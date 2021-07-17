@@ -1,0 +1,15 @@
+<!--
+SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
+SPDX-License-Identifier: MIT
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="System.IO.Pipelines" Version="5.0.1" />
+    <ProjectReference Include="$(LibrarySourceDirectory)\Smdn.Net.SkStackIP\Smdn.Net.SkStackIP.csproj" />
+  </ItemGroup>
+</Project>
