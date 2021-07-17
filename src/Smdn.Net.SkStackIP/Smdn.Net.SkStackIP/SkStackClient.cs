@@ -61,7 +61,7 @@ namespace Smdn.Net.SkStackIP {
       if (!stream.CanRead)
         throw new ArgumentException($"{nameof(stream)} must be readable stream", nameof(stream));
       if (!stream.CanWrite)
-        throw new ArgumentException($"{nameof(stream)} must be readable stream", nameof(stream));
+        throw new ArgumentException($"{nameof(stream)} must be writable stream", nameof(stream));
 
       return new SkStackClient(
         stream,
