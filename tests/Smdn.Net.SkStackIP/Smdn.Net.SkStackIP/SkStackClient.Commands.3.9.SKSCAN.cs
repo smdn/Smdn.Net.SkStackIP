@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
+
 using NUnit.Framework;
 
 using Is = Smdn.Test.NUnitExtensions.Constraints.Is;

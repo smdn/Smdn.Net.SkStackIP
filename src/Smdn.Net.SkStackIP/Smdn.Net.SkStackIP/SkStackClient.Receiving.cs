@@ -97,7 +97,7 @@ namespace Smdn.Net.SkStackIP {
 
       logger?.LogReceivingStatus($"  begin read sequence");
 
-      for (;;) {
+      for (; ; ) {
         var reparse = parseSequenceContext.Status switch {
           ParseSequenceStatus.Ignored or ParseSequenceStatus.Continueing => !parseSequenceContext.UnparsedSequence.IsEmpty,
           _ => false

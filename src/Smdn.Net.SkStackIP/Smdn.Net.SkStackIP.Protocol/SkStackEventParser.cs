@@ -31,8 +31,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
         SkStackTokenParser.ExpectADDR64(ref reader, out var senderlla) &&
         SkStackTokenParser.ExpectBinary(ref reader, out var secured) &&
         SkStackTokenParser.ExpectUINT16(ref reader, out var datalen)
-      )
-      {
+      ) {
         if (reader.GetUnreadSequence().Length < datalen + 2 /*CRLF*/) {
           context.SetAsIncomplete();
           return false;
@@ -85,11 +84,10 @@ namespace Smdn.Net.SkStackIP.Protocol {
       else if (
         SkStackTokenParser.ExpectToken(ref reader, SkStackEventCodeNames.EADDR) &&
         SkStackTokenParser.ExpectEndOfLine(ref reader)
-      )
-      {
+      ) {
         var list = new List<IPAddress>(capacity: 2);
 
-        for (;;) {
+        for (; ; ) {
           var statusLineReader = reader;
 
           if (SkStackTokenParser.TryExpectStatusLine(ref statusLineReader, out var st)) {
@@ -133,12 +131,11 @@ namespace Smdn.Net.SkStackIP.Protocol {
       else if (
         SkStackTokenParser.ExpectToken(ref reader, SkStackEventCodeNames.ENEIGHBOR) &&
         SkStackTokenParser.ExpectEndOfLine(ref reader)
-      )
-      {
+      ) {
         const int numberOfNeighborCacheEntry = 8; // 3.18. SKADDNBR
         var neighborCache = new Dictionary<IPAddress, PhysicalAddress>(capacity: numberOfNeighborCacheEntry);
 
-        for (;;) {
+        for (; ; ) {
           statusLineReader = reader;
 
           if (SkStackTokenParser.TryExpectStatusLine(ref statusLineReader, out var st)) {
@@ -177,8 +174,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
       if (
         SkStackTokenParser.ExpectToken(ref reader, SkStackEventCodeNames.EPANDESC) &&
         SkStackTokenParser.ExpectEndOfLine(ref reader)
-      )
-      {
+      ) {
         if (
           SkStackTokenParser.ExpectSequence(ref reader, EPANDESCPrefixChannel) &&
           SkStackTokenParser.ExpectUINT8(ref reader, out var channel) &&
@@ -199,8 +195,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
           SkStackTokenParser.ExpectSequence(ref reader, EPANDESCPrefixLQI) &&
           SkStackTokenParser.ExpectUINT8(ref reader, out var lqi) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader)
-        )
-        {
+        ) {
           uint pairingId = default;
 
           if (expectPairingId) {
@@ -252,8 +247,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
       if (
         SkStackTokenParser.ExpectToken(ref reader, SkStackEventCodeNames.EEDSCAN) &&
         SkStackTokenParser.ExpectEndOfLine(ref reader)
-      )
-      {
+      ) {
         var ret = new Dictionary<SkStackChannel, double>(SkStackChannel.Channels.Count);
 
         result = ret;
@@ -301,8 +295,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
       else if (
         SkStackTokenParser.ExpectToken(ref reader, SkStackEventCodeNames.EPORT) &&
         SkStackTokenParser.ExpectEndOfLine(ref reader)
-      )
-      {
+      ) {
         var ports = new SkStackUdpPort[SkStackUdpPort.NumberOfPorts];
 
         for (var i = 0; i < SkStackUdpPort.NumberOfPorts; i++) {
@@ -320,7 +313,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
           }
         }
 
-        for (;;) {
+        for (; ; ) {
           statusLineReader = reader;
 
           if (SkStackTokenParser.TryExpectStatusLine(ref statusLineReader, out var st)) {
@@ -375,8 +368,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
         SkStackTokenParser.TryExpectToken(ref reader, SkStackEventCodeNames.EVENT) &&
         SkStackTokenParser.ExpectUINT8(ref reader, out var num) &&
         SkStackTokenParser.ExpectIPADDR(ref reader, out var sender)
-      )
-      {
+      ) {
         var number = (SkStackEventNumber)num;
 
         if (!expectingEventNumberPredicate(number)) {

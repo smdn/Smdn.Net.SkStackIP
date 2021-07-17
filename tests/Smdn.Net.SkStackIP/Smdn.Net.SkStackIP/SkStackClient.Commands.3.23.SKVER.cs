@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+
 using NUnit.Framework;
 
 using Is = Smdn.Test.NUnitExtensions.Constraints.Is;

@@ -4,8 +4,8 @@
 using System;
 using System.Buffers;
 using System.IO;
-using System.IO.Ports;
 using System.IO.Pipelines;
+using System.IO.Ports;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

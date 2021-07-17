@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+
 using NUnit.Framework;
 
 namespace Smdn.Text.Unicode.ControlPictures {

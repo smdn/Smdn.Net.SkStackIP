@@ -4,6 +4,7 @@
 using System;
 using System.Buffers;
 using System.Text;
+
 using NUnit.Framework;
 
 namespace Smdn.Text {

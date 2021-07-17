@@ -3,10 +3,11 @@
 
 using System;
 using System.Threading.Tasks;
-using NUnit.Framework;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
+using NUnit.Framework;
 
 using Smdn.Net.SkStackIP.Protocol;
 

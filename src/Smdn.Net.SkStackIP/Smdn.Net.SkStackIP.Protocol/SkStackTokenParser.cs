@@ -369,7 +369,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
       if ((byte)'a' <= b && b <= (byte)'a')
         return (byte)(0xA + b - 'a');
 
-      throw SkStackUnexpectedResponseException.CreateInvalidToken(stackalloc byte[1] {b}, "HEX");
+      throw SkStackUnexpectedResponseException.CreateInvalidToken(stackalloc byte[1] { b }, "HEX");
     }
 
     private static byte ToUINT8(ReadOnlySequence<byte> token)

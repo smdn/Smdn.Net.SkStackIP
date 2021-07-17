@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
-using NUnit.Framework;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
+using NUnit.Framework;
 
 using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 

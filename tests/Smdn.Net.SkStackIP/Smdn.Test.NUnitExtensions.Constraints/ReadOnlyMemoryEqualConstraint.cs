@@ -4,6 +4,7 @@
 using System;
 using System.Buffers;
 using System.Linq;
+
 using NUnit.Framework.Constraints;
 
 namespace Smdn.Test.NUnitExtensions.Constraints {

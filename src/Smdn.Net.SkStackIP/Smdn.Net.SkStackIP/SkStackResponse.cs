@@ -16,7 +16,7 @@ namespace Smdn.Net.SkStackIP {
   }
 
   public class SkStackResponse {
-    internal readonly struct NullPayload {}
+    internal readonly struct NullPayload { }
 
     public bool Success => Status == SkStackResponseStatus.Ok ? true : false;
     public SkStackResponseStatus Status { get; internal set; } = SkStackResponseStatus.Undetermined;
