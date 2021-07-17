@@ -1,0 +1,26 @@
+<!--
+SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
+SPDX-License-Identifier: MIT
+-->
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <VersionPrefix>0.1</VersionPrefix>
+    <VersionSuffix>template</VersionSuffix>
+  </PropertyGroup>
+
+  <PropertyGroup Label="metadata">
+    <Description>
+<![CDATA[Smdn.Net.SkStackIP is a .NET client library for Skyley Networks' SKSTACK IP.
+]]>
+    </Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IO.Pipelines" Version="5.0.1" />
+    <PackageReference Include="System.IO.Ports" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
+    <!-- for System.Text.Unicode.UnicodeRanges -->
+    <PackageReference Include="System.Text.Encodings.Web" Version="5.0.1" Condition="$(TargetFramework.StartsWith('netstandard2'))" />
+  </ItemGroup>
+</Project>
