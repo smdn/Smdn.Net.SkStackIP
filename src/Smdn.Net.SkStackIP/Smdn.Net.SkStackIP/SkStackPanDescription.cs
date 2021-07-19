@@ -31,6 +31,6 @@ namespace Smdn.Net.SkStackIP {
     }
 
     public override string ToString()
-      => $"{Channel} Channel page: {ChannelPage}, PAN ID: {PanID:X4}, MAC address: {MacAddress}, Pairing ID: {PairingID:X8},  RSSI: {RSSI}";
+      => $"{Channel}, Channel page: {ChannelPage}, PAN ID: 0x{PanID:X4}, MAC address: {MacAddress}, Pairing ID: {PairingID:X8}, RSSI: {RSSI:N1}";
   }
 }
