@@ -140,6 +140,8 @@ namespace Smdn.Net.SkStackIP {
           }
           catch (SkStackUnexpectedResponseException ex) {
             logger?.LogReceivingStatus("      unexpected response: ", buffer, ex);
+
+            throw;
           }
         }
 

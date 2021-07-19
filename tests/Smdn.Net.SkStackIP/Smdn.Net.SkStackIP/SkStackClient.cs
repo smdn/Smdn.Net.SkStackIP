@@ -332,6 +332,45 @@ namespace Smdn.Net.SkStackIP {
     }
 
     [Test]
+    public async Task Response_ParseSequenceThrownUnexpectedResponseException()
+    {
+      var stream = new PseudoSkStackStream();
+
+      stream.ResponseWriter.WriteLine("UNEXPECTEDTOKEN");
+      stream.ResponseWriter.WriteLine("OK");
+
+      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+
+      var ex = Assert.ThrowsAsync<SkStackUnexpectedResponseException>(async () => {
+        await client.SendCommandAsync(
+          command: "TEST".ToByteSequence(),
+          arguments: null,
+          parseResponsePayload: static context => {
+            var reader = context.CreateReader();
+
+            if (
+              SkStackTokenParser.ExpectToken(ref reader, "EXPECTEDTOKEN".ToByteSequence()) &&
+              SkStackTokenParser.ExpectEndOfLine(ref reader)
+            ) {
+              context.Complete(reader);
+              return "payload";
+            }
+
+            context.SetAsIncomplete();
+            return default;
+          }
+        );
+      });
+
+      Assert.AreEqual("UNEXPECTEDTOKEN", ex.CausedText, nameof(ex.CausedText));
+
+      Assert.That(
+        stream.ReadSentData(),
+        Is.EqualTo("TEST\r\n".ToByteSequence())
+      );
+    }
+
+    [Test]
     public async Task Response_StatusOk()
     {
       var stream = new PseudoSkStackStream();
