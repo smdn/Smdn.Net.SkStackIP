@@ -99,7 +99,7 @@ namespace Smdn.Net.SkStackIP {
 
       this.logger = serviceProvider?.GetService<ILoggerFactory>()?.CreateLogger<SkStackClient>();
 
-      if (this.logger is not null && this.logger.IsCommandEnabled()) {
+      if (this.logger is not null && this.logger.IsCommandLoggingEnabled()) {
         this.logWriter = new ArrayBufferWriter<byte>(initialCapacity: 64);
         this.writer = DuplicateBufferWriter.Create(this.streamWriter, this.logWriter);
       }

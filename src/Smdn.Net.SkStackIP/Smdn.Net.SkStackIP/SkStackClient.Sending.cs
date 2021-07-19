@@ -162,7 +162,7 @@ namespace Smdn.Net.SkStackIP {
 
       // write command to logger
       if (logWriter is not null) {
-        logger.LogTraceCommand(logWriter.WrittenMemory);
+        logger.LogDebugCommand(logWriter.WrittenMemory);
         logWriter.Clear();
       }
     }

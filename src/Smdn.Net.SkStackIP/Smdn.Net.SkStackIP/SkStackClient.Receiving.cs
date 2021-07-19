@@ -159,7 +159,7 @@ namespace Smdn.Net.SkStackIP {
 
         if (postAction.advanceIfConsumed && parseSequenceContext.IsConsumed(buffer)) {
           // advance the buffer to the position where parsing finished
-          logger?.LogTraceResponse(buffer.Slice(0, parseSequenceContext.UnparsedSequence.Start), result);
+          logger?.LogDebugResponse(buffer.Slice(0, parseSequenceContext.UnparsedSequence.Start), result);
           streamReader.AdvanceTo(consumed: parseSequenceContext.UnparsedSequence.Start);
         }
 

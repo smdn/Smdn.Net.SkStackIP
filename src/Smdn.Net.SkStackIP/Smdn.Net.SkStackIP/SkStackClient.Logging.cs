@@ -25,16 +25,11 @@ namespace Smdn.Net.SkStackIP {
     private const string prefixResponse = "↤ ";
     private const string prefixEchoback = "↩ ";
 
-    public static bool IsCommandEnabled(this ILogger logger)
-    {
-      const LogLevel level = LogLevel.Trace;
-
-      return logger.IsEnabled(level);
-    }
+    private const LogLevel logLevelReceivingStatusDefault = LogLevel.Trace;
 
     public static void LogReceivingStatus(this ILogger logger, string prefix, ReadOnlyMemory<byte> command, Exception exception = null)
     {
-      var level = exception is null ? LogLevel.Debug : LogLevel.Error;
+      var level = exception is null ? logLevelReceivingStatusDefault : LogLevel.Error;
 
       if (!logger.IsEnabled(level))
         return;
@@ -49,7 +44,7 @@ namespace Smdn.Net.SkStackIP {
 
     public static void LogReceivingStatus(this ILogger logger, string prefix, ReadOnlySequence<byte> sequence, Exception exception = null)
     {
-      var level = exception is null ? LogLevel.Debug : LogLevel.Error;
+      var level = exception is null ? logLevelReceivingStatusDefault : LogLevel.Error;
 
       if (!logger.IsEnabled(level))
         return;
@@ -64,7 +59,7 @@ namespace Smdn.Net.SkStackIP {
 
     public static void LogReceivingStatus(this ILogger logger, string message, Exception exception = null)
     {
-      var level = exception is null ? LogLevel.Debug : LogLevel.Error;
+      var level = exception is null ? logLevelReceivingStatusDefault : LogLevel.Error;
 
       if (!logger.IsEnabled(level))
         return;
@@ -77,15 +72,18 @@ namespace Smdn.Net.SkStackIP {
       );
     }
 
-    public static void LogTraceCommand(this ILogger logger, ReadOnlyMemory<byte> sequence)
-    {
-      const LogLevel level = LogLevel.Trace;
+    private const LogLevel logLevelCommand = LogLevel.Debug;
 
-      if (!logger.IsEnabled(level))
+    public static bool IsCommandLoggingEnabled(this ILogger logger)
+      => logger.IsEnabled(logLevelCommand);
+
+    public static void LogDebugCommand(this ILogger logger, ReadOnlyMemory<byte> sequence)
+    {
+      if (!logger.IsEnabled(logLevelCommand))
         return;
 
       logger.Log(
-        level,
+        logLevelCommand,
         SkStackClient.EventIdCommandSequence,
         CreateLogMessage(prefixCommand, sequence)
       );
@@ -93,15 +91,15 @@ namespace Smdn.Net.SkStackIP {
 
     public static readonly object EchobackLineMarker = new object();
 
-    public static void LogTraceResponse(this ILogger logger, ReadOnlySequence<byte> sequence, object marker)
-    {
-      const LogLevel level = LogLevel.Trace;
+    private const LogLevel logLevelResponse = LogLevel.Debug;
 
-      if (!logger.IsEnabled(level))
+    public static void LogDebugResponse(this ILogger logger, ReadOnlySequence<byte> sequence, object marker)
+    {
+      if (!logger.IsEnabled(logLevelResponse))
         return;
 
       logger.Log(
-        level,
+        logLevelResponse,
         SkStackClient.EventIdResponseSequence,
         CreateLogMessage(Object.ReferenceEquals(marker, EchobackLineMarker) ? prefixEchoback : prefixResponse, sequence)
       );
