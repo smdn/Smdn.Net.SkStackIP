@@ -130,19 +130,19 @@ namespace Smdn.Net.SkStackIP {
 
         TResult result = default;
 
-        // process events which is received until this point
-        if (!ProcessNotificationalEvents(parseSequenceContext)) {
-          // if buffered data sequence does not contain any events, parse it with the specified parser
-          logger?.LogReceivingStatus($"      parser: {parseSequence.Method}");
+        try {
+          // process events which is received until this point
+          if (!ProcessNotificationalEvents(parseSequenceContext)) {
+            // if buffered data sequence does not contain any events, parse it with the specified parser
+            logger?.LogReceivingStatus($"      parser: {parseSequence.Method}");
 
-          try {
             result = parseSequence(parseSequenceContext, arg);
           }
-          catch (SkStackUnexpectedResponseException ex) {
-            logger?.LogReceivingStatus("      unexpected response: ", buffer, ex);
+        }
+        catch (SkStackUnexpectedResponseException ex) {
+          logger?.LogReceivingStatus("      unexpected response: ", buffer, ex);
 
-            throw;
-          }
+          throw;
         }
 
         logger?.LogReceivingStatus($"      status: {parseSequenceContext.Status}");
