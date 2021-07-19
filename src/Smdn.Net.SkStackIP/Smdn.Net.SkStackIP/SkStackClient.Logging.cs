@@ -34,7 +34,7 @@ namespace Smdn.Net.SkStackIP {
 
     public static void LogReceivingStatus(this ILogger logger, string prefix, ReadOnlyMemory<byte> command, Exception exception = null)
     {
-      const LogLevel level = LogLevel.Debug;
+      var level = exception is null ? LogLevel.Debug : LogLevel.Error;
 
       if (!logger.IsEnabled(level))
         return;
@@ -49,7 +49,7 @@ namespace Smdn.Net.SkStackIP {
 
     public static void LogReceivingStatus(this ILogger logger, string prefix, ReadOnlySequence<byte> sequence, Exception exception = null)
     {
-      const LogLevel level = LogLevel.Debug;
+      var level = exception is null ? LogLevel.Debug : LogLevel.Error;
 
       if (!logger.IsEnabled(level))
         return;
@@ -64,7 +64,7 @@ namespace Smdn.Net.SkStackIP {
 
     public static void LogReceivingStatus(this ILogger logger, string message, Exception exception = null)
     {
-      const LogLevel level = LogLevel.Debug;
+      var level = exception is null ? LogLevel.Debug : LogLevel.Error;
 
       if (!logger.IsEnabled(level))
         return;

@@ -135,7 +135,12 @@ namespace Smdn.Net.SkStackIP {
           // if buffered data sequence does not contain any events, parse it with the specified parser
           logger?.LogReceivingStatus($"      parser: {parseSequence.Method}");
 
-          result = parseSequence(parseSequenceContext, arg);
+          try {
+            result = parseSequence(parseSequenceContext, arg);
+          }
+          catch (SkStackUnexpectedResponseException ex) {
+            logger?.LogReceivingStatus("      unexpected response: ", buffer, ex);
+          }
         }
 
         logger?.LogReceivingStatus($"      status: {parseSequenceContext.Status}");
