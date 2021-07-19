@@ -349,7 +349,7 @@ namespace Smdn.Net.SkStackIP {
     }
 
     [Test]
-    public async Task Response_ParseSequenceThrownUnexpectedResponseException()
+    public void Response_ParseSequenceThrownUnexpectedResponseException()
     {
       var stream = new PseudoSkStackStream();
 
