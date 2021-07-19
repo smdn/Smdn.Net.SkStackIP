@@ -175,8 +175,8 @@ namespace Smdn.Net.SkStackIP {
 
     private async ValueTask<SkStackResponse<TPayload>> ReceiveResponseAsync<TPayload>(
       ReadOnlyMemory<byte> command,
-      bool expectsStatusResponse,
       SkStackSequenceParser<TPayload> parseResponsePayload,
+      SkStackProtocolSyntax syntax,
       CancellationToken cancellationToken
     )
     {
@@ -185,7 +185,7 @@ namespace Smdn.Net.SkStackIP {
       // try read and parse echoback
       await ReadAsync(
         parseSequence: ParseEchobackLine,
-        arg: command,
+        arg: (command, syntax),
         cancellationToken: cancellationToken
       ).ConfigureAwait(false);
 
@@ -195,16 +195,16 @@ namespace Smdn.Net.SkStackIP {
       if (parseResponsePayload is not null) {
         response.Payload = await ReadAsync(
           parseSequence: static (context, parser) => parser(context),
-          arg: parseResponsePayload,
+          arg: parseResponsePayload, // TODO: syntax
           cancellationToken: cancellationToken
         ).ConfigureAwait(false);
       }
 
       // read and parse response status line
-      if (expectsStatusResponse) {
+      if (syntax.ExpectStatusLine) {
         (response.Status, response.StatusText) = await ReadAsync(
           parseSequence: ParseStatusLine,
-          arg: command,
+          arg: (command, syntax),
           cancellationToken: cancellationToken
         ).ConfigureAwait(false);
       }
@@ -228,10 +228,10 @@ namespace Smdn.Net.SkStackIP {
 
     private static object ParseEchobackLine(
       ISkStackSequenceParserContext context,
-      ReadOnlyMemory<byte> command
+      (ReadOnlyMemory<byte> command, SkStackProtocolSyntax syntax) args
     )
     {
-      var comm = command.Span;
+      var comm = args.command.Span;
       var reader = context.CreateReader();
 
       if (comm.Length <= reader.Length && !reader.IsNext(comm, advancePast: false)) {
@@ -241,7 +241,7 @@ namespace Smdn.Net.SkStackIP {
 
       var echobackLineReader = reader;
 
-      if (!reader.TryReadTo(out ReadOnlySequence<byte> echobackLine, delimiter: SkStack.CRLFSpan)) {
+      if (!reader.TryReadTo(out ReadOnlySequence<byte> echobackLine, delimiter: args.syntax.EndOfCommandLine)) {
         context.SetAsIncomplete();
         return default;
       }
@@ -253,7 +253,7 @@ namespace Smdn.Net.SkStackIP {
 
       echobackLineReader.Advance(comm.Length); // advance to position right after the command
 
-      if (echobackLineReader.IsNext(SkStack.SP) || echobackLineReader.IsNext(SkStack.CRLFSpan)) {
+      if (echobackLineReader.IsNext(SkStack.SP) || echobackLineReader.IsNext(args.syntax.EndOfCommandLine)) {
         context.Complete(reader);
         return SkStackClientLoggerExtensions.EchobackLineMarker;
       }
@@ -269,7 +269,7 @@ namespace Smdn.Net.SkStackIP {
     )
     ParseStatusLine(
       ISkStackSequenceParserContext context,
-      ReadOnlyMemory<byte> command // not used
+      (ReadOnlyMemory<byte> command, SkStackProtocolSyntax syntax) args
     )
     {
       SkStackResponseStatus status = default;
@@ -277,8 +277,7 @@ namespace Smdn.Net.SkStackIP {
 
       var reader = context.CreateReader();
 
-      // TODO: ROHM product setting commands respond the status line terminated with CR, instead of CRLF
-      if (!reader.TryReadTo(out ReadOnlySequence<byte> statusLine, delimiter: SkStack.CRLFSpan, advancePastDelimiter: true)) {
+      if (!reader.TryReadTo(out ReadOnlySequence<byte> statusLine, delimiter: args.syntax.EndOfStatusLine, advancePastDelimiter: true)) {
         context.SetAsIncomplete();
         return default;
       }

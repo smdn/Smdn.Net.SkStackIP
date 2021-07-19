@@ -14,6 +14,7 @@ namespace Smdn.Net.SkStackIP {
     public async ValueTask<SkStackResponse> SendCommandAsync(
       ReadOnlyMemory<byte> command,
       IEnumerable<ReadOnlyMemory<byte>> arguments = null,
+      SkStackProtocolSyntax syntax = null,
       CancellationToken cancellationToken = default,
       bool throwIfErrorStatus = true
     )
@@ -21,31 +22,8 @@ namespace Smdn.Net.SkStackIP {
       var resp = await SendCommandAsyncCore<SkStackResponse.NullPayload>(
         command: command,
         arguments: arguments ?? Enumerable.Empty<ReadOnlyMemory<byte>>(),
-        endOfCommandLine: SkStack.CRLFMemory,
         parseResponsePayload: null,
-        expectsStatusResponse: true,
-        cancellationToken: cancellationToken,
-        throwIfErrorStatus: throwIfErrorStatus
-      ).ConfigureAwait(false);
-
-      return resp;
-    }
-
-    /// <param name="arguments">can be null</param>
-    public async ValueTask<SkStackResponse> SendCommandAsync(
-      ReadOnlyMemory<byte> command,
-      IEnumerable<ReadOnlyMemory<byte>> arguments,
-      ReadOnlyMemory<byte> endOfCommandLine,
-      CancellationToken cancellationToken = default,
-      bool throwIfErrorStatus = true
-    )
-    {
-      var resp = await SendCommandAsyncCore<SkStackResponse.NullPayload>(
-        command: command,
-        arguments: arguments ?? Enumerable.Empty<ReadOnlyMemory<byte>>(),
-        endOfCommandLine: endOfCommandLine,
-        parseResponsePayload: null,
-        expectsStatusResponse: true,
+        syntax: syntax ?? SkStackProtocolSyntax.Default,
         cancellationToken: cancellationToken,
         throwIfErrorStatus: throwIfErrorStatus
       ).ConfigureAwait(false);
@@ -58,33 +36,15 @@ namespace Smdn.Net.SkStackIP {
       ReadOnlyMemory<byte> command,
       IEnumerable<ReadOnlyMemory<byte>> arguments,
       SkStackSequenceParser<TPayload> parseResponsePayload,
+      SkStackProtocolSyntax syntax = null,
       CancellationToken cancellationToken = default,
       bool throwIfErrorStatus = true
     )
       => SendCommandAsyncCore(
         command: command,
         arguments: arguments ?? Enumerable.Empty<ReadOnlyMemory<byte>>(),
-        endOfCommandLine: SkStack.CRLFMemory,
         parseResponsePayload: parseResponsePayload ?? throw new ArgumentNullException(nameof(parseResponsePayload)),
-        expectsStatusResponse: true,
-        cancellationToken: cancellationToken,
-        throwIfErrorStatus: throwIfErrorStatus
-      );
-
-    /// <param name="arguments">can be null</param>
-    public ValueTask<SkStackResponse<TPayload>> SendCommandStatusUndefinedAsync<TPayload>(
-      ReadOnlyMemory<byte> command,
-      IEnumerable<ReadOnlyMemory<byte>> arguments,
-      SkStackSequenceParser<TPayload> parseResponsePayload,
-      CancellationToken cancellationToken = default,
-      bool throwIfErrorStatus = true
-    )
-      => SendCommandAsyncCore(
-        command: command,
-        arguments: arguments,
-        endOfCommandLine: SkStack.CRLFMemory,
-        parseResponsePayload: parseResponsePayload ?? throw new ArgumentNullException(nameof(parseResponsePayload)),
-        expectsStatusResponse: false,
+        syntax: syntax ?? SkStackProtocolSyntax.Default,
         cancellationToken: cancellationToken,
         throwIfErrorStatus: throwIfErrorStatus
       );
@@ -94,27 +54,28 @@ namespace Smdn.Net.SkStackIP {
     private ValueTask<SkStackResponse<TPayload>> SendCommandAsyncCore<TPayload>(
       ReadOnlyMemory<byte> command,
       IEnumerable<ReadOnlyMemory<byte>> arguments,
-      ReadOnlyMemory<byte> endOfCommandLine,
       SkStackSequenceParser<TPayload> parseResponsePayload,
-      bool expectsStatusResponse,
+      SkStackProtocolSyntax syntax,
       CancellationToken cancellationToken,
       bool throwIfErrorStatus
     )
     {
       ThrowIfDisposed();
 
+      syntax ??= SkStackProtocolSyntax.Default;
+
       // write command line
       WriteCommandLine(
         command,
         arguments,
-        endOfCommandLine
+        syntax
       );
 
       // flush command and receive response
       return FlushAndReceive(
         command,
         parseResponsePayload,
-        expectsStatusResponse,
+        syntax,
         throwIfErrorStatus,
         cancellationToken
       );
@@ -123,7 +84,7 @@ namespace Smdn.Net.SkStackIP {
     private void WriteCommandLine(
       ReadOnlyMemory<byte> command,
       IEnumerable<ReadOnlyMemory<byte>> arguments,
-      ReadOnlyMemory<byte> endOfCommandLine
+      SkStackProtocolSyntax syntax
     )
     {
       if (command.IsEmpty)
@@ -153,11 +114,11 @@ namespace Smdn.Net.SkStackIP {
       }
 
       // write end of command line
-      if (!endOfCommandLine.IsEmpty) {
+      if (!syntax.EndOfCommandLine.IsEmpty) {
         // must terminate the SKSENDTO command line without CRLF
         // ROHM product setting commands line must be terminated with CR instead of CRLF
-        endOfCommandLine.Span.CopyTo(writer.GetMemory(endOfCommandLine.Length).Span);
-        writer.Advance(endOfCommandLine.Length);
+        syntax.EndOfCommandLine.CopyTo(writer.GetMemory(syntax.EndOfCommandLine.Length).Span);
+        writer.Advance(syntax.EndOfCommandLine.Length);
       }
 
       // write command to logger
@@ -170,7 +131,7 @@ namespace Smdn.Net.SkStackIP {
     private async ValueTask<SkStackResponse<TPayload>> FlushAndReceive<TPayload>(
       ReadOnlyMemory<byte> command,
       SkStackSequenceParser<TPayload> parseResponsePayload,
-      bool expectsStatusResponse,
+      SkStackProtocolSyntax syntax,
       bool throwIfErrorStatus,
       CancellationToken cancellationToken
     )
@@ -182,8 +143,8 @@ namespace Smdn.Net.SkStackIP {
 
       var response = await ReceiveResponseAsync(
         command,
-        expectsStatusResponse,
         parseResponsePayload,
+        syntax,
         cancellationToken
       ).ConfigureAwait(false);
 

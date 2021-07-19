@@ -160,6 +160,21 @@ namespace Smdn.Net.SkStackIP {
       Assert.IsTrue(resp.Success);
     }
 
+    private class EndOfCommandLineSyntax : SkStackProtocolSyntax {
+      private readonly ReadOnlyMemory<byte> endOfCommandLine;
+      public override ReadOnlySpan<byte> EndOfCommandLine => endOfCommandLine.Span;
+
+      public override bool ExpectStatusLine => true;
+
+      private static readonly ReadOnlyMemory<byte> endOfStatusLine = "\r\n".ToByteSequence();
+      public override ReadOnlySpan<byte> EndOfStatusLine => endOfStatusLine.Span;
+
+      public EndOfCommandLineSyntax(string endOfCommandLine)
+      {
+        this.endOfCommandLine = endOfCommandLine.ToByteSequence();
+      }
+    }
+
     [TestCase("\r\n")] // SK commands
     [TestCase("")] // SKSENDTO
     [TestCase("\r")] // ROHM product setting commands
@@ -169,11 +184,13 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
+      var syntax = new EndOfCommandLineSyntax(commandLineTerminator);
+
       using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
       var resp = await client.SendCommandAsync(
         command: "TEST".ToByteSequence(),
         arguments: null,
-        endOfCommandLine: commandLineTerminator.ToByteSequence()
+        syntax: syntax
       );
 
       Assert.That(
@@ -368,6 +385,50 @@ namespace Smdn.Net.SkStackIP {
         stream.ReadSentData(),
         Is.EqualTo("TEST\r\n".ToByteSequence())
       );
+    }
+
+    private class EndOfStatusLineSyntax : SkStackProtocolSyntax {
+      private readonly ReadOnlyMemory<byte> endOfCommandLine;
+      public override ReadOnlySpan<byte> EndOfCommandLine => endOfCommandLine.Span;
+
+      public override bool ExpectStatusLine => true;
+
+      private readonly ReadOnlyMemory<byte> endOfStatusLine;
+      public override ReadOnlySpan<byte> EndOfStatusLine => endOfStatusLine.Span;
+
+      public EndOfStatusLineSyntax(string lineTerminator)
+      {
+        this.endOfCommandLine = lineTerminator.ToByteSequence();
+        this.endOfStatusLine = lineTerminator.ToByteSequence();
+      }
+    }
+
+    [TestCase("\r\n")] // SK commands
+    [TestCase("\r")] // ROHM product setting commands
+    public async Task Response_EndOfStatusLine(string lineTerminator)
+    {
+      var stream = new PseudoSkStackStream();
+
+      stream.ResponseWriter.Write("OK");
+      stream.ResponseWriter.Write(lineTerminator);
+
+      var syntax = new EndOfStatusLineSyntax(lineTerminator);
+
+      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      var resp = await client.SendCommandAsync(
+        command: "TEST".ToByteSequence(),
+        arguments: null,
+        syntax: syntax
+      );
+
+      Assert.That(
+        stream.ReadSentData(),
+        Is.EqualTo(("TEST" + lineTerminator).ToByteSequence())
+      );
+
+      Assert.IsTrue(resp.Success);
+      Assert.AreEqual(resp.Status, SkStackResponseStatus.Ok);
+      Assert.That(resp.StatusText, Is.EqualTo(ReadOnlyMemory<byte>.Empty));
     }
 
     [Test]

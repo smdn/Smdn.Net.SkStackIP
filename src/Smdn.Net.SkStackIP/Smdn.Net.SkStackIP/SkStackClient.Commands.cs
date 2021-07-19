@@ -216,7 +216,7 @@ namespace Smdn.Net.SkStackIP {
               DATALEN.AsMemory(0, lengthOfDATALEN),
               data
             ),
-            endOfCommandLine: ReadOnlyMemory<byte>.Empty, // terminate the command line without CRLF
+            syntax: SkStackProtocolSyntax.SKSENDTO, // SKSENDTO must terminate the command line without CRLF
             cancellationToken: cancellationToken,
             throwIfErrorStatus: true
           ).ConfigureAwait(false);
@@ -615,8 +615,7 @@ namespace Smdn.Net.SkStackIP {
 
           SkStackCommandArgs.TryConvertToADDR64(ADDR64, macAddress, out var lengthOfADDR64);
 
-          // SKLL64 does not define its status
-          return await SendCommandStatusUndefinedAsync(
+          return await SendCommandAsync(
             command: SkStackCommandNames.SKLL64,
             arguments: SkStackCommandArgs.CreateEnumerable(ADDR64.AsMemory(0, lengthOfADDR64)),
             parseResponsePayload: static context => {
@@ -633,6 +632,7 @@ namespace Smdn.Net.SkStackIP {
               context.SetAsIncomplete();
               return default;
             },
+            syntax: SkStackProtocolSyntax.SKLL64, // SKLL64 does not define its status
             cancellationToken: cancellationToken,
             throwIfErrorStatus: true
           ).ConfigureAwait(false);
