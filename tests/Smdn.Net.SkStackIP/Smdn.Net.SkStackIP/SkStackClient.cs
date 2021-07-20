@@ -511,15 +511,30 @@ namespace Smdn.Net.SkStackIP {
       Assert.That(resp.StatusText, Is.EqualTo("REASON".ToByteSequence()));
     }
 
-    [Test]
-    public void Response_StatusFailWithStatusText_AsException_ErrorCode()
+    [Test] public void Response_StatusFailWithStatusText_AsException_ErrorCode_ER01()
+      => Response_StatusFailWithStatusText_AsException_ErrorCode<SkStackErrorResponseException>(nameof(SkStackErrorCode.ER01), SkStackErrorCode.ER01);
+
+    [Test] public void Response_StatusFailWithStatusText_AsException_ErrorCode_ER04()
+      => Response_StatusFailWithStatusText_AsException_ErrorCode<SkStackCommandNotSupportedException>(nameof(SkStackErrorCode.ER04), SkStackErrorCode.ER04);
+
+    [Test] public void Response_StatusFailWithStatusText_AsException_ErrorCode_ER09()
+      => Response_StatusFailWithStatusText_AsException_ErrorCode<SkStackUartIOException>(nameof(SkStackErrorCode.ER09), SkStackErrorCode.ER09);
+
+    [Test] public void Response_StatusFailWithStatusText_AsException_ErrorCode_Undefined()
+      => Response_StatusFailWithStatusText_AsException_ErrorCode<SkStackErrorResponseException>("ERXX", SkStackErrorCode.Undefined);
+
+    private void Response_StatusFailWithStatusText_AsException_ErrorCode<TExpectedException>(
+      string errorCodeString,
+      SkStackErrorCode expectedErrorCode
+    )
+      where TExpectedException : SkStackErrorResponseException
     {
       var stream = new PseudoSkStackStream();
 
-      stream.ResponseWriter.WriteLine("FAIL ER01");
+      stream.ResponseWriter.WriteLine($"FAIL {errorCodeString}");
 
       using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
-      var ex = Assert.ThrowsAsync<SkStackErrorResponseException>(
+      var ex = Assert.ThrowsAsync<TExpectedException>(
         async () => await client.SendCommandAsync("TEST".ToByteSequence(), throwIfErrorStatus: true)
       );
 
@@ -528,39 +543,13 @@ namespace Smdn.Net.SkStackIP {
         Is.EqualTo("TEST\r\n".ToByteSequence())
       );
 
-      Assert.AreEqual(SkStackErrorCode.ER01, ex.ErrorCode);
+      Assert.AreEqual(expectedErrorCode, ex.ErrorCode);
       Assert.IsEmpty(ex.ErrorText);
 
       Assert.IsNotNull(ex.Response);
       Assert.IsFalse(ex.Response.Success);
       Assert.AreEqual(ex.Response.Status, SkStackResponseStatus.Fail);
-      Assert.That(ex.Response.StatusText, Is.EqualTo("ER01".ToByteSequence()));
-    }
-
-    [Test]
-    public void Response_StatusFailWithStatusText_AsException_ErrorCodeUndefined()
-    {
-      var stream = new PseudoSkStackStream();
-
-      stream.ResponseWriter.WriteLine("FAIL ERXX");
-
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
-      var ex = Assert.ThrowsAsync<SkStackErrorResponseException>(
-        async () => await client.SendCommandAsync("TEST".ToByteSequence(), throwIfErrorStatus: true)
-      );
-
-      Assert.That(
-        stream.ReadSentData(),
-        Is.EqualTo("TEST\r\n".ToByteSequence())
-      );
-
-      Assert.AreEqual(SkStackErrorCode.Undefined, ex.ErrorCode);
-      Assert.IsEmpty(ex.ErrorText);
-
-      Assert.IsNotNull(ex.Response);
-      Assert.IsFalse(ex.Response.Success);
-      Assert.AreEqual(ex.Response.Status, SkStackResponseStatus.Fail);
-      Assert.That(ex.Response.StatusText, Is.EqualTo("ERXX".ToByteSequence()));
+      Assert.That(ex.Response.StatusText, Is.EqualTo(errorCodeString.ToByteSequence()));
     }
 
     [Test]

@@ -26,7 +26,7 @@ namespace Smdn.Net.SkStackIP {
     {
     }
 
-    internal bool TryParseErrorStatus(
+    private bool TryParseErrorStatus(
       out SkStackErrorCode errorCode,
       out ReadOnlyMemory<byte> errorText,
       out string errorMessage
@@ -69,17 +69,37 @@ namespace Smdn.Net.SkStackIP {
       return true;
     }
 
-    internal void ThrowIfErrorStatus()
+    internal void ThrowIfErrorStatus(
+      Func<SkStackResponse, SkStackErrorCode, ReadOnlyMemory<byte>, Exception> translateException
+    )
     {
       if (!TryParseErrorStatus(out var errorCode, out var errorText, out var errorMessage))
         return;
 
-      throw new SkStackErrorResponseException(
-        response: this,
-        errorCode: errorCode,
-        errorText: errorText.Span,
-        message: errorMessage
-      );
+      var translatedException = translateException?.Invoke(this, errorCode, errorText);
+
+      throw translatedException ?? errorCode switch {
+        SkStackErrorCode.ER04 => new SkStackCommandNotSupportedException(
+          response: this,
+          errorCode: errorCode,
+          errorText: errorText.Span,
+          message: errorMessage
+        ),
+
+        SkStackErrorCode.ER09 => new SkStackUartIOException(
+          response: this,
+          errorCode: errorCode,
+          errorText: errorText.Span,
+          message: errorMessage
+        ),
+
+        _ => new SkStackErrorResponseException(
+          response: this,
+          errorCode: errorCode,
+          errorText: errorText.Span,
+          message: errorMessage
+        ),
+      };
     }
   }
 }

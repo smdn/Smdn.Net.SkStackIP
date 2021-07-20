@@ -149,7 +149,7 @@ namespace Smdn.Net.SkStackIP {
       ).ConfigureAwait(false);
 
       if (throwIfErrorStatus)
-        response.ThrowIfErrorStatus();
+        response.ThrowIfErrorStatus(translateException: null);
 
       return response;
     }

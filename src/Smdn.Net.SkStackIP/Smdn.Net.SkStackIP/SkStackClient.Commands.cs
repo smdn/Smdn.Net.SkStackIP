@@ -523,12 +523,12 @@ namespace Smdn.Net.SkStackIP {
         throwIfErrorStatus: false
       ).ConfigureAwait(false);
 
-      if (resp.TryParseErrorStatus(out var errorCode, out var errorText, out var message)) {
-        if (errorCode == SkStackErrorCode.ER10)
-          throw new SkStackFlashMemoryIOException(resp, errorCode, errorText.Span, message: ioErrorMessage);
-        else
-          throw new SkStackErrorResponseException(resp, errorCode, errorText.Span, message: message);
-      }
+      resp.ThrowIfErrorStatus((r, code, text) => {
+        if (code == SkStackErrorCode.ER10)
+          return new SkStackFlashMemoryIOException(r, code, text.Span, ioErrorMessage);
+
+        return null;
+      });
 
       return resp;
     }
