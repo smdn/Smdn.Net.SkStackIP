@@ -45,11 +45,11 @@ namespace Smdn.Net.SkStackIP.Protocol {
     /// <remarks>reference: BP35A1コマンドリファレンス 3.19. SKUDPPORT</remarks>
     public static ReadOnlyMemory<byte> SKUDPPORT { get; } = SkStack.ToByteSequence(nameof(SKUDPPORT));
     /// <remarks>reference: BP35A1コマンドリファレンス 3.20. SKSAVE</remarks>
-    public static ReadOnlyMemory<byte> SKSAVE => throw new NotImplementedException();
+    public static ReadOnlyMemory<byte> SKSAVE { get; } = SkStack.ToByteSequence(nameof(SKSAVE));
     /// <remarks>reference: BP35A1コマンドリファレンス 3.21. SKLOAD</remarks>
-    public static ReadOnlyMemory<byte> SKLOAD => throw new NotImplementedException();
+    public static ReadOnlyMemory<byte> SKLOAD { get; } = SkStack.ToByteSequence(nameof(SKLOAD));
     /// <remarks>reference: BP35A1コマンドリファレンス 3.22. SKERASE</remarks>
-    public static ReadOnlyMemory<byte> SKERASE => throw new NotImplementedException();
+    public static ReadOnlyMemory<byte> SKERASE { get; } = SkStack.ToByteSequence(nameof(SKERASE));
     /// <remarks>reference: BP35A1コマンドリファレンス 3.23. SKVER</remarks>
     public static ReadOnlyMemory<byte> SKVER { get; } = SkStack.ToByteSequence(nameof(SKVER));
     /// <remarks>reference: BP35A1コマンドリファレンス 3.24. SKAPPVER</remarks>

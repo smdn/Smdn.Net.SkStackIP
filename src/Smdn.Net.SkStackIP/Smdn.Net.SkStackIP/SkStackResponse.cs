@@ -26,43 +26,59 @@ namespace Smdn.Net.SkStackIP {
     {
     }
 
-    internal void ThrowIfErrorStatus()
+    internal bool TryParseErrorStatus(
+      out SkStackErrorCode errorCode,
+      out ReadOnlyMemory<byte> errorText,
+      out string errorMessage
+    )
     {
+      errorCode = default;
+      errorText = default;
+      errorMessage = default;
+
       if (Status == SkStackResponseStatus.Ok || Status == SkStackResponseStatus.Undetermined)
-        return;
+        return false; // not error status
 
-      var errorStatusText = StatusText.Span;
       ReadOnlySpan<byte> errorCodeName = default;
-      ReadOnlySpan<byte> errorText = default;
 
-      if (5 <= errorStatusText.Length && errorStatusText[4] == SkStack.SP) {
-        errorCodeName = errorStatusText.Slice(0, 4);
-        errorText = errorStatusText.Slice(5);
+      if (5 <= StatusText.Length && StatusText.Span[4] == SkStack.SP) {
+        errorCodeName = StatusText.Span.Slice(0, 4);
+        errorText = StatusText.Slice(5);
       }
       else {
-        errorCodeName = errorStatusText;
+        errorCodeName = StatusText.Span;
         errorText = default;
       }
 
-      var errorCode = SkStackErrorCodeNames.ParseErrorCode(errorCodeName);
+      errorCode = SkStackErrorCodeNames.ParseErrorCode(errorCodeName);
+
+      errorMessage = errorCode switch {
+        SkStackErrorCode.ER01 => "Reserved error code",
+        SkStackErrorCode.ER02 => "Reserved error code",
+        SkStackErrorCode.ER03 => "Reserved error code",
+        SkStackErrorCode.ER04 => "Unsupported command",
+        SkStackErrorCode.ER05 => "Invalid number of arguments",
+        SkStackErrorCode.ER06 => "Argument out-of-range or invalid format",
+        SkStackErrorCode.ER07 => "Reserved error code",
+        SkStackErrorCode.ER08 => "Reserved error code",
+        SkStackErrorCode.ER09 => "UART input error",
+        SkStackErrorCode.ER10 => "Command completed unsuccessfully",
+        _ => "unknown or undefined error code"
+      };
+
+      return true;
+    }
+
+    internal void ThrowIfErrorStatus()
+    {
+      if (!TryParseErrorStatus(out var errorCode, out var errorText, out var errorMessage))
+        return;
 
       throw new SkStackErrorResponseException(
-        this,
-        errorCode,
-        errorText,
-        errorCode switch {
-          SkStackErrorCode.ER01 => "Reserved error code",
-          SkStackErrorCode.ER02 => "Reserved error code",
-          SkStackErrorCode.ER03 => "Reserved error code",
-          SkStackErrorCode.ER04 => "Unsupported command",
-          SkStackErrorCode.ER05 => "Invalid number of arguments",
-          SkStackErrorCode.ER06 => "Argument out-of-range or invalid format",
-          SkStackErrorCode.ER07 => "Reserved error code",
-          SkStackErrorCode.ER08 => "Reserved error code",
-          SkStackErrorCode.ER09 => "UART input error",
-          SkStackErrorCode.ER10 => "Command completed unsuccessfully",
-          _ => "unknown or undefined error code"
-        }
+        response: this,
+        errorCode: errorCode,
+        errorText: errorText.Span,
+        message: errorMessage
       );
     }
   }

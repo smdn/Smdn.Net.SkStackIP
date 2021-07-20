@@ -489,6 +489,61 @@ namespace Smdn.Net.SkStackIP {
           ArrayPool<byte>.Shared.Return(PORT);
       }
     }
+
+    /// <remarks>reference: BP35A1コマンドリファレンス 3.20. SKSAVE</remarks>
+    public ValueTask<SkStackResponse> SendSKSAVEAsync(
+      CancellationToken cancellationToken = default
+    )
+      => SendFlashMemoryCommand(
+        command: SkStackCommandNames.SKSAVE,
+        ioErrorMessage: "Failed to save the register values to the flash memory.",
+        cancellationToken: cancellationToken
+      );
+
+    /// <remarks>reference: BP35A1コマンドリファレンス 3.21. SKLOAD</remarks>
+    public ValueTask<SkStackResponse> SendSKLOADAsync(
+      CancellationToken cancellationToken = default
+    )
+      => SendFlashMemoryCommand(
+        command: SkStackCommandNames.SKLOAD,
+        ioErrorMessage: "Failed to load the register values from the flash memory or the register values have not been saved in the flash memory.",
+        cancellationToken: cancellationToken
+      );
+
+    private async ValueTask<SkStackResponse> SendFlashMemoryCommand(
+      ReadOnlyMemory<byte> command,
+      string ioErrorMessage,
+      CancellationToken cancellationToken = default
+    )
+    {
+      var resp = await SendCommandAsync(
+        command: command,
+        arguments: Array.Empty<ReadOnlyMemory<byte>>(),
+        cancellationToken: cancellationToken,
+        throwIfErrorStatus: false
+      ).ConfigureAwait(false);
+
+      if (resp.TryParseErrorStatus(out var errorCode, out var errorText, out var message)) {
+        if (errorCode == SkStackErrorCode.ER10)
+          throw new SkStackFlashMemoryIOException(resp, errorCode, errorText.Span, message: ioErrorMessage);
+        else
+          throw new SkStackErrorResponseException(resp, errorCode, errorText.Span, message: message);
+      }
+
+      return resp;
+    }
+
+    /// <remarks>reference: BP35A1コマンドリファレンス 3.22. SKERASE</remarks>
+    public ValueTask<SkStackResponse> SendSKERASEAsync(
+      CancellationToken cancellationToken = default
+    )
+      => SendCommandAsync(
+        command: SkStackCommandNames.SKERASE,
+        arguments: Array.Empty<ReadOnlyMemory<byte>>(),
+        cancellationToken: cancellationToken,
+        throwIfErrorStatus: false
+      );
+
     /// <remarks>reference: BP35A1コマンドリファレンス 3.23. SKVER</remarks>
     public ValueTask<SkStackResponse<Version>> SendSKVERAsync(
       CancellationToken cancellationToken = default
