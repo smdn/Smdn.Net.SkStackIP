@@ -13,7 +13,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
   public static class SkStackTokenParser {
     private delegate (bool, TResult) TryConvertTokenFunc<TArg, TResult>(ReadOnlySequence<byte> token, TArg arg);
 
-    private static bool TryConvertToken<TArg, TResult>(
+    private static OperationStatus TryConvertToken<TArg, TResult>(
       ref SequenceReader<byte> reader,
       int length,
       bool throwIfUnexpected,
@@ -26,7 +26,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
 
       // if fixed length
       if (0 < length && reader.GetUnreadSequence().Length < length)
-        return false; // incomplete
+        return OperationStatus.NeedMoreData;
 
       var readerEOL = reader;
       var readerSP = reader;
@@ -48,7 +48,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
       }
 
       if (!(foundTokenDelimitByEOL || foundTokenDelimitBySP))
-        return false; // incomplete
+        return OperationStatus.NeedMoreData;
 
       ReadOnlySequence<byte> token;
       var consumedReader = reader;
@@ -70,7 +70,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
           );
         }
         else {
-          return false;
+          return OperationStatus.InvalidData;
         }
       }
 
@@ -79,11 +79,11 @@ namespace Smdn.Net.SkStackIP.Protocol {
       (converted, result) = tryConvert(token, arg);
 
       if (!converted)
-        return false;
+        return OperationStatus.InvalidData;
 
       reader = consumedReader;
 
-      return true;
+      return OperationStatus.Done;
     }
 
     public static bool Expect<TResult>(
@@ -92,7 +92,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
       Converter<ReadOnlySequence<byte>, TResult> converter,
       out TResult result
     )
-      => TryConvertToken(
+      => OperationStatus.Done == TryConvertToken(
         reader: ref reader,
         length: length,
         throwIfUnexpected: true,
@@ -101,7 +101,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
         result: out result
       );
 
-    public static bool TryExpectToken(
+    public static OperationStatus TryExpectToken(
       ref SequenceReader<byte> reader,
       ReadOnlyMemory<byte> expectedToken
     )
@@ -115,13 +115,13 @@ namespace Smdn.Net.SkStackIP.Protocol {
       ref SequenceReader<byte> reader,
       ReadOnlyMemory<byte> expectedToken
     )
-      => ExpectTokenCore(
+      => OperationStatus.Done == ExpectTokenCore(
         reader: ref reader,
         expectedToken: expectedToken,
         throwIfUnexpected: true
       );
 
-    private static bool ExpectTokenCore(
+    private static OperationStatus ExpectTokenCore(
       ref SequenceReader<byte> reader,
       ReadOnlyMemory<byte> expectedToken,
       bool throwIfUnexpected
@@ -290,7 +290,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
 
         buffer = ArrayPool<byte>.Shared.Rent(lengthOfUINT8Array);
 
-        return TryConvertToken(
+        return OperationStatus.Done == TryConvertToken(
           reader: ref reader,
           length: lengthOfUINT8Array,
           throwIfUnexpected: true,

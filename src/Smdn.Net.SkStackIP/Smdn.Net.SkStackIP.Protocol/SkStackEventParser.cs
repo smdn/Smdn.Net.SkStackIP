@@ -24,8 +24,18 @@ namespace Smdn.Net.SkStackIP.Protocol {
 
       var reader = context.CreateReader();
 
+      var status = SkStackTokenParser.TryExpectToken(ref reader, SkStackEventCodeNames.ERXUDP);
+
+      if (status == OperationStatus.NeedMoreData) {
+        context.SetAsIncomplete();
+        return false;
+      }
+      else if (status == OperationStatus.InvalidData) {
+        context.Ignore();
+        return false;
+      }
+
       if (
-        SkStackTokenParser.TryExpectToken(ref reader, SkStackEventCodeNames.ERXUDP) &&
         SkStackTokenParser.ExpectIPADDR(ref reader, out var sender) &&
         SkStackTokenParser.ExpectIPADDR(ref reader, out var dest) &&
         SkStackTokenParser.ExpectUINT16(ref reader, out var rport) &&
@@ -65,6 +75,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
         return true;
       }
 
+      context.SetAsIncomplete();
       return false;
     }
 
@@ -369,8 +380,18 @@ namespace Smdn.Net.SkStackIP.Protocol {
 
       var reader = context.CreateReader();
 
+      var status = SkStackTokenParser.TryExpectToken(ref reader, SkStackEventCodeNames.EVENT);
+
+      if (status == OperationStatus.NeedMoreData) {
+        context.SetAsIncomplete();
+        return false;
+      }
+      else if (status == OperationStatus.InvalidData) {
+        context.Ignore();
+        return false;
+      }
+
       if (
-        SkStackTokenParser.TryExpectToken(ref reader, SkStackEventCodeNames.EVENT) &&
         SkStackTokenParser.ExpectUINT8(ref reader, out var num) &&
         SkStackTokenParser.ExpectIPADDR(ref reader, out var sender)
       ) {
@@ -407,6 +428,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
         }
       }
 
+      context.SetAsIncomplete();
       return false;
     }
   }
