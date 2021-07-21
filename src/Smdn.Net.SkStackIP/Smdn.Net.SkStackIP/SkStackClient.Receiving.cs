@@ -3,6 +3,7 @@
 
 using System;
 using System.Buffers;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -83,93 +84,106 @@ namespace Smdn.Net.SkStackIP {
     }
 
     private readonly ParseSequenceContext parseSequenceContext;
+    private SemaphoreSlim streamReaderSemaphore;
 
     private async ValueTask<TResult> ReadAsync<TArg, TResult>(
       Func<ISkStackSequenceParserContext, TArg, TResult> parseSequence,
       TArg arg,
-      CancellationToken cancellationToken = default
+      CancellationToken cancellationToken = default,
+      [CallerMemberName] string callerMemberName = default
     )
     {
       const int continuousReadingIntervalMilliseconds = 10; // TODO: make configurable
 
-      //parseSequenceContext.Lock(); // TODO: lock or mutex
-      parseSequenceContext.Initialize();
+      logger?.LogReceivingStatus($"{callerMemberName} waiting");
 
-      logger?.LogReceivingStatus($"  begin read sequence");
+      await streamReaderSemaphore.WaitAsync().ConfigureAwait(false);
 
-      for (; ; ) {
-        var reparse = parseSequenceContext.Status switch {
-          ParseSequenceStatus.Ignored or ParseSequenceStatus.Continueing => !parseSequenceContext.UnparsedSequence.IsEmpty,
-          _ => false
-        };
+      logger?.LogReceivingStatus($"{callerMemberName} entered");
 
-        ReadOnlySequence<byte> buffer;
+      try {
+        parseSequenceContext.Initialize();
 
-        if (reparse) {
-          logger?.LogReceivingStatus($"    reparse buffered sequence");
+        logger?.LogReceivingStatus($"  begin read sequence");
 
-          // reparse previous data sequence
-          buffer = parseSequenceContext.UnparsedSequence;
-        }
-        else {
-          logger?.LogReceivingStatus($"    read sequence from stream");
-          logger?.LogReceivingStatus("      buffered: ", parseSequenceContext.UnparsedSequence);
+        for (; ; ) {
+          var reparse = parseSequenceContext.Status switch {
+            ParseSequenceStatus.Ignored or ParseSequenceStatus.Continueing => !parseSequenceContext.UnparsedSequence.IsEmpty,
+            _ => false
+          };
 
-          // receive data sequence and parse it
-          var readResult = await streamReader.ReadAsync(cancellationToken).ConfigureAwait(false);
+          ReadOnlySequence<byte> buffer;
 
-          if (readResult.IsCanceled)
-            throw new OperationCanceledException("canceled");
+          if (reparse) {
+            logger?.LogReceivingStatus($"    reparse buffered sequence");
 
-          buffer = readResult.Buffer;
-        }
-
-        logger?.LogReceivingStatus("      sequence: ", buffer);
-
-        parseSequenceContext.Update(buffer);
-
-        TResult result = default;
-
-        try {
-          // process events which is received until this point
-          if (!ProcessNotificationalEvents(parseSequenceContext)) {
-            // if buffered data sequence does not contain any events, parse it with the specified parser
-            logger?.LogReceivingStatus($"      parser: {parseSequence.Method}");
-
-            result = parseSequence(parseSequenceContext, arg);
+            // reparse previous data sequence
+            buffer = parseSequenceContext.UnparsedSequence;
           }
+          else {
+            logger?.LogReceivingStatus($"    read sequence from stream");
+            logger?.LogReceivingStatus("      buffered: ", parseSequenceContext.UnparsedSequence);
+
+            // receive data sequence and parse it
+            var readResult = await streamReader.ReadAsync(cancellationToken).ConfigureAwait(false);
+
+            if (readResult.IsCanceled)
+              throw new OperationCanceledException("canceled");
+
+            buffer = readResult.Buffer;
+          }
+
+          logger?.LogReceivingStatus("      sequence: ", buffer);
+
+          parseSequenceContext.Update(buffer);
+
+          TResult result = default;
+
+          try {
+            // process events which is received until this point
+            if (!ProcessNotificationalEvents(parseSequenceContext)) {
+              // if buffered data sequence does not contain any events, parse it with the specified parser
+              logger?.LogReceivingStatus($"      parser: {parseSequence.Method}");
+
+              result = parseSequence(parseSequenceContext, arg);
+            }
+          }
+          catch (SkStackUnexpectedResponseException ex) {
+            logger?.LogReceivingStatus("      unexpected response: ", buffer, ex);
+
+            throw;
+          }
+
+          logger?.LogReceivingStatus($"      status: {parseSequenceContext.Status}");
+
+          var postAction = parseSequenceContext.Status switch {
+            ParseSequenceStatus.Completed   => (markAsExamined: true,  advanceIfConsumed: true,  returnResult: true,  delay: default),
+            ParseSequenceStatus.Ignored     => (markAsExamined: false, advanceIfConsumed: false, returnResult: true,  delay: default),
+            ParseSequenceStatus.Incomplete  => (markAsExamined: true,  advanceIfConsumed: false, returnResult: false, delay: true),
+            ParseSequenceStatus.Continueing => (markAsExamined: true,  advanceIfConsumed: true,  returnResult: false, delay: false),
+            ParseSequenceStatus.Undetermined or _ => throw new InvalidOperationException("final status is invalid or remains undetermined"),
+          };
+
+          if (postAction.markAsExamined)
+            // mark entire buffer as examined to receive the subsequent data
+            streamReader.AdvanceTo(consumed: buffer.Start, examined: buffer.End);
+
+          if (postAction.advanceIfConsumed && parseSequenceContext.IsConsumed(buffer)) {
+            // advance the buffer to the position where parsing finished
+            logger?.LogDebugResponse(buffer.Slice(0, parseSequenceContext.UnparsedSequence.Start), result);
+            streamReader.AdvanceTo(consumed: parseSequenceContext.UnparsedSequence.Start);
+          }
+
+          if (postAction.returnResult)
+            return result;
+
+          if (postAction.delay)
+            await Task.Delay(continuousReadingIntervalMilliseconds).ConfigureAwait(false);
         }
-        catch (SkStackUnexpectedResponseException ex) {
-          logger?.LogReceivingStatus("      unexpected response: ", buffer, ex);
-
-          throw;
-        }
-
-        logger?.LogReceivingStatus($"      status: {parseSequenceContext.Status}");
-
-        var postAction = parseSequenceContext.Status switch {
-          ParseSequenceStatus.Completed   => (markAsExamined: true,  advanceIfConsumed: true,  returnResult: true,  delay: default),
-          ParseSequenceStatus.Ignored     => (markAsExamined: false, advanceIfConsumed: false, returnResult: true,  delay: default),
-          ParseSequenceStatus.Incomplete  => (markAsExamined: true,  advanceIfConsumed: false, returnResult: false, delay: true),
-          ParseSequenceStatus.Continueing => (markAsExamined: true,  advanceIfConsumed: true,  returnResult: false, delay: false),
-          ParseSequenceStatus.Undetermined or _ => throw new InvalidOperationException("final status is invalid or remains undetermined"),
-        };
-
-        if (postAction.markAsExamined)
-          // mark entire buffer as examined to receive the subsequent data
-          streamReader.AdvanceTo(consumed: buffer.Start, examined: buffer.End);
-
-        if (postAction.advanceIfConsumed && parseSequenceContext.IsConsumed(buffer)) {
-          // advance the buffer to the position where parsing finished
-          logger?.LogDebugResponse(buffer.Slice(0, parseSequenceContext.UnparsedSequence.Start), result);
-          streamReader.AdvanceTo(consumed: parseSequenceContext.UnparsedSequence.Start);
-        }
-
-        if (postAction.returnResult)
-          return result;
-
-        if (postAction.delay)
-          await Task.Delay(continuousReadingIntervalMilliseconds).ConfigureAwait(false);
+      }
+      finally {
+        logger?.LogReceivingStatus($"{callerMemberName} exited");
+        streamReaderSemaphore.Release();
       }
     }
 
@@ -180,7 +194,7 @@ namespace Smdn.Net.SkStackIP {
       CancellationToken cancellationToken
     )
     {
-      logger?.LogReceivingStatus("ReceiveResponseAsync ", command);
+      logger?.LogReceivingStatus($"{nameof(ReceiveResponseAsync)} ", command);
 
       // try read and parse echoback
       await ReadAsync(

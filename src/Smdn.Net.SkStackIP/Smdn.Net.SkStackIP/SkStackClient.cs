@@ -108,6 +108,7 @@ namespace Smdn.Net.SkStackIP {
       }
 
       this.parseSequenceContext = new ParseSequenceContext(this.logger);
+      this.streamReaderSemaphore = new(initialCount: 1, maxCount: 1);
     }
 
     public void Close()
@@ -129,6 +130,9 @@ namespace Smdn.Net.SkStackIP {
 
         stream?.Close();
         stream = null;
+
+        streamReaderSemaphore?.Dispose();
+        streamReaderSemaphore = null;
       }
     }
   }
