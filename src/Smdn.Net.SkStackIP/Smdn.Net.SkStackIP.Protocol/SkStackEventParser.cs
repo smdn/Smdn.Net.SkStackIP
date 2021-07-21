@@ -15,10 +15,12 @@ namespace Smdn.Net.SkStackIP.Protocol {
     /// <remarks>reference: BP35A1コマンドリファレンス 4.1. ERXUDP</remarks>
     public static bool TryExpectERXUDP(
       ISkStackSequenceParserContext context,
-      out SkStackUdpReceiveEvent erxudp
+      out SkStackUdpReceiveEvent erxudp,
+      out ReadOnlySequence<byte> erxudpData
     )
     {
       erxudp = default;
+      erxudpData = default;
 
       var reader = context.CreateReader();
 
@@ -37,9 +39,11 @@ namespace Smdn.Net.SkStackIP.Protocol {
           return false;
         }
 
-        var data = reader.GetUnreadSequence().Slice(0, datalen).ToArray();
+        var erxudpDataStart = reader.Position;
 
         reader.Advance(datalen);
+
+        var erxudpDataEnd = reader.Position;
 
         if (!SkStackTokenParser.ExpectEndOfLine(ref reader)) {
           context.SetAsIncomplete();
@@ -52,9 +56,10 @@ namespace Smdn.Net.SkStackIP.Protocol {
           rport: rport,
           lport: lport,
           senderlla: senderlla,
-          secured: secured,
-          data: data
+          secured: secured
         );
+
+        erxudpData = reader.Sequence.Slice(erxudpDataStart, erxudpDataEnd);
 
         context.Complete(reader);
         return true;

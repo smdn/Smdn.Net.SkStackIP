@@ -57,8 +57,8 @@ namespace Smdn.Net.SkStackIP {
         return true;
       }
 
-      if (SkStackEventParser.TryExpectERXUDP(context, out var erxudp)) {
-        logger?.LogInfoIPEventReceived(erxudp);
+      if (SkStackEventParser.TryExpectERXUDP(context, out var erxudp, out var erxudpData)) {
+        logger?.LogInfoIPEventReceived(erxudp, erxudpData);
         // TODO: copy to buffer
         context.Continue();
         return true;

@@ -152,7 +152,7 @@ namespace Smdn.Net.SkStackIP {
       );
     }
 
-    public static void LogInfoIPEventReceived(this ILogger logger, SkStackUdpReceiveEvent erxudp)
+    public static void LogInfoIPEventReceived(this ILogger logger, SkStackUdpReceiveEvent erxudp, ReadOnlySequence<byte> erxudpData)
     {
       const LogLevel level = LogLevel.Information;
 
@@ -168,8 +168,8 @@ namespace Smdn.Net.SkStackIP {
       logger.Log(
         level,
         SkStackClient.EventIdIPEventReceived,
-        $"{prefix}: {erxudp.LocalEndPoint}←{erxudp.RemoteEndPoint} {erxudp.RemoteLinkLocalAddress} (secured: {erxudp.IsSecured}, length: {erxudp.Data.Length})",
-        erxudp
+        $"{prefix}: {erxudp.LocalEndPoint}←{erxudp.RemoteEndPoint} {erxudp.RemoteLinkLocalAddress} (secured: {erxudp.IsSecured}, length: {erxudpData.Length})",
+        erxudpData
       );
     }
 

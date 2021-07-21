@@ -12,7 +12,6 @@ namespace Smdn.Net.SkStackIP {
     public IPEndPoint LocalEndPoint { get; }
     public PhysicalAddress RemoteLinkLocalAddress { get; }
     public bool IsSecured { get; }
-    public ReadOnlyMemory<byte> Data { get; }
 
     internal SkStackUdpReceiveEvent(
       IPAddress sender,
@@ -20,15 +19,13 @@ namespace Smdn.Net.SkStackIP {
       uint rport,
       uint lport,
       PhysicalAddress senderlla,
-      bool secured,
-      ReadOnlyMemory<byte> data
+      bool secured
     )
     {
       this.RemoteEndPoint = new IPEndPoint(sender, (int)rport);
       this.LocalEndPoint = new IPEndPoint(dest, (int)lport);
       this.RemoteLinkLocalAddress = senderlla;
       this.IsSecured = secured;
-      this.Data = data;
     }
   }
 }
