@@ -172,8 +172,7 @@ namespace Smdn.Net.SkStackIP {
       const int minDataLength = 0x0001;
       const int maxDataLength = 0x04D0;
 
-      if (!(SkStackUdpPort.HandleMin <= handle && handle <= SkStackUdpPort.HandleMax))
-        throw new ArgumentOutOfRangeException(nameof(handle), handle, $"must be in range of {SkStackUdpPort.HandleMin}~{SkStackUdpPort.HandleMax}");
+      SkStackUdpPort.ThrowIfPortHandleIsNotDefined(handle, nameof(handle));
 #if NET5_0_OR_GREATER
       if (!Enum.IsDefined(encryption))
 #else
@@ -182,8 +181,7 @@ namespace Smdn.Net.SkStackIP {
         throw new ArgumentException($"undefined value of {nameof(SkStackUdpEncryption)}", nameof(encryption));
       if (destinationAddress is null)
         throw new ArgumentNullException(nameof(destinationAddress));
-      if (!(ushort.MinValue <= destinationPort && destinationPort <= ushort.MaxValue)) // UINT16
-        throw new ArgumentOutOfRangeException(nameof(destinationPort), destinationPort, $"must be in range of {ushort.MinValue}~{ushort.MaxValue}");
+      SkStackUdpPort.ThrowIfPortNumberIsOutOfRange(destinationPort, nameof(destinationPort));
       if (data.IsEmpty)
         throw new ArgumentException("must be non-empty sequence", nameof(data));
       if (!(minDataLength <= data.Length && data.Length <= maxDataLength))
@@ -419,13 +417,8 @@ namespace Smdn.Net.SkStackIP {
       CancellationToken cancellationToken = default
     )
     {
-      const int minPortNumber = 0x0001;
-      const int maxPortNumber = 0xFFFF;
-
-      ThrowIfPortHandleIsNotDefined(handle, nameof(handle));
-
-      if (!(minPortNumber <= port && port <= maxPortNumber))
-        throw new ArgumentOutOfRangeException(nameof(port), port, $"must be in range of {minPortNumber}~{maxPortNumber}");
+      SkStackUdpPort.ThrowIfPortHandleIsNotDefined(handle, nameof(handle));
+      SkStackUdpPort.ThrowIfPortNumberIsOutOfRangeOrUnused(port, nameof(port));
 
       return SendSKUDPPORTAsyncCore(
         handle: handle,
@@ -440,25 +433,13 @@ namespace Smdn.Net.SkStackIP {
       CancellationToken cancellationToken = default
     )
     {
-      const int unusingPortNumber = 0x0000;
-
-      ThrowIfPortHandleIsNotDefined(handle, nameof(handle));
+      SkStackUdpPort.ThrowIfPortHandleIsNotDefined(handle, nameof(handle));
 
       return SendSKUDPPORTAsyncCore(
         handle: handle,
-        port: unusingPortNumber,
+        port: SkStackUdpPort.PortSetUnused,
         cancellationToken: cancellationToken
       );
-    }
-
-    private static void ThrowIfPortHandleIsNotDefined(SkStackUdpPortHandle handle, string paramName)
-    {
-#if NET5_0_OR_GREATER
-      if (!Enum.IsDefined(handle))
-#else
-      if (!Enum.IsDefined(typeof(SkStackUdpPortHandle), handle))
-#endif
-        throw new ArgumentException($"undefined value of {nameof(SkStackUdpPortHandle)}", paramName);
     }
 
     private async ValueTask<SkStackResponse> SendSKUDPPORTAsyncCore(
