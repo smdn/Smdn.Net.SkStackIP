@@ -11,7 +11,7 @@ using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 
 namespace Smdn.Net.SkStackIP {
   [TestFixture]
-  public class SkStackClientCommandsSKTERMTests : SkStackClientCommandsTestsBase {
+  public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
     [Test]
     public void SKTERM_CompletedWithEVENT27()
     {

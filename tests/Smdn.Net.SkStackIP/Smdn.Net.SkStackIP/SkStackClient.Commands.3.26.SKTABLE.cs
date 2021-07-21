@@ -13,7 +13,7 @@ using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 
 namespace Smdn.Net.SkStackIP {
   [TestFixture]
-  public class SkStackClientCommandsSKTABLETests : SkStackClientCommandsTestsBase {
+  public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     [Test]
     public void SKTABLE_AvailableAddressList()
     {

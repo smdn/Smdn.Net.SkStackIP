@@ -10,7 +10,7 @@ using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 
 namespace Smdn.Net.SkStackIP {
   [TestFixture]
-  public class SkStackClientCommandsSKERASETests : SkStackClientCommandsTestsBase {
+  public class SkStackClientCommandsSKERASETests : SkStackClientTestsBase {
     [Test]
     public async Task SKERASE()
     {

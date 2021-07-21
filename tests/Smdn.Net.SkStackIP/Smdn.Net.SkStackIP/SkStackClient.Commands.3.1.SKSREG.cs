@@ -10,7 +10,7 @@ using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 
 namespace Smdn.Net.SkStackIP {
   [TestFixture]
-  public class SkStackClientCommandsSKREGTests : SkStackClientCommandsTestsBase {
+  public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
     private async Task SKSREG_Set(
       string expectedSentSequence,
       Func<SkStackClient, ValueTask<SkStackResponse>> sendSKSREGSetAsync

@@ -9,7 +9,7 @@ using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 
 namespace Smdn.Net.SkStackIP {
   [TestFixture]
-  public class SkStackClientCommandsSKUDPPORTTests : SkStackClientCommandsTestsBase {
+  public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
     [Test]
     public void SKUDPPORT()
     {

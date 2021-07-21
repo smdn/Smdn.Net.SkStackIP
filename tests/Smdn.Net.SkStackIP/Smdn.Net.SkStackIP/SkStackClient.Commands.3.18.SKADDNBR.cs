@@ -11,7 +11,7 @@ using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 
 namespace Smdn.Net.SkStackIP {
   [TestFixture]
-  public class SkStackClientCommandsSKADDNBRTests : SkStackClientCommandsTestsBase {
+  public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
     [Test]
     public void SKADDNBR()
     {

@@ -12,7 +12,7 @@ using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 
 namespace Smdn.Net.SkStackIP {
   [TestFixture]
-  public class SkStackClientCommandsSKINFOTests : SkStackClientCommandsTestsBase {
+  public class SkStackClientCommandsSKINFOTests : SkStackClientTestsBase {
     [Test]
     public async Task SKINFO()
     {

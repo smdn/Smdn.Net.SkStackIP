@@ -11,7 +11,7 @@ using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 
 namespace Smdn.Net.SkStackIP {
   [TestFixture]
-  public class SkStackClientCommandsSKSENDTOTests : SkStackClientCommandsTestsBase {
+  public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     private void SKSENDTO_IPADDR_PORT(Func<SkStackClient, ValueTask<SkStackResponse>> testAction)
     {
       var stream = new PseudoSkStackStream();

@@ -15,7 +15,7 @@ using NUnit.Framework;
 using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 
 namespace Smdn.Net.SkStackIP {
-  public class SkStackClientCommandsTestsBase {
+  public class SkStackClientTestsBase {
     protected static readonly TimeSpan ResponseDelayInterval = TimeSpan.FromMilliseconds(25);
 
     protected IServiceProvider ServiceProvider;

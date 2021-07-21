@@ -11,7 +11,7 @@ using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 
 namespace Smdn.Net.SkStackIP {
   [TestFixture]
-  public class SkStackClientCommandsSKREJOINTests : SkStackClientCommandsTestsBase {
+  public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     [Test]
     public void SKREJOIN()
     {
