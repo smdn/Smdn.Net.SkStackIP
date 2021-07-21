@@ -95,6 +95,11 @@ namespace Smdn.Net.SkStackIP {
     {
       const int continuousReadingIntervalMilliseconds = 10; // TODO: make configurable
 
+#if DEBUG
+      if (parseSequence is null)
+        throw new ArgumentNullException(nameof(parseSequence));
+#endif
+
       logger?.LogReceivingStatus($"{callerMemberName} waiting");
 
       await streamReaderSemaphore.WaitAsync().ConfigureAwait(false);
