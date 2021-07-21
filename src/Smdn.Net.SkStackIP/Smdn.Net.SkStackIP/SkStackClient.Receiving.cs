@@ -237,7 +237,7 @@ namespace Smdn.Net.SkStackIP {
       => ReadAsync(
         parseSequence: static (context, parser) => parser(context),
         arg: parseEvent,
-        cancellationToken
+        cancellationToken: cancellationToken
       );
 
     private static object ParseEchobackLine(
