@@ -111,8 +111,7 @@ namespace Smdn.Net.SkStackIP {
       Assert.DoesNotThrowAsync(async () => {
         resp = await client.SendCommandAsync(
           command: "TEST".ToByteSequence(),
-          arguments: Array.Empty<ReadOnlyMemory<byte>>(),
-          parseResponsePayload: static _ => false
+          arguments: Array.Empty<ReadOnlyMemory<byte>>()
         );
       });
 
@@ -134,8 +133,7 @@ namespace Smdn.Net.SkStackIP {
       Assert.ThrowsAsync<ArgumentException>(async () => {
         await client.SendCommandAsync(
           command: "TEST".ToByteSequence(),
-          arguments: new[] { ReadOnlyMemory<byte>.Empty },
-          parseResponsePayload: static _ => false
+          arguments: new[] { ReadOnlyMemory<byte>.Empty }
         );
       });
 

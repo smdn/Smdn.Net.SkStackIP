@@ -77,7 +77,9 @@ namespace Smdn.Net.SkStackIP {
 
       using var client = SkStackClient.Create(stream, ServiceProvider);
 
-      Assert.Throws<ArgumentException>(() => client.SendSKUDPPORTAsync(handle, 0x0001));
+      var ex = Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTAsync(handle, 0x0001));
+
+      Assert.AreEqual(ex.ParamName, "handle");
 
       Assert.IsEmpty(stream.ReadSentData());
     }
@@ -91,7 +93,9 @@ namespace Smdn.Net.SkStackIP {
 
       using var client = SkStackClient.Create(stream, ServiceProvider);
 
-      Assert.Throws<ArgumentException>(() => client.SendSKUDPPORTUnsetAsync(handle));
+      var ex = Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTUnsetAsync(handle));
+
+      Assert.AreEqual(ex.ParamName, "handle");
 
       Assert.IsEmpty(stream.ReadSentData());
     }
