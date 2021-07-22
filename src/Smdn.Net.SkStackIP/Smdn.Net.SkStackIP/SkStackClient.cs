@@ -69,6 +69,8 @@ namespace Smdn.Net.SkStackIP {
       );
     }
 
+    private static readonly TimeSpan continuousReadingInterval = TimeSpan.FromMilliseconds(10); // TODO: make configurable
+
     /*
      * instance members
      */
@@ -109,6 +111,8 @@ namespace Smdn.Net.SkStackIP {
 
       this.parseSequenceContext = new ParseSequenceContext(this.logger);
       this.streamReaderSemaphore = new(initialCount: 1, maxCount: 1);
+
+      StartCapturingUdpReceiveEvents(SkStackUdpPort.PortEchonetLite);
     }
 
     public void Close()

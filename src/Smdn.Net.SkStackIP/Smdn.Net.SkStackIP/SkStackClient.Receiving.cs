@@ -89,12 +89,11 @@ namespace Smdn.Net.SkStackIP {
     private async ValueTask<TResult> ReadAsync<TArg, TResult>(
       Func<ISkStackSequenceParserContext, TArg, TResult> parseSequence,
       TArg arg,
+      bool processOnlyNotificationalEvents = false,
       CancellationToken cancellationToken = default,
       [CallerMemberName] string callerMemberName = default
     )
     {
-      const int continuousReadingIntervalMilliseconds = 10; // TODO: make configurable
-
 #if DEBUG
       if (parseSequence is null)
         throw new ArgumentNullException(nameof(parseSequence));
@@ -146,7 +145,13 @@ namespace Smdn.Net.SkStackIP {
 
           try {
             // process events which is received until this point
-            if (!ProcessNotificationalEvents(parseSequenceContext)) {
+            var notificationalEventProcessed = await ProcessNotificationalEventsAsync(parseSequenceContext).ConfigureAwait(false);
+
+            if (processOnlyNotificationalEvents && notificationalEventProcessed) {
+              if (parseSequenceContext.Status == ParseSequenceStatus.Continueing)
+                (parseSequenceContext as ISkStackSequenceParserContext).Complete(); // reset status as Completed to stop reading
+            }
+            else if (!notificationalEventProcessed) {
               // if buffered data sequence does not contain any events, parse it with the specified parser
               logger?.LogReceivingStatus($"      parser: {parseSequence.Method}");
 
@@ -183,7 +188,7 @@ namespace Smdn.Net.SkStackIP {
             return result;
 
           if (postAction.delay)
-            await Task.Delay(continuousReadingIntervalMilliseconds).ConfigureAwait(false);
+            await Task.Delay(continuousReadingInterval).ConfigureAwait(false);
         }
       }
       finally {
@@ -242,6 +247,30 @@ namespace Smdn.Net.SkStackIP {
       => ReadAsync(
         parseSequence: static (context, parser) => parser(context),
         arg: parseEvent,
+        cancellationToken: cancellationToken
+      );
+
+    internal readonly struct ReceiveNotificationalEventResult {
+      public static readonly ReceiveNotificationalEventResult NotReceivedResult = new ReceiveNotificationalEventResult(~default(int));
+      public static readonly ReceiveNotificationalEventResult ReceivedResult = default;
+
+      public bool Received => value == ReceivedResult.value;
+
+      private readonly int value;
+
+      private ReceiveNotificationalEventResult(int value)
+      {
+        this.value = value;
+      }
+    }
+
+    internal ValueTask<ReceiveNotificationalEventResult> ReceiveNotificationalEventAsync(
+      CancellationToken cancellationToken
+    )
+      => ReadAsync(
+        parseSequence: static (context, _) => ReceiveNotificationalEventResult.NotReceivedResult,
+        arg: default(int),
+        processOnlyNotificationalEvents: true,
         cancellationToken: cancellationToken
       );
 

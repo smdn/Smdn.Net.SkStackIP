@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Buffers;
+using System.Threading.Tasks;
 
 using Smdn.Net.SkStackIP.Protocol;
 #if DEBUG
@@ -10,14 +12,43 @@ using Smdn.Text.Unicode.ControlPictures;
 
 namespace Smdn.Net.SkStackIP {
   partial class SkStackClient {
+    private static readonly ValueTask<bool> TrueResultValueTask =
+#if NET5_0_OR_GREATER
+      ValueTask.FromResult(true);
+#else
+      new ValueTask<bool>(result: true);
+#endif
+
+    private static readonly ValueTask<bool> FalseResultValueTask =
+#if NET5_0_OR_GREATER
+      ValueTask.FromResult(false);
+#else
+      new ValueTask<bool>(result: false);
+#endif
+
     private delegate bool ProcessNotificationalEventsFunc(ISkStackSequenceParserContext context);
 
     /// <summary>Handles events that are not triggered by commands, or non-response notifications, especially ERXUDP/EVENT.</summary>
     /// <returns>true if the first event processed and consumed, otherwise false.</returns>
-    private bool ProcessNotificationalEvents(
+    private ValueTask<bool> ProcessNotificationalEventsAsync(
       ISkStackSequenceParserContext context
     )
     {
+      var reader = context.CreateReader();
+
+      if (reader.TryRead(out var firstByte)) {
+        const byte firstByteOfEVENTOrERXUDP = (byte)'E';
+
+        if (firstByte != firstByteOfEVENTOrERXUDP) {
+          context.Ignore();
+          return FalseResultValueTask;
+        }
+      }
+      else {
+        context.SetAsIncomplete();
+        return FalseResultValueTask;
+      }
+
       static bool IsNotificationalEvent(SkStackEventNumber eventNumber)
         => eventNumber switch {
           SkStackEventNumber.NeighborSolicitationReceived => true,
@@ -54,18 +85,28 @@ namespace Smdn.Net.SkStackIP {
         }
 
         context.Continue();
-        return true;
+        return TrueResultValueTask;
       }
 
       if (SkStackEventParser.TryExpectERXUDP(context, out var erxudp, out var erxudpData)) {
         logger?.LogInfoIPEventReceived(erxudp, erxudpData);
-        // TODO: copy to buffer
-        context.Continue();
-        return true;
+
+        return ProcessERXUDPAsync();
+
+        async ValueTask<bool> ProcessERXUDPAsync()
+        {
+          await OnERXUDPAsync(
+            localPort: erxudp.LocalEndPoint.Port,
+            remoteAddress: erxudp.RemoteEndPoint.Address,
+            data: erxudpData
+          ).ConfigureAwait(false);
+
+          context.Continue();
+          return true;
+        }
       }
 
-      context.Ignore();
-      return false;
+      return FalseResultValueTask;
     }
   }
 }
