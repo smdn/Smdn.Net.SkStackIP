@@ -160,8 +160,8 @@ namespace Smdn.Net.SkStackIP {
         return;
 
       var prefix = erxudp.LocalEndPoint.Port switch {
-        SkStackUdpPort.PortEchonetLite => "ECHONET Lite/IPv6",
-        SkStackUdpPort.PortPana => "PANA/IPv6",
+        SkStackKnownPortNumbers.EchonetLite => "ECHONET Lite/IPv6",
+        SkStackKnownPortNumbers.Pana => "PANA/IPv6",
         _ => "IPv6",
       };
 

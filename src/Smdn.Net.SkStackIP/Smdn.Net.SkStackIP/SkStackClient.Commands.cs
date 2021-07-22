@@ -437,7 +437,7 @@ namespace Smdn.Net.SkStackIP {
 
       return SendSKUDPPORTAsyncCore(
         handle: handle,
-        port: SkStackUdpPort.PortSetUnused,
+        port: SkStackKnownPortNumbers.SetUnused,
         cancellationToken: cancellationToken
       );
     }

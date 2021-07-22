@@ -10,15 +10,6 @@ namespace Smdn.Net.SkStackIP {
     internal static readonly SkStackUdpPortHandle HandleMin = SkStackUdpPortHandle.Handle1;
     internal static readonly SkStackUdpPortHandle HandleMax = SkStackUdpPortHandle.Handle6;
 
-    /// <remarks>reference: BP35A1コマンドリファレンス 5.1. UDP ポート</remarks>
-    public const int PortEchonetLite = 3610;
-    /// <remarks>reference: BP35A1コマンドリファレンス 5.1. UDP ポート</remarks>
-    public const int PortPana = 716;
-
-    /// <summary>The port number to set to be unused port.</summary>
-    /// <remarks>reference: BP35A1コマンドリファレンス 3.19. SKUDPPORT</remarks>
-    internal const int PortSetUnused = 0;
-
     public SkStackUdpPortHandle Handle { get; }
     public int Port { get; }
 
@@ -49,8 +40,8 @@ namespace Smdn.Net.SkStackIP {
 
     internal static void ThrowIfPortNumberIsOutOfRangeOrUnused(int portNumber, string paramName)
     {
-      if (portNumber == PortSetUnused)
-        throw new ArgumentOutOfRangeException(paramName, portNumber, $"can not use port number {PortSetUnused}");
+      if (portNumber == SkStackKnownPortNumbers.SetUnused)
+        throw new ArgumentOutOfRangeException(paramName, portNumber, $"can not use port number {SkStackKnownPortNumbers.SetUnused}");
 
       ThrowIfPortNumberIsOutOfRange(portNumber, paramName);
     }

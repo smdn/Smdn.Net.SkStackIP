@@ -12,8 +12,8 @@ using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 namespace Smdn.Net.SkStackIP {
   [TestFixture]
   public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
-    [TestCase(SkStackUdpPort.PortEchonetLite)]
-    [TestCase(SkStackUdpPort.PortPana)]
+    [TestCase(SkStackKnownPortNumbers.EchonetLite)]
+    [TestCase(SkStackKnownPortNumbers.Pana)]
     public void StartCapturingUdpReceiveEvents(int port)
     {
       using var stream = new PseudoSkStackStream();
@@ -42,11 +42,11 @@ namespace Smdn.Net.SkStackIP {
 
       client.Close();
 
-      Assert.Throws<ObjectDisposedException>(() => client.StartCapturingUdpReceiveEvents(SkStackUdpPort.PortEchonetLite));
+      Assert.Throws<ObjectDisposedException>(() => client.StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite));
     }
 
-    [TestCase(SkStackUdpPort.PortEchonetLite)]
-    [TestCase(SkStackUdpPort.PortPana)]
+    [TestCase(SkStackKnownPortNumbers.EchonetLite)]
+    [TestCase(SkStackKnownPortNumbers.Pana)]
     public void StopCapturingUdpReceiveEvents(int port)
     {
       using var stream = new PseudoSkStackStream();
@@ -75,7 +75,7 @@ namespace Smdn.Net.SkStackIP {
 
       client.Close();
 
-      Assert.Throws<ObjectDisposedException>(() => client.StopCapturingUdpReceiveEvents(SkStackUdpPort.PortEchonetLite));
+      Assert.Throws<ObjectDisposedException>(() => client.StopCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite));
     }
 
     [TestCase(0x0000)]
@@ -98,7 +98,7 @@ namespace Smdn.Net.SkStackIP {
 
       client.Close();
 
-      Assert.Throws<ObjectDisposedException>(() => client.UdpReceiveAsync(SkStackUdpPort.PortEchonetLite));
+      Assert.Throws<ObjectDisposedException>(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
     }
 
     [Test]
@@ -107,7 +107,7 @@ namespace Smdn.Net.SkStackIP {
       using var stream = new PseudoSkStackStream();
       using var client = SkStackClient.Create(stream, ServiceProvider);
 
-      Assert.Throws<InvalidOperationException>(() => client.UdpReceiveAsync(SkStackUdpPort.PortPana));
+      Assert.Throws<InvalidOperationException>(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.Pana));
     }
 
     [Test]
@@ -116,7 +116,7 @@ namespace Smdn.Net.SkStackIP {
       using var stream = new PseudoSkStackStream();
       using var client = SkStackClient.Create(stream, ServiceProvider);
 
-      Assert.DoesNotThrow(() => client.UdpReceiveAsync(SkStackUdpPort.PortEchonetLite));
+      Assert.DoesNotThrow(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
     }
 
     [Test]
@@ -125,11 +125,11 @@ namespace Smdn.Net.SkStackIP {
       using var stream = new PseudoSkStackStream();
       using var client = SkStackClient.Create(stream, ServiceProvider);
 
-      Assert.DoesNotThrow(() => client.UdpReceiveAsync(SkStackUdpPort.PortEchonetLite));
+      Assert.DoesNotThrow(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
 
-      client.StopCapturingUdpReceiveEvents(SkStackUdpPort.PortEchonetLite);
+      client.StopCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite);
 
-      Assert.Throws<InvalidOperationException>(() => client.UdpReceiveAsync(SkStackUdpPort.PortEchonetLite));
+      Assert.Throws<InvalidOperationException>(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
     }
 
     [Test]
@@ -143,7 +143,7 @@ namespace Smdn.Net.SkStackIP {
 
         cts.CancelAfter(TimeSpan.FromSeconds(0.2));
 
-        using var result = await client.UdpReceiveAsync(SkStackUdpPort.PortEchonetLite, cts.Token);
+        using var result = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
       });
     }
 
@@ -161,7 +161,7 @@ namespace Smdn.Net.SkStackIP {
 
         cts.CancelAfter(TimeSpan.FromSeconds(0.2));
 
-        using var result = await client.UdpReceiveAsync(SkStackUdpPort.PortEchonetLite, cts.Token);
+        using var result = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
       });
     }
 
@@ -183,7 +183,7 @@ namespace Smdn.Net.SkStackIP {
 
       try {
         Assert.DoesNotThrowAsync(async () => {
-          result1 = await client.UdpReceiveAsync(SkStackUdpPort.PortEchonetLite, cts.Token);
+          result1 = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
         });
 
         Assert.IsNotNull(result1);
@@ -203,7 +203,7 @@ namespace Smdn.Net.SkStackIP {
 
       try {
         Assert.DoesNotThrowAsync(async () => {
-          result2 = await client.UdpReceiveAsync(SkStackUdpPort.PortEchonetLite, cts.Token);
+          result2 = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
         });
 
         Assert.IsNotNull(result2);
@@ -224,10 +224,10 @@ namespace Smdn.Net.SkStackIP {
       using var stream = new PseudoSkStackStream();
       using var client = SkStackClient.Create(stream, ServiceProvider);
 
-      client.StartCapturingUdpReceiveEvents(SkStackUdpPort.PortPana);
+      client.StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.Pana);
 
-      stream.ResponseWriter.WriteLine($"ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 {SkStackUdpPort.PortEchonetLite:X4} {SkStackUdpPort.PortEchonetLite:X4} 001D129012345679 0 000C ECHONET-LITE");
-      stream.ResponseWriter.WriteLine($"ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 {SkStackUdpPort.PortPana:X4} {SkStackUdpPort.PortPana:X4} 001D129012345679 0 0004 PANA");
+      stream.ResponseWriter.WriteLine($"ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 {SkStackKnownPortNumbers.EchonetLite:X4} {SkStackKnownPortNumbers.EchonetLite:X4} 001D129012345679 0 000C ECHONET-LITE");
+      stream.ResponseWriter.WriteLine($"ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 {SkStackKnownPortNumbers.Pana:X4} {SkStackKnownPortNumbers.Pana:X4} 001D129012345679 0 0004 PANA");
 
       using var cts = new CancellationTokenSource();
 
@@ -237,7 +237,7 @@ namespace Smdn.Net.SkStackIP {
 
       try {
         Assert.DoesNotThrowAsync(async () => {
-          resultEchonetLite = await client.UdpReceiveAsync(SkStackUdpPort.PortEchonetLite, cts.Token);
+          resultEchonetLite = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
         });
 
         Assert.IsNotNull(resultEchonetLite);
@@ -259,7 +259,7 @@ namespace Smdn.Net.SkStackIP {
 
       try {
         Assert.DoesNotThrowAsync(async () => {
-          resultPana = await client.UdpReceiveAsync(SkStackUdpPort.PortPana, cts.Token);
+          resultPana = await client.UdpReceiveAsync(SkStackKnownPortNumbers.Pana, cts.Token);
         });
 
         Assert.IsNotNull(resultPana);
@@ -295,7 +295,7 @@ namespace Smdn.Net.SkStackIP {
 
       cts.CancelAfter(TimeSpan.FromSeconds(1.0));
 
-      var taskUdpReceive = client.UdpReceiveAsync(SkStackUdpPort.PortEchonetLite, cts.Token);
+      var taskUdpReceive = client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
 
       Assert.DoesNotThrowAsync(async () => {
         await Task.WhenAll(taskUdpReceive.AsTask(), RaiseERXUDPAsync());
@@ -334,7 +334,7 @@ namespace Smdn.Net.SkStackIP {
 
       cts.CancelAfter(TimeSpan.FromSeconds(2.0));
 
-      var taskUdpReceive = client.UdpReceiveAsync(SkStackUdpPort.PortEchonetLite, cts.Token).AsTask();
+      var taskUdpReceive = client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token).AsTask();
 
       Assert.IsFalse(taskUdpReceive.Wait(TimeSpan.FromMilliseconds(100)));
 
