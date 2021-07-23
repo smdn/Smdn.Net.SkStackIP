@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Smdn.Buffers;
+using Smdn.Net.SkStackIP.Protocol;
 #if DEBUG
 using Smdn.Text.Unicode.ControlPictures;
 #endif
@@ -49,29 +50,47 @@ namespace Smdn.Net.SkStackIP {
     private ValueTask OnERXUDPAsync(
       int localPort,
       IPAddress remoteAddress,
-      ReadOnlySequence<byte> data
+      ReadOnlySequence<byte> data,
+      int dataLength,
+      SkStackERXUDPDataFormat dataFormat
     )
     {
       if (!udpReceiveEventPipes.TryGetValue(localPort, out var pipe))
         return ValueTask.CompletedTask; // not capturing
 
-      return OnERXUDPAsyncCore(pipe.Writer, remoteAddress, data);
+      return OnERXUDPAsyncCore(pipe.Writer, remoteAddress, data, dataLength, dataFormat);
 
-      static async ValueTask OnERXUDPAsyncCore(PipeWriter writer, IPAddress remoteAddress, ReadOnlySequence<byte> data)
+      static async ValueTask OnERXUDPAsyncCore(
+        PipeWriter writer,
+        IPAddress remoteAddress,
+        ReadOnlySequence<byte> data,
+        int dataLength,
+        SkStackERXUDPDataFormat dataFormat
+      )
       {
-        var length = udpReceiveEventLengthOfRemoteAddress + udpReceiveEventLengthOfDataLength + (int)data.Length;
-        var memory = writer.GetMemory(length);
+        var packetLength = udpReceiveEventLengthOfRemoteAddress + udpReceiveEventLengthOfDataLength + (int)dataLength;
+        var memory = writer.GetMemory(dataLength);
 
         // BYTE[16]: remote address
         if (!remoteAddress.TryWriteBytes(memory.Span, out var bytesWritten) && bytesWritten != udpReceiveEventLengthOfRemoteAddress)
           throw new InvalidOperationException("unexpected format of remote address");
 
         // UINT16: length of data
-        BinaryPrimitives.WriteUInt16LittleEndian(memory.Span.Slice(udpReceiveEventLengthOfRemoteAddress), (ushort)data.Length);
+        BinaryPrimitives.WriteUInt16LittleEndian(memory.Span.Slice(udpReceiveEventLengthOfRemoteAddress), (ushort)dataLength);
 
         // BYTE[n]: data
-        data.CopyTo(memory.Span.Slice(udpReceiveEventLengthOfRemoteAddress + udpReceiveEventLengthOfDataLength));
-        writer.Advance(length);
+        if (dataFormat == SkStackERXUDPDataFormat.Raw) {
+          data.CopyTo(memory.Span.Slice(udpReceiveEventLengthOfRemoteAddress + udpReceiveEventLengthOfDataLength));
+        }
+        else {
+          SkStackTokenParser.ToByteSequence(
+            data,
+            dataLength,
+            memory.Span.Slice(udpReceiveEventLengthOfRemoteAddress + udpReceiveEventLengthOfDataLength)
+          );
+        }
+
+        writer.Advance(packetLength);
 
         var result = await writer.FlushAsync(/*cancellationToken*/).ConfigureAwait(false);
 

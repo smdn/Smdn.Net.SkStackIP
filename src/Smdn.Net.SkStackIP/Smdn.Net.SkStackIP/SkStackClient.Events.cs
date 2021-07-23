@@ -12,6 +12,21 @@ using Smdn.Text.Unicode.ControlPictures;
 
 namespace Smdn.Net.SkStackIP {
   partial class SkStackClient {
+    private SkStackERXUDPDataFormat erxudpDataFormat = SkStackERXUDPDataFormat.Raw; // RAW as default
+    public SkStackERXUDPDataFormat ERXUDPDataFormat {
+      get { return erxudpDataFormat; }
+      set {
+#if NET5_0_OR_GREATER
+        if (!Enum.IsDefined(value))
+#else
+        if (!Enum.IsDefined(typeof(SkStackERXUDPDataFormat), value))
+#endif
+          throw new ArgumentException($"undefined value of {nameof(SkStackERXUDPDataFormat)}", nameof(ERXUDPDataFormat));
+
+        erxudpDataFormat = value;
+      }
+    }
+
     private static readonly ValueTask<bool> TrueResultValueTask =
 #if NET5_0_OR_GREATER
       ValueTask.FromResult(true);
@@ -88,7 +103,7 @@ namespace Smdn.Net.SkStackIP {
         return TrueResultValueTask;
       }
 
-      if (SkStackEventParser.TryExpectERXUDP(context, out var erxudp, out var erxudpData)) {
+      if (SkStackEventParser.TryExpectERXUDP(context, erxudpDataFormat, out var erxudp, out var erxudpData, out var erxudpDataLength)) {
         logger?.LogInfoIPEventReceived(erxudp, erxudpData);
 
         return ProcessERXUDPAsync();
@@ -98,7 +113,9 @@ namespace Smdn.Net.SkStackIP {
           await OnERXUDPAsync(
             localPort: erxudp.LocalEndPoint.Port,
             remoteAddress: erxudp.RemoteEndPoint.Address,
-            data: erxudpData
+            data: erxudpData,
+            dataLength: erxudpDataLength,
+            dataFormat: erxudpDataFormat
           ).ConfigureAwait(false);
 
           context.Continue();

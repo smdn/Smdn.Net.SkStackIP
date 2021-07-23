@@ -360,6 +360,39 @@ namespace Smdn.Net.SkStackIP.Protocol {
       return false;
     }
 
+    public static void ToByteSequence(ReadOnlySequence<byte> hexTextSequence, int byteSequenceLength, Span<byte> destination)
+    {
+      if ((hexTextSequence.Length & 0x1L) != 0L)
+        throw SkStackUnexpectedResponseException.CreateInvalidToken(hexTextSequence, "HEX ASCII");
+      if (destination.Length < byteSequenceLength)
+        throw new ArgumentException($"buffer too short. expected at least {byteSequenceLength} but was {destination.Length}.", nameof(destination));
+
+      var reader = new SequenceReader<byte>(hexTextSequence);
+
+      Span<byte> hexTextOneByte = stackalloc byte[2];
+
+      for (var index = 0; index < byteSequenceLength; index++) {
+        reader.TryCopyTo(hexTextOneByte);
+
+        var high = hexTextOneByte[0] switch {
+          var h when ((byte)'0' <= h && h <= (byte)'9') => h - '0',
+          var h when ((byte)'A' <= h && h <= (byte)'F') => 0xA + h - 'A',
+          var h when ((byte)'a' <= h && h <= (byte)'f') => 0xA + h - 'a',
+          _ => throw SkStackUnexpectedResponseException.CreateInvalidToken(hexTextOneByte.Slice(0, 1), "HEX ASCII HIGH"),
+        };
+        var low = hexTextOneByte[1] switch {
+          var l when ((byte)'0' <= l && l <= (byte)'9') => l - '0',
+          var l when ((byte)'A' <= l && l <= (byte)'F') => 0xA + l - 'A',
+          var l when ((byte)'a' <= l && l <= (byte)'f') => 0xA + l - 'a',
+          _ => throw SkStackUnexpectedResponseException.CreateInvalidToken(hexTextOneByte.Slice(1, 1), "HEX ASCII LOW"),
+        };
+
+        destination[index] = (byte)((high << 4) | low);
+
+        reader.Advance(2);
+      }
+    }
+
     private static byte FromHex(byte b)
     {
       if ((byte)'0' <= b && b <= (byte)'9')

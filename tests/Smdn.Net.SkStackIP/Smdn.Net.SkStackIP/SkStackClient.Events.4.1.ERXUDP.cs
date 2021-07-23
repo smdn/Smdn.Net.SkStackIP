@@ -12,6 +12,26 @@ using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 namespace Smdn.Net.SkStackIP {
   [TestFixture]
   public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
+    [TestCase(SkStackERXUDPDataFormat.Raw)]
+    [TestCase(SkStackERXUDPDataFormat.HexAsciiText)]
+    public void ERXUDPDataFormat(SkStackERXUDPDataFormat format)
+    {
+      using var stream = new PseudoSkStackStream();
+      using var client = SkStackClient.Create(stream, ServiceProvider);
+
+      Assert.DoesNotThrow(() => client.ERXUDPDataFormat = format);
+      Assert.AreEqual(client.ERXUDPDataFormat, format);
+    }
+
+    [TestCase(-1)]
+    public void ERXUDPDataFormat_InvalidValue(SkStackERXUDPDataFormat format)
+    {
+      using var stream = new PseudoSkStackStream();
+      using var client = SkStackClient.Create(stream, ServiceProvider);
+
+      Assert.Throws<ArgumentException>(() => client.ERXUDPDataFormat = format);
+    }
+
     [TestCase(SkStackKnownPortNumbers.EchonetLite)]
     [TestCase(SkStackKnownPortNumbers.Pana)]
     public void StartCapturingUdpReceiveEvents(int port)
@@ -171,6 +191,8 @@ namespace Smdn.Net.SkStackIP {
       using var stream = new PseudoSkStackStream();
       using var client = SkStackClient.Create(stream, ServiceProvider);
 
+      Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
+
       stream.ResponseWriter.WriteLine("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 01234567");
       stream.ResponseWriter.WriteLine("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 89ABCDEF");
 
@@ -223,6 +245,8 @@ namespace Smdn.Net.SkStackIP {
     {
       using var stream = new PseudoSkStackStream();
       using var client = SkStackClient.Create(stream, ServiceProvider);
+
+      Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
       client.StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.Pana);
 
@@ -280,6 +304,8 @@ namespace Smdn.Net.SkStackIP {
       using var stream = new PseudoSkStackStream();
       using var client = SkStackClient.Create(stream, ServiceProvider);
 
+      Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
+
       async Task RaiseERXUDPAsync()
       {
         stream.ResponseWriter.Write("E"); await Task.Delay(ResponseDelayInterval);
@@ -315,6 +341,8 @@ namespace Smdn.Net.SkStackIP {
     {
       using var stream = new PseudoSkStackStream();
       using var client = SkStackClient.Create(stream, ServiceProvider);
+
+      Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
       async Task RaiseERXUDPAsync()
       {
@@ -353,6 +381,8 @@ namespace Smdn.Net.SkStackIP {
       using var stream = new PseudoSkStackStream();
       using var client = SkStackClient.Create(stream, ServiceProvider);
 
+      Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
+
       async Task CompleteResponseAndRaiseERXUDPAsync()
       {
         // TEST status line
@@ -389,6 +419,45 @@ namespace Smdn.Net.SkStackIP {
           Is.EqualTo("01234567".ToByteSequence()),
           nameof(result)
         );
+      }
+    }
+
+    [Test]
+    public void UdpReceiveAsync_DataFormat_HexASCIIText()
+    {
+      using var stream = new PseudoSkStackStream();
+      using var client = SkStackClient.Create(stream, ServiceProvider);
+
+      client.ERXUDPDataFormat = SkStackERXUDPDataFormat.HexAsciiText;
+
+      Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.HexAsciiText);
+
+      stream.ResponseWriter.WriteLine("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 0123456789ABCDEF");
+
+      using var cts = new CancellationTokenSource();
+
+      cts.CancelAfter(TimeSpan.FromSeconds(1.0));
+
+      SkStackUdpReceiveResult result = null;
+
+      try {
+        Assert.DoesNotThrowAsync(async () => {
+          result = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
+        });
+
+        Assert.IsNotNull(result);
+        Assert.That(
+          result.Buffer,
+          Is.EqualTo(new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF }),
+          nameof(result)
+        );
+
+        Assert.DoesNotThrow(() => result.Dispose(), $"{nameof(result)}.Dispose #1");
+        Assert.Throws<ObjectDisposedException>(() => Assert.AreEqual(result.Buffer.Length, 0));
+        Assert.DoesNotThrow(() => result.Dispose(), $"{nameof(result)}.Dispose #2");
+      }
+      finally {
+        result?.Dispose();
       }
     }
   }
