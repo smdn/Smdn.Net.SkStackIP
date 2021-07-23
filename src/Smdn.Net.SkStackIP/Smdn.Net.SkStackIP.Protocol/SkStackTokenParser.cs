@@ -3,6 +3,7 @@
 
 using System;
 using System.Buffers;
+using System.Buffers.Binary;
 using System.Net;
 using System.Net.NetworkInformation;
 
@@ -393,31 +394,14 @@ namespace Smdn.Net.SkStackIP.Protocol {
       }
     }
 
-    private static byte FromHex(byte b)
-    {
-      if ((byte)'0' <= b && b <= (byte)'9')
-        return (byte)(b - '0');
-      if ((byte)'A' <= b && b <= (byte)'F')
-        return (byte)(0xA + b - 'A');
-      if ((byte)'a' <= b && b <= (byte)'a')
-        return (byte)(0xA + b - 'a');
-
-      throw SkStackUnexpectedResponseException.CreateInvalidToken(stackalloc byte[1] { b }, "HEX");
-    }
-
     private static byte ToUINT8(ReadOnlySequence<byte> token)
     {
-      var reader = new SequenceReader<byte>(token);
-
       try {
-        Span<byte> hex = stackalloc byte[2];
+        Span<byte> uint8 = stackalloc byte[1];
 
-        reader.TryCopyTo(hex);
+        ToByteSequence(token, 1, uint8);
 
-        return (byte)(
-          (FromHex(hex[0]) << 4) |
-           FromHex(hex[1])
-        );
+        return uint8[0];
       }
       catch (SkStackUnexpectedResponseException ex) {
         throw SkStackUnexpectedResponseException.CreateInvalidToken(token, "UINT8", ex);
@@ -426,19 +410,12 @@ namespace Smdn.Net.SkStackIP.Protocol {
 
     private static ushort ToUINT16(ReadOnlySequence<byte> token)
     {
-      var reader = new SequenceReader<byte>(token);
-
       try {
-        Span<byte> hex = stackalloc byte[4];
+        Span<byte> uint16 = stackalloc byte[2];
 
-        reader.TryCopyTo(hex);
+        ToByteSequence(token, 2, uint16);
 
-        return (ushort)(
-          (FromHex(hex[0]) << 12) |
-          (FromHex(hex[1]) << 8) |
-          (FromHex(hex[2]) << 4) |
-           FromHex(hex[3])
-        );
+        return BinaryPrimitives.ReadUInt16BigEndian(uint16);
       }
       catch (Exception ex) {
         throw SkStackUnexpectedResponseException.CreateInvalidToken(token, "UINT16", ex);
@@ -447,23 +424,12 @@ namespace Smdn.Net.SkStackIP.Protocol {
 
     private static uint ToUINT32(ReadOnlySequence<byte> token)
     {
-      var reader = new SequenceReader<byte>(token);
-
       try {
-        Span<byte> hex = stackalloc byte[8];
+        Span<byte> uint32 = stackalloc byte[4];
 
-        reader.TryCopyTo(hex);
+        ToByteSequence(token, 4, uint32);
 
-        return (uint)(
-          ((uint)FromHex(hex[0]) << 28) |
-          ((uint)FromHex(hex[1]) << 24) |
-          ((uint)FromHex(hex[2]) << 20) |
-          ((uint)FromHex(hex[3]) << 16) |
-          ((uint)FromHex(hex[4]) << 12) |
-          ((uint)FromHex(hex[5]) << 8) |
-          ((uint)FromHex(hex[6]) << 4) |
-           (uint)FromHex(hex[7])
-        );
+        return BinaryPrimitives.ReadUInt32BigEndian(uint32);
       }
       catch (Exception ex) {
         throw SkStackUnexpectedResponseException.CreateInvalidToken(token, "UINT32", ex);
@@ -472,31 +438,12 @@ namespace Smdn.Net.SkStackIP.Protocol {
 
     private static ulong ToUINT64(ReadOnlySequence<byte> token)
     {
-      var reader = new SequenceReader<byte>(token);
-
       try {
-        Span<byte> hex = stackalloc byte[16];
+        Span<byte> uint64 = stackalloc byte[8];
 
-        reader.TryCopyTo(hex);
+        ToByteSequence(token, 8, uint64);
 
-        return (ulong)(
-          ((ulong)FromHex(hex[ 0]) << 60) |
-          ((ulong)FromHex(hex[ 1]) << 56) |
-          ((ulong)FromHex(hex[ 2]) << 52) |
-          ((ulong)FromHex(hex[ 3]) << 48) |
-          ((ulong)FromHex(hex[ 4]) << 44) |
-          ((ulong)FromHex(hex[ 5]) << 40) |
-          ((ulong)FromHex(hex[ 6]) << 36) |
-          ((ulong)FromHex(hex[ 7]) << 32) |
-          ((ulong)FromHex(hex[ 8]) << 28) |
-          ((ulong)FromHex(hex[ 9]) << 24) |
-          ((ulong)FromHex(hex[10]) << 20) |
-          ((ulong)FromHex(hex[11]) << 16) |
-          ((ulong)FromHex(hex[12]) << 12) |
-          ((ulong)FromHex(hex[13]) << 8) |
-          ((ulong)FromHex(hex[14]) << 4) |
-           (ulong)FromHex(hex[15])
-        );
+        return BinaryPrimitives.ReadUInt64BigEndian(uint64);
       }
       catch (Exception ex) {
         throw SkStackUnexpectedResponseException.CreateInvalidToken(token, "UINT32", ex);
@@ -529,9 +476,9 @@ namespace Smdn.Net.SkStackIP.Protocol {
     private static bool ToBinary(ReadOnlySequence<byte> token)
     {
       try {
-        return FromHex(token.FirstSpan[0]) switch {
-          0 => false,
-          1 => true,
+        return token.FirstSpan[0] switch {
+          (byte)'0' => false,
+          (byte)'1' => true,
           _ => throw SkStackUnexpectedResponseException.CreateInvalidToken(token, "0 or 1"),
         };
       }
