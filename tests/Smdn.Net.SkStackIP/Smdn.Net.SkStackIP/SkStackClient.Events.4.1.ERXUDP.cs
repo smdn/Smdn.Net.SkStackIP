@@ -311,6 +311,43 @@ namespace Smdn.Net.SkStackIP {
     }
 
     [Test]
+    public void UdpReceiveAsync_IncompleteLine_DataEndsWithCRLF_EndOfLineDelayed()
+    {
+      using var stream = new PseudoSkStackStream();
+      using var client = SkStackClient.Create(stream, ServiceProvider);
+
+      async Task RaiseERXUDPAsync()
+      {
+        stream.ResponseWriter.Write("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0002 \r\n");
+        await Task.Delay(TimeSpan.FromMilliseconds(1000));
+
+        stream.ResponseWriter.Write("\r");
+        await Task.Delay(ResponseDelayInterval);
+
+        stream.ResponseWriter.Write("\n");
+        await Task.Delay(ResponseDelayInterval);
+      }
+
+      using var cts = new CancellationTokenSource();
+
+      cts.CancelAfter(TimeSpan.FromSeconds(3.0));
+
+      var taskUdpReceive = client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
+
+      Assert.DoesNotThrowAsync(async () => {
+        await Task.WhenAll(taskUdpReceive.AsTask(), RaiseERXUDPAsync());
+      });
+
+      using (var result = taskUdpReceive.Result) {
+        Assert.That(
+          result.Buffer,
+          Is.EqualTo("\r\n".ToByteSequence()),
+          nameof(result)
+        );
+      }
+    }
+
+    [Test]
     public void UdpReceiveAsync_SendCommandWhileAwaiting()
     {
       using var stream = new PseudoSkStackStream();
