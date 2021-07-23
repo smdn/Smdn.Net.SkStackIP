@@ -9,6 +9,9 @@ using System.Net;
 using System.Net.NetworkInformation;
 
 using Smdn.Buffers;
+#if DEBUG
+using Smdn.Text.Unicode.ControlPictures;
+#endif
 
 namespace Smdn.Net.SkStackIP.Protocol {
   internal static class SkStackEventParser {
