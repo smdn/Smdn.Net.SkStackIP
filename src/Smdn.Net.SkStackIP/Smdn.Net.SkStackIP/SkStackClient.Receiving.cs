@@ -279,18 +279,28 @@ namespace Smdn.Net.SkStackIP {
       (ReadOnlyMemory<byte> command, SkStackProtocolSyntax syntax) args
     )
     {
+      // SKSENDTO occasionally echoes back the line with only CRLF even if the register SFE is set to 0 (???)
+      if (args.syntax == SkStackProtocolSyntax.SKSENDTO /*args.command.Span.SequenceEqual(SkStackCommandNames.SKSENDTO.Span)*/) {
+        var sksendtoEchobackLineReader = context.CreateReader();
+
+        if (sksendtoEchobackLineReader.IsNext(args.syntax.EndOfEchobackLine, advancePast: true)) {
+          context.Complete(sksendtoEchobackLineReader);
+          return SkStackClientLoggerExtensions.EchobackLineMarker;
+        }
+      }
+
       var comm = args.command.Span;
       var reader = context.CreateReader();
 
       if (comm.Length <= reader.Length && !reader.IsNext(comm, advancePast: false)) {
-        context.Ignore();
+        context.Ignore(); // echoback line does not start with the command
         return null;
       }
 
       var echobackLineReader = reader;
 
-      if (!reader.TryReadTo(out ReadOnlySequence<byte> echobackLine, delimiter: args.syntax.EndOfCommandLine)) {
-        context.SetAsIncomplete();
+      if (!reader.TryReadTo(out ReadOnlySequence<byte> echobackLine, delimiter: args.syntax.EndOfEchobackLine)) {
+        context.SetAsIncomplete(); // end of echoback line is not found
         return default;
       }
 
@@ -301,7 +311,7 @@ namespace Smdn.Net.SkStackIP {
 
       echobackLineReader.Advance(comm.Length); // advance to position right after the command
 
-      if (echobackLineReader.IsNext(SkStack.SP) || echobackLineReader.IsNext(args.syntax.EndOfCommandLine)) {
+      if (echobackLineReader.IsNext(SkStack.SP) || echobackLineReader.IsNext(args.syntax.EndOfEchobackLine)) {
         context.Complete(reader);
         return SkStackClientLoggerExtensions.EchobackLineMarker;
       }

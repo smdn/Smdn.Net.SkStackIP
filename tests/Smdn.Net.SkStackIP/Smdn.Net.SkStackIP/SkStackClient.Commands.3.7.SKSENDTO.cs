@@ -293,5 +293,66 @@ namespace Smdn.Net.SkStackIP {
         Is.EqualTo("SKSENDTO 1 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0 0005 01234".ToByteSequence())
       );
     }
+
+    [Test]
+    public async Task SKSENDTO_EchobackLine_Incomplete()
+    {
+      var stream = new PseudoSkStackStream();
+
+      async Task CompleteResponseAsync()
+      {
+        stream.ResponseWriter.Write("S"); await Task.Delay(ResponseDelayInterval);
+        stream.ResponseWriter.Write("KSENDTO 1 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0 0002 "); await Task.Delay(ResponseDelayInterval);
+        stream.ResponseWriter.WriteLine();
+        await Task.Delay(ResponseDelayInterval);
+
+        stream.ResponseWriter.WriteLine("OK");
+      }
+
+      using var client = SkStackClient.Create(stream, ServiceProvider);
+
+      var taskSendCommand = client.SendSKSENDTOAsync(
+        handle: SkStackUdpPortHandle.Handle1,
+        destination: new IPEndPoint(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), 0x0E1A),
+        data: new byte[] { (byte)'\r', (byte)'\n', },
+        encryption: SkStackUdpEncryption.ForcePlainText
+      );
+
+      await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
+
+      var resp = taskSendCommand.Result;
+
+      Assert.That(
+        stream.ReadSentData(),
+        Is.EqualTo("SKSENDTO 1 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0 0002 \r\n".ToByteSequence())
+      );
+
+      Assert.IsTrue(resp.Success);
+    }
+
+    [Test]
+    public async Task SKSENDTO_EchobackLine_OnlyWithCRLF()
+    {
+      var stream = new PseudoSkStackStream();
+
+      stream.ResponseWriter.Write("\r\n"); // echoback line only with CRLF
+      stream.ResponseWriter.WriteLine("OK");
+
+      using var client = SkStackClient.Create(stream, ServiceProvider);
+
+      var resp = await client.SendSKSENDTOAsync(
+        handle: SkStackUdpPortHandle.Handle1,
+        destination: new IPEndPoint(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), 0x0E1A),
+        data: new byte[] { (byte)'\r', (byte)'\n', },
+        encryption: SkStackUdpEncryption.ForcePlainText
+      );
+
+      Assert.That(
+        stream.ReadSentData(),
+        Is.EqualTo("SKSENDTO 1 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0 0002 \r\n".ToByteSequence())
+      );
+
+      Assert.IsTrue(resp.Success);
+    }
   }
 }

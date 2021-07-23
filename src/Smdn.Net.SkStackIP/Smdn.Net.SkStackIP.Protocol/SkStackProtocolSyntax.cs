@@ -17,6 +17,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
 
     private sealed class SKSENDTOSyntax : SkStackProtocolSyntax {
       public override ReadOnlySpan<byte> EndOfCommandLine => ReadOnlySpan<byte>.Empty;
+      public override ReadOnlySpan<byte> EndOfEchobackLine => SkStack.CRLFSpan;
       public override bool ExpectStatusLine => true;
       public override ReadOnlySpan<byte> EndOfStatusLine => SkStack.CRLFSpan;
     }
@@ -34,6 +35,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
     }
 
     public abstract ReadOnlySpan<byte> EndOfCommandLine { get; }
+    public virtual ReadOnlySpan<byte> EndOfEchobackLine => EndOfCommandLine;
     public abstract bool ExpectStatusLine { get; }
     public abstract ReadOnlySpan<byte> EndOfStatusLine { get; }
   }
