@@ -3,6 +3,7 @@
 
 using System;
 using System.Buffers;
+using System.ComponentModel;
 using System.Threading.Tasks;
 
 using Smdn.Net.SkStackIP.Protocol;
@@ -87,9 +88,13 @@ namespace Smdn.Net.SkStackIP {
             break;
 
           case SkStackEventNumber.PanaSessionTerminationRequestReceived:
+            logger?.LogInfoPanaEventReceived(ev);
+            RaiseEventPanaSessionTerminated(ev);
+            break;
+
           case SkStackEventNumber.PanaSessionExpired:
             logger?.LogInfoPanaEventReceived(ev);
-            // TODO: dispose session
+            RaiseEventPanaSessionExpired(ev);
             break;
 
           case SkStackEventNumber.TransmissionTimeControlLimitationActivated:
@@ -124,6 +129,47 @@ namespace Smdn.Net.SkStackIP {
       }
 
       return FalseResultValueTask;
+    }
+
+    public ISynchronizeInvoke SynchronizingObject { get; set; }
+
+    public event EventHandler<SkStackPanaSessionEventArgs> PanaSessionEstablished;
+    public event EventHandler<SkStackPanaSessionEventArgs> PanaSessionTerminated;
+    public event EventHandler<SkStackPanaSessionEventArgs> PanaSessionExpired;
+
+    internal void RaiseEventPanaSessionEstablished(SkStackEvent baseEvent) => RaiseEventPanaSession(PanaSessionEstablished, baseEvent);
+    internal void RaiseEventPanaSessionTerminated(SkStackEvent baseEvent) => RaiseEventPanaSession(PanaSessionTerminated, baseEvent);
+    internal void RaiseEventPanaSessionExpired(SkStackEvent baseEvent) => RaiseEventPanaSession(PanaSessionExpired, baseEvent);
+
+    private void RaiseEventPanaSession(EventHandler<SkStackPanaSessionEventArgs> ev, SkStackEvent baseEvent)
+    {
+      if (ev is null)
+        return; // return without creating event args if event hanlder is null
+
+      InvokeEvent(SynchronizingObject, ev, this, new SkStackPanaSessionEventArgs(baseEvent));
+    }
+
+    private static void InvokeEvent<TEventArgs>(
+      ISynchronizeInvoke synchronizingObject,
+      EventHandler<TEventArgs> ev,
+      object sender,
+      TEventArgs args
+    )
+    {
+      if (synchronizingObject is null || !synchronizingObject.InvokeRequired) {
+        try {
+          ev(sender, args);
+        }
+        catch {
+          // ignore exceptions
+        }
+      }
+      else {
+        synchronizingObject.BeginInvoke(
+          method: ev,
+          args: new object[] { sender, args }
+        );
+      }
     }
   }
 }

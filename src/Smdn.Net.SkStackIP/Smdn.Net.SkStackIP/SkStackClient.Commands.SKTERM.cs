@@ -32,6 +32,8 @@ namespace Smdn.Net.SkStackIP {
         cancellationToken: cancellationToken
       ).ConfigureAwait(false);
 
+      RaiseEventPanaSessionTerminated(finalStatusEvent);
+
       var isCompletedSuccessfully = finalStatusEvent.Number == SkStackEventNumber.PanaSessionTerminationCompleted;
 
       return (resp, isCompletedSuccessfully);

@@ -85,6 +85,8 @@ namespace Smdn.Net.SkStackIP {
         cancellationToken: cancellationToken
       ).ConfigureAwait(false);
 
+      if (finalStatusEvent.Number == SkStackEventNumber.PanaSessionEstablishmentCompleted)
+        RaiseEventPanaSessionEstablished(finalStatusEvent);
       if (finalStatusEvent.Number == SkStackEventNumber.PanaSessionEstablishmentError)
         throw new SkStackPanaSessionEstablishmentException($"PANA session establishment failed", finalStatusEvent);
 

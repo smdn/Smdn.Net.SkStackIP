@@ -36,11 +36,30 @@ namespace Smdn.Net.SkStackIP {
       }
 
       using var client = SkStackClient.Create(stream, ServiceProvider);
+      Exception thrownExceptionInEventHandler = null;
+      var raisedEventCount = 0;
+
+      client.PanaSessionTerminated += (sender, e) => {
+        try {
+          Assert.AreSame(client, sender, nameof(sender));
+          Assert.IsNotNull(e, nameof(e));
+          Assert.AreEqual(senderAddress, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
+          Assert.AreEqual(SkStackEventNumber.PanaSessionTerminationCompleted, e.EventNumber, nameof(e.EventNumber));
+          raisedEventCount++;
+        }
+        catch (Exception ex) {
+          thrownExceptionInEventHandler = ex;
+        }
+      };
+
       var taskSendCommand = client.SendSKTERMAsync();
 
       Assert.DoesNotThrowAsync(async () => {
         await Task.WhenAll(taskSendCommand.AsTask(), RaisePanaSessionTerminationEventsAsync());
       });
+
+      Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
+      Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
 
       var (response, isCompletedSuccessfully) = taskSendCommand.Result;
 
@@ -73,11 +92,30 @@ namespace Smdn.Net.SkStackIP {
       }
 
       using var client = SkStackClient.Create(stream, ServiceProvider);
+      Exception thrownExceptionInEventHandler = null;
+      var raisedEventCount = 0;
+
+      client.PanaSessionTerminated += (sender, e) => {
+        try {
+          Assert.AreSame(client, sender, nameof(sender));
+          Assert.IsNotNull(e, nameof(e));
+          Assert.AreEqual(senderAddress, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
+          Assert.AreEqual(SkStackEventNumber.PanaSessionTerminationTimedOut, e.EventNumber, nameof(e.EventNumber));
+          raisedEventCount++;
+        }
+        catch (Exception ex) {
+          thrownExceptionInEventHandler = ex;
+        }
+      };
+
       var taskSendCommand = client.SendSKTERMAsync();
 
       Assert.DoesNotThrowAsync(async () => {
         await Task.WhenAll(taskSendCommand.AsTask(), RaisePanaSessionTerminationEventsAsync());
       });
+
+      Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
+      Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
 
       var (response, isCompletedSuccessfully) = taskSendCommand.Result;
 
@@ -98,10 +136,15 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine("FAIL ER10");
 
       using var client = SkStackClient.Create(stream, ServiceProvider);
+      var raisedEventCount = 0;
+
+      client.PanaSessionTerminated += (sender, e) => raisedEventCount++;
 
       Assert.ThrowsAsync<SkStackErrorResponseException>(
         async () => await client.SendSKTERMAsync()
       );
+
+      Assert.AreEqual(0, raisedEventCount, nameof(raisedEventCount));
 
       Assert.That(
         stream.ReadSentData(),

@@ -40,11 +40,30 @@ namespace Smdn.Net.SkStackIP {
       }
 
       using var client = SkStackClient.Create(stream, ServiceProvider);
+      Exception thrownExceptionInEventHandler = null;
+      var raisedEventCount = 0;
+
+      client.PanaSessionEstablished += (sender, e) => {
+        try {
+          Assert.AreSame(client, sender, nameof(sender));
+          Assert.IsNotNull(e, nameof(e));
+          Assert.AreEqual(senderAddress, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
+          Assert.AreEqual(SkStackEventNumber.PanaSessionEstablishmentCompleted, e.EventNumber, nameof(e.EventNumber));
+          raisedEventCount++;
+        }
+        catch (Exception ex) {
+          thrownExceptionInEventHandler = ex;
+        }
+      };
+
       var taskSendCommand = client.SendSKREJOINAsync();
 
       Assert.DoesNotThrowAsync(async () => {
         await Task.WhenAll(taskSendCommand.AsTask(), RaisePanaSessionEstablishmentEventsAsync());
       });
+
+      Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
+      Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
 
       var (response, address) = taskSendCommand.Result;
 
@@ -86,6 +105,10 @@ namespace Smdn.Net.SkStackIP {
       }
 
       using var client = SkStackClient.Create(stream, ServiceProvider);
+      var raisedEventCount = 0;
+
+      client.PanaSessionEstablished += (sender, e) => raisedEventCount++;
+
       var taskSendCommand = client.SendSKREJOINAsync();
 
       var ex = Assert.ThrowsAsync<SkStackPanaSessionEstablishmentException>(async () => {
@@ -94,6 +117,8 @@ namespace Smdn.Net.SkStackIP {
 
       Assert.AreEqual(SkStackEventNumber.PanaSessionEstablishmentError, ex.EventNumber);
       Assert.AreEqual(senderAddress, ex.Address);
+
+      Assert.AreEqual(0, raisedEventCount, nameof(raisedEventCount));
 
       Assert.That(
         stream.ReadSentData(),
@@ -109,10 +134,15 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine("FAIL ER10");
 
       using var client = SkStackClient.Create(stream, ServiceProvider);
+      var raisedEventCount = 0;
+
+      client.PanaSessionEstablished += (sender, e) => raisedEventCount++;
 
       var ex = Assert.ThrowsAsync<SkStackErrorResponseException>(async () => await client.SendSKREJOINAsync());
 
       Assert.AreEqual(SkStackErrorCode.ER10, ex.ErrorCode);
+
+      Assert.AreEqual(0, raisedEventCount, nameof(raisedEventCount));
 
       Assert.That(
         stream.ReadSentData(),
