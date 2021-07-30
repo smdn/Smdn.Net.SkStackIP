@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,45 +21,39 @@ namespace Smdn.Net.SkStackIP {
       CancellationToken cancellationToken = default
     )
     {
+      var eventHandler = new SKTERMEventHandler();
+
       var resp = await SendCommandAsync(
         command: SkStackCommandNames.SKTERM,
         arguments: Array.Empty<ReadOnlyMemory<byte>>(),
+        commandEventHandler: eventHandler,
         cancellationToken: cancellationToken,
         throwIfErrorStatus: true
       ).ConfigureAwait(false);
 
-      var finalStatusEvent = await ReceiveEventAsync(
-        parseEvent: ParseSKTERMEvent,
-        cancellationToken: cancellationToken
-      ).ConfigureAwait(false);
-
-      RaiseEventPanaSessionTerminated(finalStatusEvent);
-
-      var isCompletedSuccessfully = finalStatusEvent.Number == SkStackEventNumber.PanaSessionTerminationCompleted;
-
-      return (resp, isCompletedSuccessfully);
+      return (resp, eventHandler.IsCompletedSuccessfully);
     }
 
-    private static SkStackEvent ParseSKTERMEvent(
-      ISkStackSequenceParserContext context
-    )
-    {
-      static bool IsPanaSessionTerminationEvent(SkStackEventNumber eventNumber)
-        => eventNumber switch {
-          SkStackEventNumber.PanaSessionTerminationCompleted => true,
-          SkStackEventNumber.PanaSessionTerminationTimedOut => true,
-          _ => false,
-        };
+    private class SKTERMEventHandler : ISkStackEventHandler {
+      public bool IsCompletedSuccessfully { get; private set; }
 
+      bool ISkStackEventHandler.TryProcessEvent(SkStackEventNumber eventNumber, IPAddress senderAddress)
+      {
+        switch (eventNumber) {
+          case SkStackEventNumber.PanaSessionTerminationCompleted:
+            IsCompletedSuccessfully = true;
+            return true;
 
-      if (SkStackEventParser.TryExpectEVENT(context, IsPanaSessionTerminationEvent, out var ev27or28)) {
-        context.Logger?.LogInfoPanaEventReceived(ev27or28);
-        context.Complete();
-        return ev27or28;
+          case SkStackEventNumber.PanaSessionTerminationTimedOut:
+            IsCompletedSuccessfully = false;
+            return true;
+
+          default:
+            return false;
+        }
       }
 
-      context.SetAsIncomplete();
-      return default;
+      void ISkStackEventHandler.ProcessSubsequentEvent(ISkStackSequenceParserContext context) { /*do nothing*/ }
     }
   }
 }

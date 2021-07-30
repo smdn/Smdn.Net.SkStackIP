@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Net;
 
 using Smdn.Net.SkStackIP.Protocol;
 
@@ -9,13 +10,14 @@ namespace Smdn.Net.SkStackIP {
   public class SkStackPanaSessionEstablishmentException : SkStackPanaSessionException {
     internal SkStackPanaSessionEstablishmentException(
       string message,
-      SkStackEvent causedEvent,
+      IPAddress address,
+      SkStackEventNumber eventNumber,
       Exception innerException = null
     )
       : base(
         message: message,
-        address: causedEvent.SenderAddress,
-        eventNumber: causedEvent.Number,
+        address: address,
+        eventNumber: eventNumber,
         innerException: innerException
       )
     {

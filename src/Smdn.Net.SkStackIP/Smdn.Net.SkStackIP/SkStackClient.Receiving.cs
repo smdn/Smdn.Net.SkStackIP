@@ -29,16 +29,13 @@ namespace Smdn.Net.SkStackIP {
     private class ParseSequenceContext : ISkStackSequenceParserContext {
       public ReadOnlySequence<byte> UnparsedSequence { get; internal set; }
       public ParseSequenceStatus Status { get; private set; } = ParseSequenceStatus.Initial;
-      public ILogger Logger { get; }
 
-      public ParseSequenceContext(ILogger logger)
+      public ParseSequenceContext()
       {
-        this.Logger = logger;
       }
 
       public void Initialize()
       {
-        (this as ISkStackSequenceParserContext).State = null;
       }
 
       public void Update(ReadOnlySequence<byte> unparsedSequence)
@@ -53,8 +50,6 @@ namespace Smdn.Net.SkStackIP {
       /*
        * ISkStackSequenceParserContext
        */
-      object ISkStackSequenceParserContext.State { get; set; }
-
       ISkStackSequenceParserContext ISkStackSequenceParserContext.CreateCopy()
         => (ISkStackSequenceParserContext)MemberwiseClone();
 
@@ -89,7 +84,8 @@ namespace Smdn.Net.SkStackIP {
     private async ValueTask<TResult> ReadAsync<TArg, TResult>(
       Func<ISkStackSequenceParserContext, TArg, TResult> parseSequence,
       TArg arg,
-      bool processOnlyNotificationalEvents = false,
+      ISkStackEventHandler eventHandler,
+      bool processOnlyERXUDP = false,
       CancellationToken cancellationToken = default,
       [CallerMemberName] string callerMemberName = default
     )
@@ -145,17 +141,24 @@ namespace Smdn.Net.SkStackIP {
 
           try {
             // process events which is received until this point
-            var notificationalEventProcessed = await ProcessNotificationalEventsAsync(parseSequenceContext).ConfigureAwait(false);
+            var eventProcessed = await ProcessEventsAsync(
+              parseSequenceContext,
+              eventHandler
+            ).ConfigureAwait(false);
 
-            if (processOnlyNotificationalEvents && notificationalEventProcessed) {
-              if (parseSequenceContext.Status == ParseSequenceStatus.Continueing)
+            logger?.LogReceivingStatus($"      status: {parseSequenceContext.Status}");
+
+            if (eventProcessed) {
+              if (processOnlyERXUDP && parseSequenceContext.Status == ParseSequenceStatus.Continueing)
                 (parseSequenceContext as ISkStackSequenceParserContext).Complete(); // reset status as Completed to stop reading
             }
-            else if (!notificationalEventProcessed) {
+            else if (parseSequenceContext.Status != ParseSequenceStatus.Incomplete) {
               // if buffered data sequence does not contain any events, parse it with the specified parser
               logger?.LogReceivingStatus($"      parser: {parseSequence.Method}");
 
               result = parseSequence(parseSequenceContext, arg);
+
+              logger?.LogReceivingStatus($"      status: {parseSequenceContext.Status}");
             }
           }
           catch (SkStackUnexpectedResponseException ex) {
@@ -163,8 +166,6 @@ namespace Smdn.Net.SkStackIP {
 
             throw;
           }
-
-          logger?.LogReceivingStatus($"      status: {parseSequenceContext.Status}");
 
           var postAction = parseSequenceContext.Status switch {
             ParseSequenceStatus.Completed   => (markAsExamined: true,  advanceIfConsumed: true,  returnResult: true,  delay: default),
@@ -200,6 +201,7 @@ namespace Smdn.Net.SkStackIP {
     private async ValueTask<SkStackResponse<TPayload>> ReceiveResponseAsync<TPayload>(
       ReadOnlyMemory<byte> command,
       SkStackSequenceParser<TPayload> parseResponsePayload,
+      ISkStackEventHandler commandEventHandler,
       SkStackProtocolSyntax syntax,
       CancellationToken cancellationToken
     )
@@ -210,6 +212,7 @@ namespace Smdn.Net.SkStackIP {
       await ReadAsync(
         parseSequence: ParseEchobackLine,
         arg: (command, syntax),
+        eventHandler: null,
         cancellationToken: cancellationToken
       ).ConfigureAwait(false);
 
@@ -220,6 +223,7 @@ namespace Smdn.Net.SkStackIP {
         response.Payload = await ReadAsync(
           parseSequence: static (context, parser) => parser(context),
           arg: parseResponsePayload, // TODO: syntax
+          eventHandler: null,
           cancellationToken: cancellationToken
         ).ConfigureAwait(false);
       }
@@ -229,6 +233,7 @@ namespace Smdn.Net.SkStackIP {
         (response.Status, response.StatusText) = await ReadAsync(
           parseSequence: ParseStatusLine,
           arg: (command, syntax),
+          eventHandler: null,
           cancellationToken: cancellationToken
         ).ConfigureAwait(false);
       }
@@ -237,18 +242,21 @@ namespace Smdn.Net.SkStackIP {
         response.Status = SkStackResponseStatus.Ok;
       }
 
+      if (response.Status != SkStackResponseStatus.Fail && commandEventHandler is not null) {
+        const int parseSequenceEmptyResult = default;
+
+        logger?.LogReceivingStatus($"{nameof(ReceiveResponseAsync)} {commandEventHandler.GetType().Name}");
+
+        await ReadAsync(
+          parseSequence: static (context, handler) => { handler.ProcessSubsequentEvent(context); return parseSequenceEmptyResult; },
+          arg: commandEventHandler,
+          eventHandler: commandEventHandler,
+          cancellationToken: cancellationToken
+        ).ConfigureAwait(false);
+      }
+
       return response;
     }
-
-    internal ValueTask<TResult> ReceiveEventAsync<TResult>(
-      SkStackSequenceParser<TResult> parseEvent,
-      CancellationToken cancellationToken
-    )
-      => ReadAsync(
-        parseSequence: static (context, parser) => parser(context),
-        arg: parseEvent,
-        cancellationToken: cancellationToken
-      );
 
     internal readonly struct ReceiveNotificationalEventResult {
       public static readonly ReceiveNotificationalEventResult NotReceivedResult = new ReceiveNotificationalEventResult(~default(int));
@@ -270,7 +278,8 @@ namespace Smdn.Net.SkStackIP {
       => ReadAsync(
         parseSequence: static (context, _) => ReceiveNotificationalEventResult.NotReceivedResult,
         arg: default(int),
-        processOnlyNotificationalEvents: true,
+        eventHandler: null,
+        processOnlyERXUDP: true,
         cancellationToken: cancellationToken
       );
 

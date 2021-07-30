@@ -16,7 +16,7 @@ using Smdn.Text.Unicode.ControlPictures;
 namespace Smdn.Net.SkStackIP.Protocol {
   internal static class SkStackEventParser {
     /// <remarks>reference: BP35A1コマンドリファレンス 4.1. ERXUDP</remarks>
-    public static bool TryExpectERXUDP(
+    public static OperationStatus TryExpectERXUDP(
       ISkStackSequenceParserContext context,
       SkStackERXUDPDataFormat erxudpDataFormat,
       out SkStackUdpReceiveEvent erxudp,
@@ -29,17 +29,10 @@ namespace Smdn.Net.SkStackIP.Protocol {
       erxudpDataLength = default;
 
       var reader = context.CreateReader();
-
       var status = SkStackTokenParser.TryExpectToken(ref reader, SkStackEventCodeNames.ERXUDP);
 
-      if (status == OperationStatus.NeedMoreData) {
-        context.SetAsIncomplete();
-        return false;
-      }
-      else if (status == OperationStatus.InvalidData) {
-        context.Ignore();
-        return false;
-      }
+      if (status == OperationStatus.NeedMoreData || status == OperationStatus.InvalidData)
+        return status;
 
       if (
         SkStackTokenParser.ExpectIPADDR(ref reader, out var sender) &&
@@ -57,10 +50,8 @@ namespace Smdn.Net.SkStackIP.Protocol {
           _ => erxudpDataLength,
         };
 
-        if (reader.GetUnreadSequence().Length < lengthOfDataSequence + 2 /*CRLF*/) {
-          context.SetAsIncomplete();
-          return false;
-        }
+        if (reader.GetUnreadSequence().Length < lengthOfDataSequence + 2 /*CRLF*/)
+          return OperationStatus.NeedMoreData;
 
         var erxudpDataStart = reader.Position;
 
@@ -68,10 +59,8 @@ namespace Smdn.Net.SkStackIP.Protocol {
 
         var erxudpDataEnd = reader.Position;
 
-        if (!SkStackTokenParser.ExpectEndOfLine(ref reader)) {
-          context.SetAsIncomplete();
-          return false;
-        }
+        if (!SkStackTokenParser.ExpectEndOfLine(ref reader))
+          return OperationStatus.NeedMoreData;
 
         erxudp = new(
           sender: sender,
@@ -85,11 +74,10 @@ namespace Smdn.Net.SkStackIP.Protocol {
         erxudpData = reader.Sequence.Slice(erxudpDataStart, erxudpDataEnd);
 
         context.Complete(reader);
-        return true;
+        return OperationStatus.Done;
       }
 
-      context.SetAsIncomplete();
-      return false;
+      return OperationStatus.NeedMoreData;
     }
 
     /// <remarks>reference: BP35A1コマンドリファレンス 4.2. EPONG</remarks>
@@ -364,56 +352,25 @@ namespace Smdn.Net.SkStackIP.Protocol {
       return default;
     }
 
-
     /// <remarks>reference: BP35A1コマンドリファレンス 4.8. EVENT</remarks>
-    public static bool TryExpectEVENT(
+    public static OperationStatus TryExpectEVENT(
       ISkStackSequenceParserContext context,
-      SkStackEventNumber expectingEventNumber,
-      out SkStackEvent ev
-    )
-      => TryExpectEVENT(
-        context: context,
-        expectingEventNumberPredicate: number => number == expectingEventNumber,
-        ev: out ev
-      );
-
-    /// <remarks>reference: BP35A1コマンドリファレンス 4.8. EVENT</remarks>
-    public static bool TryExpectEVENT(
-      ISkStackSequenceParserContext context,
-      Predicate<SkStackEventNumber> expectingEventNumberPredicate,
       out SkStackEvent ev
     )
     {
-#if DEBUG
-      if (expectingEventNumberPredicate is null)
-        throw new ArgumentNullException(nameof(expectingEventNumberPredicate));
-#endif
-
       ev = default;
 
       var reader = context.CreateReader();
-
       var status = SkStackTokenParser.TryExpectToken(ref reader, SkStackEventCodeNames.EVENT);
 
-      if (status == OperationStatus.NeedMoreData) {
-        context.SetAsIncomplete();
-        return false;
-      }
-      else if (status == OperationStatus.InvalidData) {
-        context.Ignore();
-        return false;
-      }
+      if (status == OperationStatus.NeedMoreData || status == OperationStatus.InvalidData)
+        return status;
 
       if (
         SkStackTokenParser.ExpectUINT8(ref reader, out var num) &&
         SkStackTokenParser.ExpectIPADDR(ref reader, out var sender)
       ) {
         var number = (SkStackEventNumber)num;
-
-        if (!expectingEventNumberPredicate(number)) {
-          context.Ignore();
-          return false;
-        }
 
         int parameter = default;
         SkStackEventCode expectedSubsequentEventCode = default;
@@ -426,10 +383,9 @@ namespace Smdn.Net.SkStackIP.Protocol {
             expectedSubsequentEventCode = SkStackEventCode.EPANDESC;
             break;
           case SkStackEventNumber.UdpSendCompleted:
-            if (!SkStackTokenParser.ExpectUINT8(ref reader, out var param)) {
-              context.SetAsIncomplete();
-              return false;
-            }
+            if (!SkStackTokenParser.ExpectUINT8(ref reader, out var param))
+              return OperationStatus.NeedMoreData;
+
             parameter = (int)param;
             break;
         }
@@ -437,12 +393,11 @@ namespace Smdn.Net.SkStackIP.Protocol {
         if (SkStackTokenParser.ExpectEndOfLine(ref reader)) {
           ev = new SkStackEvent(number, sender, (int)parameter, expectedSubsequentEventCode);
           context.Complete(reader);
-          return true;
+          return OperationStatus.Done;
         }
       }
 
-      context.SetAsIncomplete();
-      return false;
+      return OperationStatus.NeedMoreData;
     }
   }
 }

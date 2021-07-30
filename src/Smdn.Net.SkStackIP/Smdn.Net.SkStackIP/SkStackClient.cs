@@ -109,7 +109,7 @@ namespace Smdn.Net.SkStackIP {
         this.writer = this.streamWriter;
       }
 
-      this.parseSequenceContext = new ParseSequenceContext(this.logger);
+      this.parseSequenceContext = new ParseSequenceContext();
       this.streamReaderSemaphore = new(initialCount: 1, maxCount: 1);
 
       StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite);

@@ -68,13 +68,13 @@ namespace Smdn.Net.SkStackIP.Protocol {
       );
 
     internal static void ThrowIfUnexpectedSubsequentEventCode(
-      SkStackEvent ev,
+      SkStackEventCode subsequentEventCode,
       SkStackEventCode expectedEventCode
     )
     {
-      if (ev.ExpectedSubsequentEventCode != expectedEventCode) {
+      if (subsequentEventCode != expectedEventCode) {
         throw new SkStackUnexpectedResponseException(
-          message: $"expected subsequent event code is {expectedEventCode}, but was {ev.ExpectedSubsequentEventCode}"
+          message: $"expected subsequent event code is {expectedEventCode}, but was {subsequentEventCode}"
         );
       }
     }

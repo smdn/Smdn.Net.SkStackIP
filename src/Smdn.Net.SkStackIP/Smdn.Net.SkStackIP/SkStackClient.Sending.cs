@@ -14,6 +14,7 @@ namespace Smdn.Net.SkStackIP {
     public async ValueTask<SkStackResponse> SendCommandAsync(
       ReadOnlyMemory<byte> command,
       IEnumerable<ReadOnlyMemory<byte>> arguments = null,
+      ISkStackEventHandler commandEventHandler = null,
       SkStackProtocolSyntax syntax = null,
       CancellationToken cancellationToken = default,
       bool throwIfErrorStatus = true
@@ -23,6 +24,7 @@ namespace Smdn.Net.SkStackIP {
         command: command,
         arguments: arguments ?? Enumerable.Empty<ReadOnlyMemory<byte>>(),
         parseResponsePayload: null,
+        commandEventHandler: commandEventHandler,
         syntax: syntax ?? SkStackProtocolSyntax.Default,
         cancellationToken: cancellationToken,
         throwIfErrorStatus: throwIfErrorStatus
@@ -36,6 +38,7 @@ namespace Smdn.Net.SkStackIP {
       ReadOnlyMemory<byte> command,
       IEnumerable<ReadOnlyMemory<byte>> arguments,
       SkStackSequenceParser<TPayload> parseResponsePayload,
+      ISkStackEventHandler commandEventHandler = null,
       SkStackProtocolSyntax syntax = null,
       CancellationToken cancellationToken = default,
       bool throwIfErrorStatus = true
@@ -44,6 +47,7 @@ namespace Smdn.Net.SkStackIP {
         command: command,
         arguments: arguments ?? Enumerable.Empty<ReadOnlyMemory<byte>>(),
         parseResponsePayload: parseResponsePayload ?? throw new ArgumentNullException(nameof(parseResponsePayload)),
+        commandEventHandler: commandEventHandler,
         syntax: syntax ?? SkStackProtocolSyntax.Default,
         cancellationToken: cancellationToken,
         throwIfErrorStatus: throwIfErrorStatus
@@ -55,6 +59,7 @@ namespace Smdn.Net.SkStackIP {
       ReadOnlyMemory<byte> command,
       IEnumerable<ReadOnlyMemory<byte>> arguments,
       SkStackSequenceParser<TPayload> parseResponsePayload,
+      ISkStackEventHandler commandEventHandler,
       SkStackProtocolSyntax syntax,
       CancellationToken cancellationToken,
       bool throwIfErrorStatus
@@ -75,6 +80,7 @@ namespace Smdn.Net.SkStackIP {
       return FlushAndReceive(
         command,
         parseResponsePayload,
+        commandEventHandler,
         syntax,
         throwIfErrorStatus,
         cancellationToken
@@ -131,6 +137,7 @@ namespace Smdn.Net.SkStackIP {
     private async ValueTask<SkStackResponse<TPayload>> FlushAndReceive<TPayload>(
       ReadOnlyMemory<byte> command,
       SkStackSequenceParser<TPayload> parseResponsePayload,
+      ISkStackEventHandler commandEventHandler,
       SkStackProtocolSyntax syntax,
       bool throwIfErrorStatus,
       CancellationToken cancellationToken
@@ -144,6 +151,7 @@ namespace Smdn.Net.SkStackIP {
       var response = await ReceiveResponseAsync(
         command,
         parseResponsePayload,
+        commandEventHandler,
         syntax,
         cancellationToken
       ).ConfigureAwait(false);

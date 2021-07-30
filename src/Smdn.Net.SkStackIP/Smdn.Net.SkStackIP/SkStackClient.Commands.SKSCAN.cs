@@ -4,6 +4,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -14,6 +15,13 @@ using Smdn.Text.Unicode.ControlPictures;
 
 namespace Smdn.Net.SkStackIP {
   partial class SkStackClient {
+    private abstract class SKSCANEventHandler<TScanResult> : ISkStackEventHandler {
+      public TScanResult ScanResult { get; protected set; }
+
+      public abstract bool TryProcessEvent(SkStackEventNumber eventNumber, IPAddress senderAddress);
+      public abstract void ProcessSubsequentEvent(ISkStackSequenceParserContext context);
+    }
+
     /// <summary>`SKSCAN 0`</summary>
     /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
     [CLSCompliant(false)]
@@ -29,7 +37,7 @@ namespace Smdn.Net.SkStackIP {
         mode: SKSCANMode.EnergyDetectScan,
         channelMask: channelMask,
         durationFactor: TranslateToSKSCANDurationFactorOrThrowIfOutOfRange(duration == default ? SKSCANDefaultDuration : duration, nameof(duration)),
-        parseEvent: ParseSKSCANEnergyDetectScanEvent,
+        commandEventHandler: new SKSCANEnergyDetectScanEventHandler(),
         cancellationToken: cancellationToken
       );
 
@@ -48,27 +56,31 @@ namespace Smdn.Net.SkStackIP {
         mode: SKSCANMode.EnergyDetectScan,
         channelMask: channelMask,
         durationFactor: ThrowIfDurationFactorOutOfRange(durationFactor, nameof(durationFactor)),
-        parseEvent: ParseSKSCANEnergyDetectScanEvent,
+        commandEventHandler: new SKSCANEnergyDetectScanEventHandler(),
         cancellationToken: cancellationToken
       );
 
-    private static IReadOnlyDictionary<SkStackChannel, double> ParseSKSCANEnergyDetectScanEvent(
-      ISkStackSequenceParserContext context
-    )
-    {
-      var reader = context.CreateReader(); // retain current buffer
+    private class SKSCANEnergyDetectScanEventHandler : SKSCANEventHandler<IReadOnlyDictionary<SkStackChannel, double>> {
+      public override bool TryProcessEvent(SkStackEventNumber eventNumber, IPAddress senderAddress)
+      {
+        if (eventNumber == SkStackEventNumber.EnergyDetectScanCompleted)
+          return false; // process subsequent event
 
-      if (SkStackEventParser.TryExpectEVENT(context, SkStackEventNumber.EnergyDetectScanCompleted, out var ev)) {
-        SkStackUnexpectedResponseException.ThrowIfUnexpectedSubsequentEventCode(ev, expectedEventCode: SkStackEventCode.EEDSCAN);
-
-        if (SkStackEventParser.ExpectEEDSCAN(context, out var result)) {
-          context.Complete();
-          return result;
-        }
+        return false;
       }
 
-      context.SetAsIncomplete(reader); // revert buffer
-      return default;
+      public override void ProcessSubsequentEvent(ISkStackSequenceParserContext context)
+      {
+        var reader = context.CreateReader(); // retain current buffer
+
+        if (SkStackEventParser.ExpectEEDSCAN(context, out var result)) {
+          ScanResult = result;
+          context.Complete();
+        }
+        else {
+          context.SetAsIncomplete(reader); // revert buffer
+        }
+      }
     }
 
     /// <summary>`SKSCAN 2`</summary>
@@ -86,7 +98,7 @@ namespace Smdn.Net.SkStackIP {
         mode: SKSCANMode.ActiveScanPair,
         channelMask: channelMask,
         durationFactor: TranslateToSKSCANDurationFactorOrThrowIfOutOfRange(duration == default ? SKSCANDefaultDuration : duration, nameof(duration)),
-        parseEvent: static context => ParseSKSCANActiveScanEvent(context, expectPairingId: true),
+        commandEventHandler: new SKSCANActiveScanEventHandler(expectPairingId: true),
         cancellationToken: cancellationToken
       );
 
@@ -105,7 +117,7 @@ namespace Smdn.Net.SkStackIP {
         mode: SKSCANMode.ActiveScanPair,
         channelMask: channelMask,
         durationFactor: ThrowIfDurationFactorOutOfRange(durationFactor, nameof(durationFactor)),
-        parseEvent: static context => ParseSKSCANActiveScanEvent(context, expectPairingId: true),
+        commandEventHandler: new SKSCANActiveScanEventHandler(expectPairingId: true),
         cancellationToken: cancellationToken
       );
 
@@ -125,7 +137,7 @@ namespace Smdn.Net.SkStackIP {
         mode: SKSCANMode.ActiveScan,
         channelMask: channelMask,
         durationFactor: TranslateToSKSCANDurationFactorOrThrowIfOutOfRange(duration == default ? SKSCANDefaultDuration : duration, nameof(duration)),
-        parseEvent: static context => ParseSKSCANActiveScanEvent(context, expectPairingId: false),
+        commandEventHandler: new SKSCANActiveScanEventHandler(expectPairingId: false),
         cancellationToken: cancellationToken
       );
 
@@ -145,42 +157,49 @@ namespace Smdn.Net.SkStackIP {
         mode: SKSCANMode.ActiveScan,
         channelMask: channelMask,
         durationFactor: ThrowIfDurationFactorOutOfRange(durationFactor, nameof(durationFactor)),
-        parseEvent: static context => ParseSKSCANActiveScanEvent(context, expectPairingId: false),
+        commandEventHandler: new SKSCANActiveScanEventHandler(expectPairingId: false),
         cancellationToken: cancellationToken
       );
 
-    private static IReadOnlyList<SkStackPanDescription> ParseSKSCANActiveScanEvent(
-      ISkStackSequenceParserContext context,
-      bool expectPairingId
-    )
-    {
-      const int expectedMaxPanDescriptionCount = 1;
+    private class SKSCANActiveScanEventHandler : SKSCANEventHandler<IReadOnlyList<SkStackPanDescription>> {
+      private readonly bool expectPairingId;
 
-      var incompleteReader = context.CreateReader(); // retain current buffer
+      private const int expectedMaxPanDescriptionCount = 1;
+      private List<SkStackPanDescription> scanResult = null;
 
-      if (SkStackEventParser.TryExpectEVENT(context, SkStackEventNumber.BeaconReceived, out var ev20)) {
-        SkStackUnexpectedResponseException.ThrowIfUnexpectedSubsequentEventCode(ev20, SkStackEventCode.EPANDESC);
+      public SKSCANActiveScanEventHandler(bool expectPairingId)
+      {
+        this.expectPairingId = expectPairingId;
+      }
+
+      public override bool TryProcessEvent(SkStackEventNumber eventNumber, IPAddress senderAddress)
+      {
+        switch (eventNumber) {
+          case SkStackEventNumber.BeaconReceived:
+            return false; // process subsequent event
+
+          case SkStackEventNumber.ActiveScanCompleted:
+            ScanResult = (IReadOnlyList<SkStackPanDescription>)scanResult ?? Array.Empty<SkStackPanDescription>();
+            return true; // completed
+
+          default:
+            return false;
+        }
+      }
+
+      public override void ProcessSubsequentEvent(ISkStackSequenceParserContext context)
+      {
+        var reader = context.CreateReader(); // retain current buffer
 
         if (SkStackEventParser.ExpectEPANDESC(context, expectPairingId, out var pandesc)) {
-          var result = context.GetOrCreateState(static () => new List<SkStackPanDescription>(capacity: expectedMaxPanDescriptionCount));
-
-          result.Add(pandesc);
-
+          scanResult ??= new(capacity: expectedMaxPanDescriptionCount);
+          scanResult.Add(pandesc);
           context.Continue();
-          return default;
         }
-
-        context.SetAsIncomplete(incompleteReader); // revert buffer
-        return default;
+        else {
+          context.SetAsIncomplete(reader); // revert buffer
+        }
       }
-
-      if (SkStackEventParser.TryExpectEVENT(context, SkStackEventNumber.ActiveScanCompleted, out var ev22)) {
-        context.Complete();
-        return (IReadOnlyList<SkStackPanDescription>)context.State ?? Array.Empty<SkStackPanDescription>();
-      }
-
-      context.SetAsIncomplete(incompleteReader); // revert buffer
-      return default;
     }
 
     private enum SKSCANMode : byte {
@@ -231,7 +250,7 @@ namespace Smdn.Net.SkStackIP {
       SKSCANMode mode,
       uint channelMask,
       byte durationFactor,
-      SkStackSequenceParser<TScanResult> parseEvent,
+      SKSCANEventHandler<TScanResult> commandEventHandler,
       CancellationToken cancellationToken
     )
     {
@@ -250,6 +269,7 @@ namespace Smdn.Net.SkStackIP {
             CHANNEL_MASK.AsMemory(0, lengthChannelMask),
             SkStackCommandArgs.GetHex((byte)durationFactor)
           ),
+          commandEventHandler: commandEventHandler,
           cancellationToken: cancellationToken,
           throwIfErrorStatus: true
         ).ConfigureAwait(false);
@@ -261,10 +281,7 @@ namespace Smdn.Net.SkStackIP {
 
       return (
         Response: resp,
-        ScanResult: await ReceiveEventAsync(
-          cancellationToken: cancellationToken,
-          parseEvent: parseEvent
-        ).ConfigureAwait(false)
+        ScanResult: commandEventHandler.ScanResult
       );
     }
   }

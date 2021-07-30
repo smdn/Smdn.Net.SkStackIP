@@ -57,6 +57,7 @@ namespace Smdn.Net.SkStackIP {
     {
       SkStackResponse resp = default;
       byte[] IPADDR = default;
+      var eventHandler = new SKJOINEventHandler();
 
       try {
         int lengthOfIPADDR = default;
@@ -71,6 +72,7 @@ namespace Smdn.Net.SkStackIP {
         resp = await SendCommandAsync(
           command: command,
           arguments: IPADDR is null ? null : SkStackCommandArgs.CreateEnumerable(IPADDR.AsMemory(0, lengthOfIPADDR)),
+          commandEventHandler: eventHandler,
           cancellationToken: cancellationToken,
           throwIfErrorStatus: true
         ).ConfigureAwait(false);
@@ -80,38 +82,37 @@ namespace Smdn.Net.SkStackIP {
           ArrayPool<byte>.Shared.Return(IPADDR);
       }
 
-      var finalStatusEvent = await ReceiveEventAsync(
-        parseEvent: ParseSKJOINEvent,
-        cancellationToken: cancellationToken
-      ).ConfigureAwait(false);
+      eventHandler.ThrowIfEstablishmentError();
 
-      if (finalStatusEvent.Number == SkStackEventNumber.PanaSessionEstablishmentCompleted)
-        RaiseEventPanaSessionEstablished(finalStatusEvent);
-      if (finalStatusEvent.Number == SkStackEventNumber.PanaSessionEstablishmentError)
-        throw new SkStackPanaSessionEstablishmentException($"PANA session establishment failed", finalStatusEvent);
-
-      return (resp, finalStatusEvent.SenderAddress);
+      return (resp, eventHandler.Address);
     }
 
-    private static SkStackEvent ParseSKJOINEvent(
-      ISkStackSequenceParserContext context
-    )
-    {
-      static bool IsPanaSessionEstablishmentEvent(SkStackEventNumber eventNumber)
-        => eventNumber switch {
-          SkStackEventNumber.PanaSessionEstablishmentCompleted => true,
-          SkStackEventNumber.PanaSessionEstablishmentError => true,
-          _ => false,
-        };
+    private class SKJOINEventHandler : ISkStackEventHandler {
+      public bool IsSessionEstablishedSuccessfully { get; private set; } = false;
+      public IPAddress Address { get; private set; }
+      private SkStackEventNumber eventNumber;
 
-      if (SkStackEventParser.TryExpectEVENT(context, IsPanaSessionEstablishmentEvent, out var ev24or25)) {
-        context.Logger?.LogInfoPanaEventReceived(ev24or25);
-        context.Complete();
-        return ev24or25;
+      public void ThrowIfEstablishmentError()
+      {
+        if (eventNumber != SkStackEventNumber.PanaSessionEstablishmentCompleted)
+          throw new SkStackPanaSessionEstablishmentException($"PANA session establishment failed", Address, eventNumber);
       }
 
-      context.SetAsIncomplete();
-      return default;
+      bool ISkStackEventHandler.TryProcessEvent(SkStackEventNumber eventNumber, IPAddress senderAddress)
+      {
+        switch (eventNumber) {
+          case SkStackEventNumber.PanaSessionEstablishmentCompleted:
+          case SkStackEventNumber.PanaSessionEstablishmentError:
+            this.eventNumber = eventNumber;
+            this.Address = senderAddress;
+            return true;
+
+          default:
+            return false;
+        }
+      }
+
+      void ISkStackEventHandler.ProcessSubsequentEvent(ISkStackSequenceParserContext context) { /*do nothing*/ }
     }
   }
 }

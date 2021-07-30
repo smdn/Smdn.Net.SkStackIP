@@ -44,10 +44,10 @@ namespace Smdn.Net.SkStackIP {
 
     private delegate bool ProcessNotificationalEventsFunc(ISkStackSequenceParserContext context);
 
-    /// <summary>Handles events that are not triggered by commands, or non-response notifications, especially ERXUDP/EVENT.</summary>
     /// <returns>true if the first event processed and consumed, otherwise false.</returns>
-    private ValueTask<bool> ProcessNotificationalEventsAsync(
-      ISkStackSequenceParserContext context
+    private ValueTask<bool> ProcessEventsAsync(
+      ISkStackSequenceParserContext context,
+      ISkStackEventHandler eventHandler // handles events that are triggered by commands
     )
     {
       var reader = context.CreateReader();
@@ -65,20 +65,16 @@ namespace Smdn.Net.SkStackIP {
         return FalseResultValueTask;
       }
 
-      static bool IsNotificationalEvent(SkStackEventNumber eventNumber)
-        => eventNumber switch {
-          SkStackEventNumber.NeighborSolicitationReceived => true,
-          SkStackEventNumber.NeighborAdvertisementReceived => true,
-          SkStackEventNumber.EchoRequestReceived => true,
-          SkStackEventNumber.UdpSendCompleted => true,
-          SkStackEventNumber.PanaSessionTerminationRequestReceived => true,
-          SkStackEventNumber.PanaSessionExpired => true,
-          SkStackEventNumber.TransmissionTimeControlLimitationActivated => true,
-          SkStackEventNumber.TransmissionTimeControlLimitationDeactivated => true,
-          _ => false,
-        };
+      var statusEVENT = SkStackEventParser.TryExpectEVENT(context, out var ev);
 
-      if (SkStackEventParser.TryExpectEVENT(context, IsNotificationalEvent, out var ev)) {
+      if (statusEVENT == OperationStatus.NeedMoreData) {
+        context.SetAsIncomplete();
+        return FalseResultValueTask;
+      }
+      else if (statusEVENT == OperationStatus.Done) {
+        var eventHandlerStatesCompleted = eventHandler is not null && eventHandler.TryProcessEvent(ev.Number, ev.SenderAddress);
+
+        // log event
         switch (ev.Number) {
           case SkStackEventNumber.NeighborSolicitationReceived:
           case SkStackEventNumber.NeighborAdvertisementReceived:
@@ -87,28 +83,72 @@ namespace Smdn.Net.SkStackIP {
             logger?.LogInfoIPEventReceived(ev);
             break;
 
+          case SkStackEventNumber.PanaSessionEstablishmentError:
+          case SkStackEventNumber.PanaSessionEstablishmentCompleted:
           case SkStackEventNumber.PanaSessionTerminationRequestReceived:
-            logger?.LogInfoPanaEventReceived(ev);
-            RaiseEventPanaSessionTerminated(ev);
-            break;
-
+          case SkStackEventNumber.PanaSessionTerminationCompleted:
+          case SkStackEventNumber.PanaSessionTerminationTimedOut:
           case SkStackEventNumber.PanaSessionExpired:
             logger?.LogInfoPanaEventReceived(ev);
-            RaiseEventPanaSessionExpired(ev);
             break;
 
           case SkStackEventNumber.TransmissionTimeControlLimitationActivated:
           case SkStackEventNumber.TransmissionTimeControlLimitationDeactivated:
             logger?.LogInfoAribStdT108EventReceived(ev);
-            // TODO: raise event
             break;
         }
 
-        context.Continue();
+        // raise event
+        switch (ev.Number) {
+          case SkStackEventNumber.PanaSessionEstablishmentCompleted:
+            RaiseEventPanaSessionEstablished(ev);
+            break;
+
+          case SkStackEventNumber.PanaSessionTerminationRequestReceived:
+          case SkStackEventNumber.PanaSessionTerminationCompleted:
+          case SkStackEventNumber.PanaSessionTerminationTimedOut:
+            RaiseEventPanaSessionTerminated(ev);
+            break;
+
+          case SkStackEventNumber.PanaSessionExpired:
+            RaiseEventPanaSessionExpired(ev);
+            break;
+
+          case SkStackEventNumber.TransmissionTimeControlLimitationActivated:
+          case SkStackEventNumber.TransmissionTimeControlLimitationDeactivated:
+            // TODO: raise event
+            break;
+
+          case SkStackEventNumber.BeaconReceived:
+            SkStackUnexpectedResponseException.ThrowIfUnexpectedSubsequentEventCode(
+              subsequentEventCode: ev.ExpectedSubsequentEventCode,
+              expectedEventCode: SkStackEventCode.EPANDESC
+            );
+            break;
+
+          case SkStackEventNumber.EnergyDetectScanCompleted:
+            SkStackUnexpectedResponseException.ThrowIfUnexpectedSubsequentEventCode(
+              subsequentEventCode: ev.ExpectedSubsequentEventCode,
+              expectedEventCode: SkStackEventCode.EEDSCAN
+            );
+            break;
+        }
+
+        if (eventHandlerStatesCompleted)
+          context.Complete();
+        else
+          context.Continue();
+
         return TrueResultValueTask;
       }
 
-      if (SkStackEventParser.TryExpectERXUDP(context, erxudpDataFormat, out var erxudp, out var erxudpData, out var erxudpDataLength)) {
+      var statusERXUDP = SkStackEventParser.TryExpectERXUDP(context, erxudpDataFormat, out var erxudp, out var erxudpData, out var erxudpDataLength);
+
+      if (statusERXUDP == OperationStatus.NeedMoreData) {
+        context.SetAsIncomplete();
+        return FalseResultValueTask;
+      }
+      else if (statusERXUDP == OperationStatus.Done) {
         logger?.LogInfoIPEventReceived(erxudp, erxudpData);
 
         return ProcessERXUDPAsync();
@@ -128,6 +168,8 @@ namespace Smdn.Net.SkStackIP {
         }
       }
 
+      // if (status == OperationStatus.InvalidData)
+      context.Ignore();
       return FalseResultValueTask;
     }
 
