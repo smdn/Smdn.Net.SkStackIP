@@ -120,12 +120,10 @@ namespace Smdn.Net.SkStackIP {
 
       var client = CreateClient(stream, serviceProvider: serviceProvider);
 
-      Assert.DoesNotThrow(() => Assert.IsNotNull(client.BaseStream), $"{nameof(client.BaseStream)} before {nameof(client.Close)}");
       Assert.DoesNotThrowAsync(async () => await client.SendCommandAsync("TEST"), $"{nameof(client.SendCommandAsync)} before {nameof(client.Close)}");
 
       Assert.DoesNotThrow(() => closeOrDisposeClient(client), $"{nameof(client.Close)} #1");
 
-      Assert.Throws<ObjectDisposedException>(() => Assert.IsNull(client.BaseStream), $"{nameof(client.BaseStream)} after {nameof(client.Close)}");
       Assert.ThrowsAsync<ObjectDisposedException>(async () => await client.SendCommandAsync("TEST"), $"{nameof(client.SendCommandAsync)} after {nameof(client.Close)}");
 
       Assert.DoesNotThrow(() => closeOrDisposeClient(client), $"{nameof(client.Close)} #2");

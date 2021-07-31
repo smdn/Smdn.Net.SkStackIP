@@ -75,8 +75,6 @@ namespace Smdn.Net.SkStackIP {
      * instance members
      */
     private Stream stream;
-    public Stream BaseStream => ThrowIfDisposed();
-    private Stream ThrowIfDisposed() => stream ?? throw new ObjectDisposedException(GetType().FullName);
 
     private PipeWriter streamWriter;
     private readonly IBufferWriter<byte> writer;
@@ -119,6 +117,12 @@ namespace Smdn.Net.SkStackIP {
     {
       Dispose(true);
       GC.SuppressFinalize(this);
+    }
+
+    private void ThrowIfDisposed()
+    {
+      if (stream is null)
+        throw new ObjectDisposedException(GetType().FullName);
     }
 
     void IDisposable.Dispose() => Close();
