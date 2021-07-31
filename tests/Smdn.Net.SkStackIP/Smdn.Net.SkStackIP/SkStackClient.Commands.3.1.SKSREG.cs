@@ -20,7 +20,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var response = await sendSKSREGSetAsync(client);
 
       Assert.That(
@@ -47,7 +47,7 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine(responsePayload);
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var response = await sendSKSREGGetAsync(client);
 
       Assert.IsNotNull(response.Payload);
@@ -111,7 +111,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentNullException>(() => client.SendSKSREGAsync(null, (ushort)0x8888));
 
@@ -124,7 +124,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentNullException>(() => client.SendSKSREGAsync<ushort>(null));
 
@@ -135,7 +135,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<InvalidOperationException>(() => sendSKSREGSetAsync(client));
 
@@ -151,7 +151,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<TArgumentException>(() => sendSKSREGSetAsync(client));
 

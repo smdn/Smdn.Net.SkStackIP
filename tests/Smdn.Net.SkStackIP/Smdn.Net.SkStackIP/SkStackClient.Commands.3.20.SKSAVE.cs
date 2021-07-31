@@ -18,7 +18,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var response = await client.SendSKSAVEAsync();
 
       Assert.That(
@@ -36,7 +36,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("FAIL ER10");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       var ex = Assert.ThrowsAsync<SkStackFlashMemoryIOException>(async () => await client.SendSKSAVEAsync());
 
@@ -55,7 +55,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("FAIL ER01");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       var ex = Assert.ThrowsAsync<SkStackErrorResponseException>(async () => await client.SendSKSAVEAsync());
 

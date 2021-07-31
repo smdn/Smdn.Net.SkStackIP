@@ -35,7 +35,7 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine($"7 {senderAddressString}");
       }
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       Exception thrownExceptionInEventHandler = null;
       var raisedEventCount = 0;
 
@@ -91,7 +91,7 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine($" {senderAddressString}");
       }
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       Exception thrownExceptionInEventHandler = null;
       var raisedEventCount = 0;
 
@@ -135,7 +135,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("FAIL ER10");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var raisedEventCount = 0;
 
       client.PanaSessionTerminated += (sender, e) => raisedEventCount++;

@@ -18,7 +18,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var response = await client.SendSKERASEAsync();
 
       Assert.That(

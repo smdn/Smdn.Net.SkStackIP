@@ -25,7 +25,7 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine("FE80:0000:0000:0000:021D:1290:0003:AFE2");
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       SkStackResponse<IReadOnlyList<IPAddress>> response = null;
 
       Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
@@ -79,7 +79,7 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine();
       }
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var taskSendCommand = client.SendSKTABLEAvailableAddressListAsync();
 
       Assert.DoesNotThrowAsync(async () => {
@@ -113,7 +113,7 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine("EADDR");
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       SkStackResponse<IReadOnlyList<IPAddress>> response = null;
 
       Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
@@ -134,7 +134,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       SkStackResponse<IReadOnlyList<IPAddress>> response = null;
 
       Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
@@ -158,7 +158,7 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine("FE80:0000:0000:0000:021D:1290:1234:5679 001D129012345679 FFFF");
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>> response = null;
 
       Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
@@ -209,7 +209,7 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine();
       }
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var taskSendCommand = client.SendSKTABLENeighborCacheListAsync();
 
       Assert.DoesNotThrowAsync(async () => {
@@ -242,7 +242,7 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine("ENEIGHBOR");
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>> response = null;
 
       Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
@@ -264,7 +264,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>> response = null;
 
       Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
@@ -304,7 +304,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       SkStackResponse<IReadOnlyList<SkStackUdpPort>> response = null;
 
       Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEListeningPortListAsync());

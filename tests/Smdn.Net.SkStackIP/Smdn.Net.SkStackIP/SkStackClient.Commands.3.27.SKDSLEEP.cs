@@ -19,7 +19,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       Exception thrownExceptionInSleptEventHandler = null;
       Exception thrownExceptionInWokeUpEventHandler = null;
       var raisedSleptEventCount = 0;
@@ -80,7 +80,7 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine();
       }
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       Exception thrownExceptionInSleptEventHandler = null;
       Exception thrownExceptionInWokeUpEventHandler = null;
       var raisedSleptEventCount = 0;

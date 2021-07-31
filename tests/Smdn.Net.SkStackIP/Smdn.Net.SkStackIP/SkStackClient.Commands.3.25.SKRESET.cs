@@ -17,7 +17,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.DoesNotThrowAsync(async () => await client.SendSKRESETAsync());
 

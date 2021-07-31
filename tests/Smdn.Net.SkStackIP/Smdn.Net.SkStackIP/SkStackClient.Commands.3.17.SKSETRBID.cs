@@ -17,7 +17,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       SkStackResponse response = null;
 
       Assert.DoesNotThrowAsync(async () => response = await client.SendSKSETRBIDAsync(routeBID: "00112233445566778899AABBCCDDEEFF"));
@@ -35,7 +35,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentNullException>(() => client.SendSKSETRBIDAsync(routeBID: (string)null));
 
@@ -47,7 +47,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: string.Empty));
 
@@ -60,7 +60,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: ReadOnlyMemory<byte>.Empty));
 
@@ -74,7 +74,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: rbid));
 
@@ -89,7 +89,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: rbid.ToByteSequence()));
 

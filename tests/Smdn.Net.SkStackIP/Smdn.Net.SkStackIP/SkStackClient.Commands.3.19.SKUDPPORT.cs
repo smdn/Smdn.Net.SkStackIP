@@ -17,10 +17,10 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       SkStackResponse response = null;
 
-      Assert.DoesNotThrowAsync(async () => response = await client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle3, 0x0050));
+      Assert.DoesNotThrowAsync(async () => (response, _) = await client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle3, 0x0050));
 
       Assert.IsNotNull(response);
       Assert.IsTrue(response.Success);
@@ -38,7 +38,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       SkStackResponse response = null;
 
       Assert.DoesNotThrowAsync(async () => response = await client.SendSKUDPPORTUnsetAsync(SkStackUdpPortHandle.Handle3));
@@ -61,7 +61,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle1, port));
 
@@ -75,7 +75,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTAsync(handle, 0x0001));
 
@@ -91,7 +91,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       var ex = Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTUnsetAsync(handle));
 

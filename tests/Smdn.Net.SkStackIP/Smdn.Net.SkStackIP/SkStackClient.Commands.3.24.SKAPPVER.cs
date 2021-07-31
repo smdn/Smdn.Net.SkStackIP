@@ -18,7 +18,7 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine("EAPPVER rev26e");
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       SkStackResponse<string> response = null;
 
       Assert.DoesNotThrowAsync(async () => response = await client.SendSKAPPVERAsync());

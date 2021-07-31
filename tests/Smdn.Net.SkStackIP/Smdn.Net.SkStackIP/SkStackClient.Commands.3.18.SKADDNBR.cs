@@ -19,7 +19,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       SkStackResponse response = null;
 
       Assert.DoesNotThrowAsync(async () =>
@@ -43,7 +43,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentNullException>(() =>
         client.SendSKADDNBRAsync(
@@ -58,7 +58,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentException>(() =>
         client.SendSKADDNBRAsync(
@@ -73,7 +73,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentNullException>(() =>
         client.SendSKADDNBRAsync(
@@ -90,7 +90,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.ThrowsAsync<ArgumentException>(async () => await client.SendSKADDNBRAsync(
         ipv6Address: new IPAddress(new byte[] { 0xFE, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 }),
@@ -112,7 +112,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentException>(() => client.SendSKADDNBRAsync(
         ipv6Address: new IPAddress(new byte[] { 0xFE, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 }),

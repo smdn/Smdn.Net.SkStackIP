@@ -82,19 +82,19 @@ namespace Smdn.Net.SkStackIP {
 
     [Test]
     public void Create_FromSerialPortName_PortNameNull()
-      => Assert.Throws<ArgumentNullException>(() => SkStackClient.Create(serialPortName: null));
+      => Assert.Throws<ArgumentNullException>(() => new SkStackClient(serialPortName: null));
 
     [Test]
     public void Create_FromSerialPortName_PortNameEmpty()
-      => Assert.Throws<ArgumentException>(() => SkStackClient.Create(serialPortName: string.Empty));
+      => Assert.Throws<ArgumentException>(() => new SkStackClient(serialPortName: string.Empty));
 
     [Test]
     public void Create_FromStream_StreamNull()
-      => Assert.Throws<ArgumentNullException>(() => SkStackClient.Create(stream: null));
+      => Assert.Throws<ArgumentNullException>(() => new SkStackClient(stream: null));
 
     [Test]
     public void Create_FromStream_StreamNotWritable()
-      => Assert.Throws<ArgumentException>(() => SkStackClient.Create(stream: new System.IO.MemoryStream(Array.Empty<byte>(), writable: false)));
+      => Assert.Throws<ArgumentException>(() => new SkStackClient(stream: new System.IO.MemoryStream(Array.Empty<byte>(), writable: false)));
 
     private class UnreadableMemoryStream : System.IO.MemoryStream {
       public override bool CanRead => false;
@@ -107,7 +107,7 @@ namespace Smdn.Net.SkStackIP {
 
     [Test]
     public void Create_FromStream_StreamNotReadable()
-      => Assert.Throws<ArgumentException>(() => SkStackClient.Create(stream: new UnreadableMemoryStream()));
+      => Assert.Throws<ArgumentException>(() => new SkStackClient(stream: new UnreadableMemoryStream()));
 
     [Test] public void Dispose() => Close_Dispose(c => (c as IDisposable).Dispose());
     [Test] public void Close() => Close_Dispose(c => c.Close());

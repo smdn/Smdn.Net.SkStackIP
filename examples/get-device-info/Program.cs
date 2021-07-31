@@ -6,7 +6,7 @@ using System.Text;
 
 using Smdn.Net.SkStackIP;
 
-using var client = SkStackClient.Create(serialPortName: "/dev/ttyACM0");
+using var client = new SkStackClient(serialPortName: "/dev/ttyACM0");
 
 var respSKVER = await client.SendSKVERAsync();
 

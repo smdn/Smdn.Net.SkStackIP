@@ -18,7 +18,7 @@ services.AddLogging(
     //.AddFilter(static _ => true)
 );
 
-using var client = SkStackClient.Create(
+using var client = new SkStackClient(
   serialPortName: "/dev/ttyACM0",
   serviceProvider:  services.BuildServiceProvider()
 );

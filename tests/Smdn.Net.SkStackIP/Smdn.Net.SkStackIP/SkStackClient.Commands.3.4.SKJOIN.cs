@@ -42,7 +42,7 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine($"25 {addressString}");
       }
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       Exception thrownExceptionInEventHandler = null;
       var raisedEventCount = 0;
 
@@ -108,7 +108,7 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine($"{addressString}");
       }
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var raisedEventCount = 0;
 
       client.PanaSessionEstablished += (sender, e) => raisedEventCount++;
@@ -137,7 +137,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       Assert.Throws<ArgumentNullException>(() => client.SendSKJOINAsync(ipv6address: null));
 
       Assert.IsEmpty(stream.ReadSentData());
@@ -150,7 +150,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       Assert.Throws<ArgumentException>(() => client.SendSKJOINAsync(ipv6address: IPAddress.Loopback));
 
       Assert.IsEmpty(stream.ReadSentData());

@@ -21,7 +21,7 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine("EINFO FE80:0000:0000:0000:021D:1290:1234:5678 001D129012345678 21 8888 FFFE");
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var response = await client.SendSKINFOAsync();
 
       Assert.That(
@@ -59,7 +59,7 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine("OK");
       }
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var taskSendCommand = client.SendSKINFOAsync();
 
       Assert.DoesNotThrowAsync(async () => {

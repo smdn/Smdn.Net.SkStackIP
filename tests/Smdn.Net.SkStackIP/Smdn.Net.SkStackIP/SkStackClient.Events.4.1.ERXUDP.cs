@@ -17,7 +17,7 @@ namespace Smdn.Net.SkStackIP {
     public void ERXUDPDataFormat(SkStackERXUDPDataFormat format)
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.DoesNotThrow(() => client.ERXUDPDataFormat = format);
       Assert.AreEqual(client.ERXUDPDataFormat, format);
@@ -27,7 +27,7 @@ namespace Smdn.Net.SkStackIP {
     public void ERXUDPDataFormat_InvalidValue(SkStackERXUDPDataFormat format)
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentException>(() => client.ERXUDPDataFormat = format);
     }
@@ -37,7 +37,7 @@ namespace Smdn.Net.SkStackIP {
     public void StartCapturingUdpReceiveEvents(int port)
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.DoesNotThrow(() => client.StartCapturingUdpReceiveEvents(port));
     }
@@ -49,7 +49,7 @@ namespace Smdn.Net.SkStackIP {
     public void StartCapturingUdpReceiveEvents_PortOutOfRange(int port)
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentOutOfRangeException>(() => client.StartCapturingUdpReceiveEvents(port));
     }
@@ -58,7 +58,7 @@ namespace Smdn.Net.SkStackIP {
     public void StartCapturingUdpReceiveEvents_Disposed()
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       client.Close();
 
@@ -70,7 +70,7 @@ namespace Smdn.Net.SkStackIP {
     public void StopCapturingUdpReceiveEvents(int port)
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.DoesNotThrow(() => client.StopCapturingUdpReceiveEvents(port));
     }
@@ -82,7 +82,7 @@ namespace Smdn.Net.SkStackIP {
     public void StopCapturingUdpReceiveEvents_PortOutOfRange(int port)
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentOutOfRangeException>(() => client.StopCapturingUdpReceiveEvents(port));
     }
@@ -91,7 +91,7 @@ namespace Smdn.Net.SkStackIP {
     public void StopCapturingUdpReceiveEvents_Disposed()
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       client.Close();
 
@@ -105,7 +105,7 @@ namespace Smdn.Net.SkStackIP {
     public void UdpReceiveAsync_PortOutOfRange(int port)
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<ArgumentOutOfRangeException>(() => client.UdpReceiveAsync(port));
     }
@@ -114,7 +114,7 @@ namespace Smdn.Net.SkStackIP {
     public void UdpReceiveAsync_Disposed()
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       client.Close();
 
@@ -125,7 +125,7 @@ namespace Smdn.Net.SkStackIP {
     public void UdpReceiveAsync_NotCapturing()
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.Throws<InvalidOperationException>(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.Pana));
     }
@@ -134,7 +134,7 @@ namespace Smdn.Net.SkStackIP {
     public void UdpReceiveAsync_CapturingEchonetLiteByDefault()
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.DoesNotThrow(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
     }
@@ -143,7 +143,7 @@ namespace Smdn.Net.SkStackIP {
     public void UdpReceiveAsync_StoppedCapturing()
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.DoesNotThrow(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
 
@@ -156,7 +156,7 @@ namespace Smdn.Net.SkStackIP {
     public void UdpReceiveAsync_NoUdpPacketReceived()
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.ThrowsAsync<OperationCanceledException>(async () => {
         using var cts = new CancellationTokenSource();
@@ -171,7 +171,7 @@ namespace Smdn.Net.SkStackIP {
     public void UdpReceiveAsync_NoUdpPacketReceived_EVENTReceived()
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       stream.ResponseWriter.WriteLine($"EVENT 21 FE80:0000:0000:0000:021D:1290:1234:5678 00");
       stream.ResponseWriter.WriteLine($"EVENT 33 FE80:0000:0000:0000:021D:1290:1234:5678");
@@ -189,7 +189,7 @@ namespace Smdn.Net.SkStackIP {
     public void UdpReceiveAsync()
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
@@ -244,7 +244,7 @@ namespace Smdn.Net.SkStackIP {
     public void UdpReceiveAsync_MultiplePorts()
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
@@ -302,7 +302,7 @@ namespace Smdn.Net.SkStackIP {
     public void UdpReceiveAsync_IncompleteLine()
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
@@ -340,7 +340,7 @@ namespace Smdn.Net.SkStackIP {
     public void UdpReceiveAsync_IncompleteLine_DataEndsWithCRLF_EndOfLineDelayed()
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
@@ -379,7 +379,7 @@ namespace Smdn.Net.SkStackIP {
     public void UdpReceiveAsync_SendCommandWhileAwaiting()
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
@@ -430,7 +430,7 @@ namespace Smdn.Net.SkStackIP {
     public void UdpReceiveAsync_DataFormat_HexASCIIText()
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       client.ERXUDPDataFormat = SkStackERXUDPDataFormat.HexAsciiText;
 

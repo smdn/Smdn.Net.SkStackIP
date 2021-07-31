@@ -79,7 +79,7 @@ namespace Smdn.Net.SkStackIP {
     )
     {
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       client.SynchronizingObject = synchronizingObject;
 
@@ -159,7 +159,7 @@ namespace Smdn.Net.SkStackIP {
       const string senderAddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
 
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       using var waitHandle = new ManualResetEvent(false);
       var raisedEventCount = 0;

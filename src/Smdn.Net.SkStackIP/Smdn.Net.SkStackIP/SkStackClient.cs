@@ -22,11 +22,34 @@ namespace Smdn.Net.SkStackIP {
      */
     public const int DefaultBaudRate = 115200;
 
-    public static SkStackClient Create(
+    private static readonly TimeSpan continuousReadingInterval = TimeSpan.FromMilliseconds(10); // TODO: make configurable
+
+    /*
+     * instance members
+     */
+    private Stream stream;
+
+    private PipeWriter streamWriter;
+    private readonly IBufferWriter<byte> writer;
+    private PipeReader streamReader;
+
+    private readonly ILogger logger;
+
+    private readonly ArrayBufferWriter<byte> logWriter;
+
+    public SkStackClient(
       string serialPortName,
       int baudRate = DefaultBaudRate,
       IServiceProvider serviceProvider = null
-    )
+    ) :
+      this(
+        stream: OpenSerialPortStream(serialPortName, baudRate),
+        serviceProvider: serviceProvider
+      )
+    {
+    }
+
+    private static Stream OpenSerialPortStream(string serialPortName, int baudRate)
     {
       if (serialPortName is null)
         throw new ArgumentNullException(nameof(serialPortName));
@@ -48,10 +71,10 @@ namespace Smdn.Net.SkStackIP {
 
       port.Open();
 
-      return Create(port.BaseStream, serviceProvider);
+      return port.BaseStream;
     }
 
-    public static SkStackClient Create(
+    public SkStackClient(
       Stream stream,
       IServiceProvider serviceProvider = null
     )
@@ -63,29 +86,6 @@ namespace Smdn.Net.SkStackIP {
       if (!stream.CanWrite)
         throw new ArgumentException($"{nameof(stream)} must be writable stream", nameof(stream));
 
-      return new SkStackClient(
-        stream,
-        serviceProvider
-      );
-    }
-
-    private static readonly TimeSpan continuousReadingInterval = TimeSpan.FromMilliseconds(10); // TODO: make configurable
-
-    /*
-     * instance members
-     */
-    private Stream stream;
-
-    private PipeWriter streamWriter;
-    private readonly IBufferWriter<byte> writer;
-    private PipeReader streamReader;
-
-    private readonly ILogger logger;
-
-    private readonly ArrayBufferWriter<byte> logWriter;
-
-    protected SkStackClient(Stream stream, IServiceProvider serviceProvider = null)
-    {
       this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
 
       this.streamWriter = PipeWriter.Create(

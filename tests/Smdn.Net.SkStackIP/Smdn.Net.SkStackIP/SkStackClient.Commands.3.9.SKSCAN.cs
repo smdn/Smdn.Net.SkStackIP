@@ -47,7 +47,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("FAIL");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.ThrowsAsync<SkStackErrorResponseException>(async () => {
         await client.SendSKSCANEnergyDetectScanAsync(
@@ -82,7 +82,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("FAIL");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.ThrowsAsync<SkStackErrorResponseException>(async () => {
         await client.SendSKSCANEnergyDetectScanAsync(durationFactor: durationFactor);
@@ -103,7 +103,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("FAIL");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => {
         await client.SendSKSCANEnergyDetectScanAsync(
@@ -124,7 +124,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("FAIL");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => {
         await client.SendSKSCANEnergyDetectScanAsync(durationFactor: durationFactor);
@@ -142,7 +142,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("FAIL");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.ThrowsAsync<SkStackErrorResponseException>(async () => {
         await client.SendSKSCANEnergyDetectScanAsync(
@@ -171,7 +171,7 @@ namespace Smdn.Net.SkStackIP {
         // [VER 1.2.10, APPVER rev26e] EEDSCAN responds extra CRLF
         stream.ResponseWriter.WriteLine();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       IReadOnlyDictionary<SkStackChannel, double> scanResult = default;
 
       Assert.DoesNotThrowAsync(async () => {
@@ -274,7 +274,7 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
       }
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var taskSendCommand = client.SendSKSCANActiveScanPairAsync();
 
       Assert.DoesNotThrowAsync(async () => {
@@ -312,7 +312,7 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
       }
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var taskSendCommand = client.SendSKSCANActiveScanPairAsync();
 
       Assert.DoesNotThrowAsync(async () => {
@@ -367,7 +367,7 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
       }
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var taskSendCommand = client.SendSKSCANActiveScanPairAsync();
 
       Assert.DoesNotThrowAsync(async () => {
@@ -434,7 +434,7 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
       }
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var taskSendCommand = client.SendSKSCANActiveScanAsync();
 
       Assert.DoesNotThrowAsync(async () => {
@@ -472,7 +472,7 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
       }
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
       var taskSendCommand = client.SendSKSCANActiveScanAsync();
 
       Assert.DoesNotThrowAsync(async () => {

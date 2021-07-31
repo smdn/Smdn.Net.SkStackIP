@@ -18,7 +18,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       SkStackResponse response = default;
 
@@ -61,7 +61,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream);
+      using var client = new SkStackClient(stream);
 
       stream.ResponseWriter.WriteLine("EPORT");
       stream.ResponseWriter.WriteLine("3610");
@@ -82,7 +82,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       IPEndPoint destination = null;
 
@@ -105,7 +105,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       IPAddress destinationAddress = null;
 
@@ -132,7 +132,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       var ex = Assert.ThrowsAsync<ArgumentOutOfRangeException>(
         async () => await client.SendSKSENDTOAsync(
@@ -161,7 +161,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.DoesNotThrowAsync(
         async () => await client.SendSKSENDTOAsync(
@@ -184,7 +184,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       var ex = Assert.ThrowsAsync<ArgumentOutOfRangeException>(
         async () => await client.SendSKSENDTOAsync(
@@ -209,7 +209,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.DoesNotThrowAsync(
         async () => await client.SendSKSENDTOAsync(
@@ -232,7 +232,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       var ex = Assert.ThrowsAsync<ArgumentException>(
         async () => await client.SendSKSENDTOAsync(
@@ -254,7 +254,7 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       var ex = Assert.ThrowsAsync<ArgumentException>(
         async () => await client.SendSKSENDTOAsync(
@@ -277,7 +277,7 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("FAIL ER10");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Assert.ThrowsAsync<SkStackErrorResponseException>(
         async () => await client.SendSKSENDTOAsync(
@@ -309,7 +309,7 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine("OK");
       }
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       var taskSendCommand = client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
@@ -338,7 +338,7 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.Write("\r\n"); // echoback line only with CRLF
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       var resp = await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,

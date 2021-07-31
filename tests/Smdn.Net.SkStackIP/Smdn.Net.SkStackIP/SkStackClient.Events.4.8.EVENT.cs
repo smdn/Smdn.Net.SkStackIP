@@ -20,7 +20,7 @@ namespace Smdn.Net.SkStackIP {
       var senderAddress = IPAddress.Parse(senderAddressString);
 
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       var raisedEventCount = 0;
       Exception thrownExceptionInEventHandler = null;
@@ -56,7 +56,7 @@ namespace Smdn.Net.SkStackIP {
       var senderAddress = IPAddress.Parse(senderAddressString);
 
       using var stream = new PseudoSkStackStream();
-      using var client = SkStackClient.Create(stream, ServiceProvider);
+      using var client = new SkStackClient(stream, ServiceProvider);
 
       Exception thrownExceptionInEventHandler = null;
       var raisedEventCount = 0;

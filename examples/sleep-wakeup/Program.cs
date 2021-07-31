@@ -13,7 +13,7 @@ const int pinWakeUp = 5;
 
 gpio.OpenPin(pinWakeUp, PinMode.Output);
 
-using var client = SkStackClient.Create(serialPortName: "/dev/ttyACM0");
+using var client = new SkStackClient(serialPortName: "/dev/ttyACM0");
 
 client.Slept += static (sender, e) => Console.WriteLine(">> now in sleeping state");
 client.WokeUp += static (sender, e) => Console.WriteLine(">> now in wake-up state");

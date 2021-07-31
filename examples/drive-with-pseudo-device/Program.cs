@@ -14,7 +14,7 @@ var pseudoDeviceResponseWriter = new StreamWriter(pseudoDeviceStream.GetWriterSt
 pseudoDeviceResponseWriter.NewLine = "\r\n";
 pseudoDeviceResponseWriter.AutoFlush = true;
 
-using var client = SkStackClient.Create(stream: pseudoDeviceStream);
+using var client = new SkStackClient(stream: pseudoDeviceStream);
 
 // write response lines of SKVER command
 pseudoDeviceResponseWriter.WriteLine("EVER 1.2.3");
