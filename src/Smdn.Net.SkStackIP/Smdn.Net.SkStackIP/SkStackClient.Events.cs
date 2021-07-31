@@ -219,6 +219,7 @@ namespace Smdn.Net.SkStackIP {
       object sender,
       TEventArgs args
     )
+      where TEventArgs : SkStackEventArgs
     {
       if (synchronizingObject is null || !synchronizingObject.InvokeRequired) {
         try {
