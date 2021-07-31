@@ -28,5 +28,8 @@ namespace Smdn.Net.SkStackIP {
     // reference: http://www.arib.or.jp/english/html/overview/doc/5-STD-T108v1_3-E1.pdf
     TransmissionTimeControlLimitationActivated = 0x32,
     TransmissionTimeControlLimitationDeactivated = 0x33,
+
+    /// <summary>SKDSLEEP: Wake-up signal received. (undocumented)</summary>
+    WakeupSignalReceived = 0xC0,
   }
 }

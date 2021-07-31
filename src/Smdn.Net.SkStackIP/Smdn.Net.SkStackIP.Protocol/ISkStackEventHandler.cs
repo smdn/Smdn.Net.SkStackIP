@@ -6,6 +6,7 @@ using System.Net;
 
 namespace Smdn.Net.SkStackIP.Protocol {
   public interface ISkStackEventHandler {
+    bool DoContinueHandlingEvents(SkStackResponseStatus status) => status != SkStackResponseStatus.Fail;
     bool TryProcessEvent(SkStackEventNumber eventNumber, IPAddress senderAddress);
     void ProcessSubsequentEvent(ISkStackSequenceParserContext context);
   }

@@ -59,10 +59,15 @@ namespace Smdn.Net.SkStackIP.Protocol {
     /// <remarks>reference: BP35A1コマンドリファレンス 3.26. SKTABLE</remarks>
     public static ReadOnlyMemory<byte> SKTABLE { get; } = SkStack.ToByteSequence(nameof(SKTABLE));
     /// <remarks>reference: BP35A1コマンドリファレンス 3.27. SKDSLEEP</remarks>
-    public static ReadOnlyMemory<byte> SKDSLEEP => throw new NotImplementedException();
+    public static ReadOnlyMemory<byte> SKDSLEEP { get; } = SkStack.ToByteSequence(nameof(SKDSLEEP));
     /// <remarks>reference: BP35A1コマンドリファレンス 3.28. SKRFLO</remarks>
     public static ReadOnlyMemory<byte> SKRFLO => throw new NotImplementedException();
     /// <remarks>reference: BP35A1コマンドリファレンス 3.29. SKLL64</remarks>
     public static ReadOnlyMemory<byte> SKLL64 { get; } = SkStack.ToByteSequence(nameof(SKLL64));
+
+#if false
+    /// <summary>`SKSLEEP` undocumented command.</summary>
+    public static ReadOnlyMemory<byte> SKSLEEP => throw new NotImplementedException();
+#endif
   }
 }

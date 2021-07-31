@@ -96,6 +96,10 @@ namespace Smdn.Net.SkStackIP {
           case SkStackEventNumber.TransmissionTimeControlLimitationDeactivated:
             logger?.LogInfoAribStdT108EventReceived(ev);
             break;
+
+          case SkStackEventNumber.WakeupSignalReceived:
+            // TODO: log event
+            break;
         }
 
         // raise event
@@ -117,6 +121,10 @@ namespace Smdn.Net.SkStackIP {
           case SkStackEventNumber.TransmissionTimeControlLimitationActivated:
           case SkStackEventNumber.TransmissionTimeControlLimitationDeactivated:
             // TODO: raise event
+            break;
+
+          case SkStackEventNumber.WakeupSignalReceived:
+            RaiseEventWokeUp(ev);
             break;
 
           case SkStackEventNumber.BeaconReceived:
@@ -189,6 +197,20 @@ namespace Smdn.Net.SkStackIP {
         return; // return without creating event args if event hanlder is null
 
       InvokeEvent(SynchronizingObject, ev, this, new SkStackPanaSessionEventArgs(baseEvent));
+    }
+
+    public event EventHandler<SkStackEventArgs> Slept;
+    public event EventHandler<SkStackEventArgs> WokeUp;
+
+    internal void RaiseEventSlept() => RaiseEvent(Slept, default);
+    private void RaiseEventWokeUp(SkStackEvent baseEvent) => RaiseEvent(WokeUp, baseEvent);
+
+    private void RaiseEvent(EventHandler<SkStackEventArgs> ev, SkStackEvent baseEvent)
+    {
+      if (ev is null)
+        return; // return without creating event args if event hanlder is null
+
+      InvokeEvent(SynchronizingObject, ev, this, new SkStackEventArgs(baseEvent));
     }
 
     private static void InvokeEvent<TEventArgs>(

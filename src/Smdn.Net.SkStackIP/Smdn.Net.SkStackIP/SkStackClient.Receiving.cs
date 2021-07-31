@@ -242,7 +242,7 @@ namespace Smdn.Net.SkStackIP {
         response.Status = SkStackResponseStatus.Ok;
       }
 
-      if (response.Status != SkStackResponseStatus.Fail && commandEventHandler is not null) {
+      if (commandEventHandler is not null && commandEventHandler.DoContinueHandlingEvents(response.Status)) {
         const int parseSequenceEmptyResult = default;
 
         logger?.LogReceivingStatus($"{nameof(ReceiveResponseAsync)} {commandEventHandler.GetType().Name}");

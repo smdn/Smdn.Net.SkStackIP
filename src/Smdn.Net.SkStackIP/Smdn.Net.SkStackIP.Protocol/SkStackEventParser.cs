@@ -366,28 +366,32 @@ namespace Smdn.Net.SkStackIP.Protocol {
       if (status == OperationStatus.NeedMoreData || status == OperationStatus.InvalidData)
         return status;
 
-      if (
-        SkStackTokenParser.ExpectUINT8(ref reader, out var num) &&
-        SkStackTokenParser.ExpectIPADDR(ref reader, out var sender)
-      ) {
+      if (SkStackTokenParser.ExpectUINT8(ref reader, out var num)) {
         var number = (SkStackEventNumber)num;
 
+        IPAddress sender = default;
         int parameter = default;
         SkStackEventCode expectedSubsequentEventCode = default;
 
-        switch (number) {
-          case SkStackEventNumber.EnergyDetectScanCompleted:
-            expectedSubsequentEventCode = SkStackEventCode.EEDSCAN;
-            break;
-          case SkStackEventNumber.BeaconReceived:
-            expectedSubsequentEventCode = SkStackEventCode.EPANDESC;
-            break;
-          case SkStackEventNumber.UdpSendCompleted:
-            if (!SkStackTokenParser.ExpectUINT8(ref reader, out var param))
-              return OperationStatus.NeedMoreData;
+        // C0 does not define <IPADDR> and <PARAM>
+        if (number != SkStackEventNumber.WakeupSignalReceived) {
+          if (!SkStackTokenParser.ExpectIPADDR(ref reader, out sender))
+            return OperationStatus.NeedMoreData;
 
-            parameter = (int)param;
-            break;
+          switch (number) {
+            case SkStackEventNumber.EnergyDetectScanCompleted:
+              expectedSubsequentEventCode = SkStackEventCode.EEDSCAN;
+              break;
+            case SkStackEventNumber.BeaconReceived:
+              expectedSubsequentEventCode = SkStackEventCode.EPANDESC;
+              break;
+            case SkStackEventNumber.UdpSendCompleted:
+              if (!SkStackTokenParser.ExpectUINT8(ref reader, out var param))
+                return OperationStatus.NeedMoreData;
+
+              parameter = (int)param;
+              break;
+          }
         }
 
         if (SkStackTokenParser.ExpectEndOfLine(ref reader)) {

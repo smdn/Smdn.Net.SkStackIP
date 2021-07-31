@@ -7,11 +7,11 @@ using System.Net;
 using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP {
-  public abstract class SkStackEventArgs : EventArgs {
+  public class SkStackEventArgs : EventArgs {
     private protected IPAddress SenderAddress { get; }
     public SkStackEventNumber EventNumber { get; }
 
-    private protected SkStackEventArgs(SkStackEvent baseEvent)
+    internal SkStackEventArgs(SkStackEvent baseEvent)
     {
       this.SenderAddress = baseEvent.SenderAddress;
       this.EventNumber = baseEvent.Number;
