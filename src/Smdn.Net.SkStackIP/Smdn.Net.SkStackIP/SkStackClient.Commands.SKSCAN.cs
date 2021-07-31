@@ -15,11 +15,11 @@ using Smdn.Text.Unicode.ControlPictures;
 
 namespace Smdn.Net.SkStackIP {
   partial class SkStackClient {
-    private abstract class SKSCANEventHandler<TScanResult> : ISkStackEventHandler {
+    private abstract class SKSCANEventHandler<TScanResult> : SkStackEventHandlerBase {
       public TScanResult ScanResult { get; protected set; }
 
-      public abstract bool TryProcessEvent(SkStackEventNumber eventNumber, IPAddress senderAddress);
-      public abstract void ProcessSubsequentEvent(ISkStackSequenceParserContext context);
+      public override abstract bool TryProcessEvent(SkStackEvent ev);
+      public override abstract void ProcessSubsequentEvent(ISkStackSequenceParserContext context);
     }
 
     /// <summary>`SKSCAN 0`</summary>
@@ -61,9 +61,9 @@ namespace Smdn.Net.SkStackIP {
       );
 
     private class SKSCANEnergyDetectScanEventHandler : SKSCANEventHandler<IReadOnlyDictionary<SkStackChannel, double>> {
-      public override bool TryProcessEvent(SkStackEventNumber eventNumber, IPAddress senderAddress)
+      public override bool TryProcessEvent(SkStackEvent ev)
       {
-        if (eventNumber == SkStackEventNumber.EnergyDetectScanCompleted)
+        if (ev.Number == SkStackEventNumber.EnergyDetectScanCompleted)
           return false; // process subsequent event
 
         return false;
@@ -172,9 +172,9 @@ namespace Smdn.Net.SkStackIP {
         this.expectPairingId = expectPairingId;
       }
 
-      public override bool TryProcessEvent(SkStackEventNumber eventNumber, IPAddress senderAddress)
+      public override bool TryProcessEvent(SkStackEvent ev)
       {
-        switch (eventNumber) {
+        switch (ev.Number) {
           case SkStackEventNumber.BeaconReceived:
             return false; // process subsequent event
 

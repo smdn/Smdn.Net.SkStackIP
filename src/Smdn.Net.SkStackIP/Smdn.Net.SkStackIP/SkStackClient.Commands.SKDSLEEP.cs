@@ -26,7 +26,7 @@ namespace Smdn.Net.SkStackIP {
         throwIfErrorStatus: true
       );
 
-    private class SKDSLEEPEventHandler : ISkStackEventHandler {
+    private class SKDSLEEPEventHandler : SkStackEventHandlerBase {
       private readonly SkStackClient owner;
       private readonly bool waitUntilWakeUp;
 
@@ -36,7 +36,7 @@ namespace Smdn.Net.SkStackIP {
         this.waitUntilWakeUp = waitUntilWakeUp;
       }
 
-      bool ISkStackEventHandler.DoContinueHandlingEvents(SkStackResponseStatus status)
+      public override bool DoContinueHandlingEvents(SkStackResponseStatus status)
       {
         var sleepStartedSuccessfully = status == SkStackResponseStatus.Ok;
 
@@ -49,10 +49,8 @@ namespace Smdn.Net.SkStackIP {
           return false; // do not continue handling events
       }
 
-      bool ISkStackEventHandler.TryProcessEvent(SkStackEventNumber eventNumber, IPAddress senderAddress)
-        => eventNumber == SkStackEventNumber.WakeupSignalReceived;
-
-      void ISkStackEventHandler.ProcessSubsequentEvent(ISkStackSequenceParserContext context) { /*do nothing*/ }
+      public override bool TryProcessEvent(SkStackEvent ev)
+        => ev.Number == SkStackEventNumber.WakeupSignalReceived;
     }
   }
 }

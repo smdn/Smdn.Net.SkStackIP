@@ -34,12 +34,12 @@ namespace Smdn.Net.SkStackIP {
       return (resp, eventHandler.IsCompletedSuccessfully);
     }
 
-    private class SKTERMEventHandler : ISkStackEventHandler {
+    private class SKTERMEventHandler : SkStackEventHandlerBase {
       public bool IsCompletedSuccessfully { get; private set; }
 
-      bool ISkStackEventHandler.TryProcessEvent(SkStackEventNumber eventNumber, IPAddress senderAddress)
+      public override bool TryProcessEvent(SkStackEvent ev)
       {
-        switch (eventNumber) {
+        switch (ev.Number) {
           case SkStackEventNumber.PanaSessionTerminationCompleted:
             IsCompletedSuccessfully = true;
             return true;
@@ -52,8 +52,6 @@ namespace Smdn.Net.SkStackIP {
             return false;
         }
       }
-
-      void ISkStackEventHandler.ProcessSubsequentEvent(ISkStackSequenceParserContext context) { /*do nothing*/ }
     }
   }
 }

@@ -86,9 +86,9 @@ namespace Smdn.Net.SkStackIP {
 
     private readonly ArrayBufferWriter<byte> logWriter;
 
-    private SkStackClient(Stream stream, IServiceProvider serviceProvider = null)
+    protected SkStackClient(Stream stream, IServiceProvider serviceProvider = null)
     {
-      this.stream = stream;
+      this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
 
       this.streamWriter = PipeWriter.Create(
         stream,

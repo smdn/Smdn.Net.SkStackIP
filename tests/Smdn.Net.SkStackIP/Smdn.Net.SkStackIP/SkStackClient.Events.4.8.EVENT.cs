@@ -39,9 +39,11 @@ namespace Smdn.Net.SkStackIP {
       };
 
       stream.ResponseWriter.WriteLine($"EVENT 26 {senderAddressString}");
-      stream.ResponseWriter.WriteLine("OK"); // TEST
+      // SKVER
+      stream.ResponseWriter.WriteLine("EVER 1.2.10");
+      stream.ResponseWriter.WriteLine("OK");
 
-      Assert.DoesNotThrowAsync(async () => await client.SendCommandAsync("TEST".ToByteSequence()));
+      Assert.DoesNotThrowAsync(async () => await client.SendSKVERAsync());
 
       Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
       Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
@@ -73,9 +75,11 @@ namespace Smdn.Net.SkStackIP {
       };
 
       stream.ResponseWriter.WriteLine($"EVENT 29 {senderAddressString}");
-      stream.ResponseWriter.WriteLine("OK"); // TEST
+      // SKVER
+      stream.ResponseWriter.WriteLine("EVER 1.2.10");
+      stream.ResponseWriter.WriteLine("OK");
 
-      Assert.DoesNotThrowAsync(async () => await client.SendCommandAsync("TEST".ToByteSequence()));
+      Assert.DoesNotThrowAsync(async () => await client.SendSKVERAsync());
 
       Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
       Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));

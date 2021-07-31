@@ -385,7 +385,11 @@ namespace Smdn.Net.SkStackIP {
 
       async Task CompleteResponseAndRaiseERXUDPAsync()
       {
-        // TEST status line
+        // SKVER EVER event line
+        stream.ResponseWriter.WriteLine("EVER 1.2.10");
+        await Task.Delay(ResponseDelayInterval);
+
+        // SKVER status line
         stream.ResponseWriter.Write("O"); await Task.Delay(ResponseDelayInterval);
         stream.ResponseWriter.WriteLine("K");
         await Task.Delay(ResponseDelayInterval);
@@ -405,7 +409,7 @@ namespace Smdn.Net.SkStackIP {
 
       Assert.IsFalse(taskUdpReceive.Wait(TimeSpan.FromMilliseconds(100)));
 
-      var taskSendCommand = client.SendCommandAsync(command: "TEST".ToByteSequence());
+      var taskSendCommand = client.SendSKVERAsync();
 
       Assert.DoesNotThrowAsync(async () => {
         await Task.WhenAll(taskUdpReceive, taskSendCommand.AsTask(), CompleteResponseAndRaiseERXUDPAsync());

@@ -11,10 +11,51 @@ using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP {
   partial class SkStackClient {
-    public async ValueTask<SkStackResponse> SendCommandAsync(
+    internal protected async ValueTask<SkStackResponse> SendCommandAsync(
       ReadOnlyMemory<byte> command,
       IEnumerable<ReadOnlyMemory<byte>> arguments = null,
-      ISkStackEventHandler commandEventHandler = null,
+      SkStackProtocolSyntax syntax = null,
+      CancellationToken cancellationToken = default,
+      bool throwIfErrorStatus = true
+    )
+    {
+      var resp = await SendCommandAsyncCore<SkStackResponse.NullPayload>(
+        command: command,
+        arguments: arguments ?? Enumerable.Empty<ReadOnlyMemory<byte>>(),
+        parseResponsePayload: null,
+        commandEventHandler: null,
+        syntax: syntax ?? SkStackProtocolSyntax.Default,
+        cancellationToken: cancellationToken,
+        throwIfErrorStatus: throwIfErrorStatus
+      ).ConfigureAwait(false);
+
+      return resp;
+    }
+
+    /// <param name="arguments">can be null</param>
+    internal protected ValueTask<SkStackResponse<TPayload>> SendCommandAsync<TPayload>(
+      ReadOnlyMemory<byte> command,
+      IEnumerable<ReadOnlyMemory<byte>> arguments,
+      SkStackSequenceParser<TPayload> parseResponsePayload,
+      SkStackProtocolSyntax syntax = null,
+      CancellationToken cancellationToken = default,
+      bool throwIfErrorStatus = true
+    )
+      => SendCommandAsyncCore(
+        command: command,
+        arguments: arguments ?? Enumerable.Empty<ReadOnlyMemory<byte>>(),
+        parseResponsePayload: parseResponsePayload ?? throw new ArgumentNullException(nameof(parseResponsePayload)),
+        commandEventHandler: null,
+        syntax: syntax ?? SkStackProtocolSyntax.Default,
+        cancellationToken: cancellationToken,
+        throwIfErrorStatus: throwIfErrorStatus
+      );
+
+    /// <param name="arguments">can be null</param>
+    internal async ValueTask<SkStackResponse> SendCommandAsync(
+      ReadOnlyMemory<byte> command,
+      IEnumerable<ReadOnlyMemory<byte>> arguments,
+      SkStackEventHandlerBase commandEventHandler,
       SkStackProtocolSyntax syntax = null,
       CancellationToken cancellationToken = default,
       bool throwIfErrorStatus = true
@@ -33,33 +74,13 @@ namespace Smdn.Net.SkStackIP {
       return resp;
     }
 
-    /// <param name="arguments">can be null</param>
-    public ValueTask<SkStackResponse<TPayload>> SendCommandAsync<TPayload>(
-      ReadOnlyMemory<byte> command,
-      IEnumerable<ReadOnlyMemory<byte>> arguments,
-      SkStackSequenceParser<TPayload> parseResponsePayload,
-      ISkStackEventHandler commandEventHandler = null,
-      SkStackProtocolSyntax syntax = null,
-      CancellationToken cancellationToken = default,
-      bool throwIfErrorStatus = true
-    )
-      => SendCommandAsyncCore(
-        command: command,
-        arguments: arguments ?? Enumerable.Empty<ReadOnlyMemory<byte>>(),
-        parseResponsePayload: parseResponsePayload ?? throw new ArgumentNullException(nameof(parseResponsePayload)),
-        commandEventHandler: commandEventHandler,
-        syntax: syntax ?? SkStackProtocolSyntax.Default,
-        cancellationToken: cancellationToken,
-        throwIfErrorStatus: throwIfErrorStatus
-      );
-
     /// <param name="parseResponsePayload">If null, parsing response payload will not be attempted.</param>
     /// <param name="expectsStatusResponse">If true, expects that response has its status line.</param>
     private ValueTask<SkStackResponse<TPayload>> SendCommandAsyncCore<TPayload>(
       ReadOnlyMemory<byte> command,
       IEnumerable<ReadOnlyMemory<byte>> arguments,
       SkStackSequenceParser<TPayload> parseResponsePayload,
-      ISkStackEventHandler commandEventHandler,
+      SkStackEventHandlerBase commandEventHandler,
       SkStackProtocolSyntax syntax,
       CancellationToken cancellationToken,
       bool throwIfErrorStatus
@@ -137,7 +158,7 @@ namespace Smdn.Net.SkStackIP {
     private async ValueTask<SkStackResponse<TPayload>> FlushAndReceive<TPayload>(
       ReadOnlyMemory<byte> command,
       SkStackSequenceParser<TPayload> parseResponsePayload,
-      ISkStackEventHandler commandEventHandler,
+      SkStackEventHandlerBase commandEventHandler,
       SkStackProtocolSyntax syntax,
       bool throwIfErrorStatus,
       CancellationToken cancellationToken

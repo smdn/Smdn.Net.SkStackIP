@@ -84,7 +84,7 @@ namespace Smdn.Net.SkStackIP {
     private async ValueTask<TResult> ReadAsync<TArg, TResult>(
       Func<ISkStackSequenceParserContext, TArg, TResult> parseSequence,
       TArg arg,
-      ISkStackEventHandler eventHandler,
+      SkStackEventHandlerBase eventHandler,
       bool processOnlyERXUDP = false,
       CancellationToken cancellationToken = default,
       [CallerMemberName] string callerMemberName = default
@@ -201,7 +201,7 @@ namespace Smdn.Net.SkStackIP {
     private async ValueTask<SkStackResponse<TPayload>> ReceiveResponseAsync<TPayload>(
       ReadOnlyMemory<byte> command,
       SkStackSequenceParser<TPayload> parseResponsePayload,
-      ISkStackEventHandler commandEventHandler,
+      SkStackEventHandlerBase commandEventHandler,
       SkStackProtocolSyntax syntax,
       CancellationToken cancellationToken
     )

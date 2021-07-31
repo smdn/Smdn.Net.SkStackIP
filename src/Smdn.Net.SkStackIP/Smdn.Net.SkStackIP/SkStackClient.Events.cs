@@ -47,7 +47,7 @@ namespace Smdn.Net.SkStackIP {
     /// <returns>true if the first event processed and consumed, otherwise false.</returns>
     private ValueTask<bool> ProcessEventsAsync(
       ISkStackSequenceParserContext context,
-      ISkStackEventHandler eventHandler // handles events that are triggered by commands
+      SkStackEventHandlerBase eventHandler // handles events that are triggered by commands
     )
     {
       var reader = context.CreateReader();
@@ -72,7 +72,7 @@ namespace Smdn.Net.SkStackIP {
         return FalseResultValueTask;
       }
       else if (statusEVENT == OperationStatus.Done) {
-        var eventHandlerStatesCompleted = eventHandler is not null && eventHandler.TryProcessEvent(ev.Number, ev.SenderAddress);
+        var eventHandlerStatesCompleted = eventHandler is not null && eventHandler.TryProcessEvent(ev);
 
         // log event
         switch (ev.Number) {

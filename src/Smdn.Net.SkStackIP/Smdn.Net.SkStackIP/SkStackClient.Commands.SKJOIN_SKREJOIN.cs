@@ -87,7 +87,7 @@ namespace Smdn.Net.SkStackIP {
       return (resp, eventHandler.Address);
     }
 
-    private class SKJOINEventHandler : ISkStackEventHandler {
+    private class SKJOINEventHandler : SkStackEventHandlerBase {
       public bool IsSessionEstablishedSuccessfully { get; private set; } = false;
       public IPAddress Address { get; private set; }
       private SkStackEventNumber eventNumber;
@@ -98,21 +98,19 @@ namespace Smdn.Net.SkStackIP {
           throw new SkStackPanaSessionEstablishmentException($"PANA session establishment failed", Address, eventNumber);
       }
 
-      bool ISkStackEventHandler.TryProcessEvent(SkStackEventNumber eventNumber, IPAddress senderAddress)
+      public override bool TryProcessEvent(SkStackEvent ev)
       {
-        switch (eventNumber) {
+        switch (ev.Number) {
           case SkStackEventNumber.PanaSessionEstablishmentCompleted:
           case SkStackEventNumber.PanaSessionEstablishmentError:
-            this.eventNumber = eventNumber;
-            this.Address = senderAddress;
+            this.eventNumber = ev.Number;
+            this.Address = ev.SenderAddress;
             return true;
 
           default:
             return false;
         }
       }
-
-      void ISkStackEventHandler.ProcessSubsequentEvent(ISkStackSequenceParserContext context) { /*do nothing*/ }
     }
   }
 }

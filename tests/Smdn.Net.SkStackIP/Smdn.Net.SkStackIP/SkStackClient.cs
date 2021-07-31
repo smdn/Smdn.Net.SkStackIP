@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -33,6 +37,48 @@ namespace Smdn.Net.SkStackIP {
 
       serviceProvider = services.BuildServiceProvider();
     }
+
+    private class SkStackClientEx : SkStackClient {
+      public SkStackClientEx(Stream stream, IServiceProvider serviceProvider)
+        : base(stream, serviceProvider)
+      {
+      }
+
+      public ValueTask<SkStackResponse> SendCommandAsync(
+        string command,
+        IEnumerable<string> arguments = null,
+        SkStackProtocolSyntax syntax = null,
+        CancellationToken cancellationToken = default,
+        bool throwIfErrorStatus = true
+      )
+        => base.SendCommandAsync(
+          command: command.ToByteSequence(),
+          arguments: arguments?.Select(arg => arg.ToByteSequence()),
+          syntax: syntax,
+          cancellationToken: cancellationToken,
+          throwIfErrorStatus: throwIfErrorStatus
+        );
+
+      public ValueTask<SkStackResponse<TPayload>> SendCommandAsync<TPayload>(
+        string command,
+        IEnumerable<string> arguments = null,
+        SkStackSequenceParser<TPayload> parseResponsePayload = null,
+        SkStackProtocolSyntax syntax = null,
+        CancellationToken cancellationToken = default,
+        bool throwIfErrorStatus = true
+      )
+        => base.SendCommandAsync(
+          command: command.ToByteSequence(),
+          arguments: arguments?.Select(arg => arg.ToByteSequence()),
+          parseResponsePayload: parseResponsePayload,
+          syntax: syntax,
+          cancellationToken: cancellationToken,
+          throwIfErrorStatus: throwIfErrorStatus
+        );
+    }
+
+    private static SkStackClientEx CreateClient(Stream stream, IServiceProvider serviceProvider)
+      => new SkStackClientEx(stream, serviceProvider);
 
     [Test]
     public void Create_FromSerialPortName_PortNameNull()
@@ -72,15 +118,15 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      var client = CreateClient(stream, serviceProvider: serviceProvider);
 
       Assert.DoesNotThrow(() => Assert.IsNotNull(client.BaseStream), $"{nameof(client.BaseStream)} before {nameof(client.Close)}");
-      Assert.DoesNotThrowAsync(async () => await client.SendCommandAsync("TEST".ToByteSequence()), $"{nameof(client.SendCommandAsync)} before {nameof(client.Close)}");
+      Assert.DoesNotThrowAsync(async () => await client.SendCommandAsync("TEST"), $"{nameof(client.SendCommandAsync)} before {nameof(client.Close)}");
 
       Assert.DoesNotThrow(() => closeOrDisposeClient(client), $"{nameof(client.Close)} #1");
 
       Assert.Throws<ObjectDisposedException>(() => Assert.IsNull(client.BaseStream), $"{nameof(client.BaseStream)} after {nameof(client.Close)}");
-      Assert.ThrowsAsync<ObjectDisposedException>(async () => await client.SendCommandAsync("TEST".ToByteSequence()), $"{nameof(client.SendCommandAsync)} after {nameof(client.Close)}");
+      Assert.ThrowsAsync<ObjectDisposedException>(async () => await client.SendCommandAsync("TEST"), $"{nameof(client.SendCommandAsync)} after {nameof(client.Close)}");
 
       Assert.DoesNotThrow(() => closeOrDisposeClient(client), $"{nameof(client.Close)} #2");
     }
@@ -90,9 +136,9 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
 
-      Assert.ThrowsAsync<ArgumentException>(async () => await client.SendCommandAsync(ReadOnlyMemory<byte>.Empty));
+      Assert.ThrowsAsync<ArgumentException>(async () => await client.SendCommandAsync(string.Empty));
 
       Assert.IsEmpty(stream.ReadSentData());
     }
@@ -104,14 +150,14 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
 
       SkStackResponse resp = default;
 
       Assert.DoesNotThrowAsync(async () => {
         resp = await client.SendCommandAsync(
-          command: "TEST".ToByteSequence(),
-          arguments: Array.Empty<ReadOnlyMemory<byte>>()
+          command: "TEST",
+          arguments: Array.Empty<string>()
         );
       });
 
@@ -128,12 +174,12 @@ namespace Smdn.Net.SkStackIP {
     {
       var stream = new PseudoSkStackStream();
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
 
       Assert.ThrowsAsync<ArgumentException>(async () => {
         await client.SendCommandAsync(
-          command: "TEST".ToByteSequence(),
-          arguments: new[] { ReadOnlyMemory<byte>.Empty }
+          command: "TEST",
+          arguments: new[] { string.Empty }
         );
       });
 
@@ -147,8 +193,8 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
-      var resp = await client.SendCommandAsync("TEST".ToByteSequence());
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
+      var resp = await client.SendCommandAsync("TEST");
 
       Assert.That(
         stream.ReadSentData(),
@@ -184,9 +230,9 @@ namespace Smdn.Net.SkStackIP {
 
       var syntax = new EndOfCommandLineSyntax(commandLineTerminator);
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
       var resp = await client.SendCommandAsync(
-        command: "TEST".ToByteSequence(),
+        command: "TEST",
         arguments: null,
         syntax: syntax
       );
@@ -206,13 +252,13 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
       var resp = await client.SendCommandAsync(
-        "TEST".ToByteSequence(),
+        "TEST",
         new[] {
-          "ARG1".ToByteSequence(),
-          "ARG2".ToByteSequence(),
-          "ARG3".ToByteSequence()
+          "ARG1",
+          "ARG2",
+          "ARG3"
         }
       );
 
@@ -232,8 +278,8 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine("TEST");
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
-      var resp = await client.SendCommandAsync("TEST".ToByteSequence());
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
+      var resp = await client.SendCommandAsync("TEST");
 
       Assert.That(
         stream.ReadSentData(),
@@ -251,13 +297,13 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine("TEST ARG1 ARG2 ARG3");
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
       var resp = await client.SendCommandAsync(
-        "TEST".ToByteSequence(),
+        "TEST",
         new[] {
-          "ARG1".ToByteSequence(),
-          "ARG2".ToByteSequence(),
-          "ARG3".ToByteSequence()
+          "ARG1",
+          "ARG2",
+          "ARG3"
         }
       );
 
@@ -277,9 +323,9 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine("TEST2");
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
       var resp = await client.SendCommandAsync(
-        command: "TEST".ToByteSequence(),
+        command: "TEST",
         arguments: null,
         parseResponsePayload: static context => {
           var reader = context.CreateReader();
@@ -316,9 +362,9 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine("OK"); // will be treated as payload
       stream.ResponseWriter.WriteLine("TEST echoback of next command"); // will be treated as status line
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
       var resp = await client.SendCommandAsync(
-        command: "TEST".ToByteSequence(),
+        command: "TEST",
         arguments: null,
         parseResponsePayload: static context => {
           var reader = context.CreateReader();
@@ -354,11 +400,11 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine("UNEXPECTEDTOKEN");
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
 
       var ex = Assert.ThrowsAsync<SkStackUnexpectedResponseException>(async () => {
         await client.SendCommandAsync(
-          command: "TEST".ToByteSequence(),
+          command: "TEST",
           arguments: null,
           parseResponsePayload: static context => {
             var reader = context.CreateReader();
@@ -412,9 +458,9 @@ namespace Smdn.Net.SkStackIP {
 
       var syntax = new EndOfStatusLineSyntax(lineTerminator);
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
       var resp = await client.SendCommandAsync(
-        command: "TEST".ToByteSequence(),
+        command: "TEST",
         arguments: null,
         syntax: syntax
       );
@@ -436,8 +482,8 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
-      var resp = await client.SendCommandAsync("TEST".ToByteSequence());
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
+      var resp = await client.SendCommandAsync("TEST");
 
       Assert.That(
         stream.ReadSentData(),
@@ -456,8 +502,8 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("OK DONE");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
-      var resp = await client.SendCommandAsync("TEST".ToByteSequence());
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
+      var resp = await client.SendCommandAsync("TEST");
 
       Assert.That(
         stream.ReadSentData(),
@@ -476,8 +522,8 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("FAIL");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
-      var resp = await client.SendCommandAsync("TEST".ToByteSequence(), throwIfErrorStatus: false);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
+      var resp = await client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
       Assert.That(
         stream.ReadSentData(),
@@ -496,8 +542,8 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("FAIL REASON");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
-      var resp = await client.SendCommandAsync("TEST".ToByteSequence(), throwIfErrorStatus: false);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
+      var resp = await client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
       Assert.That(
         stream.ReadSentData(),
@@ -531,9 +577,9 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine($"FAIL {errorCodeString}");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
       var ex = Assert.ThrowsAsync<TExpectedException>(
-        async () => await client.SendCommandAsync("TEST".ToByteSequence(), throwIfErrorStatus: true)
+        async () => await client.SendCommandAsync("TEST", throwIfErrorStatus: true)
       );
 
       Assert.That(
@@ -557,9 +603,9 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("FAIL ER01 error text");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
       var ex = Assert.ThrowsAsync<SkStackErrorResponseException>(
-        async () => await client.SendCommandAsync("TEST".ToByteSequence(), throwIfErrorStatus: true)
+        async () => await client.SendCommandAsync("TEST", throwIfErrorStatus: true)
       );
 
       Assert.That(
@@ -583,9 +629,9 @@ namespace Smdn.Net.SkStackIP {
 
       stream.ResponseWriter.WriteLine("ERROR undefined status");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
 
-      var resp = await client.SendCommandAsync("TEST".ToByteSequence(), throwIfErrorStatus: false);
+      var resp = await client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
       Assert.IsFalse(resp.Success);
       Assert.AreEqual(SkStackResponseStatus.Undetermined, resp.Status);
@@ -594,7 +640,7 @@ namespace Smdn.Net.SkStackIP {
       // must be able to continue processing next response
       stream.ResponseWriter.WriteLine("OK done.");
 
-      var resp2 = await client.SendCommandAsync("TEST".ToByteSequence(), throwIfErrorStatus: false);
+      var resp2 = await client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
       Assert.IsTrue(resp2.Success);
       Assert.AreEqual(SkStackResponseStatus.Ok, resp2.Status);
@@ -611,9 +657,9 @@ namespace Smdn.Net.SkStackIP {
       stream.ResponseWriter.WriteLine("LINE3");
       stream.ResponseWriter.WriteLine("OK");
 
-      using var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      using var client = CreateClient(stream, serviceProvider: serviceProvider);
       var resp = await client.SendCommandAsync(
-        command: "TEST".ToByteSequence(),
+        command: "TEST",
         arguments: null,
         parseResponsePayload: static context => {
           var reader = context.CreateReader();
@@ -657,8 +703,8 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine();
       }
 
-      var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
-      var taskSendCommand = client.SendCommandAsync("TEST".ToByteSequence(), throwIfErrorStatus: false);
+      var client = CreateClient(stream, serviceProvider: serviceProvider);
+      var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
       await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
 
@@ -683,8 +729,8 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.Write("\n");
       }
 
-      var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
-      var taskSendCommand = client.SendCommandAsync("TEST".ToByteSequence(), throwIfErrorStatus: false);
+      var client = CreateClient(stream, serviceProvider: serviceProvider);
+      var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
       await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
 
@@ -713,8 +759,8 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine("OK");
       }
 
-      var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
-      var taskSendCommand = client.SendCommandAsync("TEST".ToByteSequence(), throwIfErrorStatus: false);
+      var client = CreateClient(stream, serviceProvider: serviceProvider);
+      var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
       await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
 
@@ -749,9 +795,9 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine("OK");
       }
 
-      var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      var client = CreateClient(stream, serviceProvider: serviceProvider);
       var taskSendCommand = client.SendCommandAsync(
-        command: "TEST".ToByteSequence(),
+        command: "TEST",
         arguments: null,
         parseResponsePayload: static context => {
           var reader = context.CreateReader();
@@ -807,9 +853,9 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine("OK");
       }
 
-      var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      var client = CreateClient(stream, serviceProvider: serviceProvider);
       var taskSendCommand = client.SendCommandAsync(
-        command: "TEST".ToByteSequence(),
+        command: "TEST",
         arguments: null,
         throwIfErrorStatus: false
       );
@@ -845,9 +891,9 @@ namespace Smdn.Net.SkStackIP {
         stream.ResponseWriter.WriteLine("OK");
       }
 
-      var client = SkStackClient.Create(stream, serviceProvider: serviceProvider);
+      var client = CreateClient(stream, serviceProvider: serviceProvider);
       var taskSendCommand = client.SendCommandAsync(
-        command: "TEST".ToByteSequence(),
+        command: "TEST",
         arguments: null,
         throwIfErrorStatus: false
       );
