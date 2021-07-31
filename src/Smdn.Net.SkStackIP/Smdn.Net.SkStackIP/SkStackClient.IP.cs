@@ -56,7 +56,12 @@ namespace Smdn.Net.SkStackIP {
     )
     {
       if (!udpReceiveEventPipes.TryGetValue(localPort, out var pipe))
-        return ValueTask.CompletedTask; // not capturing
+        // not capturing
+#if NET5_0_OR_GREATER
+        return ValueTask.CompletedTask;
+#else
+        return default(ValueTask);
+#endif
 
       return OnERXUDPAsyncCore(pipe.Writer, remoteAddress, data, dataLength, dataFormat);
 
