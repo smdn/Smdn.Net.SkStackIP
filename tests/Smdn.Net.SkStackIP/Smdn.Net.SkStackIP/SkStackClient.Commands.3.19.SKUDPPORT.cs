@@ -19,11 +19,17 @@ namespace Smdn.Net.SkStackIP {
 
       using var client = new SkStackClient(stream, ServiceProvider);
       SkStackResponse response = null;
+      SkStackUdpPort port = default;
 
-      Assert.DoesNotThrowAsync(async () => (response, _) = await client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle3, 0x0050));
+      Assert.DoesNotThrowAsync(async () => (response, port) = await client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle3, 0x0050));
 
       Assert.IsNotNull(response);
       Assert.IsTrue(response.Success);
+
+      Assert.IsFalse(port.IsNull, nameof(port.IsNull));
+      Assert.IsFalse(port.IsUnused, nameof(port.IsUnused));
+      Assert.AreEqual(port.Handle, SkStackUdpPortHandle.Handle3, nameof(port.Handle));
+      Assert.AreEqual(port.Port, 0x0050, nameof(port.Port));
 
       Assert.That(
         stream.ReadSentData(),

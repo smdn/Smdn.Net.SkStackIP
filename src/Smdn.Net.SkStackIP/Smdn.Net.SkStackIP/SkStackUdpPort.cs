@@ -10,8 +10,13 @@ namespace Smdn.Net.SkStackIP {
     internal static readonly SkStackUdpPortHandle HandleMin = SkStackUdpPortHandle.Handle1;
     internal static readonly SkStackUdpPortHandle HandleMax = SkStackUdpPortHandle.Handle6;
 
+    public static readonly SkStackUdpPort Null = default; // Null.Handle will be invalid handle
+
     public SkStackUdpPortHandle Handle { get; }
     public int Port { get; }
+
+    public bool IsNull => Handle == Null.Handle;
+    public bool IsUnused => Port == 0;
 
     internal SkStackUdpPort(SkStackUdpPortHandle handle, int port)
     {

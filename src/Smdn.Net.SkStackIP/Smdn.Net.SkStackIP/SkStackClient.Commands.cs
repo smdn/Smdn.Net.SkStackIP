@@ -411,7 +411,7 @@ namespace Smdn.Net.SkStackIP {
     }
 
     /// <remarks>reference: BP35A1コマンドリファレンス 3.19. SKUDPPORT</remarks>
-    public ValueTask<SkStackResponse> SendSKUDPPORTAsync(
+    public ValueTask<(SkStackResponse, SkStackUdpPort)> SendSKUDPPORTAsync(
       SkStackUdpPortHandle handle,
       int port,
       CancellationToken cancellationToken = default
@@ -435,14 +435,21 @@ namespace Smdn.Net.SkStackIP {
     {
       SkStackUdpPort.ThrowIfPortHandleIsNotDefined(handle, nameof(handle));
 
-      return SendSKUDPPORTAsyncCore(
-        handle: handle,
-        port: SkStackKnownPortNumbers.SetUnused,
-        cancellationToken: cancellationToken
-      );
+      return Core();
+
+      async ValueTask<SkStackResponse> Core()
+      {
+        var (resp, _) = await SendSKUDPPORTAsyncCore(
+          handle: handle,
+          port: SkStackKnownPortNumbers.SetUnused,
+          cancellationToken: cancellationToken
+        ).ConfigureAwait(false);
+
+        return resp;
+      }
     }
 
-    private async ValueTask<SkStackResponse> SendSKUDPPORTAsyncCore(
+    private async ValueTask<(SkStackResponse, SkStackUdpPort)> SendSKUDPPORTAsyncCore(
       SkStackUdpPortHandle handle,
       int port,
       CancellationToken cancellationToken = default
@@ -455,7 +462,7 @@ namespace Smdn.Net.SkStackIP {
 
         SkStackCommandArgs.TryConvertToUINT16(PORT, (ushort)port, out var lengthOfPORT, zeroPadding: true);
 
-        return await SendCommandAsync(
+        var resp = await SendCommandAsync(
           command: SkStackCommandNames.SKUDPPORT,
           arguments: SkStackCommandArgs.CreateEnumerable(
             SkStackCommandArgs.GetHex((int)handle),
@@ -464,6 +471,8 @@ namespace Smdn.Net.SkStackIP {
           cancellationToken: cancellationToken,
           throwIfErrorStatus: true
         ).ConfigureAwait(false);
+
+        return (resp, new SkStackUdpPort(handle, port));
       }
       finally {
         if (PORT is not null)
