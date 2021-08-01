@@ -44,6 +44,11 @@ namespace Smdn.Net.SkStackIP {
     public Stream ResponseStream => readStreamWriterStream;
     public TextWriter ResponseWriter => readStreamWriter;
 
+    public void ClearSentData()
+    {
+      writeStream.SetLength(0L);
+    }
+
     public byte[] ReadSentData()
     {
       try {

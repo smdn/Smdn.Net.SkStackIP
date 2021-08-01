@@ -12,30 +12,51 @@ using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 namespace Smdn.Net.SkStackIP {
   [TestFixture]
   public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
-    [Test]
-    public void SKTERM_CompletedWithEVENT27()
+    private static async Task JoinAsync(
+      SkStackClient client,
+      PseudoSkStackStream stream,
+      string addressString
+    )
     {
-      const string senderAddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
-      var senderAddress = IPAddress.Parse(senderAddressString);
+      var address = IPAddress.Parse(addressString);
+
+      stream.ResponseWriter.WriteLine("OK");
+      stream.ResponseWriter.WriteLine($"EVENT 25 {addressString}");
+
+      await client.SendSKJOINAsync(address);
+
+      Assert.AreEqual(client.PanaSessionPeerAddress, address);
+
+      stream.ClearSentData();
+    }
+
+    [Test]
+    public async Task SKTERM_CompletedWithEVENT27()
+    {
+      const string addressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
+      var address = IPAddress.Parse(addressString);
 
       var stream = new PseudoSkStackStream();
 
-      stream.ResponseWriter.WriteLine($"EVENT 21 {senderAddressString} 02");
+      using var client = new SkStackClient(stream, ServiceProvider);
+
+      await JoinAsync(client, stream, addressString);
+
+      stream.ResponseWriter.WriteLine($"EVENT 21 {addressString} 02");
       stream.ResponseWriter.WriteLine("OK");
 
       async Task RaisePanaSessionTerminationEventsAsync()
       {
         await Task.Delay(ResponseDelayInterval);
 
-        stream.ResponseWriter.WriteLine($"ERXUDP {senderAddressString} FE80:0000:0000:0000:021D:1290:1234:5678 02CC 02CC 001D129012345678 0 0001 0");
+        stream.ResponseWriter.WriteLine($"ERXUDP {addressString} FE80:0000:0000:0000:021D:1290:1234:5678 02CC 02CC 001D129012345678 0 0001 0");
 
         await Task.Delay(ResponseDelayInterval);
 
         stream.ResponseWriter.Write($"EVENT 2"); await Task.Delay(ResponseDelayInterval);
-        stream.ResponseWriter.WriteLine($"7 {senderAddressString}");
+        stream.ResponseWriter.WriteLine($"7 {addressString}");
       }
 
-      using var client = new SkStackClient(stream, ServiceProvider);
       Exception thrownExceptionInEventHandler = null;
       var raisedEventCount = 0;
 
@@ -43,14 +64,17 @@ namespace Smdn.Net.SkStackIP {
         try {
           Assert.AreSame(client, sender, nameof(sender));
           Assert.IsNotNull(e, nameof(e));
-          Assert.AreEqual(senderAddress, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
+          Assert.AreEqual(address, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
           Assert.AreEqual(SkStackEventNumber.PanaSessionTerminationCompleted, e.EventNumber, nameof(e.EventNumber));
+          Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
           raisedEventCount++;
         }
         catch (Exception ex) {
           thrownExceptionInEventHandler = ex;
         }
       };
+
+      Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
       var taskSendCommand = client.SendSKTERMAsync();
 
@@ -66,6 +90,8 @@ namespace Smdn.Net.SkStackIP {
       Assert.IsTrue(response.Success);
       Assert.IsTrue(isCompletedSuccessfully);
 
+      Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+
       Assert.That(
         stream.ReadSentData(),
         Is.EqualTo("SKTERM\r\n".ToByteSequence())
@@ -73,14 +99,18 @@ namespace Smdn.Net.SkStackIP {
     }
 
     [Test]
-    public void SKTERM_CompletedWithEVENT28()
+    public async Task SKTERM_CompletedWithEVENT28()
     {
-      const string senderAddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
-      var senderAddress = IPAddress.Parse(senderAddressString);
+      const string addressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
+      var address = IPAddress.Parse(addressString);
 
       var stream = new PseudoSkStackStream();
 
-      stream.ResponseWriter.WriteLine($"EVENT 21 {senderAddressString} 02");
+      using var client = new SkStackClient(stream, ServiceProvider);
+
+      await JoinAsync(client, stream, addressString);
+
+      stream.ResponseWriter.WriteLine($"EVENT 21 {addressString} 02");
       stream.ResponseWriter.WriteLine("OK");
 
       async Task RaisePanaSessionTerminationEventsAsync()
@@ -88,10 +118,9 @@ namespace Smdn.Net.SkStackIP {
         await Task.Delay(ResponseDelayInterval);
 
         stream.ResponseWriter.Write($"EVENT 28"); await Task.Delay(ResponseDelayInterval);
-        stream.ResponseWriter.WriteLine($" {senderAddressString}");
+        stream.ResponseWriter.WriteLine($" {addressString}");
       }
 
-      using var client = new SkStackClient(stream, ServiceProvider);
       Exception thrownExceptionInEventHandler = null;
       var raisedEventCount = 0;
 
@@ -99,14 +128,17 @@ namespace Smdn.Net.SkStackIP {
         try {
           Assert.AreSame(client, sender, nameof(sender));
           Assert.IsNotNull(e, nameof(e));
-          Assert.AreEqual(senderAddress, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
+          Assert.AreEqual(address, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
           Assert.AreEqual(SkStackEventNumber.PanaSessionTerminationTimedOut, e.EventNumber, nameof(e.EventNumber));
+          Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
           raisedEventCount++;
         }
         catch (Exception ex) {
           thrownExceptionInEventHandler = ex;
         }
       };
+
+      Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
       var taskSendCommand = client.SendSKTERMAsync();
 
@@ -122,6 +154,8 @@ namespace Smdn.Net.SkStackIP {
       Assert.IsTrue(response.Success);
       Assert.IsFalse(isCompletedSuccessfully);
 
+      Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+
       Assert.That(
         stream.ReadSentData(),
         Is.EqualTo("SKTERM\r\n".ToByteSequence())
@@ -129,22 +163,31 @@ namespace Smdn.Net.SkStackIP {
     }
 
     [Test]
-    public void SKTERM_FAIL()
+    public async Task SKTERM_FAIL()
     {
+      const string addressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
+
       var stream = new PseudoSkStackStream();
+
+      using var client = new SkStackClient(stream, ServiceProvider);
+
+      await JoinAsync(client, stream, addressString);
 
       stream.ResponseWriter.WriteLine("FAIL ER10");
 
-      using var client = new SkStackClient(stream, ServiceProvider);
       var raisedEventCount = 0;
 
       client.PanaSessionTerminated += (sender, e) => raisedEventCount++;
+
+      Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
       Assert.ThrowsAsync<SkStackErrorResponseException>(
         async () => await client.SendSKTERMAsync()
       );
 
       Assert.AreEqual(0, raisedEventCount, nameof(raisedEventCount));
+
+      Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
       Assert.That(
         stream.ReadSentData(),

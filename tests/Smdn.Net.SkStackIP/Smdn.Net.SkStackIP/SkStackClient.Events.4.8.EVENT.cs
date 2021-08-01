@@ -13,14 +13,34 @@ using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
 namespace Smdn.Net.SkStackIP {
   [TestFixture]
   public class SkStackClientEventsEVENTTests : SkStackClientTestsBase {
-    [Test]
-    public void EVENT_26_RaiseEventPanaSessionTerminated()
+    private static async Task JoinAsync(
+      SkStackClient client,
+      PseudoSkStackStream stream,
+      string addressString
+    )
     {
-      const string senderAddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
-      var senderAddress = IPAddress.Parse(senderAddressString);
+      var address = IPAddress.Parse(addressString);
+
+      stream.ResponseWriter.WriteLine("OK");
+      stream.ResponseWriter.WriteLine($"EVENT 25 {addressString}");
+
+      await client.SendSKJOINAsync(address);
+
+      Assert.AreEqual(client.PanaSessionPeerAddress, address);
+
+      stream.ClearSentData();
+    }
+
+    [Test]
+    public async Task EVENT_26_RaiseEventPanaSessionTerminated()
+    {
+      const string addressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
+      var address = IPAddress.Parse(addressString);
 
       using var stream = new PseudoSkStackStream();
       using var client = new SkStackClient(stream, ServiceProvider);
+
+      await JoinAsync(client, stream, addressString);
 
       var raisedEventCount = 0;
       Exception thrownExceptionInEventHandler = null;
@@ -29,8 +49,9 @@ namespace Smdn.Net.SkStackIP {
         try {
           Assert.AreSame(client, sender, nameof(sender));
           Assert.IsNotNull(e, nameof(e));
-          Assert.AreEqual(senderAddress, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
+          Assert.AreEqual(address, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
           Assert.AreEqual(SkStackEventNumber.PanaSessionTerminationRequestReceived, e.EventNumber, nameof(e.EventNumber));
+          Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
           raisedEventCount++;
         }
         catch (Exception ex) {
@@ -38,25 +59,31 @@ namespace Smdn.Net.SkStackIP {
         }
       };
 
-      stream.ResponseWriter.WriteLine($"EVENT 26 {senderAddressString}");
+      stream.ResponseWriter.WriteLine($"EVENT 26 {addressString}");
       // SKVER
       stream.ResponseWriter.WriteLine("EVER 1.2.10");
       stream.ResponseWriter.WriteLine("OK");
+
+      Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
       Assert.DoesNotThrowAsync(async () => await client.SendSKVERAsync());
 
       Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
       Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
+
+      Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
     }
 
     [Test]
-    public void EVENT_29_RaiseEventPanaSessionExpired()
+    public async Task EVENT_29_RaiseEventPanaSessionExpired()
     {
-      const string senderAddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
-      var senderAddress = IPAddress.Parse(senderAddressString);
+      const string addressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
+      var address = IPAddress.Parse(addressString);
 
       using var stream = new PseudoSkStackStream();
       using var client = new SkStackClient(stream, ServiceProvider);
+
+      await JoinAsync(client, stream, addressString);
 
       Exception thrownExceptionInEventHandler = null;
       var raisedEventCount = 0;
@@ -65,8 +92,9 @@ namespace Smdn.Net.SkStackIP {
         try {
           Assert.AreSame(client, sender, nameof(sender));
           Assert.IsNotNull(e, nameof(e));
-          Assert.AreEqual(senderAddress, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
+          Assert.AreEqual(address, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
           Assert.AreEqual(SkStackEventNumber.PanaSessionExpired, e.EventNumber, nameof(e.EventNumber));
+          Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
           raisedEventCount++;
         }
         catch (Exception ex) {
@@ -74,15 +102,19 @@ namespace Smdn.Net.SkStackIP {
         }
       };
 
-      stream.ResponseWriter.WriteLine($"EVENT 29 {senderAddressString}");
+      stream.ResponseWriter.WriteLine($"EVENT 29 {addressString}");
       // SKVER
       stream.ResponseWriter.WriteLine("EVER 1.2.10");
       stream.ResponseWriter.WriteLine("OK");
+
+      Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
       Assert.DoesNotThrowAsync(async () => await client.SendSKVERAsync());
 
       Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
       Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
+
+      Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
     }
   }
 }

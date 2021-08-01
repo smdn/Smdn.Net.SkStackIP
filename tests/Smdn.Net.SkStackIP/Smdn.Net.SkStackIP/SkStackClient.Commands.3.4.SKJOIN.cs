@@ -43,6 +43,9 @@ namespace Smdn.Net.SkStackIP {
       }
 
       using var client = new SkStackClient(stream, ServiceProvider);
+
+      Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+
       Exception thrownExceptionInEventHandler = null;
       var raisedEventCount = 0;
 
@@ -52,6 +55,8 @@ namespace Smdn.Net.SkStackIP {
           Assert.IsNotNull(e, nameof(e));
           Assert.AreEqual(address, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
           Assert.AreEqual(SkStackEventNumber.PanaSessionEstablishmentCompleted, e.EventNumber, nameof(e.EventNumber));
+          Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+          Assert.AreEqual(client.PanaSessionPeerAddress, e.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
           raisedEventCount++;
         }
         catch (Exception ex) {
@@ -67,6 +72,8 @@ namespace Smdn.Net.SkStackIP {
 
       Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
       Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
+
+      Assert.AreEqual(client.PanaSessionPeerAddress, address, nameof(client.PanaSessionPeerAddress));
 
       var response = taskSendCommand.Result;
 
@@ -109,6 +116,9 @@ namespace Smdn.Net.SkStackIP {
       }
 
       using var client = new SkStackClient(stream, ServiceProvider);
+
+      Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+
       var raisedEventCount = 0;
 
       client.PanaSessionEstablished += (sender, e) => raisedEventCount++;
@@ -123,6 +133,8 @@ namespace Smdn.Net.SkStackIP {
       Assert.AreEqual(address, ex.Address);
 
       Assert.AreEqual(0, raisedEventCount, nameof(raisedEventCount));
+
+      Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
       Assert.That(
         stream.ReadSentData(),

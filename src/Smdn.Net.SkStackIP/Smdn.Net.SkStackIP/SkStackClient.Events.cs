@@ -4,6 +4,7 @@
 using System;
 using System.Buffers;
 using System.ComponentModel;
+using System.Net;
 using System.Threading.Tasks;
 
 using Smdn.Net.SkStackIP.Protocol;
@@ -27,6 +28,9 @@ namespace Smdn.Net.SkStackIP {
         erxudpDataFormat = value;
       }
     }
+
+    /// <value><see cref="IPAddress"/> of current PANA session peer. <see langword="null"/> if PANA session has been terminated, expired, or not been established.</value>
+    public IPAddress PanaSessionPeerAddress { get; private set; } = null;
 
     private static readonly ValueTask<bool> TrueResultValueTask =
 #if NET5_0_OR_GREATER
@@ -105,16 +109,19 @@ namespace Smdn.Net.SkStackIP {
         // raise event
         switch (ev.Number) {
           case SkStackEventNumber.PanaSessionEstablishmentCompleted:
+            PanaSessionPeerAddress = ev.SenderAddress;
             RaiseEventPanaSessionEstablished(ev);
             break;
 
           case SkStackEventNumber.PanaSessionTerminationRequestReceived:
           case SkStackEventNumber.PanaSessionTerminationCompleted:
           case SkStackEventNumber.PanaSessionTerminationTimedOut:
+            PanaSessionPeerAddress = null;
             RaiseEventPanaSessionTerminated(ev);
             break;
 
           case SkStackEventNumber.PanaSessionExpired:
+            PanaSessionPeerAddress = null;
             RaiseEventPanaSessionExpired(ev);
             break;
 
