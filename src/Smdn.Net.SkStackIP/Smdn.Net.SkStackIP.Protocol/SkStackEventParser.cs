@@ -50,7 +50,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
           _ => erxudpDataLength,
         };
 
-        if (reader.GetUnreadSequence().Length < lengthOfDataSequence + 2 /*CRLF*/)
+        if (reader.Remaining < lengthOfDataSequence + 2 /*CRLF*/)
           return OperationStatus.NeedMoreData;
 
         var erxudpDataStart = reader.Position;

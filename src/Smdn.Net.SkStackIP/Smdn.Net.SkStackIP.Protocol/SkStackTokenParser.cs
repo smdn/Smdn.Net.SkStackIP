@@ -26,7 +26,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
       result = default;
 
       // if fixed length
-      if (0 < length && reader.GetUnreadSequence().Length < length)
+      if (0 < length && reader.Remaining < length)
         return OperationStatus.NeedMoreData;
 
       var readerEOL = reader;
@@ -183,7 +183,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
       Func<ReadOnlyMemory<byte>, string> createUnexpectedExceptionMessage
     )
     {
-      if (reader.GetUnreadSequence().Length < expectedSequence.Length)
+      if (reader.Remaining < expectedSequence.Length)
         return false; // incomplete
 
       var consumedReader = reader;
