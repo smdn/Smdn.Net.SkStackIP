@@ -20,7 +20,8 @@ SPDX-License-Identifier: MIT
     <PackageReference Include="System.IO.Ports" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
-    <!-- for System.Text.Unicode.UnicodeRanges -->
-    <PackageReference Include="System.Text.Encodings.Web" Version="5.0.1" Condition="$(TargetFramework.StartsWith('netstandard2'))" />
+    <PackageReference Include="Smdn.Fundamental.Buffer" Version="[3.0.2,4.0.0]" />
+    <PackageReference Include="Smdn.Fundamental.ControlPicture" Version="[3.0.0,4.0.0]" />
+    <PackageReference Include="Smdn.Fundamental.Encoding.Buffer" Version="[3.0.0,4.0.0]" Condition="!$(TargetFramework.StartsWith('net5.'))" />
   </ItemGroup>
 </Project>

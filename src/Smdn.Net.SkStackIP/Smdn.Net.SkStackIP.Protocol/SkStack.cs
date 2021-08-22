@@ -5,7 +5,9 @@ using System;
 using System.Buffers;
 using System.Text;
 
-using Smdn.Text; // EncodingExtensions
+#if !NET5_0_OR_GREATER
+using Smdn.Text.Encodings; // EncodingReadOnlySequenceExtensions
+#endif
 
 namespace Smdn.Net.SkStackIP.Protocol {
   internal static class SkStack {
