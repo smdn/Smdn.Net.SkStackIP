@@ -186,7 +186,7 @@ namespace Smdn.Net.SkStackIP {
 
         var data = MemoryPool<byte>.Shared.Rent(dataLength);
 
-        reader.GetUnreadSequence().Slice(0, dataLength).CopyTo(data.Memory.Span);
+        reader.TryCopyTo(data.Memory.Span.Slice(0, dataLength));
         reader.Advance(dataLength);
 
         unreadSequence = reader.GetUnreadSequence();
