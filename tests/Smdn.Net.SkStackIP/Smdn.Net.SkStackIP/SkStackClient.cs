@@ -15,7 +15,7 @@ using NUnit.Framework;
 
 using Smdn.Net.SkStackIP.Protocol;
 
-using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
+using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP {
   [TestFixture]

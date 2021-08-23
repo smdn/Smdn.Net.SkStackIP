@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 using NUnit.Framework;
 
-using Is = Smdn.Test.NUnitExtensions.Constraints.Is;
+using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP {
   public class SkStackClientTestsBase {
