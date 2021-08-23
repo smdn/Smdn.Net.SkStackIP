@@ -298,11 +298,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
           throwIfUnexpected: true,
           arg: (converter: converter, memory: buffer.AsMemory(0, length)),
           tryConvert: static (token, arg) => {
-            var span = arg.memory.Span;
-
-            for (var i = 0; i < span.Length; i++) {
-              span[i] = ToUINT8(token.Slice(i * 2, 2));
-            }
+            ToByteSequence(token, arg.memory.Length, arg.memory.Span);
 
             return (true, arg.converter(arg.memory));
           },
