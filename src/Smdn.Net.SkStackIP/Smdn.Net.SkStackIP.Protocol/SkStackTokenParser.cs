@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 
 using Smdn.Buffers;
+using Smdn.Formats;
 using Smdn.Text.Unicode.ControlPictures;
 
 namespace Smdn.Net.SkStackIP.Protocol {
@@ -375,20 +376,10 @@ namespace Smdn.Net.SkStackIP.Protocol {
       for (var index = 0; index < byteSequenceLength; index++) {
         reader.TryCopyTo(hexTextOneByte);
 
-        var high = hexTextOneByte[0] switch {
-          var h when ((byte)'0' <= h && h <= (byte)'9') => h - '0',
-          var h when ((byte)'A' <= h && h <= (byte)'F') => 0xA + h - 'A',
-          var h when ((byte)'a' <= h && h <= (byte)'f') => 0xA + h - 'a',
-          _ => throw SkStackUnexpectedResponseException.CreateInvalidToken(hexTextOneByte.Slice(0, 1), "HEX ASCII HIGH"),
-        };
-        var low = hexTextOneByte[1] switch {
-          var l when ((byte)'0' <= l && l <= (byte)'9') => l - '0',
-          var l when ((byte)'A' <= l && l <= (byte)'F') => 0xA + l - 'A',
-          var l when ((byte)'a' <= l && l <= (byte)'f') => 0xA + l - 'a',
-          _ => throw SkStackUnexpectedResponseException.CreateInvalidToken(hexTextOneByte.Slice(1, 1), "HEX ASCII LOW"),
-        };
+        if (!Hexadecimal.TryDecode(hexTextOneByte, out var decodedbyte))
+          throw SkStackUnexpectedResponseException.CreateInvalidToken(hexTextOneByte.Slice(0, 1), "HEX ASCII");
 
-        destination[index] = (byte)((high << 4) | low);
+        destination[index] = decodedbyte;
 
         reader.Advance(2);
       }

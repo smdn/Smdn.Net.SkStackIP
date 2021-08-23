@@ -7,11 +7,12 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
+using Smdn.Formats;
+
 namespace Smdn.Net.SkStackIP.Protocol {
   internal static class SkStackCommandArgs {
     private static readonly ReadOnlyMemory<byte> hexNumbers = SkStack.ToByteSequence("0123456789ABCDEF");
     public static ReadOnlyMemory<byte> GetHex(int hexNumber) => hexNumbers.Slice(hexNumber, 1);
-    private static byte GetHexByte(int hexNumber) => hexNumbers.Span[hexNumber];
 
     public static Memory<byte> ConvertToUINT8(byte number, bool zeroPadding = false)
     {
@@ -90,24 +91,6 @@ namespace Smdn.Net.SkStackIP.Protocol {
       return true;
     }
 
-    public static bool TryConvertToHex(Memory<byte> memory, ReadOnlyMemory<byte> sequence, out int bytesWritten)
-    {
-      bytesWritten = 0;
-
-      if (memory.Length < sequence.Length * 2)
-        return false;
-
-      var seq = sequence.Span;
-      var span = memory.Span;
-
-      for (var i = 0; i < sequence.Length; i++) {
-        span[bytesWritten++] = GetHexByte(seq[i] >> 4);
-        span[bytesWritten++] = GetHexByte(seq[i] & 0xF);
-      }
-
-      return true;
-    }
-
     public static readonly int LengthOfADDR64 = 16; // "0123456789ABCDEF".Length
 
     public static bool TryConvertToADDR64(Memory<byte> memory, PhysicalAddress macAddress, out int bytesWritten)
@@ -125,7 +108,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
       if (macAddressBytes.Length != 8)
         throw new ArgumentException("address length must be exactly 64 bits", nameof(macAddress));
 
-      return TryConvertToHex(memory, macAddressBytes, out bytesWritten);
+      return Hexadecimal.TryEncodeUpperCase(macAddressBytes.AsSpan(), memory.Span, out bytesWritten);
     }
 
     public static readonly int LengthOfIPADDR = 39; // "XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX".Length
@@ -153,10 +136,9 @@ namespace Smdn.Net.SkStackIP.Protocol {
         if (0 < i)
           span[bytesWritten++] = (byte)':';
 
-        span[bytesWritten++] = GetHexByte(addressBytes[i] >> 4);
-        span[bytesWritten++] = GetHexByte(addressBytes[i] & 0xF);
-        span[bytesWritten++] = GetHexByte(addressBytes[i + 1] >> 4);
-        span[bytesWritten++] = GetHexByte(addressBytes[i + 1] & 0xF);
+        Hexadecimal.TryEncodeUpperCase(addressBytes.Slice(i, 2), span.Slice(bytesWritten), out var bytesEncoded);
+
+        bytesWritten += bytesEncoded;
       }
 
       return true;
