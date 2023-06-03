@@ -3,16 +3,30 @@ SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 SPDX-License-Identifier: MIT
 -->
 <Project>
-  <PropertyGroup>
-    <TargetFrameworks>net5.0;netcoreapp3.1</TargetFrameworks>
-    <LangVersion>latest</LangVersion>
-    <Deterministic>true</Deterministic>
-    <IsPackable>false</IsPackable>
+  <!-- This is required to restore Smdn.MSBuild.ProjectAssets.* when test projects are attempted to built directly. (ex: on CI) -->
+  <ImportGroup Label="project assets">
+    <Import Project="$(MSBuildThisFileDirectory)..\src\ProjectAssets.props" />
+  </ImportGroup>
+
+  <PropertyGroup Condition=" '$(IsTestProject)' == 'true' ">
+    <Nullable>warnings</Nullable>
+
+    <SmdnTestTargetProjectDirectory
+      Condition=" '$(SmdnTestTargetProjectName)' != '' "
+    >$(MSBuildThisFileDirectory)..\src\$(SmdnTestTargetProjectName)\</SmdnTestTargetProjectDirectory>
+    <SmdnTestTargetProjectFullPath
+      Condition=" '$(SmdnTestTargetProjectName)' != '' "
+    >$(SmdnTestTargetProjectDirectory)$(SmdnTestTargetProjectName).csproj</SmdnTestTargetProjectFullPath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="NUnit" Version="3.13.2" />
-    <PackageReference Include="NUnit3TestAdapter" Version="4.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.10.0"/>
+  <Import
+    Condition=" '$(IsTestProject)' == 'true' "
+    Project="$(MSBuildThisFileDirectory)TargetFrameworks.props"
+  />
+
+  <ItemGroup Condition=" '$(IsTestProject)' == 'true' ">
+    <PackageReference Include="NUnit" Version="3.13.3" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.4.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.5.0"/>
   </ItemGroup>
 </Project>

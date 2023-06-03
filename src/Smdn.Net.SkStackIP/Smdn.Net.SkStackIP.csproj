@@ -4,8 +4,11 @@ SPDX-License-Identifier: MIT
 -->
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <TargetFrameworks>net5.0;netstandard2.1</TargetFrameworks>
     <VersionPrefix>0.1</VersionPrefix>
     <VersionSuffix>template</VersionSuffix>
+    <!-- <PackageValidationBaselineVersion>1.0.0</PackageValidationBaselineVersion> -->
+    <RootNamespace/> <!-- empty the root namespace so that the namespace is determined only by the directory name, for code style rule IDE0030 -->
   </PropertyGroup>
 
   <PropertyGroup Label="metadata">
@@ -13,6 +16,11 @@ SPDX-License-Identifier: MIT
 <![CDATA[Smdn.Net.SkStackIP is a .NET client library for Skyley Networks' SKSTACK IP.
 ]]>
     </Description>
+    <CopyrightYear>2021</CopyrightYear>
+  </PropertyGroup>
+
+  <PropertyGroup Label="package properties">
+    <PackageTags>SKSTACK,SKSTACK-IP</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
