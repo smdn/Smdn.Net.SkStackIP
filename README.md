@@ -14,3 +14,10 @@ The library implementation is still under development and experimental. The func
 Documentation and examples of use are not yet available.
 
 No pre-built packages have been released yet.
+
+# For contributers
+Contributions are appreciated!
+
+If there's a feature you would like to add or a bug you would like to fix, please read [Contribution guidelines](./CONTRIBUTING.md) and create an Issue or Pull Request.
+
+IssueやPull Requestを送る際は、[Contribution guidelines](./CONTRIBUTING.md)をご覧頂ください。　可能なら英語が望ましいですが、日本語で構いません。
