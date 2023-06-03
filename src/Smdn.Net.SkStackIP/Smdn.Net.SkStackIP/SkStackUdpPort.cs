@@ -29,7 +29,7 @@ namespace Smdn.Net.SkStackIP {
 
     internal static void ThrowIfPortHandleIsNotDefined(SkStackUdpPortHandle handle, string paramName)
     {
-#if NET5_0_OR_GREATER
+#if SYSTEM_ENUM_ISDEFINED_OF_TENUM
       if (!Enum.IsDefined(handle))
 #else
       if (!Enum.IsDefined(typeof(SkStackUdpPortHandle), handle))

@@ -173,7 +173,7 @@ namespace Smdn.Net.SkStackIP {
       const int maxDataLength = 0x04D0;
 
       SkStackUdpPort.ThrowIfPortHandleIsNotDefined(handle, nameof(handle));
-#if NET5_0_OR_GREATER
+#if SYSTEM_ENUM_ISDEFINED_OF_TENUM
       if (!Enum.IsDefined(encryption))
 #else
       if (!Enum.IsDefined(typeof(SkStackUdpEncryption), encryption))

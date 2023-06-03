@@ -18,7 +18,7 @@ namespace Smdn.Net.SkStackIP {
     public SkStackERXUDPDataFormat ERXUDPDataFormat {
       get { return erxudpDataFormat; }
       set {
-#if NET5_0_OR_GREATER
+#if SYSTEM_ENUM_ISDEFINED_OF_TENUM
         if (!Enum.IsDefined(value))
 #else
         if (!Enum.IsDefined(typeof(SkStackERXUDPDataFormat), value))
@@ -33,14 +33,14 @@ namespace Smdn.Net.SkStackIP {
     public IPAddress PanaSessionPeerAddress { get; private set; } = null;
 
     private static readonly ValueTask<bool> TrueResultValueTask =
-#if NET5_0_OR_GREATER
+#if SYSTEM_THREADING_TASKS_VALUETASK_FROMRESULT
       ValueTask.FromResult(true);
 #else
       new ValueTask<bool>(result: true);
 #endif
 
     private static readonly ValueTask<bool> FalseResultValueTask =
-#if NET5_0_OR_GREATER
+#if SYSTEM_THREADING_TASKS_VALUETASK_FROMRESULT
       ValueTask.FromResult(false);
 #else
       new ValueTask<bool>(result: false);

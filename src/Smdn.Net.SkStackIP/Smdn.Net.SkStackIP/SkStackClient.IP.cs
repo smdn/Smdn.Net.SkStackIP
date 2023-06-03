@@ -57,7 +57,7 @@ namespace Smdn.Net.SkStackIP {
     {
       if (!udpReceiveEventPipes.TryGetValue(localPort, out var pipe))
         // not capturing
-#if NET5_0_OR_GREATER
+#if SYSTEM_THREADING_TASKS_VALUETASK_COMPLETEDTASK
         return ValueTask.CompletedTask;
 #else
         return default(ValueTask);

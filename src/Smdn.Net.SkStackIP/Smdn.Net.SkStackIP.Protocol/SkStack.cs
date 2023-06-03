@@ -5,7 +5,7 @@ using System;
 using System.Buffers;
 using System.Text;
 
-#if !NET5_0_OR_GREATER
+#if !SYSTEM_TEXT_ENCODINGEXTENSIONS
 using Smdn.Text.Encodings; // EncodingReadOnlySequenceExtensions
 #endif
 
