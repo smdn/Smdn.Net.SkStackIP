@@ -3,9 +3,9 @@
 
 using System;
 
-namespace Smdn.Net.SkStackIP.Protocol {
-  internal static class SkStackLQI {
-    /// <remarks>reference: BP35A1コマンドリファレンス 4.6. EEDSCAN</remarks>
-    public static double ToRSSI(int lqi) => 0.275 * lqi - 104.27;
-  }
+namespace Smdn.Net.SkStackIP.Protocol;
+
+internal static class SkStackLQI {
+  /// <remarks>reference: BP35A1コマンドリファレンス 4.6. EEDSCAN</remarks>
+  public static double ToRSSI(int lqi) => 0.275 * lqi - 104.27;
 }

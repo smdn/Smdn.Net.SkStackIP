@@ -3,10 +3,10 @@
 
 using System;
 
-namespace Smdn.Net.SkStackIP {
-  public enum SkStackResponseStatus {
-    Undetermined = 0, // used as default(SkStackResponseStatus)
-    Ok = +1,
-    Fail = -1,
-  }
+namespace Smdn.Net.SkStackIP;
+
+public enum SkStackResponseStatus {
+  Undetermined = 0, // used as default(SkStackResponseStatus)
+  Ok = +1,
+  Fail = -1,
 }

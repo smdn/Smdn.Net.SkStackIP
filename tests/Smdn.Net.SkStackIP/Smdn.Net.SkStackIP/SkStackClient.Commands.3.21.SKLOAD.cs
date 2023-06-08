@@ -8,63 +8,63 @@ using NUnit.Framework;
 
 using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
-namespace Smdn.Net.SkStackIP {
-  [TestFixture]
-  public class SkStackClientCommandsSKLOADTests : SkStackClientTestsBase {
-    [Test]
-    public async Task SKLOAD()
-    {
-      var stream = new PseudoSkStackStream();
+namespace Smdn.Net.SkStackIP;
 
-      stream.ResponseWriter.WriteLine("OK");
+[TestFixture]
+public class SkStackClientCommandsSKLOADTests : SkStackClientTestsBase {
+  [Test]
+  public async Task SKLOAD()
+  {
+    var stream = new PseudoSkStackStream();
 
-      using var client = new SkStackClient(stream, ServiceProvider);
-      var response = await client.SendSKLOADAsync();
+    stream.ResponseWriter.WriteLine("OK");
 
-      Assert.That(
-        stream.ReadSentData(),
-        Is.EqualTo("SKLOAD\r\n".ToByteSequence())
-      );
+    using var client = new SkStackClient(stream, ServiceProvider);
+    var response = await client.SendSKLOADAsync();
 
-      Assert.IsTrue(response.Success);
-    }
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("SKLOAD\r\n".ToByteSequence())
+    );
 
-    [Test]
-    public void SKLOAD_FAIL_ER10()
-    {
-      var stream = new PseudoSkStackStream();
+    Assert.IsTrue(response.Success);
+  }
 
-      stream.ResponseWriter.WriteLine("FAIL ER10");
+  [Test]
+  public void SKLOAD_FAIL_ER10()
+  {
+    var stream = new PseudoSkStackStream();
 
-      using var client = new SkStackClient(stream, ServiceProvider);
+    stream.ResponseWriter.WriteLine("FAIL ER10");
 
-      var ex = Assert.ThrowsAsync<SkStackFlashMemoryIOException>(async () => await client.SendSKLOADAsync());
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.AreEqual(ex.ErrorCode, SkStackErrorCode.ER10);
+    var ex = Assert.ThrowsAsync<SkStackFlashMemoryIOException>(async () => await client.SendSKLOADAsync());
 
-      Assert.That(
-        stream.ReadSentData(),
-        Is.EqualTo("SKLOAD\r\n".ToByteSequence())
-      );
-    }
+    Assert.AreEqual(ex.ErrorCode, SkStackErrorCode.ER10);
 
-    [Test]
-    public void SKLOAD_FAIL_ERXX()
-    {
-      var stream = new PseudoSkStackStream();
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("SKLOAD\r\n".ToByteSequence())
+    );
+  }
 
-      stream.ResponseWriter.WriteLine("FAIL ER01");
+  [Test]
+  public void SKLOAD_FAIL_ERXX()
+  {
+    var stream = new PseudoSkStackStream();
 
-      using var client = new SkStackClient(stream, ServiceProvider);
+    stream.ResponseWriter.WriteLine("FAIL ER01");
 
-      var ex = Assert.ThrowsAsync<SkStackErrorResponseException>(async () => await client.SendSKLOADAsync());
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.AreEqual(ex.ErrorCode, SkStackErrorCode.ER01);
+    var ex = Assert.ThrowsAsync<SkStackErrorResponseException>(async () => await client.SendSKLOADAsync());
 
-      Assert.That(
-        stream.ReadSentData(),
-        Is.EqualTo("SKLOAD\r\n".ToByteSequence())
-      );
-    }
+    Assert.AreEqual(ex.ErrorCode, SkStackErrorCode.ER01);
+
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("SKLOAD\r\n".ToByteSequence())
+    );
   }
 }

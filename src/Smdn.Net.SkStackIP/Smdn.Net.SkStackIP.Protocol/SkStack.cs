@@ -9,20 +9,20 @@ using System.Text;
 using Smdn.Text.Encodings; // EncodingReadOnlySequenceExtensions
 #endif
 
-namespace Smdn.Net.SkStackIP.Protocol {
-  internal static class SkStack {
-    public static readonly Encoding DefaultEncoding = Encoding.ASCII;
+namespace Smdn.Net.SkStackIP.Protocol;
 
-    public static byte[] ToByteSequence(string text)
-      => DefaultEncoding.GetBytes(text);
+internal static class SkStack {
+  public static readonly Encoding DefaultEncoding = Encoding.ASCII;
 
-    public static string GetString(ReadOnlySequence<byte> sequence)
-      => DefaultEncoding.GetString(sequence);
+  public static byte[] ToByteSequence(string text)
+    => DefaultEncoding.GetBytes(text);
 
-    private static readonly ReadOnlyMemory<byte> crlf = new[] {(byte)'\r', (byte)'\n'};
-    internal static ReadOnlyMemory<byte> CRLFMemory => crlf;
-    public static ReadOnlySpan<byte> CRLFSpan => crlf.Span;
+  public static string GetString(ReadOnlySequence<byte> sequence)
+    => DefaultEncoding.GetString(sequence);
 
-    public const byte SP = 0x20;
-  }
+  private static readonly ReadOnlyMemory<byte> crlf = new[] {(byte)'\r', (byte)'\n'};
+  internal static ReadOnlyMemory<byte> CRLFMemory => crlf;
+  public static ReadOnlySpan<byte> CRLFSpan => crlf.Span;
+
+  public const byte SP = 0x20;
 }

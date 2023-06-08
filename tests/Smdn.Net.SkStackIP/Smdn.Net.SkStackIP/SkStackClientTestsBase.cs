@@ -14,24 +14,24 @@ using NUnit.Framework;
 
 using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
-namespace Smdn.Net.SkStackIP {
-  public class SkStackClientTestsBase {
-    protected static readonly TimeSpan ResponseDelayInterval = TimeSpan.FromMilliseconds(25);
+namespace Smdn.Net.SkStackIP;
 
-    protected IServiceProvider ServiceProvider;
+public class SkStackClientTestsBase {
+  protected static readonly TimeSpan ResponseDelayInterval = TimeSpan.FromMilliseconds(25);
 
-    [SetUp]
-    public void SetUp()
-    {
-      var services = new ServiceCollection();
+  protected IServiceProvider ServiceProvider;
 
-      services.AddLogging(
-        builder => builder
-          .AddSimpleConsole(static options => options.SingleLine = true)
-          .AddFilter(static level => true/*level <= LogLevel.Trace*/)
-      );
+  [SetUp]
+  public void SetUp()
+  {
+    var services = new ServiceCollection();
 
-      ServiceProvider = services.BuildServiceProvider();
-    }
+    services.AddLogging(
+      builder => builder
+        .AddSimpleConsole(static options => options.SingleLine = true)
+        .AddFilter(static level => true/*level <= LogLevel.Trace*/)
+    );
+
+    ServiceProvider = services.BuildServiceProvider();
   }
 }

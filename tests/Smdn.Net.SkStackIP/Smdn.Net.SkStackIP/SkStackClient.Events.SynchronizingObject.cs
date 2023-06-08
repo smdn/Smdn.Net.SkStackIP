@@ -9,183 +9,183 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-namespace Smdn.Net.SkStackIP {
-  [TestFixture]
-  public class SkStackClientEventsTests : SkStackClientTestsBase {
-    private class PseudoSynchronizingObject : ISynchronizeInvoke {
-      public bool InvokeRequired { get; }
-      private bool expectSynchronousCall;
+namespace Smdn.Net.SkStackIP;
 
-      public PseudoSynchronizingObject(bool invokeRequired, bool expectSynchronousCall)
-      {
-        this.InvokeRequired = invokeRequired;
-        this.expectSynchronousCall = expectSynchronousCall;
-      }
+[TestFixture]
+public class SkStackClientEventsTests : SkStackClientTestsBase {
+  private class PseudoSynchronizingObject : ISynchronizeInvoke {
+    public bool InvokeRequired { get; }
+    private bool expectSynchronousCall;
 
-      public IAsyncResult BeginInvoke(Delegate method, object[] args)
-      {
-        if (expectSynchronousCall)
-          Assert.Fail("synchronous call expected");
-
-        Task.Run(() => method.DynamicInvoke(args));
-
-        return null;
-      }
-
-      public object EndInvoke(IAsyncResult result)
-      {
-        throw new NotImplementedException();
-      }
-
-      public object Invoke(Delegate method, object[] args)
-      {
-        if (!expectSynchronousCall)
-          Assert.Fail("asynchronous call expected");
-
-        return method.DynamicInvoke(args);
-      }
+    public PseudoSynchronizingObject(bool invokeRequired, bool expectSynchronousCall)
+    {
+      this.InvokeRequired = invokeRequired;
+      this.expectSynchronousCall = expectSynchronousCall;
     }
 
-    [Test]
-    public void EventHandler_WithoutSynchronizingObject()
-      => EventHandler(
-        synchronizingObject: null,
-        expectSynchronousCall: true
-      );
-
-    [Test]
-    public void EventHandler_WithSynchronizingObject_InvokeRequired()
-      => EventHandler(
-        synchronizingObject: new PseudoSynchronizingObject(
-          invokeRequired: true,
-          expectSynchronousCall: false
-        ),
-        expectSynchronousCall: false
-      );
-
-    [Test]
-    public void EventHandler_WithSynchronizingObject_InvokeNotRequired()
-      => EventHandler(
-        synchronizingObject: new PseudoSynchronizingObject(
-          invokeRequired: false,
-          expectSynchronousCall: true
-        ),
-        expectSynchronousCall: true
-      );
-
-    private void EventHandler(
-      ISynchronizeInvoke synchronizingObject,
-      bool expectSynchronousCall
-    )
+    public IAsyncResult BeginInvoke(Delegate method, object[] args)
     {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+      if (expectSynchronousCall)
+        Assert.Fail("synchronous call expected");
 
-      client.SynchronizingObject = synchronizingObject;
+      Task.Run(() => method.DynamicInvoke(args));
 
-      const string senderAddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
-
-      using var waitHandle = new ManualResetEvent(false);
-      Exception thrownExceptionInEventHandler = null;
-      var raisedEventCount = 0;
-
-      client.PanaSessionTerminated += (sender, e) => {
-        try {
-          try {
-            Assert.AreSame(client, sender, nameof(sender));
-
-            Assert.IsNotNull(e, nameof(e));
-            Assert.IsNotNull(e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
-            Assert.AreEqual(IPAddress.Parse(senderAddressString), e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
-            Assert.AreEqual(SkStackEventNumber.PanaSessionTerminationCompleted, e.EventNumber, nameof(e.EventNumber));
-
-            raisedEventCount++;
-          }
-          catch (Exception ex) {
-            thrownExceptionInEventHandler = ex;
-          }
-        }
-        finally {
-          waitHandle.Set();
-        }
-      };
-
-      stream.ResponseWriter.WriteLine("OK");
-      stream.ResponseWriter.WriteLine($"EVENT 27 {senderAddressString}");
-
-      var taskSendSKTERM = client.SendSKTERMAsync();
-
-      if (!waitHandle.WaitOne(100)) // wait for event handler finished
-        Assert.Fail("event handler not called or not finished");
-
-      Assert.DoesNotThrowAsync(async () => await taskSendSKTERM);
-
-      Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
-      Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
+      return null;
     }
 
-    [Test]
-    public void EventHandler_EventHandlerThrownException_WithoutSynchronizingObject()
-      => EventHandler_EventHandlerThrownException(
-        synchronizingObject: null,
-        expectSynchronousCall: true
-      );
-
-    [Test]
-    public void EventHandler_EventHandlerThrownException_WithSynchronizingObject_InvokeRequired()
-      => EventHandler_EventHandlerThrownException(
-        synchronizingObject: new PseudoSynchronizingObject(
-          invokeRequired: true,
-          expectSynchronousCall: false
-        ),
-        expectSynchronousCall: false
-      );
-
-    [Test]
-    public void EventHandler_EventHandlerThrownException_WithSynchronizingObject_InvokeNotRequired()
-      => EventHandler_EventHandlerThrownException(
-        synchronizingObject: new PseudoSynchronizingObject(
-          invokeRequired: false,
-          expectSynchronousCall: true
-        ),
-        expectSynchronousCall: true
-      );
-
-    private void EventHandler_EventHandlerThrownException(
-      ISynchronizeInvoke synchronizingObject,
-      bool expectSynchronousCall
-    )
+    public object EndInvoke(IAsyncResult result)
     {
-      const string senderAddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
+      throw new NotImplementedException();
+    }
 
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+    public object Invoke(Delegate method, object[] args)
+    {
+      if (!expectSynchronousCall)
+        Assert.Fail("asynchronous call expected");
 
-      using var waitHandle = new ManualResetEvent(false);
-      var raisedEventCount = 0;
+      return method.DynamicInvoke(args);
+    }
+  }
 
-      client.SynchronizingObject = synchronizingObject;
-      client.PanaSessionTerminated += (sender, e) => {
+  [Test]
+  public void EventHandler_WithoutSynchronizingObject()
+    => EventHandler(
+      synchronizingObject: null,
+      expectSynchronousCall: true
+    );
+
+  [Test]
+  public void EventHandler_WithSynchronizingObject_InvokeRequired()
+    => EventHandler(
+      synchronizingObject: new PseudoSynchronizingObject(
+        invokeRequired: true,
+        expectSynchronousCall: false
+      ),
+      expectSynchronousCall: false
+    );
+
+  [Test]
+  public void EventHandler_WithSynchronizingObject_InvokeNotRequired()
+    => EventHandler(
+      synchronizingObject: new PseudoSynchronizingObject(
+        invokeRequired: false,
+        expectSynchronousCall: true
+      ),
+      expectSynchronousCall: true
+    );
+
+  private void EventHandler(
+    ISynchronizeInvoke synchronizingObject,
+    bool expectSynchronousCall
+  )
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
+
+    client.SynchronizingObject = synchronizingObject;
+
+    const string senderAddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
+
+    using var waitHandle = new ManualResetEvent(false);
+    Exception thrownExceptionInEventHandler = null;
+    var raisedEventCount = 0;
+
+    client.PanaSessionTerminated += (sender, e) => {
+      try {
         try {
+          Assert.AreSame(client, sender, nameof(sender));
+
+          Assert.IsNotNull(e, nameof(e));
+          Assert.IsNotNull(e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
+          Assert.AreEqual(IPAddress.Parse(senderAddressString), e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
+          Assert.AreEqual(SkStackEventNumber.PanaSessionTerminationCompleted, e.EventNumber, nameof(e.EventNumber));
+
           raisedEventCount++;
-          throw new Exception("exception thrown by event handler");
         }
-        finally {
-          waitHandle.Set();
+        catch (Exception ex) {
+          thrownExceptionInEventHandler = ex;
         }
-      };
+      }
+      finally {
+        waitHandle.Set();
+      }
+    };
 
-      stream.ResponseWriter.WriteLine("OK");
-      stream.ResponseWriter.WriteLine($"EVENT 27 {senderAddressString}");
+    stream.ResponseWriter.WriteLine("OK");
+    stream.ResponseWriter.WriteLine($"EVENT 27 {senderAddressString}");
 
-      var taskSendSKTERM = client.SendSKTERMAsync();
+    var taskSendSKTERM = client.SendSKTERMAsync();
 
-      if (!waitHandle.WaitOne(100)) // wait for event handler finished
-        Assert.Fail("event handler not called or not finished");
+    if (!waitHandle.WaitOne(100)) // wait for event handler finished
+      Assert.Fail("event handler not called or not finished");
 
-      Assert.DoesNotThrowAsync(async () => await taskSendSKTERM);
+    Assert.DoesNotThrowAsync(async () => await taskSendSKTERM);
 
-      Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
-    }
+    Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
+    Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
+  }
+
+  [Test]
+  public void EventHandler_EventHandlerThrownException_WithoutSynchronizingObject()
+    => EventHandler_EventHandlerThrownException(
+      synchronizingObject: null,
+      expectSynchronousCall: true
+    );
+
+  [Test]
+  public void EventHandler_EventHandlerThrownException_WithSynchronizingObject_InvokeRequired()
+    => EventHandler_EventHandlerThrownException(
+      synchronizingObject: new PseudoSynchronizingObject(
+        invokeRequired: true,
+        expectSynchronousCall: false
+      ),
+      expectSynchronousCall: false
+    );
+
+  [Test]
+  public void EventHandler_EventHandlerThrownException_WithSynchronizingObject_InvokeNotRequired()
+    => EventHandler_EventHandlerThrownException(
+      synchronizingObject: new PseudoSynchronizingObject(
+        invokeRequired: false,
+        expectSynchronousCall: true
+      ),
+      expectSynchronousCall: true
+    );
+
+  private void EventHandler_EventHandlerThrownException(
+    ISynchronizeInvoke synchronizingObject,
+    bool expectSynchronousCall
+  )
+  {
+    const string senderAddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
+
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
+
+    using var waitHandle = new ManualResetEvent(false);
+    var raisedEventCount = 0;
+
+    client.SynchronizingObject = synchronizingObject;
+    client.PanaSessionTerminated += (sender, e) => {
+      try {
+        raisedEventCount++;
+        throw new Exception("exception thrown by event handler");
+      }
+      finally {
+        waitHandle.Set();
+      }
+    };
+
+    stream.ResponseWriter.WriteLine("OK");
+    stream.ResponseWriter.WriteLine($"EVENT 27 {senderAddressString}");
+
+    var taskSendSKTERM = client.SendSKTERMAsync();
+
+    if (!waitHandle.WaitOne(100)) // wait for event handler finished
+      Assert.Fail("event handler not called or not finished");
+
+    Assert.DoesNotThrowAsync(async () => await taskSendSKTERM);
+
+    Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
   }
 }

@@ -5,101 +5,101 @@ using System;
 
 using Smdn.Net.SkStackIP.Protocol;
 
-namespace Smdn.Net.SkStackIP {
-  public class SkStackResponse<TPayload> : SkStackResponse {
-    public TPayload Payload { get; internal set; }
+namespace Smdn.Net.SkStackIP;
 
-    internal SkStackResponse()
-      : base()
-    {
-    }
+public class SkStackResponse<TPayload> : SkStackResponse {
+  public TPayload Payload { get; internal set; }
+
+  internal SkStackResponse()
+    : base()
+  {
+  }
+}
+
+public class SkStackResponse {
+  internal readonly struct NullPayload { }
+
+  public bool Success => Status == SkStackResponseStatus.Ok ? true : false;
+  public SkStackResponseStatus Status { get; internal set; } = SkStackResponseStatus.Undetermined;
+  public ReadOnlyMemory<byte> StatusText { get; internal set; }
+
+  internal SkStackResponse()
+  {
   }
 
-  public class SkStackResponse {
-    internal readonly struct NullPayload { }
+  private bool TryParseErrorStatus(
+    out SkStackErrorCode errorCode,
+    out ReadOnlyMemory<byte> errorText,
+    out string errorMessage
+  )
+  {
+    errorCode = default;
+    errorText = default;
+    errorMessage = default;
 
-    public bool Success => Status == SkStackResponseStatus.Ok ? true : false;
-    public SkStackResponseStatus Status { get; internal set; } = SkStackResponseStatus.Undetermined;
-    public ReadOnlyMemory<byte> StatusText { get; internal set; }
+    if (Status == SkStackResponseStatus.Ok || Status == SkStackResponseStatus.Undetermined)
+      return false; // not error status
 
-    internal SkStackResponse()
-    {
+    ReadOnlySpan<byte> errorCodeName = default;
+
+    if (5 <= StatusText.Length && StatusText.Span[4] == SkStack.SP) {
+      errorCodeName = StatusText.Span.Slice(0, 4);
+      errorText = StatusText.Slice(5);
     }
-
-    private bool TryParseErrorStatus(
-      out SkStackErrorCode errorCode,
-      out ReadOnlyMemory<byte> errorText,
-      out string errorMessage
-    )
-    {
-      errorCode = default;
+    else {
+      errorCodeName = StatusText.Span;
       errorText = default;
-      errorMessage = default;
-
-      if (Status == SkStackResponseStatus.Ok || Status == SkStackResponseStatus.Undetermined)
-        return false; // not error status
-
-      ReadOnlySpan<byte> errorCodeName = default;
-
-      if (5 <= StatusText.Length && StatusText.Span[4] == SkStack.SP) {
-        errorCodeName = StatusText.Span.Slice(0, 4);
-        errorText = StatusText.Slice(5);
-      }
-      else {
-        errorCodeName = StatusText.Span;
-        errorText = default;
-      }
-
-      errorCode = SkStackErrorCodeNames.ParseErrorCode(errorCodeName);
-
-      errorMessage = errorCode switch {
-        SkStackErrorCode.ER01 => "Reserved error code",
-        SkStackErrorCode.ER02 => "Reserved error code",
-        SkStackErrorCode.ER03 => "Reserved error code",
-        SkStackErrorCode.ER04 => "Unsupported command",
-        SkStackErrorCode.ER05 => "Invalid number of arguments",
-        SkStackErrorCode.ER06 => "Argument out-of-range or invalid format",
-        SkStackErrorCode.ER07 => "Reserved error code",
-        SkStackErrorCode.ER08 => "Reserved error code",
-        SkStackErrorCode.ER09 => "UART input error",
-        SkStackErrorCode.ER10 => "Command completed unsuccessfully",
-        _ => "unknown or undefined error code"
-      };
-
-      return true;
     }
 
-    internal void ThrowIfErrorStatus(
-      Func<SkStackResponse, SkStackErrorCode, ReadOnlyMemory<byte>, Exception> translateException
-    )
-    {
-      if (!TryParseErrorStatus(out var errorCode, out var errorText, out var errorMessage))
-        return;
+    errorCode = SkStackErrorCodeNames.ParseErrorCode(errorCodeName);
 
-      var translatedException = translateException?.Invoke(this, errorCode, errorText);
+    errorMessage = errorCode switch {
+      SkStackErrorCode.ER01 => "Reserved error code",
+      SkStackErrorCode.ER02 => "Reserved error code",
+      SkStackErrorCode.ER03 => "Reserved error code",
+      SkStackErrorCode.ER04 => "Unsupported command",
+      SkStackErrorCode.ER05 => "Invalid number of arguments",
+      SkStackErrorCode.ER06 => "Argument out-of-range or invalid format",
+      SkStackErrorCode.ER07 => "Reserved error code",
+      SkStackErrorCode.ER08 => "Reserved error code",
+      SkStackErrorCode.ER09 => "UART input error",
+      SkStackErrorCode.ER10 => "Command completed unsuccessfully",
+      _ => "unknown or undefined error code"
+    };
 
-      throw translatedException ?? errorCode switch {
-        SkStackErrorCode.ER04 => new SkStackCommandNotSupportedException(
-          response: this,
-          errorCode: errorCode,
-          errorText: errorText.Span,
-          message: errorMessage
-        ),
+    return true;
+  }
 
-        SkStackErrorCode.ER09 => new SkStackUartIOException(
-          response: this,
-          errorCode: errorCode,
-          errorText: errorText.Span,
-          message: errorMessage
-        ),
+  internal void ThrowIfErrorStatus(
+    Func<SkStackResponse, SkStackErrorCode, ReadOnlyMemory<byte>, Exception> translateException
+  )
+  {
+    if (!TryParseErrorStatus(out var errorCode, out var errorText, out var errorMessage))
+      return;
 
-        _ => new SkStackErrorResponseException(
-          response: this,
-          errorCode: errorCode,
-          errorText: errorText.Span,
-          message: errorMessage
-        ),
-      };
-    }
+    var translatedException = translateException?.Invoke(this, errorCode, errorText);
+
+    throw translatedException ?? errorCode switch {
+      SkStackErrorCode.ER04 => new SkStackCommandNotSupportedException(
+        response: this,
+        errorCode: errorCode,
+        errorText: errorText.Span,
+        message: errorMessage
+      ),
+
+      SkStackErrorCode.ER09 => new SkStackUartIOException(
+        response: this,
+        errorCode: errorCode,
+        errorText: errorText.Span,
+        message: errorMessage
+      ),
+
+      _ => new SkStackErrorResponseException(
+        response: this,
+        errorCode: errorCode,
+        errorText: errorText.Span,
+        message: errorMessage
+      ),
+    };
   }
 }

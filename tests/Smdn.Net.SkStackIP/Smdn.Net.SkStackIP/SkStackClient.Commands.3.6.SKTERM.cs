@@ -9,190 +9,190 @@ using NUnit.Framework;
 
 using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
-namespace Smdn.Net.SkStackIP {
-  [TestFixture]
-  public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
-    private static async Task JoinAsync(
-      SkStackClient client,
-      PseudoSkStackStream stream,
-      string addressString
-    )
+namespace Smdn.Net.SkStackIP;
+
+[TestFixture]
+public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
+  private static async Task JoinAsync(
+    SkStackClient client,
+    PseudoSkStackStream stream,
+    string addressString
+  )
+  {
+    var address = IPAddress.Parse(addressString);
+
+    stream.ResponseWriter.WriteLine("OK");
+    stream.ResponseWriter.WriteLine($"EVENT 25 {addressString}");
+
+    await client.SendSKJOINAsync(address);
+
+    Assert.AreEqual(client.PanaSessionPeerAddress, address);
+
+    stream.ClearSentData();
+  }
+
+  [Test]
+  public async Task SKTERM_CompletedWithEVENT27()
+  {
+    const string addressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
+    var address = IPAddress.Parse(addressString);
+
+    var stream = new PseudoSkStackStream();
+
+    using var client = new SkStackClient(stream, ServiceProvider);
+
+    await JoinAsync(client, stream, addressString);
+
+    stream.ResponseWriter.WriteLine($"EVENT 21 {addressString} 02");
+    stream.ResponseWriter.WriteLine("OK");
+
+    async Task RaisePanaSessionTerminationEventsAsync()
     {
-      var address = IPAddress.Parse(addressString);
+      await Task.Delay(ResponseDelayInterval);
 
-      stream.ResponseWriter.WriteLine("OK");
-      stream.ResponseWriter.WriteLine($"EVENT 25 {addressString}");
+      stream.ResponseWriter.WriteLine($"ERXUDP {addressString} FE80:0000:0000:0000:021D:1290:1234:5678 02CC 02CC 001D129012345678 0 0001 0");
 
-      await client.SendSKJOINAsync(address);
+      await Task.Delay(ResponseDelayInterval);
 
-      Assert.AreEqual(client.PanaSessionPeerAddress, address);
-
-      stream.ClearSentData();
+      stream.ResponseWriter.Write($"EVENT 2"); await Task.Delay(ResponseDelayInterval);
+      stream.ResponseWriter.WriteLine($"7 {addressString}");
     }
 
-    [Test]
-    public async Task SKTERM_CompletedWithEVENT27()
-    {
-      const string addressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
-      var address = IPAddress.Parse(addressString);
+    Exception thrownExceptionInEventHandler = null;
+    var raisedEventCount = 0;
 
-      var stream = new PseudoSkStackStream();
-
-      using var client = new SkStackClient(stream, ServiceProvider);
-
-      await JoinAsync(client, stream, addressString);
-
-      stream.ResponseWriter.WriteLine($"EVENT 21 {addressString} 02");
-      stream.ResponseWriter.WriteLine("OK");
-
-      async Task RaisePanaSessionTerminationEventsAsync()
-      {
-        await Task.Delay(ResponseDelayInterval);
-
-        stream.ResponseWriter.WriteLine($"ERXUDP {addressString} FE80:0000:0000:0000:021D:1290:1234:5678 02CC 02CC 001D129012345678 0 0001 0");
-
-        await Task.Delay(ResponseDelayInterval);
-
-        stream.ResponseWriter.Write($"EVENT 2"); await Task.Delay(ResponseDelayInterval);
-        stream.ResponseWriter.WriteLine($"7 {addressString}");
+    client.PanaSessionTerminated += (sender, e) => {
+      try {
+        Assert.AreSame(client, sender, nameof(sender));
+        Assert.IsNotNull(e, nameof(e));
+        Assert.AreEqual(address, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
+        Assert.AreEqual(SkStackEventNumber.PanaSessionTerminationCompleted, e.EventNumber, nameof(e.EventNumber));
+        Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+        raisedEventCount++;
       }
-
-      Exception thrownExceptionInEventHandler = null;
-      var raisedEventCount = 0;
-
-      client.PanaSessionTerminated += (sender, e) => {
-        try {
-          Assert.AreSame(client, sender, nameof(sender));
-          Assert.IsNotNull(e, nameof(e));
-          Assert.AreEqual(address, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
-          Assert.AreEqual(SkStackEventNumber.PanaSessionTerminationCompleted, e.EventNumber, nameof(e.EventNumber));
-          Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-          raisedEventCount++;
-        }
-        catch (Exception ex) {
-          thrownExceptionInEventHandler = ex;
-        }
-      };
-
-      Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-
-      var taskSendCommand = client.SendSKTERMAsync();
-
-      Assert.DoesNotThrowAsync(async () => {
-        await Task.WhenAll(taskSendCommand.AsTask(), RaisePanaSessionTerminationEventsAsync());
-      });
-
-      Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
-      Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
-
-      var (response, isCompletedSuccessfully) = taskSendCommand.Result;
-
-      Assert.IsTrue(response.Success);
-      Assert.IsTrue(isCompletedSuccessfully);
-
-      Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-
-      Assert.That(
-        stream.ReadSentData(),
-        Is.EqualTo("SKTERM\r\n".ToByteSequence())
-      );
-    }
-
-    [Test]
-    public async Task SKTERM_CompletedWithEVENT28()
-    {
-      const string addressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
-      var address = IPAddress.Parse(addressString);
-
-      var stream = new PseudoSkStackStream();
-
-      using var client = new SkStackClient(stream, ServiceProvider);
-
-      await JoinAsync(client, stream, addressString);
-
-      stream.ResponseWriter.WriteLine($"EVENT 21 {addressString} 02");
-      stream.ResponseWriter.WriteLine("OK");
-
-      async Task RaisePanaSessionTerminationEventsAsync()
-      {
-        await Task.Delay(ResponseDelayInterval);
-
-        stream.ResponseWriter.Write($"EVENT 28"); await Task.Delay(ResponseDelayInterval);
-        stream.ResponseWriter.WriteLine($" {addressString}");
+      catch (Exception ex) {
+        thrownExceptionInEventHandler = ex;
       }
+    };
 
-      Exception thrownExceptionInEventHandler = null;
-      var raisedEventCount = 0;
+    Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
-      client.PanaSessionTerminated += (sender, e) => {
-        try {
-          Assert.AreSame(client, sender, nameof(sender));
-          Assert.IsNotNull(e, nameof(e));
-          Assert.AreEqual(address, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
-          Assert.AreEqual(SkStackEventNumber.PanaSessionTerminationTimedOut, e.EventNumber, nameof(e.EventNumber));
-          Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-          raisedEventCount++;
-        }
-        catch (Exception ex) {
-          thrownExceptionInEventHandler = ex;
-        }
-      };
+    var taskSendCommand = client.SendSKTERMAsync();
 
-      Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+    Assert.DoesNotThrowAsync(async () => {
+      await Task.WhenAll(taskSendCommand.AsTask(), RaisePanaSessionTerminationEventsAsync());
+    });
 
-      var taskSendCommand = client.SendSKTERMAsync();
+    Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
+    Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
 
-      Assert.DoesNotThrowAsync(async () => {
-        await Task.WhenAll(taskSendCommand.AsTask(), RaisePanaSessionTerminationEventsAsync());
-      });
+    var (response, isCompletedSuccessfully) = taskSendCommand.Result;
 
-      Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
-      Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
+    Assert.IsTrue(response.Success);
+    Assert.IsTrue(isCompletedSuccessfully);
 
-      var (response, isCompletedSuccessfully) = taskSendCommand.Result;
+    Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
-      Assert.IsTrue(response.Success);
-      Assert.IsFalse(isCompletedSuccessfully);
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("SKTERM\r\n".ToByteSequence())
+    );
+  }
 
-      Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+  [Test]
+  public async Task SKTERM_CompletedWithEVENT28()
+  {
+    const string addressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
+    var address = IPAddress.Parse(addressString);
 
-      Assert.That(
-        stream.ReadSentData(),
-        Is.EqualTo("SKTERM\r\n".ToByteSequence())
-      );
-    }
+    var stream = new PseudoSkStackStream();
 
-    [Test]
-    public async Task SKTERM_FAIL()
+    using var client = new SkStackClient(stream, ServiceProvider);
+
+    await JoinAsync(client, stream, addressString);
+
+    stream.ResponseWriter.WriteLine($"EVENT 21 {addressString} 02");
+    stream.ResponseWriter.WriteLine("OK");
+
+    async Task RaisePanaSessionTerminationEventsAsync()
     {
-      const string addressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
+      await Task.Delay(ResponseDelayInterval);
 
-      var stream = new PseudoSkStackStream();
-
-      using var client = new SkStackClient(stream, ServiceProvider);
-
-      await JoinAsync(client, stream, addressString);
-
-      stream.ResponseWriter.WriteLine("FAIL ER10");
-
-      var raisedEventCount = 0;
-
-      client.PanaSessionTerminated += (sender, e) => raisedEventCount++;
-
-      Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-
-      Assert.ThrowsAsync<SkStackErrorResponseException>(
-        async () => await client.SendSKTERMAsync()
-      );
-
-      Assert.AreEqual(0, raisedEventCount, nameof(raisedEventCount));
-
-      Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-
-      Assert.That(
-        stream.ReadSentData(),
-        Is.EqualTo("SKTERM\r\n".ToByteSequence())
-      );
+      stream.ResponseWriter.Write($"EVENT 28"); await Task.Delay(ResponseDelayInterval);
+      stream.ResponseWriter.WriteLine($" {addressString}");
     }
+
+    Exception thrownExceptionInEventHandler = null;
+    var raisedEventCount = 0;
+
+    client.PanaSessionTerminated += (sender, e) => {
+      try {
+        Assert.AreSame(client, sender, nameof(sender));
+        Assert.IsNotNull(e, nameof(e));
+        Assert.AreEqual(address, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
+        Assert.AreEqual(SkStackEventNumber.PanaSessionTerminationTimedOut, e.EventNumber, nameof(e.EventNumber));
+        Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+        raisedEventCount++;
+      }
+      catch (Exception ex) {
+        thrownExceptionInEventHandler = ex;
+      }
+    };
+
+    Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+
+    var taskSendCommand = client.SendSKTERMAsync();
+
+    Assert.DoesNotThrowAsync(async () => {
+      await Task.WhenAll(taskSendCommand.AsTask(), RaisePanaSessionTerminationEventsAsync());
+    });
+
+    Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
+    Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
+
+    var (response, isCompletedSuccessfully) = taskSendCommand.Result;
+
+    Assert.IsTrue(response.Success);
+    Assert.IsFalse(isCompletedSuccessfully);
+
+    Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("SKTERM\r\n".ToByteSequence())
+    );
+  }
+
+  [Test]
+  public async Task SKTERM_FAIL()
+  {
+    const string addressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
+
+    var stream = new PseudoSkStackStream();
+
+    using var client = new SkStackClient(stream, ServiceProvider);
+
+    await JoinAsync(client, stream, addressString);
+
+    stream.ResponseWriter.WriteLine("FAIL ER10");
+
+    var raisedEventCount = 0;
+
+    client.PanaSessionTerminated += (sender, e) => raisedEventCount++;
+
+    Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+
+    Assert.ThrowsAsync<SkStackErrorResponseException>(
+      async () => await client.SendSKTERMAsync()
+    );
+
+    Assert.AreEqual(0, raisedEventCount, nameof(raisedEventCount));
+
+    Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("SKTERM\r\n".ToByteSequence())
+    );
   }
 }

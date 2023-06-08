@@ -9,460 +9,460 @@ using NUnit.Framework;
 
 using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
-namespace Smdn.Net.SkStackIP {
-  [TestFixture]
-  public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
-    [TestCase(SkStackERXUDPDataFormat.Raw)]
-    [TestCase(SkStackERXUDPDataFormat.HexAsciiText)]
-    public void ERXUDPDataFormat(SkStackERXUDPDataFormat format)
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+namespace Smdn.Net.SkStackIP;
 
-      Assert.DoesNotThrow(() => client.ERXUDPDataFormat = format);
-      Assert.AreEqual(client.ERXUDPDataFormat, format);
-    }
+[TestFixture]
+public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
+  [TestCase(SkStackERXUDPDataFormat.Raw)]
+  [TestCase(SkStackERXUDPDataFormat.HexAsciiText)]
+  public void ERXUDPDataFormat(SkStackERXUDPDataFormat format)
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-    [TestCase(-1)]
-    public void ERXUDPDataFormat_InvalidValue(SkStackERXUDPDataFormat format)
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+    Assert.DoesNotThrow(() => client.ERXUDPDataFormat = format);
+    Assert.AreEqual(client.ERXUDPDataFormat, format);
+  }
 
-      Assert.Throws<ArgumentException>(() => client.ERXUDPDataFormat = format);
-    }
+  [TestCase(-1)]
+  public void ERXUDPDataFormat_InvalidValue(SkStackERXUDPDataFormat format)
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-    [TestCase(SkStackKnownPortNumbers.EchonetLite)]
-    [TestCase(SkStackKnownPortNumbers.Pana)]
-    public void StartCapturingUdpReceiveEvents(int port)
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+    Assert.Throws<ArgumentException>(() => client.ERXUDPDataFormat = format);
+  }
 
-      Assert.DoesNotThrow(() => client.StartCapturingUdpReceiveEvents(port));
-    }
+  [TestCase(SkStackKnownPortNumbers.EchonetLite)]
+  [TestCase(SkStackKnownPortNumbers.Pana)]
+  public void StartCapturingUdpReceiveEvents(int port)
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-    [TestCase(0x0000)]
-    [TestCase(0x10000)]
-    [TestCase(int.MinValue)]
-    [TestCase(int.MaxValue)]
-    public void StartCapturingUdpReceiveEvents_PortOutOfRange(int port)
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+    Assert.DoesNotThrow(() => client.StartCapturingUdpReceiveEvents(port));
+  }
 
-      Assert.Throws<ArgumentOutOfRangeException>(() => client.StartCapturingUdpReceiveEvents(port));
-    }
+  [TestCase(0x0000)]
+  [TestCase(0x10000)]
+  [TestCase(int.MinValue)]
+  [TestCase(int.MaxValue)]
+  public void StartCapturingUdpReceiveEvents_PortOutOfRange(int port)
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-    [Test]
-    public void StartCapturingUdpReceiveEvents_Disposed()
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+    Assert.Throws<ArgumentOutOfRangeException>(() => client.StartCapturingUdpReceiveEvents(port));
+  }
 
-      client.Close();
+  [Test]
+  public void StartCapturingUdpReceiveEvents_Disposed()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.Throws<ObjectDisposedException>(() => client.StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite));
-    }
+    client.Close();
 
-    [TestCase(SkStackKnownPortNumbers.EchonetLite)]
-    [TestCase(SkStackKnownPortNumbers.Pana)]
-    public void StopCapturingUdpReceiveEvents(int port)
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+    Assert.Throws<ObjectDisposedException>(() => client.StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite));
+  }
 
-      Assert.DoesNotThrow(() => client.StopCapturingUdpReceiveEvents(port));
-    }
+  [TestCase(SkStackKnownPortNumbers.EchonetLite)]
+  [TestCase(SkStackKnownPortNumbers.Pana)]
+  public void StopCapturingUdpReceiveEvents(int port)
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-    [TestCase(0x0000)]
-    [TestCase(0x10000)]
-    [TestCase(int.MinValue)]
-    [TestCase(int.MaxValue)]
-    public void StopCapturingUdpReceiveEvents_PortOutOfRange(int port)
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+    Assert.DoesNotThrow(() => client.StopCapturingUdpReceiveEvents(port));
+  }
 
-      Assert.Throws<ArgumentOutOfRangeException>(() => client.StopCapturingUdpReceiveEvents(port));
-    }
+  [TestCase(0x0000)]
+  [TestCase(0x10000)]
+  [TestCase(int.MinValue)]
+  [TestCase(int.MaxValue)]
+  public void StopCapturingUdpReceiveEvents_PortOutOfRange(int port)
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-    [Test]
-    public void StopCapturingUdpReceiveEvents_Disposed()
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+    Assert.Throws<ArgumentOutOfRangeException>(() => client.StopCapturingUdpReceiveEvents(port));
+  }
 
-      client.Close();
+  [Test]
+  public void StopCapturingUdpReceiveEvents_Disposed()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.Throws<ObjectDisposedException>(() => client.StopCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite));
-    }
+    client.Close();
 
-    [TestCase(0x0000)]
-    [TestCase(0x10000)]
-    [TestCase(int.MinValue)]
-    [TestCase(int.MaxValue)]
-    public void UdpReceiveAsync_PortOutOfRange(int port)
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+    Assert.Throws<ObjectDisposedException>(() => client.StopCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite));
+  }
 
-      Assert.Throws<ArgumentOutOfRangeException>(() => client.UdpReceiveAsync(port));
-    }
+  [TestCase(0x0000)]
+  [TestCase(0x10000)]
+  [TestCase(int.MinValue)]
+  [TestCase(int.MaxValue)]
+  public void UdpReceiveAsync_PortOutOfRange(int port)
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-    [Test]
-    public void UdpReceiveAsync_Disposed()
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+    Assert.Throws<ArgumentOutOfRangeException>(() => client.UdpReceiveAsync(port));
+  }
 
-      client.Close();
+  [Test]
+  public void UdpReceiveAsync_Disposed()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.Throws<ObjectDisposedException>(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
-    }
+    client.Close();
 
-    [Test]
-    public void UdpReceiveAsync_NotCapturing()
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+    Assert.Throws<ObjectDisposedException>(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
+  }
 
-      Assert.Throws<InvalidOperationException>(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.Pana));
-    }
+  [Test]
+  public void UdpReceiveAsync_NotCapturing()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-    [Test]
-    public void UdpReceiveAsync_CapturingEchonetLiteByDefault()
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+    Assert.Throws<InvalidOperationException>(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.Pana));
+  }
 
-      Assert.DoesNotThrow(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
-    }
+  [Test]
+  public void UdpReceiveAsync_CapturingEchonetLiteByDefault()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-    [Test]
-    public void UdpReceiveAsync_StoppedCapturing()
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+    Assert.DoesNotThrow(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
+  }
 
-      Assert.DoesNotThrow(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
+  [Test]
+  public void UdpReceiveAsync_StoppedCapturing()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      client.StopCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite);
+    Assert.DoesNotThrow(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
 
-      Assert.Throws<InvalidOperationException>(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
-    }
+    client.StopCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite);
 
-    [Test]
-    public void UdpReceiveAsync_NoUdpPacketReceived()
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+    Assert.Throws<InvalidOperationException>(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
+  }
 
-      Assert.ThrowsAsync<OperationCanceledException>(async () => {
-        using var cts = new CancellationTokenSource();
+  [Test]
+  public void UdpReceiveAsync_NoUdpPacketReceived()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-        cts.CancelAfter(TimeSpan.FromSeconds(0.2));
-
-        using var result = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
-      });
-    }
-
-    [Test]
-    public void UdpReceiveAsync_NoUdpPacketReceived_EVENTReceived()
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
-
-      stream.ResponseWriter.WriteLine($"EVENT 21 FE80:0000:0000:0000:021D:1290:1234:5678 00");
-      stream.ResponseWriter.WriteLine($"EVENT 33 FE80:0000:0000:0000:021D:1290:1234:5678");
-
-      Assert.ThrowsAsync<OperationCanceledException>(async () => {
-        using var cts = new CancellationTokenSource();
-
-        cts.CancelAfter(TimeSpan.FromSeconds(0.2));
-
-        using var result = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
-      });
-    }
-
-    [Test]
-    public void UdpReceiveAsync()
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
-
-      Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
-
-      stream.ResponseWriter.WriteLine("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 01234567");
-      stream.ResponseWriter.WriteLine("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 89ABCDEF");
-
+    Assert.ThrowsAsync<OperationCanceledException>(async () => {
       using var cts = new CancellationTokenSource();
 
-      cts.CancelAfter(TimeSpan.FromSeconds(1.0));
+      cts.CancelAfter(TimeSpan.FromSeconds(0.2));
 
-      SkStackUdpReceiveResult result1 = null;
-      SkStackUdpReceiveResult result2 = null;
+      using var result = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
+    });
+  }
 
-      try {
-        Assert.DoesNotThrowAsync(async () => {
-          result1 = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
-        });
+  [Test]
+  public void UdpReceiveAsync_NoUdpPacketReceived_EVENTReceived()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-        Assert.IsNotNull(result1);
-        Assert.That(
-          result1.Buffer,
-          Is.EqualTo("01234567".ToByteSequence()),
-          nameof(result1)
-        );
+    stream.ResponseWriter.WriteLine($"EVENT 21 FE80:0000:0000:0000:021D:1290:1234:5678 00");
+    stream.ResponseWriter.WriteLine($"EVENT 33 FE80:0000:0000:0000:021D:1290:1234:5678");
 
-        Assert.DoesNotThrow(() => result1.Dispose(), $"{nameof(result1)}.Dispose #1");
-        Assert.Throws<ObjectDisposedException>(() => Assert.AreEqual(result1.Buffer.Length, 0));
-        Assert.DoesNotThrow(() => result1.Dispose(), $"{nameof(result1)}.Dispose #2");
-      }
-      finally {
-        result1?.Dispose();
-      }
-
-      try {
-        Assert.DoesNotThrowAsync(async () => {
-          result2 = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
-        });
-
-        Assert.IsNotNull(result2);
-        Assert.That(
-          result2.Buffer,
-          Is.EqualTo("89ABCDEF".ToByteSequence()),
-          nameof(result2)
-        );
-      }
-      finally {
-        result2?.Dispose();
-      }
-    }
-
-    [Test]
-    public void UdpReceiveAsync_MultiplePorts()
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
-
-      Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
-
-      client.StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.Pana);
-
-      stream.ResponseWriter.WriteLine($"ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 {SkStackKnownPortNumbers.EchonetLite:X4} {SkStackKnownPortNumbers.EchonetLite:X4} 001D129012345679 0 000C ECHONET-LITE");
-      stream.ResponseWriter.WriteLine($"ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 {SkStackKnownPortNumbers.Pana:X4} {SkStackKnownPortNumbers.Pana:X4} 001D129012345679 0 0004 PANA");
-
+    Assert.ThrowsAsync<OperationCanceledException>(async () => {
       using var cts = new CancellationTokenSource();
 
-      cts.CancelAfter(TimeSpan.FromSeconds(1.0));
+      cts.CancelAfter(TimeSpan.FromSeconds(0.2));
 
-      SkStackUdpReceiveResult resultEchonetLite = null;
+      using var result = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
+    });
+  }
 
-      try {
-        Assert.DoesNotThrowAsync(async () => {
-          resultEchonetLite = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
-        });
+  [Test]
+  public void UdpReceiveAsync()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-        Assert.IsNotNull(resultEchonetLite);
-        Assert.That(
-          resultEchonetLite.Buffer,
-          Is.EqualTo("ECHONET-LITE".ToByteSequence()),
-          nameof(resultEchonetLite)
-        );
+    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
-        Assert.DoesNotThrow(() => resultEchonetLite.Dispose(), $"{nameof(resultEchonetLite)}.Dispose #1");
-        Assert.Throws<ObjectDisposedException>(() => Assert.AreEqual(resultEchonetLite.Buffer.Length, 0));
-        Assert.DoesNotThrow(() => resultEchonetLite.Dispose(), $"{nameof(resultEchonetLite)}.Dispose #2");
-      }
-      finally {
-        resultEchonetLite?.Dispose();
-      }
+    stream.ResponseWriter.WriteLine("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 01234567");
+    stream.ResponseWriter.WriteLine("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 89ABCDEF");
 
-      SkStackUdpReceiveResult resultPana = null;
+    using var cts = new CancellationTokenSource();
 
-      try {
-        Assert.DoesNotThrowAsync(async () => {
-          resultPana = await client.UdpReceiveAsync(SkStackKnownPortNumbers.Pana, cts.Token);
-        });
+    cts.CancelAfter(TimeSpan.FromSeconds(1.0));
 
-        Assert.IsNotNull(resultPana);
-        Assert.That(
-          resultPana.Buffer,
-          Is.EqualTo("PANA".ToByteSequence()),
-          nameof(resultPana)
-        );
-      }
-      finally {
-        resultPana?.Dispose();
-      }
-    }
+    SkStackUdpReceiveResult result1 = null;
+    SkStackUdpReceiveResult result2 = null;
 
-    [Test]
-    public void UdpReceiveAsync_IncompleteLine()
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
-
-      Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
-
-      async Task RaiseERXUDPAsync()
-      {
-        stream.ResponseWriter.Write("E"); await Task.Delay(ResponseDelayInterval);
-        stream.ResponseWriter.Write("RXUDP"); await Task.Delay(ResponseDelayInterval);
-        stream.ResponseWriter.Write(" FE80:0000:0000:0000:021D:1290:1234:5679 "); await Task.Delay(ResponseDelayInterval);
-        stream.ResponseWriter.Write("FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E"); await Task.Delay(ResponseDelayInterval);
-        stream.ResponseWriter.Write("1A 001D129012345679 0 0001 "); await Task.Delay(ResponseDelayInterval);
-        stream.ResponseWriter.Write("X"); await Task.Delay(ResponseDelayInterval);
-        stream.ResponseWriter.WriteLine();
-      }
-
-      using var cts = new CancellationTokenSource();
-
-      cts.CancelAfter(TimeSpan.FromSeconds(1.0));
-
-      var taskUdpReceive = client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
-
+    try {
       Assert.DoesNotThrowAsync(async () => {
-        await Task.WhenAll(taskUdpReceive.AsTask(), RaiseERXUDPAsync());
+        result1 = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
       });
 
-      using (var result = taskUdpReceive.Result) {
-        Assert.That(
-          result.Buffer,
-          Is.EqualTo("X".ToByteSequence()),
-          nameof(result)
-        );
-      }
+      Assert.IsNotNull(result1);
+      Assert.That(
+        result1.Buffer,
+        Is.EqualTo("01234567".ToByteSequence()),
+        nameof(result1)
+      );
+
+      Assert.DoesNotThrow(() => result1.Dispose(), $"{nameof(result1)}.Dispose #1");
+      Assert.Throws<ObjectDisposedException>(() => Assert.AreEqual(result1.Buffer.Length, 0));
+      Assert.DoesNotThrow(() => result1.Dispose(), $"{nameof(result1)}.Dispose #2");
+    }
+    finally {
+      result1?.Dispose();
     }
 
-    [Test]
-    public void UdpReceiveAsync_IncompleteLine_DataEndsWithCRLF_EndOfLineDelayed()
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
-
-      Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
-
-      async Task RaiseERXUDPAsync()
-      {
-        stream.ResponseWriter.Write("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0002 \r\n");
-        await Task.Delay(TimeSpan.FromMilliseconds(1000));
-
-        stream.ResponseWriter.Write("\r");
-        await Task.Delay(ResponseDelayInterval);
-
-        stream.ResponseWriter.Write("\n");
-        await Task.Delay(ResponseDelayInterval);
-      }
-
-      using var cts = new CancellationTokenSource();
-
-      cts.CancelAfter(TimeSpan.FromSeconds(3.0));
-
-      var taskUdpReceive = client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
-
+    try {
       Assert.DoesNotThrowAsync(async () => {
-        await Task.WhenAll(taskUdpReceive.AsTask(), RaiseERXUDPAsync());
+        result2 = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
       });
 
-      using (var result = taskUdpReceive.Result) {
-        Assert.That(
-          result.Buffer,
-          Is.EqualTo("\r\n".ToByteSequence()),
-          nameof(result)
-        );
-      }
+      Assert.IsNotNull(result2);
+      Assert.That(
+        result2.Buffer,
+        Is.EqualTo("89ABCDEF".ToByteSequence()),
+        nameof(result2)
+      );
     }
+    finally {
+      result2?.Dispose();
+    }
+  }
 
-    [Test]
-    public void UdpReceiveAsync_SendCommandWhileAwaiting()
-    {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+  [Test]
+  public void UdpReceiveAsync_MultiplePorts()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
+    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
-      async Task CompleteResponseAndRaiseERXUDPAsync()
-      {
-        // SKVER EVER event line
-        stream.ResponseWriter.WriteLine("EVER 1.2.10");
-        await Task.Delay(ResponseDelayInterval);
+    client.StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.Pana);
 
-        // SKVER status line
-        stream.ResponseWriter.Write("O"); await Task.Delay(ResponseDelayInterval);
-        stream.ResponseWriter.WriteLine("K");
-        await Task.Delay(ResponseDelayInterval);
+    stream.ResponseWriter.WriteLine($"ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 {SkStackKnownPortNumbers.EchonetLite:X4} {SkStackKnownPortNumbers.EchonetLite:X4} 001D129012345679 0 000C ECHONET-LITE");
+    stream.ResponseWriter.WriteLine($"ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 {SkStackKnownPortNumbers.Pana:X4} {SkStackKnownPortNumbers.Pana:X4} 001D129012345679 0 0004 PANA");
 
-        // ERXUDP
-        stream.ResponseWriter.Write("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 "); await Task.Delay(ResponseDelayInterval);
-        stream.ResponseWriter.Write("FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 0"); await Task.Delay(ResponseDelayInterval);
-        stream.ResponseWriter.WriteLine("1234567"); await Task.Delay(ResponseDelayInterval);
-        await Task.Delay(ResponseDelayInterval);
-      }
+    using var cts = new CancellationTokenSource();
 
-      using var cts = new CancellationTokenSource();
+    cts.CancelAfter(TimeSpan.FromSeconds(1.0));
 
-      cts.CancelAfter(TimeSpan.FromSeconds(2.0));
+    SkStackUdpReceiveResult resultEchonetLite = null;
 
-      var taskUdpReceive = client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token).AsTask();
-
-      Assert.IsFalse(taskUdpReceive.Wait(TimeSpan.FromMilliseconds(100)));
-
-      var taskSendCommand = client.SendSKVERAsync();
-
+    try {
       Assert.DoesNotThrowAsync(async () => {
-        await Task.WhenAll(taskUdpReceive, taskSendCommand.AsTask(), CompleteResponseAndRaiseERXUDPAsync());
+        resultEchonetLite = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
       });
 
-      Assert.IsTrue(taskSendCommand.Result.Success);
+      Assert.IsNotNull(resultEchonetLite);
+      Assert.That(
+        resultEchonetLite.Buffer,
+        Is.EqualTo("ECHONET-LITE".ToByteSequence()),
+        nameof(resultEchonetLite)
+      );
 
-      using (var result = taskUdpReceive.Result) {
-        Assert.That(
-          result.Buffer,
-          Is.EqualTo("01234567".ToByteSequence()),
-          nameof(result)
-        );
-      }
+      Assert.DoesNotThrow(() => resultEchonetLite.Dispose(), $"{nameof(resultEchonetLite)}.Dispose #1");
+      Assert.Throws<ObjectDisposedException>(() => Assert.AreEqual(resultEchonetLite.Buffer.Length, 0));
+      Assert.DoesNotThrow(() => resultEchonetLite.Dispose(), $"{nameof(resultEchonetLite)}.Dispose #2");
+    }
+    finally {
+      resultEchonetLite?.Dispose();
     }
 
-    [Test]
-    public void UdpReceiveAsync_DataFormat_HexASCIIText()
+    SkStackUdpReceiveResult resultPana = null;
+
+    try {
+      Assert.DoesNotThrowAsync(async () => {
+        resultPana = await client.UdpReceiveAsync(SkStackKnownPortNumbers.Pana, cts.Token);
+      });
+
+      Assert.IsNotNull(resultPana);
+      Assert.That(
+        resultPana.Buffer,
+        Is.EqualTo("PANA".ToByteSequence()),
+        nameof(resultPana)
+      );
+    }
+    finally {
+      resultPana?.Dispose();
+    }
+  }
+
+  [Test]
+  public void UdpReceiveAsync_IncompleteLine()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
+
+    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
+
+    async Task RaiseERXUDPAsync()
     {
-      using var stream = new PseudoSkStackStream();
-      using var client = new SkStackClient(stream, ServiceProvider);
+      stream.ResponseWriter.Write("E"); await Task.Delay(ResponseDelayInterval);
+      stream.ResponseWriter.Write("RXUDP"); await Task.Delay(ResponseDelayInterval);
+      stream.ResponseWriter.Write(" FE80:0000:0000:0000:021D:1290:1234:5679 "); await Task.Delay(ResponseDelayInterval);
+      stream.ResponseWriter.Write("FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E"); await Task.Delay(ResponseDelayInterval);
+      stream.ResponseWriter.Write("1A 001D129012345679 0 0001 "); await Task.Delay(ResponseDelayInterval);
+      stream.ResponseWriter.Write("X"); await Task.Delay(ResponseDelayInterval);
+      stream.ResponseWriter.WriteLine();
+    }
 
-      client.ERXUDPDataFormat = SkStackERXUDPDataFormat.HexAsciiText;
+    using var cts = new CancellationTokenSource();
 
-      Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.HexAsciiText);
+    cts.CancelAfter(TimeSpan.FromSeconds(1.0));
 
-      stream.ResponseWriter.WriteLine("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 0123456789ABCDEF");
+    var taskUdpReceive = client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
 
-      using var cts = new CancellationTokenSource();
+    Assert.DoesNotThrowAsync(async () => {
+      await Task.WhenAll(taskUdpReceive.AsTask(), RaiseERXUDPAsync());
+    });
 
-      cts.CancelAfter(TimeSpan.FromSeconds(1.0));
+    using (var result = taskUdpReceive.Result) {
+      Assert.That(
+        result.Buffer,
+        Is.EqualTo("X".ToByteSequence()),
+        nameof(result)
+      );
+    }
+  }
 
-      SkStackUdpReceiveResult result = null;
+  [Test]
+  public void UdpReceiveAsync_IncompleteLine_DataEndsWithCRLF_EndOfLineDelayed()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      try {
-        Assert.DoesNotThrowAsync(async () => {
-          result = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
-        });
+    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
-        Assert.IsNotNull(result);
-        Assert.That(
-          result.Buffer,
-          Is.EqualTo(new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF }),
-          nameof(result)
-        );
+    async Task RaiseERXUDPAsync()
+    {
+      stream.ResponseWriter.Write("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0002 \r\n");
+      await Task.Delay(TimeSpan.FromMilliseconds(1000));
 
-        Assert.DoesNotThrow(() => result.Dispose(), $"{nameof(result)}.Dispose #1");
-        Assert.Throws<ObjectDisposedException>(() => Assert.AreEqual(result.Buffer.Length, 0));
-        Assert.DoesNotThrow(() => result.Dispose(), $"{nameof(result)}.Dispose #2");
-      }
-      finally {
-        result?.Dispose();
-      }
+      stream.ResponseWriter.Write("\r");
+      await Task.Delay(ResponseDelayInterval);
+
+      stream.ResponseWriter.Write("\n");
+      await Task.Delay(ResponseDelayInterval);
+    }
+
+    using var cts = new CancellationTokenSource();
+
+    cts.CancelAfter(TimeSpan.FromSeconds(3.0));
+
+    var taskUdpReceive = client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
+
+    Assert.DoesNotThrowAsync(async () => {
+      await Task.WhenAll(taskUdpReceive.AsTask(), RaiseERXUDPAsync());
+    });
+
+    using (var result = taskUdpReceive.Result) {
+      Assert.That(
+        result.Buffer,
+        Is.EqualTo("\r\n".ToByteSequence()),
+        nameof(result)
+      );
+    }
+  }
+
+  [Test]
+  public void UdpReceiveAsync_SendCommandWhileAwaiting()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
+
+    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
+
+    async Task CompleteResponseAndRaiseERXUDPAsync()
+    {
+      // SKVER EVER event line
+      stream.ResponseWriter.WriteLine("EVER 1.2.10");
+      await Task.Delay(ResponseDelayInterval);
+
+      // SKVER status line
+      stream.ResponseWriter.Write("O"); await Task.Delay(ResponseDelayInterval);
+      stream.ResponseWriter.WriteLine("K");
+      await Task.Delay(ResponseDelayInterval);
+
+      // ERXUDP
+      stream.ResponseWriter.Write("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 "); await Task.Delay(ResponseDelayInterval);
+      stream.ResponseWriter.Write("FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 0"); await Task.Delay(ResponseDelayInterval);
+      stream.ResponseWriter.WriteLine("1234567"); await Task.Delay(ResponseDelayInterval);
+      await Task.Delay(ResponseDelayInterval);
+    }
+
+    using var cts = new CancellationTokenSource();
+
+    cts.CancelAfter(TimeSpan.FromSeconds(2.0));
+
+    var taskUdpReceive = client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token).AsTask();
+
+    Assert.IsFalse(taskUdpReceive.Wait(TimeSpan.FromMilliseconds(100)));
+
+    var taskSendCommand = client.SendSKVERAsync();
+
+    Assert.DoesNotThrowAsync(async () => {
+      await Task.WhenAll(taskUdpReceive, taskSendCommand.AsTask(), CompleteResponseAndRaiseERXUDPAsync());
+    });
+
+    Assert.IsTrue(taskSendCommand.Result.Success);
+
+    using (var result = taskUdpReceive.Result) {
+      Assert.That(
+        result.Buffer,
+        Is.EqualTo("01234567".ToByteSequence()),
+        nameof(result)
+      );
+    }
+  }
+
+  [Test]
+  public void UdpReceiveAsync_DataFormat_HexASCIIText()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, ServiceProvider);
+
+    client.ERXUDPDataFormat = SkStackERXUDPDataFormat.HexAsciiText;
+
+    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.HexAsciiText);
+
+    stream.ResponseWriter.WriteLine("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 0123456789ABCDEF");
+
+    using var cts = new CancellationTokenSource();
+
+    cts.CancelAfter(TimeSpan.FromSeconds(1.0));
+
+    SkStackUdpReceiveResult result = null;
+
+    try {
+      Assert.DoesNotThrowAsync(async () => {
+        result = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
+      });
+
+      Assert.IsNotNull(result);
+      Assert.That(
+        result.Buffer,
+        Is.EqualTo(new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF }),
+        nameof(result)
+      );
+
+      Assert.DoesNotThrow(() => result.Dispose(), $"{nameof(result)}.Dispose #1");
+      Assert.Throws<ObjectDisposedException>(() => Assert.AreEqual(result.Buffer.Length, 0));
+      Assert.DoesNotThrow(() => result.Dispose(), $"{nameof(result)}.Dispose #2");
+    }
+    finally {
+      result?.Dispose();
     }
   }
 }

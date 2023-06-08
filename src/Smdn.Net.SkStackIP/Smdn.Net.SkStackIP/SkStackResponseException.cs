@@ -3,11 +3,11 @@
 
 using System;
 
-namespace Smdn.Net.SkStackIP {
-  public abstract class SkStackResponseException : InvalidOperationException {
-    protected SkStackResponseException(string message, Exception innerException = null)
-      : base(message: message, innerException: innerException)
-    {
-    }
+namespace Smdn.Net.SkStackIP;
+
+public abstract class SkStackResponseException : InvalidOperationException {
+  protected SkStackResponseException(string message, Exception innerException = null)
+    : base(message: message, innerException: innerException)
+  {
   }
 }

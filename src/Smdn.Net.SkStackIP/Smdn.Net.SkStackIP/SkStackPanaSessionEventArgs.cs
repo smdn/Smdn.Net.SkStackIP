@@ -6,13 +6,13 @@ using System.Net;
 
 using Smdn.Net.SkStackIP.Protocol;
 
-namespace Smdn.Net.SkStackIP {
-  public sealed class SkStackPanaSessionEventArgs : SkStackEventArgs {
-    public IPAddress PanaSessionPeerAddress => base.SenderAddress;
+namespace Smdn.Net.SkStackIP;
 
-    internal SkStackPanaSessionEventArgs(SkStackEvent baseEvent)
-      : base(baseEvent)
-    {
-    }
+public sealed class SkStackPanaSessionEventArgs : SkStackEventArgs {
+  public IPAddress PanaSessionPeerAddress => base.SenderAddress;
+
+  internal SkStackPanaSessionEventArgs(SkStackEvent baseEvent)
+    : base(baseEvent)
+  {
   }
 }

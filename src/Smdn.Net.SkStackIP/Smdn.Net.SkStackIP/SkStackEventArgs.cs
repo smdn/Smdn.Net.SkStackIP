@@ -6,15 +6,15 @@ using System.Net;
 
 using Smdn.Net.SkStackIP.Protocol;
 
-namespace Smdn.Net.SkStackIP {
-  public class SkStackEventArgs : EventArgs {
-    private protected IPAddress SenderAddress { get; }
-    public SkStackEventNumber EventNumber { get; }
+namespace Smdn.Net.SkStackIP;
 
-    internal SkStackEventArgs(SkStackEvent baseEvent)
-    {
-      this.SenderAddress = baseEvent.SenderAddress;
-      this.EventNumber = baseEvent.Number;
-    }
+public class SkStackEventArgs : EventArgs {
+  private protected IPAddress SenderAddress { get; }
+  public SkStackEventNumber EventNumber { get; }
+
+  internal SkStackEventArgs(SkStackEvent baseEvent)
+  {
+    this.SenderAddress = baseEvent.SenderAddress;
+    this.EventNumber = baseEvent.Number;
   }
 }

@@ -7,24 +7,24 @@ using NUnit.Framework;
 
 using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
-namespace Smdn.Net.SkStackIP {
-  [TestFixture]
-  public class SkStackClientCommandsSKRESETTests : SkStackClientTestsBase {
-    [Test]
-    public void SKRESET()
-    {
-      var stream = new PseudoSkStackStream();
+namespace Smdn.Net.SkStackIP;
 
-      stream.ResponseWriter.WriteLine("OK");
+[TestFixture]
+public class SkStackClientCommandsSKRESETTests : SkStackClientTestsBase {
+  [Test]
+  public void SKRESET()
+  {
+    var stream = new PseudoSkStackStream();
 
-      using var client = new SkStackClient(stream, ServiceProvider);
+    stream.ResponseWriter.WriteLine("OK");
 
-      Assert.DoesNotThrowAsync(async () => await client.SendSKRESETAsync());
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.That(
-        stream.ReadSentData(),
-        Is.EqualTo("SKRESET\r\n".ToByteSequence())
-      );
-    }
+    Assert.DoesNotThrowAsync(async () => await client.SendSKRESETAsync());
+
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("SKRESET\r\n".ToByteSequence())
+    );
   }
 }

@@ -4,31 +4,31 @@
 using System;
 using System.Collections.Generic;
 
-namespace Smdn.Net.SkStackIP.Protocol {
-  /// <remarks>reference: BP35A1コマンドリファレンス 7. エラーコード</remarks>
-  internal static class SkStackErrorCodeNames {
-    private static readonly IReadOnlyDictionary<SkStackErrorCode, ReadOnlyMemory<byte>> errorCodeAndNames =
-      new Dictionary<SkStackErrorCode, ReadOnlyMemory<byte>>() {
-        { SkStackErrorCode.ER01, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER01)) },
-        { SkStackErrorCode.ER02, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER02)) },
-        { SkStackErrorCode.ER03, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER03)) },
-        { SkStackErrorCode.ER04, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER04)) },
-        { SkStackErrorCode.ER05, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER05)) },
-        { SkStackErrorCode.ER06, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER06)) },
-        { SkStackErrorCode.ER07, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER07)) },
-        { SkStackErrorCode.ER08, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER08)) },
-        { SkStackErrorCode.ER09, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER09)) },
-        { SkStackErrorCode.ER10, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER10)) },
-      };
+namespace Smdn.Net.SkStackIP.Protocol;
 
-    public static SkStackErrorCode ParseErrorCode(ReadOnlySpan<byte> errorCodeName)
-    {
-      foreach (var (code, name) in errorCodeAndNames) {
-        if (name.Span.SequenceEqual(errorCodeName))
-          return code;
-      }
+/// <remarks>reference: BP35A1コマンドリファレンス 7. エラーコード</remarks>
+internal static class SkStackErrorCodeNames {
+  private static readonly IReadOnlyDictionary<SkStackErrorCode, ReadOnlyMemory<byte>> errorCodeAndNames =
+    new Dictionary<SkStackErrorCode, ReadOnlyMemory<byte>>() {
+      { SkStackErrorCode.ER01, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER01)) },
+      { SkStackErrorCode.ER02, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER02)) },
+      { SkStackErrorCode.ER03, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER03)) },
+      { SkStackErrorCode.ER04, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER04)) },
+      { SkStackErrorCode.ER05, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER05)) },
+      { SkStackErrorCode.ER06, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER06)) },
+      { SkStackErrorCode.ER07, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER07)) },
+      { SkStackErrorCode.ER08, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER08)) },
+      { SkStackErrorCode.ER09, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER09)) },
+      { SkStackErrorCode.ER10, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER10)) },
+    };
 
-      return SkStackErrorCode.Undefined;
+  public static SkStackErrorCode ParseErrorCode(ReadOnlySpan<byte> errorCodeName)
+  {
+    foreach (var (code, name) in errorCodeAndNames) {
+      if (name.Span.SequenceEqual(errorCodeName))
+        return code;
     }
+
+    return SkStackErrorCode.Undefined;
   }
 }

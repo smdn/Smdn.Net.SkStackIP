@@ -10,87 +10,87 @@ using NUnit.Framework;
 
 using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
-namespace Smdn.Net.SkStackIP {
-  [TestFixture]
-  public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
-    [Test]
-    public void SKSETPWD()
-    {
-      var stream = new PseudoSkStackStream();
+namespace Smdn.Net.SkStackIP;
 
-      stream.ResponseWriter.WriteLine("OK");
+[TestFixture]
+public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
+  [Test]
+  public void SKSETPWD()
+  {
+    var stream = new PseudoSkStackStream();
 
-      using var client = new SkStackClient(stream, ServiceProvider);
-      SkStackResponse response = null;
+    stream.ResponseWriter.WriteLine("OK");
 
-      Assert.DoesNotThrowAsync(async () => response = await client.SendSKSETPWDAsync("0123456789AB"));
+    using var client = new SkStackClient(stream, ServiceProvider);
+    SkStackResponse response = null;
 
-      Assert.IsNotNull(response);
+    Assert.DoesNotThrowAsync(async () => response = await client.SendSKSETPWDAsync("0123456789AB"));
 
-      Assert.That(
-        stream.ReadSentData(),
-        Is.EqualTo("SKSETPWD C 0123456789AB\r\n".ToByteSequence())
-      );
-    }
+    Assert.IsNotNull(response);
 
-    [Test]
-    public void SKSETPWD_Password_String_Null()
-    {
-      var stream = new PseudoSkStackStream();
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("SKSETPWD C 0123456789AB\r\n".ToByteSequence())
+    );
+  }
 
-      using var client = new SkStackClient(stream, ServiceProvider);
+  [Test]
+  public void SKSETPWD_Password_String_Null()
+  {
+    var stream = new PseudoSkStackStream();
 
-      Assert.Throws<ArgumentNullException>(() => client.SendSKSETPWDAsync(password: (string)null));
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.IsEmpty(stream.ReadSentData());
-    }
+    Assert.Throws<ArgumentNullException>(() => client.SendSKSETPWDAsync(password: (string)null));
 
-    [Test]
-    public void SKSETPWD_Password_String_Empty()
-    {
-      var stream = new PseudoSkStackStream();
+    Assert.IsEmpty(stream.ReadSentData());
+  }
 
-      using var client = new SkStackClient(stream, ServiceProvider);
+  [Test]
+  public void SKSETPWD_Password_String_Empty()
+  {
+    var stream = new PseudoSkStackStream();
 
-      Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: string.Empty));
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.IsEmpty(stream.ReadSentData());
-    }
+    Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: string.Empty));
 
-    [Test]
-    public void SKSETPWD_Password_ReadOnlyByteMemory_Empty()
-    {
-      var stream = new PseudoSkStackStream();
+    Assert.IsEmpty(stream.ReadSentData());
+  }
 
-      using var client = new SkStackClient(stream, ServiceProvider);
+  [Test]
+  public void SKSETPWD_Password_ReadOnlyByteMemory_Empty()
+  {
+    var stream = new PseudoSkStackStream();
 
-      Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: ReadOnlyMemory<byte>.Empty));
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.IsEmpty(stream.ReadSentData());
-    }
+    Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: ReadOnlyMemory<byte>.Empty));
 
-    [Test]
-    public void SKSETPWD_Password_String_TooLong()
-    {
-      var stream = new PseudoSkStackStream();
+    Assert.IsEmpty(stream.ReadSentData());
+  }
 
-      using var client = new SkStackClient(stream, ServiceProvider);
+  [Test]
+  public void SKSETPWD_Password_String_TooLong()
+  {
+    var stream = new PseudoSkStackStream();
 
-      Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012"));
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.IsEmpty(stream.ReadSentData());
-    }
+    Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012"));
 
-    [Test]
-    public void SKSETPWD_Password_ReadOnlyByteMemory_TooLong()
-    {
-      var stream = new PseudoSkStackStream();
+    Assert.IsEmpty(stream.ReadSentData());
+  }
 
-      using var client = new SkStackClient(stream, ServiceProvider);
+  [Test]
+  public void SKSETPWD_Password_ReadOnlyByteMemory_TooLong()
+  {
+    var stream = new PseudoSkStackStream();
 
-      Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012".ToByteSequence()));
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.IsEmpty(stream.ReadSentData());
-    }
+    Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012".ToByteSequence()));
+
+    Assert.IsEmpty(stream.ReadSentData());
   }
 }

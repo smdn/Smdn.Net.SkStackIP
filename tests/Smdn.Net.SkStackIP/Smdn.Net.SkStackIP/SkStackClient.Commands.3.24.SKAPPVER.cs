@@ -7,29 +7,29 @@ using NUnit.Framework;
 
 using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
-namespace Smdn.Net.SkStackIP {
-  [TestFixture]
-  public class SkStackClientCommandsSKAPPVERTests : SkStackClientTestsBase {
-    [Test]
-    public void SKAPPVER()
-    {
-      var stream = new PseudoSkStackStream();
+namespace Smdn.Net.SkStackIP;
 
-      stream.ResponseWriter.WriteLine("EAPPVER rev26e");
-      stream.ResponseWriter.WriteLine("OK");
+[TestFixture]
+public class SkStackClientCommandsSKAPPVERTests : SkStackClientTestsBase {
+  [Test]
+  public void SKAPPVER()
+  {
+    var stream = new PseudoSkStackStream();
 
-      using var client = new SkStackClient(stream, ServiceProvider);
-      SkStackResponse<string> response = null;
+    stream.ResponseWriter.WriteLine("EAPPVER rev26e");
+    stream.ResponseWriter.WriteLine("OK");
 
-      Assert.DoesNotThrowAsync(async () => response = await client.SendSKAPPVERAsync());
+    using var client = new SkStackClient(stream, ServiceProvider);
+    SkStackResponse<string> response = null;
 
-      Assert.IsNotNull(response.Payload);
-      Assert.AreEqual("rev26e", response.Payload);
+    Assert.DoesNotThrowAsync(async () => response = await client.SendSKAPPVERAsync());
 
-      Assert.That(
-        stream.ReadSentData(),
-        Is.EqualTo("SKAPPVER\r\n".ToByteSequence())
-      );
-    }
+    Assert.IsNotNull(response.Payload);
+    Assert.AreEqual("rev26e", response.Payload);
+
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("SKAPPVER\r\n".ToByteSequence())
+    );
   }
 }

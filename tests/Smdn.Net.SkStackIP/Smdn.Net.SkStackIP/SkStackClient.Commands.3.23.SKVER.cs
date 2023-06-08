@@ -7,29 +7,29 @@ using NUnit.Framework;
 
 using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
-namespace Smdn.Net.SkStackIP {
-  [TestFixture]
-  public class SkStackClientCommandsSKVERTests : SkStackClientTestsBase {
-    [Test]
-    public void SKVER()
-    {
-      var stream = new PseudoSkStackStream();
+namespace Smdn.Net.SkStackIP;
 
-      stream.ResponseWriter.WriteLine("EVER 1.2.10");
-      stream.ResponseWriter.WriteLine("OK");
+[TestFixture]
+public class SkStackClientCommandsSKVERTests : SkStackClientTestsBase {
+  [Test]
+  public void SKVER()
+  {
+    var stream = new PseudoSkStackStream();
 
-      using var client = new SkStackClient(stream, ServiceProvider);
-      SkStackResponse<Version> response = null;
+    stream.ResponseWriter.WriteLine("EVER 1.2.10");
+    stream.ResponseWriter.WriteLine("OK");
 
-      Assert.DoesNotThrowAsync(async () => response = await client.SendSKVERAsync());
+    using var client = new SkStackClient(stream, ServiceProvider);
+    SkStackResponse<Version> response = null;
 
-      Assert.IsNotNull(response.Payload);
-      Assert.AreEqual(new Version(1, 2, 10), response.Payload);
+    Assert.DoesNotThrowAsync(async () => response = await client.SendSKVERAsync());
 
-      Assert.That(
-        stream.ReadSentData(),
-        Is.EqualTo("SKVER\r\n".ToByteSequence())
-      );
-    }
+    Assert.IsNotNull(response.Payload);
+    Assert.AreEqual(new Version(1, 2, 10), response.Payload);
+
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("SKVER\r\n".ToByteSequence())
+    );
   }
 }

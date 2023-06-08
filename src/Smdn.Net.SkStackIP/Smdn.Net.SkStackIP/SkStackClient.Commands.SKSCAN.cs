@@ -13,276 +13,276 @@ using Smdn.Net.SkStackIP.Protocol;
 using Smdn.Text.Unicode.ControlPictures;
 #endif
 
-namespace Smdn.Net.SkStackIP {
-  partial class SkStackClient {
-    private abstract class SKSCANEventHandler<TScanResult> : SkStackEventHandlerBase {
-      public TScanResult ScanResult { get; protected set; }
+namespace Smdn.Net.SkStackIP;
 
-      public override abstract bool TryProcessEvent(SkStackEvent ev);
-      public override abstract void ProcessSubsequentEvent(ISkStackSequenceParserContext context);
+partial class SkStackClient {
+  private abstract class SKSCANEventHandler<TScanResult> : SkStackEventHandlerBase {
+    public TScanResult ScanResult { get; protected set; }
+
+    public override abstract bool TryProcessEvent(SkStackEvent ev);
+    public override abstract void ProcessSubsequentEvent(ISkStackSequenceParserContext context);
+  }
+
+  /// <summary>`SKSCAN 0`</summary>
+  /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
+  [CLSCompliant(false)]
+  public ValueTask<(
+    SkStackResponse Response,
+    IReadOnlyDictionary<SkStackChannel, double> ScanResult
+  )> SendSKSCANEnergyDetectScanAsync(
+    TimeSpan duration = default,
+    uint channelMask = SKSCANDefaultChannelMask,
+    CancellationToken cancellationToken = default
+  )
+    => SendSKSCANAsyncCore(
+      mode: SKSCANMode.EnergyDetectScan,
+      channelMask: channelMask,
+      durationFactor: TranslateToSKSCANDurationFactorOrThrowIfOutOfRange(duration == default ? SKSCANDefaultDuration : duration, nameof(duration)),
+      commandEventHandler: new SKSCANEnergyDetectScanEventHandler(),
+      cancellationToken: cancellationToken
+    );
+
+  /// <summary>`SKSCAN 0`</summary>
+  /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
+  [CLSCompliant(false)]
+  public ValueTask<(
+    SkStackResponse Response,
+    IReadOnlyDictionary<SkStackChannel, double> ScanResult
+  )> SendSKSCANEnergyDetectScanAsync(
+    int durationFactor,
+    uint channelMask = SKSCANDefaultChannelMask,
+    CancellationToken cancellationToken = default
+  )
+    => SendSKSCANAsyncCore(
+      mode: SKSCANMode.EnergyDetectScan,
+      channelMask: channelMask,
+      durationFactor: ThrowIfDurationFactorOutOfRange(durationFactor, nameof(durationFactor)),
+      commandEventHandler: new SKSCANEnergyDetectScanEventHandler(),
+      cancellationToken: cancellationToken
+    );
+
+  private class SKSCANEnergyDetectScanEventHandler : SKSCANEventHandler<IReadOnlyDictionary<SkStackChannel, double>> {
+    public override bool TryProcessEvent(SkStackEvent ev)
+    {
+      if (ev.Number == SkStackEventNumber.EnergyDetectScanCompleted)
+        return false; // process subsequent event
+
+      return false;
     }
 
-    /// <summary>`SKSCAN 0`</summary>
-    /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
-    [CLSCompliant(false)]
-    public ValueTask<(
-      SkStackResponse Response,
-      IReadOnlyDictionary<SkStackChannel, double> ScanResult
-    )> SendSKSCANEnergyDetectScanAsync(
-      TimeSpan duration = default,
-      uint channelMask = SKSCANDefaultChannelMask,
-      CancellationToken cancellationToken = default
-    )
-      => SendSKSCANAsyncCore(
-        mode: SKSCANMode.EnergyDetectScan,
-        channelMask: channelMask,
-        durationFactor: TranslateToSKSCANDurationFactorOrThrowIfOutOfRange(duration == default ? SKSCANDefaultDuration : duration, nameof(duration)),
-        commandEventHandler: new SKSCANEnergyDetectScanEventHandler(),
-        cancellationToken: cancellationToken
-      );
+    public override void ProcessSubsequentEvent(ISkStackSequenceParserContext context)
+    {
+      var reader = context.CreateReader(); // retain current buffer
 
-    /// <summary>`SKSCAN 0`</summary>
-    /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
-    [CLSCompliant(false)]
-    public ValueTask<(
-      SkStackResponse Response,
-      IReadOnlyDictionary<SkStackChannel, double> ScanResult
-    )> SendSKSCANEnergyDetectScanAsync(
-      int durationFactor,
-      uint channelMask = SKSCANDefaultChannelMask,
-      CancellationToken cancellationToken = default
-    )
-      => SendSKSCANAsyncCore(
-        mode: SKSCANMode.EnergyDetectScan,
-        channelMask: channelMask,
-        durationFactor: ThrowIfDurationFactorOutOfRange(durationFactor, nameof(durationFactor)),
-        commandEventHandler: new SKSCANEnergyDetectScanEventHandler(),
-        cancellationToken: cancellationToken
-      );
+      if (SkStackEventParser.ExpectEEDSCAN(context, out var result)) {
+        ScanResult = result;
+        context.Complete();
+      }
+      else {
+        context.SetAsIncomplete(reader); // revert buffer
+      }
+    }
+  }
 
-    private class SKSCANEnergyDetectScanEventHandler : SKSCANEventHandler<IReadOnlyDictionary<SkStackChannel, double>> {
-      public override bool TryProcessEvent(SkStackEvent ev)
-      {
-        if (ev.Number == SkStackEventNumber.EnergyDetectScanCompleted)
+  /// <summary>`SKSCAN 2`</summary>
+  /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
+  [CLSCompliant(false)]
+  public ValueTask<(
+    SkStackResponse Response,
+    IReadOnlyList<SkStackPanDescription> PanDescriptions
+  )> SendSKSCANActiveScanPairAsync(
+    TimeSpan duration = default,
+    uint channelMask = SKSCANDefaultChannelMask,
+    CancellationToken cancellationToken = default
+  )
+    => SendSKSCANAsyncCore(
+      mode: SKSCANMode.ActiveScanPair,
+      channelMask: channelMask,
+      durationFactor: TranslateToSKSCANDurationFactorOrThrowIfOutOfRange(duration == default ? SKSCANDefaultDuration : duration, nameof(duration)),
+      commandEventHandler: new SKSCANActiveScanEventHandler(expectPairingId: true),
+      cancellationToken: cancellationToken
+    );
+
+  /// <summary>`SKSCAN 2`</summary>
+  /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
+  [CLSCompliant(false)]
+  public ValueTask<(
+    SkStackResponse Response,
+    IReadOnlyList<SkStackPanDescription> PanDescriptions
+  )> SendSKSCANActiveScanPairAsync(
+    int durationFactor,
+    uint channelMask = SKSCANDefaultChannelMask,
+    CancellationToken cancellationToken = default
+  )
+    => SendSKSCANAsyncCore(
+      mode: SKSCANMode.ActiveScanPair,
+      channelMask: channelMask,
+      durationFactor: ThrowIfDurationFactorOutOfRange(durationFactor, nameof(durationFactor)),
+      commandEventHandler: new SKSCANActiveScanEventHandler(expectPairingId: true),
+      cancellationToken: cancellationToken
+    );
+
+  /// <summary>`SKSCAN 3`</summary>
+  /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
+  [CLSCompliant(false)]
+  public ValueTask<(
+    SkStackResponse Response,
+    IReadOnlyList<SkStackPanDescription> PanDescriptions
+  )>
+  SendSKSCANActiveScanAsync(
+    TimeSpan duration = default,
+    uint channelMask = SKSCANDefaultChannelMask,
+    CancellationToken cancellationToken = default
+  )
+    => SendSKSCANAsyncCore(
+      mode: SKSCANMode.ActiveScan,
+      channelMask: channelMask,
+      durationFactor: TranslateToSKSCANDurationFactorOrThrowIfOutOfRange(duration == default ? SKSCANDefaultDuration : duration, nameof(duration)),
+      commandEventHandler: new SKSCANActiveScanEventHandler(expectPairingId: false),
+      cancellationToken: cancellationToken
+    );
+
+  /// <summary>`SKSCAN 3`</summary>
+  /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
+  [CLSCompliant(false)]
+  public ValueTask<(
+    SkStackResponse Response,
+    IReadOnlyList<SkStackPanDescription> PanDescriptions
+  )>
+  SendSKSCANActiveScanAsync(
+    int durationFactor,
+    uint channelMask = SKSCANDefaultChannelMask,
+    CancellationToken cancellationToken = default
+  )
+    => SendSKSCANAsyncCore(
+      mode: SKSCANMode.ActiveScan,
+      channelMask: channelMask,
+      durationFactor: ThrowIfDurationFactorOutOfRange(durationFactor, nameof(durationFactor)),
+      commandEventHandler: new SKSCANActiveScanEventHandler(expectPairingId: false),
+      cancellationToken: cancellationToken
+    );
+
+  private class SKSCANActiveScanEventHandler : SKSCANEventHandler<IReadOnlyList<SkStackPanDescription>> {
+    private readonly bool expectPairingId;
+
+    private const int expectedMaxPanDescriptionCount = 1;
+    private List<SkStackPanDescription> scanResult = null;
+
+    public SKSCANActiveScanEventHandler(bool expectPairingId)
+    {
+      this.expectPairingId = expectPairingId;
+    }
+
+    public override bool TryProcessEvent(SkStackEvent ev)
+    {
+      switch (ev.Number) {
+        case SkStackEventNumber.BeaconReceived:
           return false; // process subsequent event
 
-        return false;
-      }
+        case SkStackEventNumber.ActiveScanCompleted:
+          ScanResult = (IReadOnlyList<SkStackPanDescription>)scanResult ?? Array.Empty<SkStackPanDescription>();
+          return true; // completed
 
-      public override void ProcessSubsequentEvent(ISkStackSequenceParserContext context)
-      {
-        var reader = context.CreateReader(); // retain current buffer
-
-        if (SkStackEventParser.ExpectEEDSCAN(context, out var result)) {
-          ScanResult = result;
-          context.Complete();
-        }
-        else {
-          context.SetAsIncomplete(reader); // revert buffer
-        }
+        default:
+          return false;
       }
     }
 
-    /// <summary>`SKSCAN 2`</summary>
-    /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
-    [CLSCompliant(false)]
-    public ValueTask<(
-      SkStackResponse Response,
-      IReadOnlyList<SkStackPanDescription> PanDescriptions
-    )> SendSKSCANActiveScanPairAsync(
-      TimeSpan duration = default,
-      uint channelMask = SKSCANDefaultChannelMask,
-      CancellationToken cancellationToken = default
-    )
-      => SendSKSCANAsyncCore(
-        mode: SKSCANMode.ActiveScanPair,
-        channelMask: channelMask,
-        durationFactor: TranslateToSKSCANDurationFactorOrThrowIfOutOfRange(duration == default ? SKSCANDefaultDuration : duration, nameof(duration)),
-        commandEventHandler: new SKSCANActiveScanEventHandler(expectPairingId: true),
-        cancellationToken: cancellationToken
-      );
-
-    /// <summary>`SKSCAN 2`</summary>
-    /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
-    [CLSCompliant(false)]
-    public ValueTask<(
-      SkStackResponse Response,
-      IReadOnlyList<SkStackPanDescription> PanDescriptions
-    )> SendSKSCANActiveScanPairAsync(
-      int durationFactor,
-      uint channelMask = SKSCANDefaultChannelMask,
-      CancellationToken cancellationToken = default
-    )
-      => SendSKSCANAsyncCore(
-        mode: SKSCANMode.ActiveScanPair,
-        channelMask: channelMask,
-        durationFactor: ThrowIfDurationFactorOutOfRange(durationFactor, nameof(durationFactor)),
-        commandEventHandler: new SKSCANActiveScanEventHandler(expectPairingId: true),
-        cancellationToken: cancellationToken
-      );
-
-    /// <summary>`SKSCAN 3`</summary>
-    /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
-    [CLSCompliant(false)]
-    public ValueTask<(
-      SkStackResponse Response,
-      IReadOnlyList<SkStackPanDescription> PanDescriptions
-    )>
-    SendSKSCANActiveScanAsync(
-      TimeSpan duration = default,
-      uint channelMask = SKSCANDefaultChannelMask,
-      CancellationToken cancellationToken = default
-    )
-      => SendSKSCANAsyncCore(
-        mode: SKSCANMode.ActiveScan,
-        channelMask: channelMask,
-        durationFactor: TranslateToSKSCANDurationFactorOrThrowIfOutOfRange(duration == default ? SKSCANDefaultDuration : duration, nameof(duration)),
-        commandEventHandler: new SKSCANActiveScanEventHandler(expectPairingId: false),
-        cancellationToken: cancellationToken
-      );
-
-    /// <summary>`SKSCAN 3`</summary>
-    /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
-    [CLSCompliant(false)]
-    public ValueTask<(
-      SkStackResponse Response,
-      IReadOnlyList<SkStackPanDescription> PanDescriptions
-    )>
-    SendSKSCANActiveScanAsync(
-      int durationFactor,
-      uint channelMask = SKSCANDefaultChannelMask,
-      CancellationToken cancellationToken = default
-    )
-      => SendSKSCANAsyncCore(
-        mode: SKSCANMode.ActiveScan,
-        channelMask: channelMask,
-        durationFactor: ThrowIfDurationFactorOutOfRange(durationFactor, nameof(durationFactor)),
-        commandEventHandler: new SKSCANActiveScanEventHandler(expectPairingId: false),
-        cancellationToken: cancellationToken
-      );
-
-    private class SKSCANActiveScanEventHandler : SKSCANEventHandler<IReadOnlyList<SkStackPanDescription>> {
-      private readonly bool expectPairingId;
-
-      private const int expectedMaxPanDescriptionCount = 1;
-      private List<SkStackPanDescription> scanResult = null;
-
-      public SKSCANActiveScanEventHandler(bool expectPairingId)
-      {
-        this.expectPairingId = expectPairingId;
-      }
-
-      public override bool TryProcessEvent(SkStackEvent ev)
-      {
-        switch (ev.Number) {
-          case SkStackEventNumber.BeaconReceived:
-            return false; // process subsequent event
-
-          case SkStackEventNumber.ActiveScanCompleted:
-            ScanResult = (IReadOnlyList<SkStackPanDescription>)scanResult ?? Array.Empty<SkStackPanDescription>();
-            return true; // completed
-
-          default:
-            return false;
-        }
-      }
-
-      public override void ProcessSubsequentEvent(ISkStackSequenceParserContext context)
-      {
-        var reader = context.CreateReader(); // retain current buffer
-
-        if (SkStackEventParser.ExpectEPANDESC(context, expectPairingId, out var pandesc)) {
-          scanResult ??= new(capacity: expectedMaxPanDescriptionCount);
-          scanResult.Add(pandesc);
-          context.Continue();
-        }
-        else {
-          context.SetAsIncomplete(reader); // revert buffer
-        }
-      }
-    }
-
-    private enum SKSCANMode : byte {
-      EnergyDetectScan = 0,
-      ActiveScanPair = 2,
-      ActiveScan = 3,
-    }
-
-    private const uint SKSCANDefaultChannelMask = 0xFFFFFFFF;
-
-    private const byte SKSCANMinDurationFactor = 0x0; // 0
-    private const byte SKSCANMaxDurationFactor = 0xE; // 14
-    private const byte SKSCANDefaultDurationFactor = 0x2; // 2
-
-    private static byte ThrowIfDurationFactorOutOfRange(int durationFactor, string paramName)
+    public override void ProcessSubsequentEvent(ISkStackSequenceParserContext context)
     {
-      if (!(SKSCANMinDurationFactor <= durationFactor && durationFactor <= SKSCANMaxDurationFactor))
-        throw new ArgumentOutOfRangeException(paramName, durationFactor, $"must be in range of {SKSCANMinDurationFactor}~{SKSCANMaxDurationFactor}");
+      var reader = context.CreateReader(); // retain current buffer
 
-      return (byte)durationFactor;
+      if (SkStackEventParser.ExpectEPANDESC(context, expectPairingId, out var pandesc)) {
+        scanResult ??= new(capacity: expectedMaxPanDescriptionCount);
+        scanResult.Add(pandesc);
+        context.Continue();
+      }
+      else {
+        context.SetAsIncomplete(reader); // revert buffer
+      }
     }
+  }
 
-    private static TimeSpan ToSKSCANDuration(int factor)
-      => TimeSpan.FromMilliseconds(9.6) * (Math.Pow(2.0, factor) + 1);
+  private enum SKSCANMode : byte {
+    EnergyDetectScan = 0,
+    ActiveScanPair = 2,
+    ActiveScan = 3,
+  }
 
-    public static readonly TimeSpan SKSCANMinDuration = ToSKSCANDuration(SKSCANMinDurationFactor);
-    public static readonly TimeSpan SKSCANMaxDuration = ToSKSCANDuration(SKSCANMaxDurationFactor);
-    public static readonly TimeSpan SKSCANDefaultDuration = ToSKSCANDuration(SKSCANDefaultDurationFactor);
+  private const uint SKSCANDefaultChannelMask = 0xFFFFFFFF;
 
-    private static byte TranslateToSKSCANDurationFactorOrThrowIfOutOfRange(TimeSpan duration, string paramName)
-    {
-      if (SKSCANMinDuration <= duration && duration <= SKSCANMaxDuration) {
-        for (byte durationFactor = SKSCANMinDurationFactor + 1; durationFactor <= SKSCANMaxDurationFactor; durationFactor++) {
-          if (duration < ToSKSCANDuration(durationFactor))
-            return (byte)(durationFactor - 1);
-        }
+  private const byte SKSCANMinDurationFactor = 0x0; // 0
+  private const byte SKSCANMaxDurationFactor = 0xE; // 14
+  private const byte SKSCANDefaultDurationFactor = 0x2; // 2
 
-        return SKSCANMaxDurationFactor;
+  private static byte ThrowIfDurationFactorOutOfRange(int durationFactor, string paramName)
+  {
+    if (!(SKSCANMinDurationFactor <= durationFactor && durationFactor <= SKSCANMaxDurationFactor))
+      throw new ArgumentOutOfRangeException(paramName, durationFactor, $"must be in range of {SKSCANMinDurationFactor}~{SKSCANMaxDurationFactor}");
+
+    return (byte)durationFactor;
+  }
+
+  private static TimeSpan ToSKSCANDuration(int factor)
+    => TimeSpan.FromMilliseconds(9.6) * (Math.Pow(2.0, factor) + 1);
+
+  public static readonly TimeSpan SKSCANMinDuration = ToSKSCANDuration(SKSCANMinDurationFactor);
+  public static readonly TimeSpan SKSCANMaxDuration = ToSKSCANDuration(SKSCANMaxDurationFactor);
+  public static readonly TimeSpan SKSCANDefaultDuration = ToSKSCANDuration(SKSCANDefaultDurationFactor);
+
+  private static byte TranslateToSKSCANDurationFactorOrThrowIfOutOfRange(TimeSpan duration, string paramName)
+  {
+    if (SKSCANMinDuration <= duration && duration <= SKSCANMaxDuration) {
+      for (byte durationFactor = SKSCANMinDurationFactor + 1; durationFactor <= SKSCANMaxDurationFactor; durationFactor++) {
+        if (duration < ToSKSCANDuration(durationFactor))
+          return (byte)(durationFactor - 1);
       }
 
-      throw new ArgumentOutOfRangeException(paramName, duration, $"must be in range of {SKSCANMinDuration}~{SKSCANMaxDuration}");
+      return SKSCANMaxDurationFactor;
     }
 
-    private async ValueTask<(
-      SkStackResponse Response,
-      TScanResult ScanResult
-    )> SendSKSCANAsyncCore<TScanResult>(
-      SKSCANMode mode,
-      uint channelMask,
-      byte durationFactor,
-      SKSCANEventHandler<TScanResult> commandEventHandler,
-      CancellationToken cancellationToken
-    )
-    {
-      SkStackResponse resp = default;
-      byte[] CHANNEL_MASK = default;
+    throw new ArgumentOutOfRangeException(paramName, duration, $"must be in range of {SKSCANMinDuration}~{SKSCANMaxDuration}");
+  }
 
-      try {
-        CHANNEL_MASK = ArrayPool<byte>.Shared.Rent(8);
+  private async ValueTask<(
+    SkStackResponse Response,
+    TScanResult ScanResult
+  )> SendSKSCANAsyncCore<TScanResult>(
+    SKSCANMode mode,
+    uint channelMask,
+    byte durationFactor,
+    SKSCANEventHandler<TScanResult> commandEventHandler,
+    CancellationToken cancellationToken
+  )
+  {
+    SkStackResponse resp = default;
+    byte[] CHANNEL_MASK = default;
 
-        SkStackCommandArgs.TryConvertToUINT32(CHANNEL_MASK, channelMask, out var lengthChannelMask, zeroPadding: true);
+    try {
+      CHANNEL_MASK = ArrayPool<byte>.Shared.Rent(8);
 
-        resp = await SendCommandAsync(
-          command: SkStackCommandNames.SKSCAN,
-          arguments: SkStackCommandArgs.CreateEnumerable(
-            SkStackCommandArgs.GetHex((byte)mode),
-            CHANNEL_MASK.AsMemory(0, lengthChannelMask),
-            SkStackCommandArgs.GetHex((byte)durationFactor)
-          ),
-          commandEventHandler: commandEventHandler,
-          cancellationToken: cancellationToken,
-          throwIfErrorStatus: true
-        ).ConfigureAwait(false);
-      }
-      finally {
-        if (CHANNEL_MASK is not null)
-          ArrayPool<byte>.Shared.Return(CHANNEL_MASK);
-      }
+      SkStackCommandArgs.TryConvertToUINT32(CHANNEL_MASK, channelMask, out var lengthChannelMask, zeroPadding: true);
 
-      return (
-        Response: resp,
-        ScanResult: commandEventHandler.ScanResult
-      );
+      resp = await SendCommandAsync(
+        command: SkStackCommandNames.SKSCAN,
+        arguments: SkStackCommandArgs.CreateEnumerable(
+          SkStackCommandArgs.GetHex((byte)mode),
+          CHANNEL_MASK.AsMemory(0, lengthChannelMask),
+          SkStackCommandArgs.GetHex((byte)durationFactor)
+        ),
+        commandEventHandler: commandEventHandler,
+        cancellationToken: cancellationToken,
+        throwIfErrorStatus: true
+      ).ConfigureAwait(false);
     }
+    finally {
+      if (CHANNEL_MASK is not null)
+        ArrayPool<byte>.Shared.Return(CHANNEL_MASK);
+    }
+
+    return (
+      Response: resp,
+      ScanResult: commandEventHandler.ScanResult
+    );
   }
 }

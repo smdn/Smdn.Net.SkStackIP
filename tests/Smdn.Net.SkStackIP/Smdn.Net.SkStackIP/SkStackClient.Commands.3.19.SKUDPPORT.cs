@@ -7,103 +7,103 @@ using NUnit.Framework;
 
 using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
-namespace Smdn.Net.SkStackIP {
-  [TestFixture]
-  public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
-    [Test]
-    public void SKUDPPORT()
-    {
-      var stream = new PseudoSkStackStream();
+namespace Smdn.Net.SkStackIP;
 
-      stream.ResponseWriter.WriteLine("OK");
+[TestFixture]
+public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
+  [Test]
+  public void SKUDPPORT()
+  {
+    var stream = new PseudoSkStackStream();
 
-      using var client = new SkStackClient(stream, ServiceProvider);
-      SkStackResponse response = null;
-      SkStackUdpPort port = default;
+    stream.ResponseWriter.WriteLine("OK");
 
-      Assert.DoesNotThrowAsync(async () => (response, port) = await client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle3, 0x0050));
+    using var client = new SkStackClient(stream, ServiceProvider);
+    SkStackResponse response = null;
+    SkStackUdpPort port = default;
 
-      Assert.IsNotNull(response);
-      Assert.IsTrue(response.Success);
+    Assert.DoesNotThrowAsync(async () => (response, port) = await client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle3, 0x0050));
 
-      Assert.IsFalse(port.IsNull, nameof(port.IsNull));
-      Assert.IsFalse(port.IsUnused, nameof(port.IsUnused));
-      Assert.AreEqual(port.Handle, SkStackUdpPortHandle.Handle3, nameof(port.Handle));
-      Assert.AreEqual(port.Port, 0x0050, nameof(port.Port));
+    Assert.IsNotNull(response);
+    Assert.IsTrue(response.Success);
 
-      Assert.That(
-        stream.ReadSentData(),
-        Is.EqualTo("SKUDPPORT 3 0050\r\n".ToByteSequence())
-      );
-    }
+    Assert.IsFalse(port.IsNull, nameof(port.IsNull));
+    Assert.IsFalse(port.IsUnused, nameof(port.IsUnused));
+    Assert.AreEqual(port.Handle, SkStackUdpPortHandle.Handle3, nameof(port.Handle));
+    Assert.AreEqual(port.Port, 0x0050, nameof(port.Port));
 
-    [Test]
-    public void SKUDPPORTUnset()
-    {
-      var stream = new PseudoSkStackStream();
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("SKUDPPORT 3 0050\r\n".ToByteSequence())
+    );
+  }
 
-      stream.ResponseWriter.WriteLine("OK");
+  [Test]
+  public void SKUDPPORTUnset()
+  {
+    var stream = new PseudoSkStackStream();
 
-      using var client = new SkStackClient(stream, ServiceProvider);
-      SkStackResponse response = null;
+    stream.ResponseWriter.WriteLine("OK");
 
-      Assert.DoesNotThrowAsync(async () => response = await client.SendSKUDPPORTUnsetAsync(SkStackUdpPortHandle.Handle3));
+    using var client = new SkStackClient(stream, ServiceProvider);
+    SkStackResponse response = null;
 
-      Assert.IsNotNull(response);
-      Assert.IsTrue(response.Success);
+    Assert.DoesNotThrowAsync(async () => response = await client.SendSKUDPPORTUnsetAsync(SkStackUdpPortHandle.Handle3));
 
-      Assert.That(
-        stream.ReadSentData(),
-        Is.EqualTo("SKUDPPORT 3 0000\r\n".ToByteSequence())
-      );
-    }
+    Assert.IsNotNull(response);
+    Assert.IsTrue(response.Success);
 
-    [TestCase(-1)]
-    [TestCase(0x0000)]
-    [TestCase(0xFFFF + 1)]
-    [TestCase(int.MinValue)]
-    [TestCase(int.MaxValue)]
-    public void SKUDPPORT_PortOutOfRange(int port)
-    {
-      var stream = new PseudoSkStackStream();
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("SKUDPPORT 3 0000\r\n".ToByteSequence())
+    );
+  }
 
-      using var client = new SkStackClient(stream, ServiceProvider);
+  [TestCase(-1)]
+  [TestCase(0x0000)]
+  [TestCase(0xFFFF + 1)]
+  [TestCase(int.MinValue)]
+  [TestCase(int.MaxValue)]
+  public void SKUDPPORT_PortOutOfRange(int port)
+  {
+    var stream = new PseudoSkStackStream();
 
-      Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle1, port));
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.IsEmpty(stream.ReadSentData());
-    }
+    Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle1, port));
 
-    [TestCase((SkStackUdpPortHandle)0)]
-    [TestCase((SkStackUdpPortHandle)7)]
-    [TestCase((SkStackUdpPortHandle)0xFF)]
-    public void SKUDPPORT_HandleUndefined(SkStackUdpPortHandle handle)
-    {
-      var stream = new PseudoSkStackStream();
+    Assert.IsEmpty(stream.ReadSentData());
+  }
 
-      using var client = new SkStackClient(stream, ServiceProvider);
+  [TestCase((SkStackUdpPortHandle)0)]
+  [TestCase((SkStackUdpPortHandle)7)]
+  [TestCase((SkStackUdpPortHandle)0xFF)]
+  public void SKUDPPORT_HandleUndefined(SkStackUdpPortHandle handle)
+  {
+    var stream = new PseudoSkStackStream();
 
-      var ex = Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTAsync(handle, 0x0001));
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.AreEqual(ex.ParamName, "handle");
+    var ex = Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTAsync(handle, 0x0001));
 
-      Assert.IsEmpty(stream.ReadSentData());
-    }
+    Assert.AreEqual(ex.ParamName, "handle");
 
-    [TestCase((SkStackUdpPortHandle)0)]
-    [TestCase((SkStackUdpPortHandle)7)]
-    [TestCase((SkStackUdpPortHandle)0xFF)]
-    public void SKUDPPORTUnset_HandleUndefined(SkStackUdpPortHandle handle)
-    {
-      var stream = new PseudoSkStackStream();
+    Assert.IsEmpty(stream.ReadSentData());
+  }
 
-      using var client = new SkStackClient(stream, ServiceProvider);
+  [TestCase((SkStackUdpPortHandle)0)]
+  [TestCase((SkStackUdpPortHandle)7)]
+  [TestCase((SkStackUdpPortHandle)0xFF)]
+  public void SKUDPPORTUnset_HandleUndefined(SkStackUdpPortHandle handle)
+  {
+    var stream = new PseudoSkStackStream();
 
-      var ex = Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTUnsetAsync(handle));
+    using var client = new SkStackClient(stream, ServiceProvider);
 
-      Assert.AreEqual(ex.ParamName, "handle");
+    var ex = Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTUnsetAsync(handle));
 
-      Assert.IsEmpty(stream.ReadSentData());
-    }
+    Assert.AreEqual(ex.ParamName, "handle");
+
+    Assert.IsEmpty(stream.ReadSentData());
   }
 }

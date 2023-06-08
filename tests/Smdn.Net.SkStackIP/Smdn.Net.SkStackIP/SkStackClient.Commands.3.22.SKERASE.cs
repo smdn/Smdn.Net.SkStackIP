@@ -8,25 +8,25 @@ using NUnit.Framework;
 
 using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
-namespace Smdn.Net.SkStackIP {
-  [TestFixture]
-  public class SkStackClientCommandsSKERASETests : SkStackClientTestsBase {
-    [Test]
-    public async Task SKERASE()
-    {
-      var stream = new PseudoSkStackStream();
+namespace Smdn.Net.SkStackIP;
 
-      stream.ResponseWriter.WriteLine("OK");
+[TestFixture]
+public class SkStackClientCommandsSKERASETests : SkStackClientTestsBase {
+  [Test]
+  public async Task SKERASE()
+  {
+    var stream = new PseudoSkStackStream();
 
-      using var client = new SkStackClient(stream, ServiceProvider);
-      var response = await client.SendSKERASEAsync();
+    stream.ResponseWriter.WriteLine("OK");
 
-      Assert.That(
-        stream.ReadSentData(),
-        Is.EqualTo("SKERASE\r\n".ToByteSequence())
-      );
+    using var client = new SkStackClient(stream, ServiceProvider);
+    var response = await client.SendSKERASEAsync();
 
-      Assert.IsTrue(response.Success);
-    }
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("SKERASE\r\n".ToByteSequence())
+    );
+
+    Assert.IsTrue(response.Success);
   }
 }

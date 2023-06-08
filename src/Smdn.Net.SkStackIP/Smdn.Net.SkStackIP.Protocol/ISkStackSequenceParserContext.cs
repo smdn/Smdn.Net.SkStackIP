@@ -6,18 +6,18 @@ using System.Buffers;
 
 using Microsoft.Extensions.Logging;
 
-namespace Smdn.Net.SkStackIP.Protocol {
-  public interface ISkStackSequenceParserContext {
-    ReadOnlySequence<byte> UnparsedSequence { get; }
+namespace Smdn.Net.SkStackIP.Protocol;
 
-    SequenceReader<byte> CreateReader() => new(UnparsedSequence);
-    ISkStackSequenceParserContext CreateCopy();
+public interface ISkStackSequenceParserContext {
+  ReadOnlySequence<byte> UnparsedSequence { get; }
 
-    void Continue();
-    void Complete();
-    void Complete(SequenceReader<byte> consumedReader);
-    void Ignore();
-    void SetAsIncomplete();
-    void SetAsIncomplete(SequenceReader<byte> incompleteReader);
-  }
+  SequenceReader<byte> CreateReader() => new(UnparsedSequence);
+  ISkStackSequenceParserContext CreateCopy();
+
+  void Continue();
+  void Complete();
+  void Complete(SequenceReader<byte> consumedReader);
+  void Ignore();
+  void SetAsIncomplete();
+  void SetAsIncomplete(SequenceReader<byte> incompleteReader);
 }

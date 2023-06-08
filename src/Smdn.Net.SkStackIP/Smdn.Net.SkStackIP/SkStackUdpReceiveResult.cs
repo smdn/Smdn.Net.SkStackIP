@@ -5,35 +5,35 @@ using System;
 using System.Buffers;
 using System.Net;
 
-namespace Smdn.Net.SkStackIP {
-  public sealed class SkStackUdpReceiveResult : IDisposable {
-    public IPAddress RemoteAddress { get; }
+namespace Smdn.Net.SkStackIP;
 
-    private readonly int length;
-    private IMemoryOwner<byte> data;
+public sealed class SkStackUdpReceiveResult : IDisposable {
+  public IPAddress RemoteAddress { get; }
 
-    public ReadOnlyMemory<byte> Buffer => (data ?? throw new ObjectDisposedException(GetType().FullName)).Memory.Slice(0, length);
+  private readonly int length;
+  private IMemoryOwner<byte> data;
 
-    internal SkStackUdpReceiveResult(
-      IPAddress remoteAddress,
-      int length,
-      IMemoryOwner<byte> data
-    )
-    {
-      this.RemoteAddress = remoteAddress;
-      this.length = length;
-      this.data = data;
-    }
+  public ReadOnlyMemory<byte> Buffer => (data ?? throw new ObjectDisposedException(GetType().FullName)).Memory.Slice(0, length);
 
-    ~SkStackUdpReceiveResult()
-      => Dispose();
+  internal SkStackUdpReceiveResult(
+    IPAddress remoteAddress,
+    int length,
+    IMemoryOwner<byte> data
+  )
+  {
+    this.RemoteAddress = remoteAddress;
+    this.length = length;
+    this.data = data;
+  }
 
-    public void Dispose()
-    {
-      data?.Dispose();
-      data = null;
+  ~SkStackUdpReceiveResult()
+    => Dispose();
 
-      GC.SuppressFinalize(this);
-    }
+  public void Dispose()
+  {
+    data?.Dispose();
+    data = null;
+
+    GC.SuppressFinalize(this);
   }
 }

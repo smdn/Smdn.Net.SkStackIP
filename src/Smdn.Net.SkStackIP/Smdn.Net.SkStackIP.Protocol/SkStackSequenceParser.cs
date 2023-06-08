@@ -4,8 +4,8 @@
 using System;
 using System.Threading;
 
-namespace Smdn.Net.SkStackIP.Protocol {
-  public delegate TResult SkStackSequenceParser<TResult>(
-    ISkStackSequenceParserContext context
-  );
-}
+namespace Smdn.Net.SkStackIP.Protocol;
+
+public delegate TResult SkStackSequenceParser<TResult>(
+  ISkStackSequenceParserContext context
+);
