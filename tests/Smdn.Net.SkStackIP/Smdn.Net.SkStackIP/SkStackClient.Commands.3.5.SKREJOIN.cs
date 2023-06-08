@@ -60,11 +60,13 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
 
     Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
-    var taskSendCommand = client.SendSKREJOINAsync();
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKREJOINAsync().AsTask();
 
-    Assert.DoesNotThrowAsync(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), RaisePanaSessionEstablishmentEventsAsync());
-    });
+    Assert.DoesNotThrowAsync(
+      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync())
+    );
+#pragma warning restore CA2012
 
     Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
     Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
@@ -117,13 +119,15 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
 
     Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
-    var taskSendCommand = client.SendSKREJOINAsync();
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKREJOINAsync().AsTask();
 
-    var ex = Assert.ThrowsAsync<SkStackPanaSessionEstablishmentException>(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), RaisePanaSessionEstablishmentEventsAsync());
-    });
+    var ex = Assert.ThrowsAsync<SkStackPanaSessionEstablishmentException>(
+      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync())
+    );
+#pragma warning restore CA2012
 
-    Assert.AreEqual(SkStackEventNumber.PanaSessionEstablishmentError, ex.EventNumber);
+    Assert.AreEqual(SkStackEventNumber.PanaSessionEstablishmentError, ex!.EventNumber);
     Assert.AreEqual(address, ex.Address);
 
     Assert.AreEqual(0, raisedEventCount, nameof(raisedEventCount));
@@ -152,7 +156,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
 
     var ex = Assert.ThrowsAsync<SkStackErrorResponseException>(async () => await client.SendSKREJOINAsync());
 
-    Assert.AreEqual(SkStackErrorCode.ER10, ex.ErrorCode);
+    Assert.AreEqual(SkStackErrorCode.ER10, ex!.ErrorCode);
 
     Assert.AreEqual(0, raisedEventCount, nameof(raisedEventCount));
 

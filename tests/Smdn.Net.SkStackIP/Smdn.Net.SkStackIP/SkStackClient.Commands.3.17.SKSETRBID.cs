@@ -38,7 +38,9 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     Assert.Throws<ArgumentNullException>(() => client.SendSKSETRBIDAsync(routeBID: (string)null));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -50,7 +52,9 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: string.Empty));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -63,7 +67,9 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: ReadOnlyMemory<byte>.Empty));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -77,7 +83,9 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: rbid));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -92,7 +100,9 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: rbid.ToByteSequence()));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }

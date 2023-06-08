@@ -180,7 +180,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     });
 
     Assert.IsNotNull(scanResult);
-    Assert.AreEqual(28, scanResult.Count);
+    Assert.AreEqual(28, scanResult!.Count);
 
     var expectedValues = new[] {
       new { Channel = 0x21, LQI = 0x04, RSSI = -103.17 },
@@ -276,11 +276,14 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     }
 
     using var client = new SkStackClient(stream, ServiceProvider);
-    var taskSendCommand = client.SendSKSCANActiveScanPairAsync();
 
-    Assert.DoesNotThrowAsync(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), RaiseBeaconReceivedEventAsync());
-    });
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKSCANActiveScanPairAsync().AsTask();
+
+    Assert.DoesNotThrowAsync(
+      async () => await Task.WhenAll(taskSendCommand, RaiseBeaconReceivedEventAsync())
+    );
+#pragma warning restore CA2012
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 
@@ -314,11 +317,14 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     }
 
     using var client = new SkStackClient(stream, ServiceProvider);
-    var taskSendCommand = client.SendSKSCANActiveScanPairAsync();
 
-    Assert.DoesNotThrowAsync(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), RaiseActiveScanCompletedEventAsync());
-    });
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKSCANActiveScanPairAsync().AsTask();
+
+    Assert.DoesNotThrowAsync(
+      async () => await Task.WhenAll(taskSendCommand, RaiseActiveScanCompletedEventAsync())
+    );
+#pragma warning restore CA2012
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 
@@ -369,11 +375,14 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     }
 
     using var client = new SkStackClient(stream, ServiceProvider);
-    var taskSendCommand = client.SendSKSCANActiveScanPairAsync();
 
-    Assert.DoesNotThrowAsync(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), RaiseBeaconReceivedEventAsync());
-    });
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKSCANActiveScanPairAsync().AsTask();
+
+    Assert.DoesNotThrowAsync(
+      async () => await Task.WhenAll(taskSendCommand, RaiseBeaconReceivedEventAsync())
+    );
+#pragma warning restore CA2012
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 
@@ -436,11 +445,14 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     }
 
     using var client = new SkStackClient(stream, ServiceProvider);
-    var taskSendCommand = client.SendSKSCANActiveScanAsync();
 
-    Assert.DoesNotThrowAsync(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), RaiseBeaconReceivedEventAsync());
-    });
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKSCANActiveScanAsync().AsTask();
+
+    Assert.DoesNotThrowAsync(
+      async () => await Task.WhenAll(taskSendCommand, RaiseBeaconReceivedEventAsync())
+    );
+#pragma warning restore CA2012
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 
@@ -474,11 +486,14 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     }
 
     using var client = new SkStackClient(stream, ServiceProvider);
-    var taskSendCommand = client.SendSKSCANActiveScanAsync();
 
-    Assert.DoesNotThrowAsync(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), RaiseActiveScanCompletedEventAsync());
-    });
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKSCANActiveScanAsync().AsTask();
+
+    Assert.DoesNotThrowAsync(
+      async () => await Task.WhenAll(taskSendCommand, RaiseActiveScanCompletedEventAsync())
+    );
+#pragma warning restore CA2012
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 

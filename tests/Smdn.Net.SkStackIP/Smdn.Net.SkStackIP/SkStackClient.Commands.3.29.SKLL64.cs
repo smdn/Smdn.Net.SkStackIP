@@ -26,7 +26,8 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKLL64Async(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })));
 
-    Assert.IsNotNull(response.Payload);
+    Assert.IsNotNull(response, nameof(response));
+    Assert.IsNotNull(response!.Payload);
     Assert.AreEqual(SkStackResponseStatus.Ok, response.Status);
     Assert.That(response.StatusText, Is.EqualTo(ReadOnlyMemory<byte>.Empty));
     Assert.AreEqual(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), response.Payload);
@@ -58,11 +59,16 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
     }
 
     using var client = new SkStackClient(stream, ServiceProvider);
-    var taskSendCommand = client.SendSKLL64Async(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 }));
 
-    Assert.DoesNotThrowAsync(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
-    });
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKLL64Async(
+      new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })
+    ).AsTask();
+
+    Assert.DoesNotThrowAsync(
+      async () => await Task.WhenAll(taskSendCommand, CompleteResponseAsync())
+    );
+#pragma warning restore CA2012
 
     var response = taskSendCommand.Result;
 
@@ -84,7 +90,9 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     Assert.Throws<ArgumentNullException>(() => client.SendSKLL64Async(macAddress: null));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -117,7 +125,9 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKLL64Async(macAddress: addr64));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }

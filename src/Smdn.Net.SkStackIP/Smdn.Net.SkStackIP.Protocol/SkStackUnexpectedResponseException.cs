@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
+#pragma warning disable CA1032
 
 using System;
 using System.Buffers;
@@ -19,17 +20,17 @@ public class SkStackUnexpectedResponseException : SkStackResponseException {
   private SkStackUnexpectedResponseException(string causedText, string message, Exception innerException = null)
     : base(message, innerException)
   {
-    this.CausedText = causedText;
+    CausedText = causedText;
   }
 
   internal static SkStackUnexpectedResponseException CreateLackOfExpectedResponseText(Exception innerException = null)
-    => new SkStackUnexpectedResponseException($"lack of expected response text", innerException);
+    => new($"lack of expected response text", innerException);
 
   internal static SkStackUnexpectedResponseException CreateInvalidFormat(
     ReadOnlySpan<byte> text,
     Exception innerException = null
   )
-    => new SkStackUnexpectedResponseException(
+    => new(
       causedText: text.ToControlCharsPicturizedString(),
       message: $"unexpected response format: '{text.ToControlCharsPicturizedString()}'",
       innerException: innerException
@@ -40,7 +41,7 @@ public class SkStackUnexpectedResponseException : SkStackResponseException {
     string expectedFormat,
     Exception innerException = null
   )
-    => new SkStackUnexpectedResponseException(
+    => new(
       causedText: token.ToControlCharsPicturizedString(),
       message: $"unexpected response token: '{token.ToControlCharsPicturizedString()}' ({expectedFormat})",
       innerException: innerException
@@ -51,7 +52,7 @@ public class SkStackUnexpectedResponseException : SkStackResponseException {
     string expectedFormat,
     Exception innerException = null
   )
-    => new SkStackUnexpectedResponseException(
+    => new(
       causedText: token.ToControlCharsPicturizedString(),
       message: $"unexpected response token: '{token.ToControlCharsPicturizedString()}' ({expectedFormat})",
       innerException: innerException
@@ -62,7 +63,7 @@ public class SkStackUnexpectedResponseException : SkStackResponseException {
     string expectedFormat,
     Exception innerException = null
   )
-    => new SkStackUnexpectedResponseException(
+    => new(
       causedText: causedText,
       message: $"unexpected response token: '{causedText}' ({expectedFormat})'",
       innerException: innerException

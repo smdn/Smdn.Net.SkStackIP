@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
+#pragma warning disable CA1032
 
 using System;
-using System.Text;
 
 using Smdn.Net.SkStackIP.Protocol;
 
@@ -32,8 +32,8 @@ public class SkStackErrorResponseException : SkStackResponseException {
       innerException: innerException
     )
   {
-    this.Response = response;
-    this.ErrorCode = errorCode;
-    this.ErrorText = SkStack.DefaultEncoding.GetString(errorText);
+    Response = response;
+    ErrorCode = errorCode;
+    ErrorText = SkStack.DefaultEncoding.GetString(errorText);
   }
 }

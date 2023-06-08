@@ -86,11 +86,11 @@ public static class SkStackTokenParser {
     return OperationStatus.Done;
   }
 
-  public static bool Expect<TResult>(
+  public static bool Expect<TValue>(
     ref SequenceReader<byte> reader,
     int length,
-    Converter<ReadOnlySequence<byte>, TResult> converter,
-    out TResult result
+    Converter<ReadOnlySequence<byte>, TValue> converter,
+    out TValue value
   )
     => OperationStatus.Done == TryConvertToken(
       reader: ref reader,
@@ -98,7 +98,7 @@ public static class SkStackTokenParser {
       throwIfUnexpected: true,
       arg: converter,
       tryConvert: static (token, conv) => (true, conv(token)),
-      result: out result
+      result: out value
     );
 
   public static OperationStatus TryExpectToken(
@@ -203,82 +203,82 @@ public static class SkStackTokenParser {
 
   public static bool ExpectCharArray(
     ref SequenceReader<byte> reader,
-    out ReadOnlyMemory<byte> charArray
+    out ReadOnlyMemory<byte> value
   )
     => Expect(
       reader: ref reader,
       length: 0,
       converter: static seq => seq.ToArray().AsMemory(),
-      result: out charArray
+      value: out value
     );
 
   public static bool ExpectCharArray(
     ref SequenceReader<byte> reader,
-    out string charArray
+    out string value
   )
     => Expect(
       reader: ref reader,
       length: 0,
       converter: SkStack.GetString,
-      result: out charArray
+      value: out value
     );
 
   [CLSCompliant(false)]
   public static bool ExpectDecimalNumber(
     ref SequenceReader<byte> reader,
-    out uint number
+    out uint value
   )
-    => Expect(ref reader, 0, ToDecimalNumber, out number);
+    => Expect(ref reader, 0, ToDecimalNumber, out value);
 
   [CLSCompliant(false)]
   public static bool ExpectDecimalNumber(
     ref SequenceReader<byte> reader,
     int length,
-    out uint number
+    out uint value
   )
-    => Expect(ref reader, length, ToDecimalNumber, out number);
+    => Expect(ref reader, length, ToDecimalNumber, out value);
 
   public static bool ExpectUINT8(
     ref SequenceReader<byte> reader,
-    out byte uint8
+    out byte value
   )
-    => Expect(ref reader, length: 1 * 2, ToUINT8, out uint8);
+    => Expect(ref reader, length: 1 * 2, ToUINT8, out value);
 
   [CLSCompliant(false)]
   public static bool ExpectUINT16(
     ref SequenceReader<byte> reader,
-    out ushort uint16
+    out ushort value
   )
-    => Expect(ref reader, length: 2 * 2, ToUINT16, out uint16);
+    => Expect(ref reader, length: 2 * 2, ToUINT16, out value);
 
   [CLSCompliant(false)]
   public static bool ExpectUINT32(
     ref SequenceReader<byte> reader,
-    out uint uint32
+    out uint value
   )
-    => Expect(ref reader, length: 4 * 2, ToUINT32, out uint32);
+    => Expect(ref reader, length: 4 * 2, ToUINT32, out value);
 
   [CLSCompliant(false)]
   public static bool ExpectUINT64(
     ref SequenceReader<byte> reader,
-    out ulong uint64
+    out ulong value
   )
-    => Expect(ref reader, length: 8 * 2, ToUINT64, out uint64);
+    => Expect(ref reader, length: 8 * 2, ToUINT64, out value);
 
   public static bool ExpectBinary(
     ref SequenceReader<byte> reader,
-    out bool binary
+    out bool value
   )
-    => Expect(ref reader, length: 1, ToBinary, out binary);
+    => Expect(ref reader, length: 1, ToBinary, out value);
 
-  private static bool ExpectUINT8Array<TResult>(
+  private static bool ExpectUINT8Array<TValue>(
     ref SequenceReader<byte> reader,
     int length,
-    Converter<Memory<byte>, TResult> converter,
-    out TResult result
+    Converter<Memory<byte>, TValue> converter,
+    out TValue value
   )
   {
-    result = default;
+    value = default;
 
     byte[] buffer = null;
 
@@ -297,7 +297,7 @@ public static class SkStackTokenParser {
 
           return (true, arg.converter(arg.memory));
         },
-        result: out result
+        result: out value
       );
     }
     finally {
@@ -308,45 +308,45 @@ public static class SkStackTokenParser {
 
   public static bool ExpectIPADDR(
     ref SequenceReader<byte> reader,
-    out IPAddress ipv6address
+    out IPAddress value
   )
     => Expect(
       reader: ref reader,
       length: 39, // "XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX".Length
       converter: static seq => IPAddress.Parse(SkStack.GetString(seq)),
-      result: out ipv6address
+      value: out value
     );
 
   public static bool ExpectADDR64(
     ref SequenceReader<byte> reader,
-    out PhysicalAddress macAddress
+    out PhysicalAddress value
   )
     => ExpectUINT8Array(
       reader: ref reader,
       length: 8,
       converter: static array => new PhysicalAddress(array.ToArray()), // XXX: cannot pass ReadOnlySpan<byte>
-      result: out macAddress
+      value: out value
     );
 
   [CLSCompliant(false)]
   public static bool ExpectADDR16(
     ref SequenceReader<byte> reader,
-    out ushort addr16
+    out ushort value
   )
     => ExpectUINT16(
       reader: ref reader,
-      uint16: out addr16
+      value: out value
     );
 
   public static bool ExpectCHANNEL(
     ref SequenceReader<byte> reader,
-    out SkStackChannel channel
+    out SkStackChannel value
   )
   {
-    channel = default;
+    value = default;
 
     if (ExpectUINT8(ref reader, out var ch)) {
-      channel = SkStackChannel.FindByChannelNumber(ch);
+      value = SkStackChannel.FindByChannelNumber(ch);
       return true;
     }
 

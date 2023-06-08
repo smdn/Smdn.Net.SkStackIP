@@ -25,7 +25,8 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await testAction(client));
 
-    Assert.IsTrue(response.Success);
+    Assert.IsNotNull(response, nameof(response));
+    Assert.IsTrue(response!.Success);
 
     Assert.That(
       stream.ReadSentData(),
@@ -96,7 +97,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.AreEqual("destination", ex.ParamName);
+    Assert.AreEqual("destination", ex!.ParamName);
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -120,7 +121,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.AreEqual("destinationAddress", ex.ParamName);
+    Assert.AreEqual("destinationAddress", ex!.ParamName);
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -145,7 +146,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.AreEqual("destinationPort", ex.ParamName);
+    Assert.AreEqual("destinationPort", ex!.ParamName);
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -196,7 +197,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.AreEqual("handle", ex.ParamName);
+    Assert.AreEqual("handle", ex!.ParamName);
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -244,7 +245,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.AreEqual("encryption", ex.ParamName);
+    Assert.AreEqual("encryption", ex!.ParamName);
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -266,7 +267,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.AreEqual("data", ex.ParamName);
+    Assert.AreEqual("data", ex!.ParamName);
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -312,14 +313,16 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     var taskSendCommand = client.SendSKSENDTOAsync(
       handle: SkStackUdpPortHandle.Handle1,
       destination: new IPEndPoint(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), 0x0E1A),
       data: new byte[] { (byte)'\r', (byte)'\n', },
       encryption: SkStackUdpEncryption.ForcePlainText
-    );
+    ).AsTask();
 
-    await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
+    await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
+#pragma warning restore CA2012
 
     var resp = taskSendCommand.Result;
 

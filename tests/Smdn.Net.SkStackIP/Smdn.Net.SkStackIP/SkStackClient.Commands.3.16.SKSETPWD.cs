@@ -41,7 +41,9 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     Assert.Throws<ArgumentNullException>(() => client.SendSKSETPWDAsync(password: (string)null));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -53,7 +55,9 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: string.Empty));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -65,7 +69,9 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: ReadOnlyMemory<byte>.Empty));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -77,7 +83,9 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012"));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -89,7 +97,9 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012".ToByteSequence()));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }

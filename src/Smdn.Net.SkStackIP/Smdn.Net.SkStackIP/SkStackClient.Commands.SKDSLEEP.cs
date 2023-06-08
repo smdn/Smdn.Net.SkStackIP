@@ -21,8 +21,8 @@ partial class SkStackClient {
       command: SkStackCommandNames.SKDSLEEP,
       arguments: Array.Empty<ReadOnlyMemory<byte>>(),
       commandEventHandler: new SKDSLEEPEventHandler(this, waitUntilWakeUp),
-      cancellationToken: cancellationToken,
-      throwIfErrorStatus: true
+      throwIfErrorStatus: true,
+      cancellationToken: cancellationToken
     );
 
   private class SKDSLEEPEventHandler : SkStackEventHandlerBase {

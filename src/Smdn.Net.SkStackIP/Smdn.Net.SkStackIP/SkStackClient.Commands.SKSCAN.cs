@@ -266,8 +266,8 @@ partial class SkStackClient {
           SkStackCommandArgs.GetHex(durationFactor)
         ),
         commandEventHandler: commandEventHandler,
-        cancellationToken: cancellationToken,
-        throwIfErrorStatus: true
+        throwIfErrorStatus: true,
+        cancellationToken: cancellationToken
       ).ConfigureAwait(false);
     }
     finally {

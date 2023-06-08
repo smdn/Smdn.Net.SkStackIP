@@ -32,10 +32,6 @@ partial class SkStackClient {
     {
     }
 
-    public void Initialize()
-    {
-    }
-
     public void Update(ReadOnlySequence<byte> unparsedSequence)
     {
       UnparsedSequence = unparsedSequence;
@@ -79,6 +75,7 @@ partial class SkStackClient {
   private readonly ParseSequenceContext parseSequenceContext;
   private SemaphoreSlim streamReaderSemaphore;
 
+#pragma warning disable CA1502 // TODO: refactor
   private async ValueTask<TResult> ReadAsync<TArg, TResult>(
     Func<ISkStackSequenceParserContext, TArg, TResult> parseSequence,
     TArg arg,
@@ -100,8 +97,6 @@ partial class SkStackClient {
     logger?.LogReceivingStatus($"{callerMemberName} entered");
 
     try {
-      parseSequenceContext.Initialize();
-
       logger?.LogReceivingStatus($"  begin read sequence");
 
       for (; ; ) {
@@ -195,6 +190,7 @@ partial class SkStackClient {
       streamReaderSemaphore.Release();
     }
   }
+#pragma warning restore CA1502
 
   private async ValueTask<SkStackResponse<TPayload>> ReceiveResponseAsync<TPayload>(
     ReadOnlyMemory<byte> command,

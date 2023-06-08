@@ -32,6 +32,7 @@ partial class SkStackClient {
   /// <value><see cref="IPAddress"/> of current PANA session peer. <see langword="null"/> if PANA session has been terminated, expired, or not been established.</value>
   public IPAddress PanaSessionPeerAddress { get; private set; } = null;
 
+#pragma warning disable CA2012
   private static readonly ValueTask<bool> TrueResultValueTask =
 #if SYSTEM_THREADING_TASKS_VALUETASK_FROMRESULT
     ValueTask.FromResult(true);
@@ -45,9 +46,11 @@ partial class SkStackClient {
 #else
     new(result: false);
 #endif
+#pragma warning restore CA2012
 
   private delegate bool ProcessNotificationalEventsFunc(ISkStackSequenceParserContext context);
 
+#pragma warning disable CA1502 // TODO: refactor
   /// <returns>true if the first event processed and consumed, otherwise false.</returns>
   private ValueTask<bool> ProcessEventsAsync(
     ISkStackSequenceParserContext context,
@@ -187,6 +190,7 @@ partial class SkStackClient {
     context.Ignore();
     return FalseResultValueTask;
   }
+#pragma warning restore CA1502
 
   public ISynchronizeInvoke SynchronizingObject { get; set; }
 
@@ -232,9 +236,11 @@ partial class SkStackClient {
       try {
         ev(sender, args);
       }
+#pragma warning disable CA1031
       catch {
         // ignore exceptions
       }
+#pragma warning restore CA1031
     }
     else {
       synchronizingObject.BeginInvoke(

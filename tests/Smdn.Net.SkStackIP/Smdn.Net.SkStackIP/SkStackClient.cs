@@ -56,8 +56,8 @@ public class SkStackClientTests {
         command: command.ToByteSequence(),
         arguments: arguments?.Select(arg => arg.ToByteSequence()),
         syntax: syntax,
-        cancellationToken: cancellationToken,
-        throwIfErrorStatus: throwIfErrorStatus
+        throwIfErrorStatus: throwIfErrorStatus,
+        cancellationToken: cancellationToken
       );
 
     public ValueTask<SkStackResponse<TPayload>> SendCommandAsync<TPayload>(
@@ -73,8 +73,8 @@ public class SkStackClientTests {
         arguments: arguments?.Select(arg => arg.ToByteSequence()),
         parseResponsePayload: parseResponsePayload,
         syntax: syntax,
-        cancellationToken: cancellationToken,
-        throwIfErrorStatus: throwIfErrorStatus
+        throwIfErrorStatus: throwIfErrorStatus,
+        cancellationToken: cancellationToken
       );
   }
 
@@ -110,10 +110,8 @@ public class SkStackClientTests {
   public void Create_FromStream_StreamNotReadable()
     => Assert.Throws<ArgumentException>(() => new SkStackClient(stream: new UnreadableMemoryStream()));
 
-  [Test] public void Dispose() => Close_Dispose(c => (c as IDisposable).Dispose());
-  [Test] public void Close() => Close_Dispose(c => c.Close());
-
-  private void Close_Dispose(Action<SkStackClient> closeOrDisposeClient)
+  [Test]
+  public void Dispose()
   {
     var stream = new PseudoSkStackStream();
 
@@ -121,13 +119,13 @@ public class SkStackClientTests {
 
     var client = CreateClient(stream, serviceProvider: serviceProvider);
 
-    Assert.DoesNotThrowAsync(async () => await client.SendCommandAsync("TEST"), $"{nameof(client.SendCommandAsync)} before {nameof(client.Close)}");
+    Assert.DoesNotThrowAsync(async () => await client.SendCommandAsync("TEST"), $"{nameof(client.SendCommandAsync)} before {nameof(client.Dispose)}");
 
-    Assert.DoesNotThrow(() => closeOrDisposeClient(client), $"{nameof(client.Close)} #1");
+    Assert.DoesNotThrow(client.Dispose, $"{nameof(client.Dispose)} #1");
 
-    Assert.ThrowsAsync<ObjectDisposedException>(async () => await client.SendCommandAsync("TEST"), $"{nameof(client.SendCommandAsync)} after {nameof(client.Close)}");
+    Assert.ThrowsAsync<ObjectDisposedException>(async () => await client.SendCommandAsync("TEST"), $"{nameof(client.SendCommandAsync)} after {nameof(client.Dispose)}");
 
-    Assert.DoesNotThrow(() => closeOrDisposeClient(client), $"{nameof(client.Close)} #2");
+    Assert.DoesNotThrow(client.Dispose, $"{nameof(client.Dispose)} #2");
   }
 
   [Test]
@@ -165,7 +163,7 @@ public class SkStackClientTests {
       Is.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
+    Assert.IsTrue(resp!.Success);
   }
 
   [Test]
@@ -422,7 +420,7 @@ public class SkStackClientTests {
       );
     });
 
-    Assert.AreEqual("UNEXPECTEDTOKEN", ex.CausedText, nameof(ex.CausedText));
+    Assert.AreEqual("UNEXPECTEDTOKEN", ex!.CausedText, nameof(ex.CausedText));
 
     Assert.That(
       stream.ReadSentData(),
@@ -586,7 +584,7 @@ public class SkStackClientTests {
       Is.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.AreEqual(expectedErrorCode, ex.ErrorCode);
+    Assert.AreEqual(expectedErrorCode, ex!.ErrorCode);
     Assert.IsEmpty(ex.ErrorText);
 
     Assert.IsNotNull(ex.Response);
@@ -612,7 +610,7 @@ public class SkStackClientTests {
       Is.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.AreEqual(SkStackErrorCode.ER01, ex.ErrorCode);
+    Assert.AreEqual(SkStackErrorCode.ER01, ex!.ErrorCode);
     Assert.AreEqual("error text", ex.ErrorText);
 
     Assert.IsNotNull(ex.Response);
@@ -703,9 +701,12 @@ public class SkStackClientTests {
     }
 
     var client = CreateClient(stream, serviceProvider: serviceProvider);
-    var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
-    await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false).AsTask();
+
+    await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
+#pragma warning restore CA2012
 
     var resp = taskSendCommand.Result;
 
@@ -729,9 +730,12 @@ public class SkStackClientTests {
     }
 
     var client = CreateClient(stream, serviceProvider: serviceProvider);
-    var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
-    await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false).AsTask();
+
+    await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
+#pragma warning restore CA2012
 
     var resp = taskSendCommand.Result;
 
@@ -759,9 +763,12 @@ public class SkStackClientTests {
     }
 
     var client = CreateClient(stream, serviceProvider: serviceProvider);
-    var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
-    await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false).AsTask();
+
+    await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
+#pragma warning restore CA2012
 
     var resp = taskSendCommand.Result;
 
@@ -795,6 +802,8 @@ public class SkStackClientTests {
     }
 
     var client = CreateClient(stream, serviceProvider: serviceProvider);
+
+#pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync(
       command: "TEST",
       arguments: null,
@@ -817,9 +826,10 @@ public class SkStackClientTests {
         return default;
       },
       throwIfErrorStatus: false
-    );
+    ).AsTask();
 
-    await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
+    await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
+#pragma warning restore CA2012
 
     var resp = taskSendCommand.Result;
 
@@ -853,13 +863,16 @@ public class SkStackClientTests {
     }
 
     var client = CreateClient(stream, serviceProvider: serviceProvider);
+
+#pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync(
       command: "TEST",
       arguments: null,
       throwIfErrorStatus: false
-    );
+    ).AsTask();
 
-    await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
+    await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
+#pragma warning restore CA2012
 
     var resp = taskSendCommand.Result;
 
@@ -891,13 +904,16 @@ public class SkStackClientTests {
     }
 
     var client = CreateClient(stream, serviceProvider: serviceProvider);
+
+#pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync(
       command: "TEST",
       arguments: null,
       throwIfErrorStatus: false
-    );
+    ).AsTask();
 
-    await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
+    await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
+#pragma warning restore CA2012
 
     var resp = taskSendCommand.Result;
 

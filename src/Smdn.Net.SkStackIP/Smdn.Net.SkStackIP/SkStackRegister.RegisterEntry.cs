@@ -121,6 +121,7 @@ partial class SkStackRegister {
     private protected override bool IsInRange(bool value) => true;
   }
 
+#if false // unused
   private sealed class RegisterUINT8Entry : ComparableValueRegisterEntry<byte> {
     public RegisterUINT8Entry(
       string name,
@@ -137,6 +138,7 @@ partial class SkStackRegister {
     {
     }
   }
+#endif
 
   private sealed class RegisterChannelEntry : ComparableValueRegisterEntry<SkStackChannel> {
     public RegisterChannelEntry(

@@ -31,7 +31,8 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
 
-    Assert.IsNotNull(response.Payload);
+    Assert.IsNotNull(response, nameof(response));
+    Assert.IsNotNull(response!.Payload);
     Assert.AreEqual(3, response.Payload.Count);
     Assert.AreEqual(
       IPAddress.Parse("FE80:0000:0000:0000:021D:1290:0003:AFE0"),
@@ -81,11 +82,14 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     }
 
     using var client = new SkStackClient(stream, ServiceProvider);
-    var taskSendCommand = client.SendSKTABLEAvailableAddressListAsync();
 
-    Assert.DoesNotThrowAsync(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
-    });
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKTABLEAvailableAddressListAsync().AsTask();
+
+    Assert.DoesNotThrowAsync(
+      async () => await Task.WhenAll(taskSendCommand, CompleteResponseAsync())
+    );
+#pragma warning restore CA2012
 
     var response = taskSendCommand.Result;
 
@@ -119,7 +123,8 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
 
-    Assert.IsNotNull(response.Payload);
+    Assert.IsNotNull(response, nameof(response));
+    Assert.IsNotNull(response!.Payload);
     Assert.AreEqual(0, response.Payload.Count);
 
     Assert.That(
@@ -140,7 +145,8 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
 
-    Assert.IsNotNull(response.Payload);
+    Assert.IsNotNull(response, nameof(response));
+    Assert.IsNotNull(response!.Payload);
     Assert.AreEqual(0, response.Payload.Count);
 
     Assert.That(
@@ -164,7 +170,8 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
 
-    Assert.IsNotNull(response.Payload);
+    Assert.IsNotNull(response, nameof(response));
+    Assert.IsNotNull(response!.Payload);
     Assert.AreEqual(2, response.Payload.Count);
 
     Assert.IsTrue(response.Payload.ContainsKey(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")));
@@ -211,11 +218,14 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     }
 
     using var client = new SkStackClient(stream, ServiceProvider);
-    var taskSendCommand = client.SendSKTABLENeighborCacheListAsync();
 
-    Assert.DoesNotThrowAsync(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
-    });
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKTABLENeighborCacheListAsync().AsTask();
+
+    Assert.DoesNotThrowAsync(
+      async () => await Task.WhenAll(taskSendCommand, CompleteResponseAsync())
+    );
+#pragma warning restore CA2012
 
     var response = taskSendCommand.Result;
 
@@ -248,7 +258,8 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
 
-    Assert.IsNotNull(response.Payload);
+    Assert.IsNotNull(response, nameof(response));
+    Assert.IsNotNull(response!.Payload);
     Assert.AreEqual(0, response.Payload.Count);
 
     Assert.That(
@@ -270,7 +281,8 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
 
-    Assert.IsNotNull(response.Payload);
+    Assert.IsNotNull(response, nameof(response));
+    Assert.IsNotNull(response!.Payload);
     Assert.AreEqual(0, response.Payload.Count);
 
     Assert.That(
@@ -310,7 +322,9 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEListeningPortListAsync());
 
-    var ports = response.Payload;
+    Assert.IsNotNull(response, nameof(response));
+
+    var ports = response!.Payload;
 
     Assert.IsNotNull(ports);
     Assert.AreEqual(6, ports.Count);

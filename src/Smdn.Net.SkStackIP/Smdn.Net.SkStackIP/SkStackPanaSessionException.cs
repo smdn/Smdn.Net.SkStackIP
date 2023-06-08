@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
+#pragma warning disable CA1032
 
 using System;
 using System.Net;
@@ -21,7 +22,7 @@ public abstract class SkStackPanaSessionException : InvalidOperationException {
       innerException: innerException
     )
   {
-    this.Address = address;
-    this.EventNumber = eventNumber;
+    Address = address;
+    EventNumber = eventNumber;
   }
 }

@@ -65,11 +65,13 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
       }
     };
 
-    var taskSendCommand = client.SendSKJOINAsync(address);
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKJOINAsync(address).AsTask();
 
-    Assert.DoesNotThrowAsync(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), RaisePanaSessionEstablishmentEventsAsync());
-    });
+    Assert.DoesNotThrowAsync(
+      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync())
+    );
+#pragma warning restore CA2012
 
     Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
     Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
@@ -124,13 +126,13 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     client.PanaSessionEstablished += (sender, e) => raisedEventCount++;
 
-    var taskSendCommand = client.SendSKJOINAsync(address);
+    var taskSendCommand = client.SendSKJOINAsync(address).AsTask();
 
-    var ex = Assert.ThrowsAsync<SkStackPanaSessionEstablishmentException>(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), RaisePanaSessionEstablishmentEventsAsync());
-    });
+    var ex = Assert.ThrowsAsync<SkStackPanaSessionEstablishmentException>(
+      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync())
+    );
 
-    Assert.AreEqual(SkStackEventNumber.PanaSessionEstablishmentError, ex.EventNumber);
+    Assert.AreEqual(SkStackEventNumber.PanaSessionEstablishmentError, ex!.EventNumber);
     Assert.AreEqual(address, ex.Address);
 
     Assert.AreEqual(0, raisedEventCount, nameof(raisedEventCount));
@@ -151,7 +153,10 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, ServiceProvider);
+
+#pragma warning disable CA2012
     Assert.Throws<ArgumentNullException>(() => client.SendSKJOINAsync(ipv6address: null));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -164,7 +169,10 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, ServiceProvider);
+
+#pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKJOINAsync(ipv6address: IPAddress.Loopback));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }

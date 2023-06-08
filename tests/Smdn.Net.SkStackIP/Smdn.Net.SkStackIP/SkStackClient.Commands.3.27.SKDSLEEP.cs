@@ -57,7 +57,7 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
     Assert.AreEqual(0, raisedWokeUpEventCount, nameof(raisedWokeUpEventCount));
 
     Assert.IsNotNull(response);
-    Assert.IsTrue(response.Success);
+    Assert.IsTrue(response!.Success);
 
     Assert.That(
       stream.ReadSentData(),
@@ -114,11 +114,13 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
       }
     };
 
-    var taskSendCommand = client.SendSKDSLEEPAsync(waitUntilWakeUp: true);
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKDSLEEPAsync(waitUntilWakeUp: true).AsTask();
 
-    Assert.DoesNotThrowAsync(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), RaiseWakeupSignalReceivedEventsAsync());
-    });
+    Assert.DoesNotThrowAsync(
+      async () => await Task.WhenAll(taskSendCommand, RaiseWakeupSignalReceivedEventsAsync())
+    );
+#pragma warning restore CA2012
 
     Assert.IsNull(thrownExceptionInSleptEventHandler, nameof(thrownExceptionInSleptEventHandler));
     Assert.AreEqual(1, raisedSleptEventCount, nameof(raisedSleptEventCount));

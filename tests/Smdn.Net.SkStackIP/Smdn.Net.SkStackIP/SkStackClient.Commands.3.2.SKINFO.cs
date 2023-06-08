@@ -61,11 +61,14 @@ public class SkStackClientCommandsSKINFOTests : SkStackClientTestsBase {
     }
 
     using var client = new SkStackClient(stream, ServiceProvider);
-    var taskSendCommand = client.SendSKINFOAsync();
 
-    Assert.DoesNotThrowAsync(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), CompleteResponseAsync());
-    });
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKINFOAsync().AsTask();
+
+    Assert.DoesNotThrowAsync(
+      async () => await Task.WhenAll(taskSendCommand, CompleteResponseAsync())
+    );
+#pragma warning restore CA2012
 
     var response = taskSendCommand.Result;
 

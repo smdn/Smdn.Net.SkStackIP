@@ -25,7 +25,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
     Assert.DoesNotThrowAsync(async () => (response, port) = await client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle3, 0x0050));
 
     Assert.IsNotNull(response);
-    Assert.IsTrue(response.Success);
+    Assert.IsTrue(response!.Success);
 
     Assert.IsFalse(port.IsNull, nameof(port.IsNull));
     Assert.IsFalse(port.IsUnused, nameof(port.IsUnused));
@@ -51,7 +51,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKUDPPORTUnsetAsync(SkStackUdpPortHandle.Handle3));
 
     Assert.IsNotNull(response);
-    Assert.IsTrue(response.Success);
+    Assert.IsTrue(response!.Success);
 
     Assert.That(
       stream.ReadSentData(),
@@ -70,7 +70,9 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle1, port));
+#pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -84,9 +86,11 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     var ex = Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTAsync(handle, 0x0001));
+#pragma warning restore CA2012
 
-    Assert.AreEqual(ex.ParamName, "handle");
+    Assert.AreEqual(ex!.ParamName, "handle");
 
     Assert.IsEmpty(stream.ReadSentData());
   }
@@ -100,9 +104,11 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
+#pragma warning disable CA2012
     var ex = Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTUnsetAsync(handle));
+#pragma warning restore CA2012
 
-    Assert.AreEqual(ex.ParamName, "handle");
+    Assert.AreEqual(ex!.ParamName, "handle");
 
     Assert.IsEmpty(stream.ReadSentData());
   }

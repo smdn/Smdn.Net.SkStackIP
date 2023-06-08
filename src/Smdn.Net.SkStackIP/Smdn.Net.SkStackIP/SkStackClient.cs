@@ -1,6 +1,5 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
-
 using System;
 using System.Buffers;
 using System.IO;
@@ -57,6 +56,7 @@ public partial class SkStackClient :
     if (serialPortName.Length == 0)
       throw new ArgumentException("must be non-empty string", nameof(serialPortName));
 
+#pragma warning disable CA2000
     var port = new SerialPort(
       portName: serialPortName,
       baudRate: baudRate,
@@ -69,7 +69,7 @@ public partial class SkStackClient :
       RtsEnable = false,
       NewLine = SkStack.DefaultEncoding.GetString(SkStack.CRLFSpan),
     };
-
+#pragma warning restore CA2000
 
     port.Open();
 
@@ -88,7 +88,7 @@ public partial class SkStackClient :
     if (!stream.CanWrite)
       throw new ArgumentException($"{nameof(stream)} must be writable stream", nameof(stream));
 
-    this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
+    this.stream = stream;
 
     streamWriter = PipeWriter.Create(
       stream,
@@ -115,19 +115,17 @@ public partial class SkStackClient :
     StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite);
   }
 
-  public void Close()
-  {
-    Dispose(true);
-    GC.SuppressFinalize(this);
-  }
-
   private void ThrowIfDisposed()
   {
     if (stream is null)
       throw new ObjectDisposedException(GetType().FullName);
   }
 
-  void IDisposable.Dispose() => Close();
+  public void Dispose()
+  {
+    Dispose(true);
+    GC.SuppressFinalize(this);
+  }
 
   protected virtual void Dispose(bool disposing)
   {

@@ -73,8 +73,8 @@ partial class SkStackClient {
         command: command,
         arguments: IPADDR is null ? null : SkStackCommandArgs.CreateEnumerable(IPADDR.AsMemory(0, lengthOfIPADDR)),
         commandEventHandler: eventHandler,
-        cancellationToken: cancellationToken,
-        throwIfErrorStatus: true
+        throwIfErrorStatus: true,
+        cancellationToken: cancellationToken
       ).ConfigureAwait(false);
     }
     finally {

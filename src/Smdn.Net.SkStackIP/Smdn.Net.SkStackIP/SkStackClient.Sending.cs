@@ -18,8 +18,8 @@ partial class SkStackClient {
     ReadOnlyMemory<byte> command,
     IEnumerable<ReadOnlyMemory<byte>> arguments = null,
     SkStackProtocolSyntax syntax = null,
-    CancellationToken cancellationToken = default,
-    bool throwIfErrorStatus = true
+    bool throwIfErrorStatus = true,
+    CancellationToken cancellationToken = default
   )
   {
     var resp = await SendCommandAsyncCore<SkStackResponse.NullPayload>(
@@ -28,8 +28,8 @@ partial class SkStackClient {
       parseResponsePayload: null,
       commandEventHandler: null,
       syntax: syntax ?? SkStackProtocolSyntax.Default,
-      cancellationToken: cancellationToken,
-      throwIfErrorStatus: throwIfErrorStatus
+      throwIfErrorStatus: throwIfErrorStatus,
+      cancellationToken: cancellationToken
     ).ConfigureAwait(false);
 
     return resp;
@@ -41,8 +41,8 @@ partial class SkStackClient {
     IEnumerable<ReadOnlyMemory<byte>> arguments,
     SkStackSequenceParser<TPayload> parseResponsePayload,
     SkStackProtocolSyntax syntax = null,
-    CancellationToken cancellationToken = default,
-    bool throwIfErrorStatus = true
+    bool throwIfErrorStatus = true,
+    CancellationToken cancellationToken = default
   )
     => SendCommandAsyncCore(
       command: command,
@@ -50,8 +50,8 @@ partial class SkStackClient {
       parseResponsePayload: parseResponsePayload ?? throw new ArgumentNullException(nameof(parseResponsePayload)),
       commandEventHandler: null,
       syntax: syntax ?? SkStackProtocolSyntax.Default,
-      cancellationToken: cancellationToken,
-      throwIfErrorStatus: throwIfErrorStatus
+      throwIfErrorStatus: throwIfErrorStatus,
+      cancellationToken: cancellationToken
     );
 
   /// <param name="arguments">can be null</param>
@@ -60,8 +60,8 @@ partial class SkStackClient {
     IEnumerable<ReadOnlyMemory<byte>> arguments,
     SkStackEventHandlerBase commandEventHandler,
     SkStackProtocolSyntax syntax = null,
-    CancellationToken cancellationToken = default,
-    bool throwIfErrorStatus = true
+    bool throwIfErrorStatus = true,
+    CancellationToken cancellationToken = default
   )
   {
     var resp = await SendCommandAsyncCore<SkStackResponse.NullPayload>(
@@ -70,8 +70,8 @@ partial class SkStackClient {
       parseResponsePayload: null,
       commandEventHandler: commandEventHandler,
       syntax: syntax ?? SkStackProtocolSyntax.Default,
-      cancellationToken: cancellationToken,
-      throwIfErrorStatus: throwIfErrorStatus
+      throwIfErrorStatus: throwIfErrorStatus,
+      cancellationToken: cancellationToken
     ).ConfigureAwait(false);
 
     return resp;
@@ -85,8 +85,8 @@ partial class SkStackClient {
     SkStackSequenceParser<TPayload> parseResponsePayload,
     SkStackEventHandlerBase commandEventHandler,
     SkStackProtocolSyntax syntax,
-    CancellationToken cancellationToken,
-    bool throwIfErrorStatus
+    bool throwIfErrorStatus,
+    CancellationToken cancellationToken
   )
   {
     ThrowIfDisposed();

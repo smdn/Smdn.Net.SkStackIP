@@ -130,7 +130,7 @@ partial class SkStackClient {
           var receiveNotificationalEventResult = await _this.ReceiveNotificationalEventAsync(cancellationToken).ConfigureAwait(false);
 
           if (!receiveNotificationalEventResult.Received)
-            await Task.Delay(ContinuousReadingInterval).ConfigureAwait(false);
+            await Task.Delay(ContinuousReadingInterval, cancellationToken).ConfigureAwait(false);
 
           continue;
         }
@@ -191,11 +191,13 @@ partial class SkStackClient {
 
       unreadSequence = reader.GetUnreadSequence();
 
+#pragma warning disable CA2000
       result = new SkStackUdpReceiveResult(
         remoteAddress: remoteAddress,
         length: dataLength,
         data: data
       );
+#pragma warning restore CA2000
 
       return true;
     }

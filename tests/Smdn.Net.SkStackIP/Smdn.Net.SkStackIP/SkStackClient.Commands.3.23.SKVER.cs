@@ -24,7 +24,8 @@ public class SkStackClientCommandsSKVERTests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKVERAsync());
 
-    Assert.IsNotNull(response.Payload);
+    Assert.IsNotNull(response, nameof(response));
+    Assert.IsNotNull(response!.Payload);
     Assert.AreEqual(new Version(1, 2, 10), response.Payload);
 
     Assert.That(

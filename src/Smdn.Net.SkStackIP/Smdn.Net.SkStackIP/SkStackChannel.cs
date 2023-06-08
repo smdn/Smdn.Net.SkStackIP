@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
+#pragma warning disable CA1036
 
 using System;
 using System.Collections.Generic;
@@ -98,8 +99,18 @@ public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<
   public bool Equals(SkStackChannel other)
     => ChannelNumber == other.ChannelNumber;
 
+  public static bool operator == (SkStackChannel x, SkStackChannel y) => x.Equals(y);
+  public static bool operator != (SkStackChannel x, SkStackChannel y) => !x.Equals(y);
+
   int IComparable<SkStackChannel>.CompareTo(SkStackChannel other)
     => ChannelNumber.CompareTo(other.ChannelNumber);
+
+#if false
+  public static bool operator < (SkStackChannel x, SkStackChannel y) => x.ChannelNumber < y.ChannelNumber;
+  public static bool operator <= (SkStackChannel x, SkStackChannel y) => x.ChannelNumber <= y.ChannelNumber;
+  public static bool operator > (SkStackChannel x, SkStackChannel y) => x.ChannelNumber > y.ChannelNumber;
+  public static bool operator >= (SkStackChannel x, SkStackChannel y) => x.ChannelNumber >= y.ChannelNumber;
+#endif
 
   public override int GetHashCode()
     => ChannelNumber.GetHashCode();

@@ -1,10 +1,8 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
+#pragma warning disable CA1716
 
-using System;
 using System.Buffers;
-
-using Microsoft.Extensions.Logging;
 
 namespace Smdn.Net.SkStackIP.Protocol;
 

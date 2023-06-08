@@ -26,8 +26,8 @@ partial class SkStackClient {
       command: SkStackCommandNames.SKTERM,
       arguments: Array.Empty<ReadOnlyMemory<byte>>(),
       commandEventHandler: eventHandler,
-      cancellationToken: cancellationToken,
-      throwIfErrorStatus: true
+      throwIfErrorStatus: true,
+      cancellationToken: cancellationToken
     ).ConfigureAwait(false);
 
     return (resp, eventHandler.IsCompletedSuccessfully);

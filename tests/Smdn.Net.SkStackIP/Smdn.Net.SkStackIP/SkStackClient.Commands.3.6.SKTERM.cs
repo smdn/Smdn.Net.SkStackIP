@@ -77,11 +77,13 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
 
     Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
-    var taskSendCommand = client.SendSKTERMAsync();
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKTERMAsync().AsTask();
 
-    Assert.DoesNotThrowAsync(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), RaisePanaSessionTerminationEventsAsync());
-    });
+    Assert.DoesNotThrowAsync(
+      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionTerminationEventsAsync())
+    );
+#pragma warning restore CA2012
 
     Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
     Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
@@ -141,11 +143,13 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
 
     Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
-    var taskSendCommand = client.SendSKTERMAsync();
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendSKTERMAsync().AsTask();
 
-    Assert.DoesNotThrowAsync(async () => {
-      await Task.WhenAll(taskSendCommand.AsTask(), RaisePanaSessionTerminationEventsAsync());
-    });
+    Assert.DoesNotThrowAsync(
+      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionTerminationEventsAsync())
+    );
+#pragma warning restore CA2012
 
     Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
     Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));

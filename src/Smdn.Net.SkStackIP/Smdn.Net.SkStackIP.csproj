@@ -9,6 +9,7 @@ SPDX-License-Identifier: MIT
     <VersionSuffix>preview1</VersionSuffix>
     <!-- <PackageValidationBaselineVersion>1.0.0</PackageValidationBaselineVersion> -->
     <RootNamespace/> <!-- empty the root namespace so that the namespace is determined only by the directory name, for code style rule IDE0030 -->
+    <NoWarn>CA1848;CA2254;$(NoWarn)</NoWarn>
   </PropertyGroup>
 
   <PropertyGroup Label="metadata">
