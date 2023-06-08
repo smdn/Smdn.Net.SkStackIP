@@ -20,9 +20,8 @@ internal static class SkStack {
   public static string GetString(ReadOnlySequence<byte> sequence)
     => DefaultEncoding.GetString(sequence);
 
-  private static readonly ReadOnlyMemory<byte> crlf = new[] {(byte)'\r', (byte)'\n'};
-  internal static ReadOnlyMemory<byte> CRLFMemory => crlf;
-  public static ReadOnlySpan<byte> CRLFSpan => crlf.Span;
+  internal static ReadOnlyMemory<byte> CRLFMemory { get; } = new[] {(byte)'\r', (byte)'\n'};
+  public static ReadOnlySpan<byte> CRLFSpan => CRLFMemory.Span;
 
   public const byte SP = 0x20;
 }

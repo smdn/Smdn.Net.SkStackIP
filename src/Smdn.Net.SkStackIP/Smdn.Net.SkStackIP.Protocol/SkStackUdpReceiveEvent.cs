@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
 
-using System;
 using System.Net;
 using System.Net.NetworkInformation;
 
@@ -23,9 +22,9 @@ internal readonly struct SkStackUdpReceiveEvent {
     bool secured
   )
   {
-    this.RemoteEndPoint = new IPEndPoint(sender, (int)rport);
-    this.LocalEndPoint = new IPEndPoint(dest, (int)lport);
-    this.RemoteLinkLocalAddress = senderlla;
-    this.IsSecured = secured;
+    RemoteEndPoint = new(sender, (int)rport);
+    LocalEndPoint = new(dest, (int)lport);
+    RemoteLinkLocalAddress = senderlla;
+    IsSecured = secured;
   }
 }

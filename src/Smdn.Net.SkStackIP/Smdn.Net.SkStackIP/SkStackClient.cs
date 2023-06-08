@@ -23,7 +23,7 @@ public partial class SkStackClient :
    */
   public const int DefaultBaudRate = 115200;
 
-  private static readonly TimeSpan continuousReadingInterval = TimeSpan.FromMilliseconds(10); // TODO: make configurable
+  private static readonly TimeSpan ContinuousReadingInterval = TimeSpan.FromMilliseconds(10); // TODO: make configurable
 
   /*
    * instance members
@@ -63,12 +63,13 @@ public partial class SkStackClient :
       parity: Parity.None,
       dataBits: 8
       //stopBits: StopBits.None
-    );
+    ) {
+      Handshake = Handshake.None, // TODO: RequestToSend
+      DtrEnable = false,
+      RtsEnable = false,
+      NewLine = SkStack.DefaultEncoding.GetString(SkStack.CRLFSpan),
+    };
 
-    port.Handshake = Handshake.None; // TODO: RequestToSend
-    port.DtrEnable = false;
-    port.RtsEnable = false;
-    port.NewLine = SkStack.DefaultEncoding.GetString(SkStack.CRLFSpan);
 
     port.Open();
 
@@ -89,27 +90,27 @@ public partial class SkStackClient :
 
     this.stream = stream ?? throw new ArgumentNullException(nameof(stream));
 
-    this.streamWriter = PipeWriter.Create(
+    streamWriter = PipeWriter.Create(
       stream,
       new(leaveOpen: true, minimumBufferSize: 64)
     );
-    this.streamReader = PipeReader.Create(
+    streamReader = PipeReader.Create(
       stream,
       new(leaveOpen: true, bufferSize: 1024, minimumReadSize: 256)
     );
 
-    this.logger = serviceProvider?.GetService<ILoggerFactory>()?.CreateLogger<SkStackClient>();
+    logger = serviceProvider?.GetService<ILoggerFactory>()?.CreateLogger<SkStackClient>();
 
-    if (this.logger is not null && this.logger.IsCommandLoggingEnabled()) {
-      this.logWriter = new ArrayBufferWriter<byte>(initialCapacity: 64);
-      this.writer = DuplicateBufferWriter.Create(this.streamWriter, this.logWriter);
+    if (logger is not null && logger.IsCommandLoggingEnabled()) {
+      logWriter = new ArrayBufferWriter<byte>(initialCapacity: 64);
+      writer = DuplicateBufferWriter.Create(streamWriter, logWriter);
     }
     else {
-      this.writer = this.streamWriter;
+      writer = streamWriter;
     }
 
-    this.parseSequenceContext = new ParseSequenceContext();
-    this.streamReaderSemaphore = new(initialCount: 1, maxCount: 1);
+    parseSequenceContext = new ParseSequenceContext();
+    streamReaderSemaphore = new(initialCount: 1, maxCount: 1);
 
     StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite);
   }

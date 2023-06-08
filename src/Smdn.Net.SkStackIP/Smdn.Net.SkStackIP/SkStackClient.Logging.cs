@@ -11,14 +11,16 @@ using Smdn.Text.Unicode.ControlPictures;
 
 namespace Smdn.Net.SkStackIP;
 
+#pragma warning disable IDE0040
 partial class SkStackClient {
-  internal static readonly EventId EventIdReceivingStatus = new EventId(1, "receiving status");
-  internal static readonly EventId EventIdCommandSequence = new EventId(2, "sent command sequence");
-  internal static readonly EventId EventIdResponseSequence = new EventId(3, "received response sequence");
+#pragma warning restore IDE0040
+  internal static readonly EventId EventIdReceivingStatus = new(1, "receiving status");
+  internal static readonly EventId EventIdCommandSequence = new(2, "sent command sequence");
+  internal static readonly EventId EventIdResponseSequence = new(3, "received response sequence");
 
-  internal static readonly EventId EventIdIPEventReceived = new EventId(6, "IP event received");
-  internal static readonly EventId EventIdPanaEventReceived = new EventId(7, "PANA event received");
-  internal static readonly EventId EventIdAribStdT108EventReceived = new EventId(8, "ARIB STD-T108 event received");
+  internal static readonly EventId EventIdIPEventReceived = new(6, "IP event received");
+  internal static readonly EventId EventIdPanaEventReceived = new(7, "PANA event received");
+  internal static readonly EventId EventIdAribStdT108EventReceived = new(8, "ARIB STD-T108 event received");
 }
 
 internal static class SkStackClientLoggerExtensions {
@@ -102,7 +104,7 @@ internal static class SkStackClientLoggerExtensions {
     logger.Log(
       logLevelResponse,
       SkStackClient.EventIdResponseSequence,
-      CreateLogMessage(Object.ReferenceEquals(marker, EchobackLineMarker) ? prefixEchoback : prefixResponse, sequence)
+      CreateLogMessage(ReferenceEquals(marker, EchobackLineMarker) ? prefixEchoback : prefixResponse, sequence)
     );
   }
 

@@ -8,7 +8,9 @@ using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;
 
+#pragma warning disable IDE0040
 partial class SkStackRegister {
+#pragma warning restore IDE0040
   public abstract class RegisterEntry<TValue> {
     public string Name { get; }
     internal ReadOnlyMemory<byte> SREG { get; }
@@ -36,14 +38,14 @@ partial class SkStackRegister {
       if (readWrite.isReadable && expectValue is null)
         throw new ArgumentNullException(nameof(expectValue));
 
-      this.Name = name;
-      this.SREG = SkStack.ToByteSequence(name);
-      this.IsReadable = readWrite.isReadable;
-      this.IsWritable = readWrite.isWritable;
-      this.MinValue = valueRange.minValue;
-      this.MaxValue = valueRange.maxValue;
-      this.CreateSKSREGArgument = createSKSREGArgument;
-      this.ExpectValue = expectValue;
+      Name = name;
+      SREG = SkStack.ToByteSequence(name);
+      IsReadable = readWrite.isReadable;
+      IsWritable = readWrite.isWritable;
+      MinValue = valueRange.minValue;
+      MaxValue = valueRange.maxValue;
+      CreateSKSREGArgument = createSKSREGArgument;
+      ExpectValue = expectValue;
     }
 
     internal virtual void ThrowIfValueIsNotInRange(TValue value, string paramName)

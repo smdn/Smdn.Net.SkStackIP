@@ -7,17 +7,14 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.Extensions.Logging;
-
 using Smdn.Buffers;
 using Smdn.Net.SkStackIP.Protocol;
-#if DEBUG
-using Smdn.Text.Unicode.ControlPictures;
-#endif
 
 namespace Smdn.Net.SkStackIP;
 
+#pragma warning disable IDE0040
 partial class SkStackClient {
+#pragma warning restore IDE0040
   private enum ParseSequenceStatus {
     Initial,
     Undetermined,   // the parsing finished without declaring its state (invalid state)
@@ -168,7 +165,7 @@ partial class SkStackClient {
           throw;
         }
 
-        var postAction = parseSequenceContext.Status switch {
+        var (markAsExamined, advanceIfConsumed, returnResult, delay) = parseSequenceContext.Status switch {
           ParseSequenceStatus.Completed   => (markAsExamined: true,  advanceIfConsumed: true,  returnResult: true,  delay: default),
           ParseSequenceStatus.Ignored     => (markAsExamined: false, advanceIfConsumed: false, returnResult: true,  delay: default),
           ParseSequenceStatus.Incomplete  => (markAsExamined: true,  advanceIfConsumed: false, returnResult: false, delay: true),
@@ -176,21 +173,21 @@ partial class SkStackClient {
           ParseSequenceStatus.Undetermined or _ => throw new InvalidOperationException("final status is invalid or remains undetermined"),
         };
 
-        if (postAction.markAsExamined)
+        if (markAsExamined)
           // mark entire buffer as examined to receive the subsequent data
           streamReader.AdvanceTo(consumed: buffer.Start, examined: buffer.End);
 
-        if (postAction.advanceIfConsumed && parseSequenceContext.IsConsumed(buffer)) {
+        if (advanceIfConsumed && parseSequenceContext.IsConsumed(buffer)) {
           // advance the buffer to the position where parsing finished
           logger?.LogDebugResponse(buffer.Slice(0, parseSequenceContext.UnparsedSequence.Start), result);
           streamReader.AdvanceTo(consumed: parseSequenceContext.UnparsedSequence.Start);
         }
 
-        if (postAction.returnResult)
+        if (returnResult)
           return result;
 
-        if (postAction.delay)
-          await Task.Delay(continuousReadingInterval).ConfigureAwait(false);
+        if (delay)
+          await Task.Delay(ContinuousReadingInterval).ConfigureAwait(false);
       }
     }
     finally {

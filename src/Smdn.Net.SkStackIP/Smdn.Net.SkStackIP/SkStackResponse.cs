@@ -19,7 +19,7 @@ public class SkStackResponse<TPayload> : SkStackResponse {
 public class SkStackResponse {
   internal readonly struct NullPayload { }
 
-  public bool Success => Status == SkStackResponseStatus.Ok ? true : false;
+  public bool Success => Status == SkStackResponseStatus.Ok;
   public SkStackResponseStatus Status { get; internal set; } = SkStackResponseStatus.Undetermined;
   public ReadOnlyMemory<byte> StatusText { get; internal set; }
 
@@ -37,10 +37,10 @@ public class SkStackResponse {
     errorText = default;
     errorMessage = default;
 
-    if (Status == SkStackResponseStatus.Ok || Status == SkStackResponseStatus.Undetermined)
+    if (Status is SkStackResponseStatus.Ok or SkStackResponseStatus.Undetermined)
       return false; // not error status
 
-    ReadOnlySpan<byte> errorCodeName = default;
+    ReadOnlySpan<byte> errorCodeName;
 
     if (5 <= StatusText.Length && StatusText.Span[4] == SkStack.SP) {
       errorCodeName = StatusText.Span.Slice(0, 4);

@@ -8,16 +8,15 @@ using System.Net;
 using System.Threading.Tasks;
 
 using Smdn.Net.SkStackIP.Protocol;
-#if DEBUG
-using Smdn.Text.Unicode.ControlPictures;
-#endif
 
 namespace Smdn.Net.SkStackIP;
 
+#pragma warning disable IDE0040
 partial class SkStackClient {
+#pragma warning restore IDE0040
   private SkStackERXUDPDataFormat erxudpDataFormat = SkStackERXUDPDataFormat.Raw; // RAW as default
   public SkStackERXUDPDataFormat ERXUDPDataFormat {
-    get { return erxudpDataFormat; }
+    get => erxudpDataFormat;
     set {
 #if SYSTEM_ENUM_ISDEFINED_OF_TENUM
       if (!Enum.IsDefined(value))
@@ -37,14 +36,14 @@ partial class SkStackClient {
 #if SYSTEM_THREADING_TASKS_VALUETASK_FROMRESULT
     ValueTask.FromResult(true);
 #else
-    new ValueTask<bool>(result: true);
+    new(result: true);
 #endif
 
   private static readonly ValueTask<bool> FalseResultValueTask =
 #if SYSTEM_THREADING_TASKS_VALUETASK_FROMRESULT
     ValueTask.FromResult(false);
 #else
-    new ValueTask<bool>(result: false);
+    new(result: false);
 #endif
 
   private delegate bool ProcessNotificationalEventsFunc(ISkStackSequenceParserContext context);

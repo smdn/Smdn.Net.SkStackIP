@@ -9,13 +9,12 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Smdn.Net.SkStackIP.Protocol;
-#if DEBUG
-using Smdn.Text.Unicode.ControlPictures;
-#endif
 
 namespace Smdn.Net.SkStackIP;
 
+#pragma warning disable IDE0040
 partial class SkStackClient {
+#pragma warning restore IDE0040
   /// <remarks>reference: BP35A1コマンドリファレンス 3.4. SKJOIN</remarks>
   public ValueTask<SkStackResponse> SendSKJOINAsync(
     IPAddress ipv6address,
@@ -31,9 +30,9 @@ partial class SkStackClient {
 
     async ValueTask<SkStackResponse> SKJOIN(IPAddress addr, CancellationToken ct)
     {
-      var ret = await SKJOIN_SKREJOIN(SkStackCommandNames.SKJOIN, addr, ct).ConfigureAwait(false);
+      var (response, _) = await SKJOIN_SKREJOIN(SkStackCommandNames.SKJOIN, addr, ct).ConfigureAwait(false);
 
-      return ret.Response;
+      return response;
     }
   }
 
@@ -104,8 +103,8 @@ partial class SkStackClient {
       switch (ev.Number) {
         case SkStackEventNumber.PanaSessionEstablishmentCompleted:
         case SkStackEventNumber.PanaSessionEstablishmentError:
-          this.eventNumber = ev.Number;
-          this.Address = ev.SenderAddress;
+          eventNumber = ev.Number;
+          Address = ev.SenderAddress;
           return true;
 
         default:

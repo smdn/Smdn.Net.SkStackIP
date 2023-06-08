@@ -2,18 +2,16 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Smdn.Net.SkStackIP.Protocol;
-#if DEBUG
-using Smdn.Text.Unicode.ControlPictures;
-#endif
 
 namespace Smdn.Net.SkStackIP;
 
+#pragma warning disable IDE0040
 partial class SkStackClient {
+#pragma warning restore IDE0040
   /// <remarks>reference: BP35A1コマンドリファレンス 3.6. SKTERM</remarks>
   public async ValueTask<(
     SkStackResponse Response,

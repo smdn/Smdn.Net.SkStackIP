@@ -33,8 +33,8 @@ public static class SkStackTokenParser {
 
     var readerEOL = reader;
     var readerSP = reader;
-    ReadOnlySequence<byte> tokenDelimitByEOL = default;
-    ReadOnlySequence<byte> tokenDelimitBySP = default;
+    ReadOnlySequence<byte> tokenDelimitByEOL;
+    ReadOnlySequence<byte> tokenDelimitBySP;
     var foundTokenDelimitByEOL = readerEOL.TryReadTo(out tokenDelimitByEOL, SkStack.CRLFSpan);
     var foundTokenDelimitBySP = readerSP.TryReadTo(out tokenDelimitBySP, SkStack.SP);
 
@@ -66,15 +66,12 @@ public static class SkStackTokenParser {
     }
 
     if (0 < length && token.Length != length) {
-      if (throwIfUnexpected) {
-        throw SkStackUnexpectedResponseException.CreateInvalidToken(
-          token,
-          $"invalid length of token (expected {length} but was {token.Length})"
-        );
-      }
-      else {
-        return OperationStatus.InvalidData;
-      }
+      return throwIfUnexpected
+        ? throw SkStackUnexpectedResponseException.CreateInvalidToken(
+            token,
+            $"invalid length of token (expected {length} but was {token.Length})"
+          )
+        : OperationStatus.InvalidData;
     }
 
     bool converted;
@@ -141,9 +138,9 @@ public static class SkStackTokenParser {
 
           for (var i = 0; i < arg.expectedToken.Length; i++) {
             if (r.TryRead(out var b) && (char)b != arg.expectedToken.Span[i]) {
-              if (arg.throwIfUnexpected)
-                throw SkStackUnexpectedResponseException.CreateInvalidToken(seq, "unexpected token");
-              return (false, default(int));
+              return arg.throwIfUnexpected
+                ? throw SkStackUnexpectedResponseException.CreateInvalidToken(seq, "unexpected token")
+                : (false, default(int));
             }
           }
 
@@ -191,15 +188,12 @@ public static class SkStackTokenParser {
     var consumedReader = reader;
 
     if (!consumedReader.IsNext(expectedSequence.Span, advancePast: true)) {
-      if (throwIfUnexpected) {
-        throw SkStackUnexpectedResponseException.CreateInvalidToken(
-          consumedReader.GetUnreadSequence().Slice(0, expectedSequence.Length),
-          createUnexpectedExceptionMessage(expectedSequence)
-        );
-      }
-      else {
-        return false;
-      }
+      return throwIfUnexpected
+        ? throw SkStackUnexpectedResponseException.CreateInvalidToken(
+            consumedReader.GetUnreadSequence().Slice(0, expectedSequence.Length),
+            createUnexpectedExceptionMessage(expectedSequence)
+          )
+        : false;
     }
 
     reader = consumedReader;
@@ -297,7 +291,7 @@ public static class SkStackTokenParser {
         reader: ref reader,
         length: lengthOfUINT8Array,
         throwIfUnexpected: true,
-        arg: (converter: converter, memory: buffer.AsMemory(0, length)),
+        arg: (converter, memory: buffer.AsMemory(0, length)),
         tryConvert: static (token, arg) => {
           ToByteSequence(token, arg.memory.Length, arg.memory.Span);
 

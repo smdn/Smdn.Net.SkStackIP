@@ -4,23 +4,21 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
 using Smdn.Net.SkStackIP.Protocol;
-#if DEBUG
-using Smdn.Text.Unicode.ControlPictures;
-#endif
 
 namespace Smdn.Net.SkStackIP;
 
+#pragma warning disable IDE0040
 partial class SkStackClient {
+#pragma warning restore IDE0040
   private abstract class SKSCANEventHandler<TScanResult> : SkStackEventHandlerBase {
     public TScanResult ScanResult { get; protected set; }
 
-    public override abstract bool TryProcessEvent(SkStackEvent ev);
-    public override abstract void ProcessSubsequentEvent(ISkStackSequenceParserContext context);
+    public abstract override bool TryProcessEvent(SkStackEvent ev);
+    public abstract override void ProcessSubsequentEvent(ISkStackSequenceParserContext context);
   }
 
   /// <summary>`SKSCAN 0`</summary>
@@ -216,12 +214,9 @@ partial class SkStackClient {
   private const byte SKSCANDefaultDurationFactor = 0x2; // 2
 
   private static byte ThrowIfDurationFactorOutOfRange(int durationFactor, string paramName)
-  {
-    if (!(SKSCANMinDurationFactor <= durationFactor && durationFactor <= SKSCANMaxDurationFactor))
-      throw new ArgumentOutOfRangeException(paramName, durationFactor, $"must be in range of {SKSCANMinDurationFactor}~{SKSCANMaxDurationFactor}");
-
-    return (byte)durationFactor;
-  }
+    => durationFactor is >= SKSCANMinDurationFactor and <= SKSCANMaxDurationFactor
+      ? (byte)durationFactor
+      : throw new ArgumentOutOfRangeException(paramName, durationFactor, $"must be in range of {SKSCANMinDurationFactor}~{SKSCANMaxDurationFactor}");
 
   private static TimeSpan ToSKSCANDuration(int factor)
     => TimeSpan.FromMilliseconds(9.6) * (Math.Pow(2.0, factor) + 1);
@@ -268,7 +263,7 @@ partial class SkStackClient {
         arguments: SkStackCommandArgs.CreateEnumerable(
           SkStackCommandArgs.GetHex((byte)mode),
           CHANNEL_MASK.AsMemory(0, lengthChannelMask),
-          SkStackCommandArgs.GetHex((byte)durationFactor)
+          SkStackCommandArgs.GetHex(durationFactor)
         ),
         commandEventHandler: commandEventHandler,
         cancellationToken: cancellationToken,
@@ -280,9 +275,6 @@ partial class SkStackClient {
         ArrayPool<byte>.Shared.Return(CHANNEL_MASK);
     }
 
-    return (
-      Response: resp,
-      ScanResult: commandEventHandler.ScanResult
-    );
+    return (resp, commandEventHandler.ScanResult);
   }
 }

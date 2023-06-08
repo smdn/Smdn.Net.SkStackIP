@@ -12,13 +12,12 @@ using System.Threading.Tasks;
 
 using Smdn.Buffers;
 using Smdn.Net.SkStackIP.Protocol;
-#if DEBUG
-using Smdn.Text.Unicode.ControlPictures;
-#endif
 
 namespace Smdn.Net.SkStackIP;
 
+#pragma warning disable IDE0040
 partial class SkStackClient {
+#pragma warning restore IDE0040
   private readonly Dictionary<int/*port*/, Pipe> udpReceiveEventPipes = new(
     capacity: SkStackUdpPort.NumberOfPorts
   );
@@ -61,7 +60,7 @@ partial class SkStackClient {
 #if SYSTEM_THREADING_TASKS_VALUETASK_COMPLETEDTASK
       return ValueTask.CompletedTask;
 #else
-      return default(ValueTask);
+      return default;
 #endif
 
     return OnERXUDPAsyncCore(pipe.Writer, remoteAddress, data, dataLength, dataFormat);
@@ -74,7 +73,7 @@ partial class SkStackClient {
       SkStackERXUDPDataFormat dataFormat
     )
     {
-      var packetLength = udpReceiveEventLengthOfRemoteAddress + udpReceiveEventLengthOfDataLength + (int)dataLength;
+      var packetLength = udpReceiveEventLengthOfRemoteAddress + udpReceiveEventLengthOfDataLength + dataLength;
       var memory = writer.GetMemory(dataLength);
 
       // BYTE[16]: remote address
@@ -131,7 +130,7 @@ partial class SkStackClient {
           var receiveNotificationalEventResult = await _this.ReceiveNotificationalEventAsync(cancellationToken).ConfigureAwait(false);
 
           if (!receiveNotificationalEventResult.Received)
-            await Task.Delay(SkStackClient.continuousReadingInterval).ConfigureAwait(false);
+            await Task.Delay(ContinuousReadingInterval).ConfigureAwait(false);
 
           continue;
         }

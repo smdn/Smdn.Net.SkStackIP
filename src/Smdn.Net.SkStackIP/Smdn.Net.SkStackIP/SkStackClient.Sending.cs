@@ -11,8 +11,10 @@ using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;
 
+#pragma warning disable IDE0040
 partial class SkStackClient {
-  internal protected async ValueTask<SkStackResponse> SendCommandAsync(
+#pragma warning restore IDE0040
+  protected internal async ValueTask<SkStackResponse> SendCommandAsync(
     ReadOnlyMemory<byte> command,
     IEnumerable<ReadOnlyMemory<byte>> arguments = null,
     SkStackProtocolSyntax syntax = null,
@@ -34,7 +36,7 @@ partial class SkStackClient {
   }
 
   /// <param name="arguments">can be null</param>
-  internal protected ValueTask<SkStackResponse<TPayload>> SendCommandAsync<TPayload>(
+  protected internal ValueTask<SkStackResponse<TPayload>> SendCommandAsync<TPayload>(
     ReadOnlyMemory<byte> command,
     IEnumerable<ReadOnlyMemory<byte>> arguments,
     SkStackSequenceParser<TPayload> parseResponsePayload,
@@ -165,7 +167,7 @@ partial class SkStackClient {
     CancellationToken cancellationToken
   )
   {
-    var writerResult = await this.streamWriter.FlushAsync(cancellationToken).ConfigureAwait(false);
+    var writerResult = await streamWriter.FlushAsync(cancellationToken).ConfigureAwait(false);
 
     if (writerResult.IsCompleted)
       throw new InvalidOperationException("writer is completed");

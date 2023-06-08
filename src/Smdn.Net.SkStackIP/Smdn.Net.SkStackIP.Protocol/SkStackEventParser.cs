@@ -8,11 +8,6 @@ using System.Collections.ObjectModel; // ReadOnlyDictionary
 using System.Net;
 using System.Net.NetworkInformation;
 
-using Smdn.Buffers;
-#if DEBUG
-using Smdn.Text.Unicode.ControlPictures;
-#endif
-
 namespace Smdn.Net.SkStackIP.Protocol;
 
 internal static class SkStackEventParser {
@@ -32,7 +27,7 @@ internal static class SkStackEventParser {
     var reader = context.CreateReader();
     var status = SkStackTokenParser.TryExpectToken(ref reader, SkStackEventCodeNames.ERXUDP);
 
-    if (status == OperationStatus.NeedMoreData || status == OperationStatus.InvalidData)
+    if (status is OperationStatus.NeedMoreData or OperationStatus.InvalidData)
       return status;
 
     if (
@@ -44,7 +39,7 @@ internal static class SkStackEventParser {
       SkStackTokenParser.ExpectBinary(ref reader, out var secured) &&
       SkStackTokenParser.ExpectUINT16(ref reader, out var datalen)
     ) {
-      erxudpDataLength = (int)datalen;
+      erxudpDataLength = datalen;
 
       var lengthOfDataSequence = erxudpDataFormat switch {
         SkStackERXUDPDataFormat.HexAsciiText => erxudpDataLength * 2,
@@ -163,7 +158,7 @@ internal static class SkStackEventParser {
         else if (
           SkStackTokenParser.ExpectIPADDR(ref reader, out var ipaddr) &&
           SkStackTokenParser.ExpectADDR64(ref reader, out var addr64) &&
-          SkStackTokenParser.ExpectADDR16(ref reader, out var addr16) &&
+          SkStackTokenParser.ExpectADDR16(ref reader, out _) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader)
         ) {
           neighborCache[ipaddr] = addr64;
@@ -232,7 +227,7 @@ internal static class SkStackEventParser {
           channelPage: channelPage,
           panId: panId,
           macAddress: macAddress,
-          rssi: SkStackLQI.ToRSSI((int)lqi),
+          rssi: SkStackLQI.ToRSSI(lqi),
           pairingId: expectPairingId ? pairingId : default
         );
 
@@ -275,7 +270,7 @@ internal static class SkStackEventParser {
           SkStackTokenParser.ExpectUINT8(ref reader, out var channel) &&
           SkStackTokenParser.ExpectUINT8(ref reader, out var lqi)
         ) {
-          ret[SkStackChannel.FindByChannelNumber(channel)] = SkStackLQI.ToRSSI((int)lqi);
+          ret[SkStackChannel.FindByChannelNumber(channel)] = SkStackLQI.ToRSSI(lqi);
         }
         else {
           context.SetAsIncomplete();
@@ -364,7 +359,7 @@ internal static class SkStackEventParser {
     var reader = context.CreateReader();
     var status = SkStackTokenParser.TryExpectToken(ref reader, SkStackEventCodeNames.EVENT);
 
-    if (status == OperationStatus.NeedMoreData || status == OperationStatus.InvalidData)
+    if (status is OperationStatus.NeedMoreData or OperationStatus.InvalidData)
       return status;
 
     if (SkStackTokenParser.ExpectUINT8(ref reader, out var num)) {
@@ -390,13 +385,13 @@ internal static class SkStackEventParser {
             if (!SkStackTokenParser.ExpectUINT8(ref reader, out var param))
               return OperationStatus.NeedMoreData;
 
-            parameter = (int)param;
+            parameter = param;
             break;
         }
       }
 
       if (SkStackTokenParser.ExpectEndOfLine(ref reader)) {
-        ev = new SkStackEvent(number, sender, (int)parameter, expectedSubsequentEventCode);
+        ev = new SkStackEvent(number, sender, parameter, expectedSubsequentEventCode);
         context.Complete(reader);
         return OperationStatus.Done;
       }

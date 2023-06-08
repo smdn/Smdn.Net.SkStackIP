@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -70,15 +69,12 @@ public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<
   public static SkStackChannel Channel60 => Channels[60];
 
   internal static SkStackChannel FindByRegisterS02Value(byte registerValue)
-    => FindByChannelNumber((int)registerValue);
+    => FindByChannelNumber(registerValue);
 
   internal static SkStackChannel FindByChannelNumber(int channelNumber)
-  {
-    if (Channels.TryGetValue(channelNumber, out var channel))
-      return channel;
-
-    throw new ArgumentOutOfRangeException(nameof(channelNumber), channelNumber, "undefined channel");
-  }
+    => Channels.TryGetValue(channelNumber, out var channel)
+      ? channel
+      : throw new ArgumentOutOfRangeException(nameof(channelNumber), channelNumber, "undefined channel");
 
   /*
    * instance members
@@ -89,23 +85,21 @@ public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<
 
   private SkStackChannel(int channelNumber, decimal frequencyMHz)
   {
-    this.ChannelNumber = channelNumber;
-    this.FrequencyMHz = frequencyMHz;
+    ChannelNumber = channelNumber;
+    FrequencyMHz = frequencyMHz;
   }
 
   public override bool Equals(object obj)
-  {
-    if (obj is SkStackChannel channel)
-      return Equals(channel);
-
-    return false;
-  }
+    => obj switch {
+      SkStackChannel channel => Equals(channel),
+      _ => false,
+    };
 
   public bool Equals(SkStackChannel other)
-    => this.ChannelNumber == other.ChannelNumber;
+    => ChannelNumber == other.ChannelNumber;
 
   int IComparable<SkStackChannel>.CompareTo(SkStackChannel other)
-    => this.ChannelNumber.CompareTo(other.ChannelNumber);
+    => ChannelNumber.CompareTo(other.ChannelNumber);
 
   public override int GetHashCode()
     => ChannelNumber.GetHashCode();

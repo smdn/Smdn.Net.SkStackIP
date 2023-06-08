@@ -10,15 +10,13 @@ using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
-#if DEBUG
-using Smdn.Text.Unicode.ControlPictures;
-#endif
-
 using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;
 
+#pragma warning disable IDE0040
 partial class SkStackClient {
+#pragma warning restore IDE0040
   /// <summary>sets the value of register <paramref name="register"/> to <paramref name="value"/></value>
   /// <remarks>reference: BP35A1コマンドリファレンス 3.1. SKSREG</remarks>
   public ValueTask<SkStackResponse> SendSKSREGAsync<TValue>(
@@ -185,7 +183,7 @@ partial class SkStackClient {
     SkStackUdpPort.ThrowIfPortNumberIsOutOfRange(destinationPort, nameof(destinationPort));
     if (data.IsEmpty)
       throw new ArgumentException("must be non-empty sequence", nameof(data));
-    if (!(minDataLength <= data.Length && data.Length <= maxDataLength))
+    if (data.Length is not (>= minDataLength and <= maxDataLength))
       throw new ArgumentException($"length of {nameof(data)} must be in range of {minDataLength}~{maxDataLength}", nameof(data));
 
     return SKSENDTO();
@@ -244,7 +242,7 @@ partial class SkStackClient {
 
     var length = SkStack.DefaultEncoding.GetByteCount(password);
 
-    if (!(SKSETPWDMinLength <= length && length <= SKSETPWDMaxLength))
+    if (length is not (>= SKSETPWDMinLength and <= SKSETPWDMaxLength))
       throw new ArgumentException($"length of `{nameof(password)}` must be in range of {SKSETPWDMinLength}~{SKSETPWDMaxLength}", nameof(password));
 
     return Core();
@@ -280,7 +278,7 @@ partial class SkStackClient {
     CancellationToken cancellationToken = default
   )
   {
-    if (!(SKSETPWDMinLength <= password.Length && password.Length <= SKSETPWDMaxLength))
+    if (password.Length is not (>= SKSETPWDMinLength and <= SKSETPWDMaxLength))
       throw new ArgumentException($"length of `{nameof(password)}` must be in range of {SKSETPWDMinLength}~{SKSETPWDMaxLength}", nameof(password));
 
     return SKSETPWD();
@@ -514,12 +512,11 @@ partial class SkStackClient {
       throwIfErrorStatus: false
     ).ConfigureAwait(false);
 
-    resp.ThrowIfErrorStatus((r, code, text) => {
-      if (code == SkStackErrorCode.ER10)
-        return new SkStackFlashMemoryIOException(r, code, text.Span, ioErrorMessage);
-
-      return null;
-    });
+    resp.ThrowIfErrorStatus(
+      (r, code, text) => code == SkStackErrorCode.ER10
+        ? new SkStackFlashMemoryIOException(r, code, text.Span, ioErrorMessage)
+        : null
+    );
 
     return resp;
   }

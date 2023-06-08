@@ -21,8 +21,8 @@ public readonly struct SkStackUdpPort {
 
   internal SkStackUdpPort(SkStackUdpPortHandle handle, int port)
   {
-    this.Handle = handle;
-    this.Port = port;
+    Handle = handle;
+    Port = port;
   }
 
   public override string ToString()
@@ -40,7 +40,7 @@ public readonly struct SkStackUdpPort {
 
   internal static void ThrowIfPortNumberIsOutOfRange(int portNumber, string paramName)
   {
-    if (!(ushort.MinValue <= portNumber && portNumber <= ushort.MaxValue)) // UINT16
+    if (portNumber is not (>= ushort.MinValue and <= ushort.MaxValue)) // UINT16
       throw new ArgumentOutOfRangeException(paramName, portNumber, $"must be in range of {ushort.MinValue}~{ushort.MaxValue}");
   }
 
