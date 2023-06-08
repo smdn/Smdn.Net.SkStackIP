@@ -5,7 +5,7 @@ using System;
 using System.Net;
 using System.Net.NetworkInformation;
 
-namespace Smdn.Net.SkStackIP;
+namespace Smdn.Net.SkStackIP.Protocol;
 
 /// <remarks>reference: BP35A1コマンドリファレンス 4.1. ERXUDP</remarks>
 internal readonly struct SkStackUdpReceiveEvent {
