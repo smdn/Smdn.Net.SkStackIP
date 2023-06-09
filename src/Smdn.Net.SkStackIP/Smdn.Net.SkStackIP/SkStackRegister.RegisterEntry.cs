@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
+#pragma warning disable SA1316
 
 using System;
 using System.Buffers;
@@ -56,7 +57,7 @@ partial class SkStackRegister {
 
     private protected abstract bool IsInRange(TValue value);
 
-    private readonly ReadOnlyMemory<byte> ESREG = SkStack.ToByteSequence("ESREG");
+    private static readonly ReadOnlyMemory<byte> ESREG = SkStack.ToByteSequence("ESREG");
 
     internal TValue ParseESREG(
       ISkStackSequenceParserContext context

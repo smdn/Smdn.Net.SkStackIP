@@ -79,7 +79,7 @@ public class SkStackClientTests {
   }
 
   private static SkStackClientEx CreateClient(Stream stream, IServiceProvider serviceProvider)
-    => new SkStackClientEx(stream, serviceProvider);
+    => new(stream, serviceProvider);
 
   [Test]
   public void Create_FromSerialPortName_PortNameNull()
@@ -439,8 +439,8 @@ public class SkStackClientTests {
 
     public EndOfStatusLineSyntax(string lineTerminator)
     {
-      this.endOfCommandLine = lineTerminator.ToByteSequence();
-      this.endOfStatusLine = lineTerminator.ToByteSequence();
+      endOfCommandLine = lineTerminator.ToByteSequence();
+      endOfStatusLine = lineTerminator.ToByteSequence();
     }
   }
 

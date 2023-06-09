@@ -41,8 +41,8 @@ public partial class SkStackClient :
     string serialPortName,
     int baudRate = DefaultBaudRate,
     IServiceProvider serviceProvider = null
-  ) :
-    this(
+  )
+    : this(
       stream: OpenSerialPortStream(serialPortName, baudRate),
       serviceProvider: serviceProvider
     )
@@ -62,7 +62,7 @@ public partial class SkStackClient :
       baudRate: baudRate,
       parity: Parity.None,
       dataBits: 8
-      //stopBits: StopBits.None
+      // stopBits: StopBits.None
     ) {
       Handshake = Handshake.None, // TODO: RequestToSend
       DtrEnable = false,

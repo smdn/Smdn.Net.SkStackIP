@@ -163,7 +163,7 @@ partial class SkStackClient {
   private class SKSCANActiveScanEventHandler : SKSCANEventHandler<IReadOnlyList<SkStackPanDescription>> {
     private readonly bool expectPairingId;
 
-    private const int expectedMaxPanDescriptionCount = 1;
+    private const int ExpectedMaxPanDescriptionCount = 1;
     private List<SkStackPanDescription> scanResult = null;
 
     public SKSCANActiveScanEventHandler(bool expectPairingId)
@@ -191,7 +191,7 @@ partial class SkStackClient {
       var reader = context.CreateReader(); // retain current buffer
 
       if (SkStackEventParser.ExpectEPANDESC(context, expectPairingId, out var pandesc)) {
-        scanResult ??= new(capacity: expectedMaxPanDescriptionCount);
+        scanResult ??= new(capacity: ExpectedMaxPanDescriptionCount);
         scanResult.Add(pandesc);
         context.Continue();
       }

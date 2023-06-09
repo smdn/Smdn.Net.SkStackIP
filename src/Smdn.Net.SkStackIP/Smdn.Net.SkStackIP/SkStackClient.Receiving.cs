@@ -102,7 +102,7 @@ partial class SkStackClient {
       for (; ; ) {
         var reparse = parseSequenceContext.Status switch {
           ParseSequenceStatus.Ignored or ParseSequenceStatus.Continueing => !parseSequenceContext.UnparsedSequence.IsEmpty,
-          _ => false
+          _ => false,
         };
 
         ReadOnlySequence<byte> buffer;
@@ -279,20 +279,22 @@ partial class SkStackClient {
 
   private static object ParseEchobackLine(
     ISkStackSequenceParserContext context,
-    (ReadOnlyMemory<byte> command, SkStackProtocolSyntax syntax) args
+    (ReadOnlyMemory<byte> Command, SkStackProtocolSyntax Syntax) args
   )
   {
+    var (command, syntax) = args;
+
     // SKSENDTO occasionally echoes back the line with only CRLF even if the register SFE is set to 0 (???)
-    if (args.syntax == SkStackProtocolSyntax.SKSENDTO /*args.command.Span.SequenceEqual(SkStackCommandNames.SKSENDTO.Span)*/) {
+    if (syntax == SkStackProtocolSyntax.SKSENDTO /*args.command.Span.SequenceEqual(SkStackCommandNames.SKSENDTO.Span)*/) {
       var sksendtoEchobackLineReader = context.CreateReader();
 
-      if (sksendtoEchobackLineReader.IsNext(args.syntax.EndOfEchobackLine, advancePast: true)) {
+      if (sksendtoEchobackLineReader.IsNext(syntax.EndOfEchobackLine, advancePast: true)) {
         context.Complete(sksendtoEchobackLineReader);
         return SkStackClientLoggerExtensions.EchobackLineMarker;
       }
     }
 
-    var comm = args.command.Span;
+    var comm = command.Span;
     var reader = context.CreateReader();
 
     if (comm.Length <= reader.Length && !reader.IsNext(comm, advancePast: false)) {
@@ -302,7 +304,7 @@ partial class SkStackClient {
 
     var echobackLineReader = reader;
 
-    if (!reader.TryReadTo(out ReadOnlySequence<byte> echobackLine, delimiter: args.syntax.EndOfEchobackLine)) {
+    if (!reader.TryReadTo(out ReadOnlySequence<byte> echobackLine, delimiter: syntax.EndOfEchobackLine)) {
       context.SetAsIncomplete(); // end of echoback line is not found
       return default;
     }
@@ -314,7 +316,7 @@ partial class SkStackClient {
 
     echobackLineReader.Advance(comm.Length); // advance to position right after the command
 
-    if (echobackLineReader.IsNext(SkStack.SP) || echobackLineReader.IsNext(args.syntax.EndOfEchobackLine)) {
+    if (echobackLineReader.IsNext(SkStack.SP) || echobackLineReader.IsNext(syntax.EndOfEchobackLine)) {
       context.Complete(reader);
       return SkStackClientLoggerExtensions.EchobackLineMarker;
     }
@@ -325,20 +327,22 @@ partial class SkStackClient {
   }
 
   private static (
-    SkStackResponseStatus status,
-    ReadOnlyMemory<byte> statusText
+    SkStackResponseStatus Status,
+    ReadOnlyMemory<byte> StatusText
   )
   ParseStatusLine(
     ISkStackSequenceParserContext context,
-    (ReadOnlyMemory<byte> command, SkStackProtocolSyntax syntax) args
+    (ReadOnlyMemory<byte> Command, SkStackProtocolSyntax Syntax) args
   )
   {
     SkStackResponseStatus status = default;
     ReadOnlyMemory<byte> statusText = default;
 
+    var (_, syntax) = args;
+
     var reader = context.CreateReader();
 
-    if (!reader.TryReadTo(out ReadOnlySequence<byte> statusLine, delimiter: args.syntax.EndOfStatusLine, advancePastDelimiter: true)) {
+    if (!reader.TryReadTo(out ReadOnlySequence<byte> statusLine, delimiter: syntax.EndOfStatusLine, advancePastDelimiter: true)) {
       context.SetAsIncomplete();
       return default;
     }
@@ -352,7 +356,7 @@ partial class SkStackClient {
 
     if (status == default) {
       // if the line starts with unknown status code, mark entire buffer as consumed to discard buffer
-      //context.Ignore();
+      // context.Ignore();
       context.Complete(reader);
       return default;
     }

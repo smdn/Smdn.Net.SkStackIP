@@ -24,15 +24,15 @@ partial class SkStackClient {
 }
 
 internal static class SkStackClientLoggerExtensions {
-  private const string prefixCommand = "↦ ";
-  private const string prefixResponse = "↤ ";
-  private const string prefixEchoback = "↩ ";
+  private const string PrefixCommand = "↦ ";
+  private const string PrefixResponse = "↤ ";
+  private const string PrefixEchoback = "↩ ";
 
-  private const LogLevel logLevelReceivingStatusDefault = LogLevel.Trace;
+  private const LogLevel LogLevelReceivingStatusDefault = LogLevel.Trace;
 
   public static void LogReceivingStatus(this ILogger logger, string prefix, ReadOnlyMemory<byte> command, Exception exception = null)
   {
-    var level = exception is null ? logLevelReceivingStatusDefault : LogLevel.Error;
+    var level = exception is null ? LogLevelReceivingStatusDefault : LogLevel.Error;
 
     if (!logger.IsEnabled(level))
       return;
@@ -47,7 +47,7 @@ internal static class SkStackClientLoggerExtensions {
 
   public static void LogReceivingStatus(this ILogger logger, string prefix, ReadOnlySequence<byte> sequence, Exception exception = null)
   {
-    var level = exception is null ? logLevelReceivingStatusDefault : LogLevel.Error;
+    var level = exception is null ? LogLevelReceivingStatusDefault : LogLevel.Error;
 
     if (!logger.IsEnabled(level))
       return;
@@ -62,7 +62,7 @@ internal static class SkStackClientLoggerExtensions {
 
   public static void LogReceivingStatus(this ILogger logger, string message, Exception exception = null)
   {
-    var level = exception is null ? logLevelReceivingStatusDefault : LogLevel.Error;
+    var level = exception is null ? LogLevelReceivingStatusDefault : LogLevel.Error;
 
     if (!logger.IsEnabled(level))
       return;
@@ -75,36 +75,36 @@ internal static class SkStackClientLoggerExtensions {
     );
   }
 
-  private const LogLevel logLevelCommand = LogLevel.Debug;
+  private const LogLevel LogLevelCommand = LogLevel.Debug;
 
   public static bool IsCommandLoggingEnabled(this ILogger logger)
-    => logger.IsEnabled(logLevelCommand);
+    => logger.IsEnabled(LogLevelCommand);
 
   public static void LogDebugCommand(this ILogger logger, ReadOnlyMemory<byte> sequence)
   {
-    if (!logger.IsEnabled(logLevelCommand))
+    if (!logger.IsEnabled(LogLevelCommand))
       return;
 
     logger.Log(
-      logLevelCommand,
+      LogLevelCommand,
       SkStackClient.EventIdCommandSequence,
-      CreateLogMessage(prefixCommand, sequence)
+      CreateLogMessage(PrefixCommand, sequence)
     );
   }
 
-  public static readonly object EchobackLineMarker = new object();
+  public static readonly object EchobackLineMarker = new();
 
-  private const LogLevel logLevelResponse = LogLevel.Debug;
+  private const LogLevel LogLevelResponse = LogLevel.Debug;
 
   public static void LogDebugResponse(this ILogger logger, ReadOnlySequence<byte> sequence, object marker)
   {
-    if (!logger.IsEnabled(logLevelResponse))
+    if (!logger.IsEnabled(LogLevelResponse))
       return;
 
     logger.Log(
-      logLevelResponse,
+      LogLevelResponse,
       SkStackClient.EventIdResponseSequence,
-      CreateLogMessage(ReferenceEquals(marker, EchobackLineMarker) ? prefixEchoback : prefixResponse, sequence)
+      CreateLogMessage(ReferenceEquals(marker, EchobackLineMarker) ? PrefixEchoback : PrefixResponse, sequence)
     );
   }
 
@@ -141,15 +141,18 @@ internal static class SkStackClientLoggerExtensions {
     if (!logger.IsEnabled(level))
       return;
 
-    const string param0 = "Successful";
-    const string param1 = "Failed";
-    const string param2 = "Neighbor Solicitation";
+    var parameter = ev.Parameter switch {
+      0 => "Successful",
+      1 => "Failed",
+      2 => "Neighbor Solicitation",
+      _ => "Unknown",
+    };
 
     logger.Log(
       level,
       SkStackClient.EventIdIPEventReceived,
       ev.Number == SkStackEventNumber.UdpSendCompleted
-        ? $"IPv6: {ev.Number} - {ev.Parameter switch { 0 => param0, 1 => param1, 2 => param2, _ => "Unknown" }} (EVENT {(byte)ev.Number:X2}, PARAM {ev.Parameter}, {ev.SenderAddress})"
+        ? $"IPv6: {ev.Number} - {parameter} (EVENT {(byte)ev.Number:X2}, PARAM {ev.Parameter}, {ev.SenderAddress})"
         : $"IPv6: {ev.Number} (EVENT {(byte)ev.Number:X2}, {ev.SenderAddress})",
       ev
     );
@@ -186,8 +189,8 @@ internal static class SkStackClientLoggerExtensions {
     logger.Log(
       level,
       SkStackClient.EventIdPanaEventReceived,
-       $"PANA: {ev.Number} (EVENT {(byte)ev.Number:X2}, {ev.SenderAddress})",
-       ev
+      $"PANA: {ev.Number} (EVENT {(byte)ev.Number:X2}, {ev.SenderAddress})",
+      ev
     );
   }
 
@@ -201,8 +204,8 @@ internal static class SkStackClientLoggerExtensions {
     logger.Log(
       level,
       SkStackClient.EventIdAribStdT108EventReceived,
-       $"ARIB STD-T108: {ev.Number} (EVENT {(byte)ev.Number:X2}, {ev.SenderAddress})",
-       ev
+      $"ARIB STD-T108: {ev.Number} (EVENT {(byte)ev.Number:X2}, {ev.SenderAddress})",
+      ev
     );
   }
 }

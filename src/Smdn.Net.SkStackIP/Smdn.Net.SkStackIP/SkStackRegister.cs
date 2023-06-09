@@ -7,8 +7,8 @@ namespace Smdn.Net.SkStackIP;
 
 /// <remarks>reference: BP35A1コマンドリファレンス 3.1. SKSREG</remarks>
 public static partial class SkStackRegister {
-  private static readonly (bool isReadable, bool isWritable) RW = (isReadable: true, isWritable: true);
-  private static readonly (bool isReadable, bool isWritable) R = (isReadable: true, isWritable: false);
+  private static readonly (bool IsReadable, bool IsWritable) RW = (IsReadable: true, IsWritable: true);
+  private static readonly (bool IsReadable, bool IsWritable) R = (IsReadable: true, IsWritable: false);
 
   public static RegisterEntry<SkStackChannel> S02 { get; } = new RegisterChannelEntry(name: nameof(S02), readWrite: RW, valueRange: (minValue: SkStackChannel.Channel33, maxValue: SkStackChannel.Channel60));
   [CLSCompliant(false)]

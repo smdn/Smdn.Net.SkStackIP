@@ -13,7 +13,7 @@ namespace Smdn.Net.SkStackIP;
 partial class SkStackClient {
 #pragma warning restore IDE0040
   /// <remarks>reference: BP35A1コマンドリファレンス 3.19. SKUDPPORT</remarks>
-  public ValueTask<(SkStackResponse, SkStackUdpPort)> SendSKUDPPORTAsync(
+  public ValueTask<(SkStackResponse Response, SkStackUdpPort UdpPort)> SendSKUDPPORTAsync(
     SkStackUdpPortHandle handle,
     int port,
     CancellationToken cancellationToken = default
@@ -51,7 +51,7 @@ partial class SkStackClient {
     }
   }
 
-  private async ValueTask<(SkStackResponse, SkStackUdpPort)> SendSKUDPPORTAsyncCore(
+  private async ValueTask<(SkStackResponse Response, SkStackUdpPort UdpPort)> SendSKUDPPORTAsyncCore(
     SkStackUdpPortHandle handle,
     int port,
     CancellationToken cancellationToken = default

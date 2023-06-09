@@ -64,7 +64,7 @@ public class SkStackResponse {
       SkStackErrorCode.ER08 => "Reserved error code",
       SkStackErrorCode.ER09 => "UART input error",
       SkStackErrorCode.ER10 => "Command completed unsuccessfully",
-      _ => "unknown or undefined error code"
+      _ => "unknown or undefined error code",
     };
 
     return true;
@@ -77,29 +77,31 @@ public class SkStackResponse {
     if (!TryParseErrorStatus(out var errorCode, out var errorText, out var errorMessage))
       return;
 
-    var translatedException = translateException?.Invoke(this, errorCode, errorText);
+    var translatedException =
+      translateException?.Invoke(this, errorCode, errorText)
+      ?? errorCode switch {
+        SkStackErrorCode.ER04 => new SkStackCommandNotSupportedException(
+          response: this,
+          errorCode: errorCode,
+          errorText: errorText.Span,
+          message: errorMessage
+        ),
 
-    throw translatedException ?? errorCode switch {
-      SkStackErrorCode.ER04 => new SkStackCommandNotSupportedException(
-        response: this,
-        errorCode: errorCode,
-        errorText: errorText.Span,
-        message: errorMessage
-      ),
+        SkStackErrorCode.ER09 => new SkStackUartIOException(
+          response: this,
+          errorCode: errorCode,
+          errorText: errorText.Span,
+          message: errorMessage
+        ),
 
-      SkStackErrorCode.ER09 => new SkStackUartIOException(
-        response: this,
-        errorCode: errorCode,
-        errorText: errorText.Span,
-        message: errorMessage
-      ),
+        _ => new SkStackErrorResponseException(
+          response: this,
+          errorCode: errorCode,
+          errorText: errorText.Span,
+          message: errorMessage
+        ),
+      };
 
-      _ => new SkStackErrorResponseException(
-        response: this,
-        errorCode: errorCode,
-        errorText: errorText.Span,
-        message: errorMessage
-      ),
-    };
+    throw translatedException;
   }
 }

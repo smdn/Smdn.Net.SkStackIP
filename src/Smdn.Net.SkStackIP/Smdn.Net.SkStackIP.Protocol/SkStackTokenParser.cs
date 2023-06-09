@@ -14,7 +14,7 @@ using Smdn.Text.Unicode.ControlPictures;
 namespace Smdn.Net.SkStackIP.Protocol;
 
 public static class SkStackTokenParser {
-  private delegate (bool, TResult) TryConvertTokenFunc<TArg, TResult>(ReadOnlySequence<byte> token, TArg arg);
+  private delegate (bool Success, TResult Result) TryConvertTokenFunc<TArg, TResult>(ReadOnlySequence<byte> token, TArg arg);
 
   private static OperationStatus TryConvertToken<TArg, TResult>(
     ref SequenceReader<byte> reader,

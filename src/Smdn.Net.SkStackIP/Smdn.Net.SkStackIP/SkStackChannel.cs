@@ -99,8 +99,8 @@ public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<
   public bool Equals(SkStackChannel other)
     => ChannelNumber == other.ChannelNumber;
 
-  public static bool operator == (SkStackChannel x, SkStackChannel y) => x.Equals(y);
-  public static bool operator != (SkStackChannel x, SkStackChannel y) => !x.Equals(y);
+  public static bool operator ==(SkStackChannel x, SkStackChannel y) => x.Equals(y);
+  public static bool operator !=(SkStackChannel x, SkStackChannel y) => !x.Equals(y);
 
   int IComparable<SkStackChannel>.CompareTo(SkStackChannel other)
     => ChannelNumber.CompareTo(other.ChannelNumber);

@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Buffers;
 using System.Buffers.Binary;
 using System.Collections.Generic;
-using System.Buffers;
 using System.IO.Pipelines;
 using System.Net;
 using System.Threading;
@@ -44,8 +44,8 @@ partial class SkStackClient {
     }
   }
 
-  private const int udpReceiveEventLengthOfRemoteAddress = 16;
-  private const int udpReceiveEventLengthOfDataLength = sizeof(ushort);
+  private const int UdpReceiveEventLengthOfRemoteAddress = 16;
+  private const int UdpReceiveEventLengthOfDataLength = sizeof(ushort);
 
   private ValueTask OnERXUDPAsync(
     int localPort,
@@ -73,25 +73,25 @@ partial class SkStackClient {
       SkStackERXUDPDataFormat dataFormat
     )
     {
-      var packetLength = udpReceiveEventLengthOfRemoteAddress + udpReceiveEventLengthOfDataLength + dataLength;
+      var packetLength = UdpReceiveEventLengthOfRemoteAddress + UdpReceiveEventLengthOfDataLength + dataLength;
       var memory = writer.GetMemory(dataLength);
 
       // BYTE[16]: remote address
-      if (!remoteAddress.TryWriteBytes(memory.Span, out var bytesWritten) && bytesWritten != udpReceiveEventLengthOfRemoteAddress)
+      if (!remoteAddress.TryWriteBytes(memory.Span, out var bytesWritten) && bytesWritten != UdpReceiveEventLengthOfRemoteAddress)
         throw new InvalidOperationException("unexpected format of remote address");
 
       // UINT16: length of data
-      BinaryPrimitives.WriteUInt16LittleEndian(memory.Span.Slice(udpReceiveEventLengthOfRemoteAddress), (ushort)dataLength);
+      BinaryPrimitives.WriteUInt16LittleEndian(memory.Span.Slice(UdpReceiveEventLengthOfRemoteAddress), (ushort)dataLength);
 
       // BYTE[n]: data
       if (dataFormat == SkStackERXUDPDataFormat.Raw) {
-        data.CopyTo(memory.Span.Slice(udpReceiveEventLengthOfRemoteAddress + udpReceiveEventLengthOfDataLength));
+        data.CopyTo(memory.Span.Slice(UdpReceiveEventLengthOfRemoteAddress + UdpReceiveEventLengthOfDataLength));
       }
       else {
         SkStackTokenParser.ToByteSequence(
           data,
           dataLength,
-          memory.Span.Slice(udpReceiveEventLengthOfRemoteAddress + udpReceiveEventLengthOfDataLength)
+          memory.Span.Slice(UdpReceiveEventLengthOfRemoteAddress + UdpReceiveEventLengthOfDataLength)
         );
       }
 
@@ -101,7 +101,7 @@ partial class SkStackClient {
 
       if (result.IsCompleted)
         return;
-        //throw new InvalidOperationException("writer is completed");
+        // throw new InvalidOperationException("writer is completed");
     }
   }
 
@@ -120,14 +120,14 @@ partial class SkStackClient {
     return UdpReceiveAsyncCore(this, pipe.Reader, cancellationToken);
 
     static async ValueTask<SkStackUdpReceiveResult> UdpReceiveAsyncCore(
-      SkStackClient _this,
+      SkStackClient thisClient,
       PipeReader pipeReader,
       CancellationToken cancellationToken
     )
     {
-      for (;;) {
+      for (; ;) {
         if (!pipeReader.TryRead(out var readResult)) {
-          var receiveNotificationalEventResult = await _this.ReceiveNotificationalEventAsync(cancellationToken).ConfigureAwait(false);
+          var receiveNotificationalEventResult = await thisClient.ReceiveNotificationalEventAsync(cancellationToken).ConfigureAwait(false);
 
           if (!receiveNotificationalEventResult.Received)
             await Task.Delay(ContinuousReadingInterval, cancellationToken).ConfigureAwait(false);
@@ -164,14 +164,14 @@ partial class SkStackClient {
 
       var reader = new SequenceReader<byte>(unreadSequence);
 
-      if (reader.Remaining < udpReceiveEventLengthOfRemoteAddress + udpReceiveEventLengthOfDataLength)
+      if (reader.Remaining < UdpReceiveEventLengthOfRemoteAddress + UdpReceiveEventLengthOfDataLength)
         return false; // need more
 
       // BYTE[16]: remote address
-      Span<byte> remoteAddressBytes = stackalloc byte[udpReceiveEventLengthOfRemoteAddress];
+      Span<byte> remoteAddressBytes = stackalloc byte[UdpReceiveEventLengthOfRemoteAddress];
 
       reader.TryCopyTo(remoteAddressBytes);
-      reader.Advance(udpReceiveEventLengthOfRemoteAddress);
+      reader.Advance(UdpReceiveEventLengthOfRemoteAddress);
 
       var remoteAddress = new IPAddress(remoteAddressBytes);
 

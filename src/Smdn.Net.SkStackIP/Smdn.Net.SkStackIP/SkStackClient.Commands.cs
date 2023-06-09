@@ -102,7 +102,6 @@ partial class SkStackClient {
   private const int SKSETPWDMinLength = 1;
   private const int SKSETPWDMaxLength = 32;
 
-
   /// <remarks>reference: BP35A1コマンドリファレンス 3.16. SKSETPWD</remarks>
   public ValueTask<SkStackResponse> SendSKSETPWDAsync(
     ReadOnlyMemory<byte> password,
@@ -199,7 +198,7 @@ partial class SkStackClient {
   )
     => SendFlashMemoryCommand(
       command: SkStackCommandNames.SKSAVE,
-      ioErrorMessage: "Failed to save the register values to the flash memory.",
+      messageForFlashMemoryIOException: "Failed to save the register values to the flash memory.",
       cancellationToken: cancellationToken
     );
 
@@ -209,13 +208,13 @@ partial class SkStackClient {
   )
     => SendFlashMemoryCommand(
       command: SkStackCommandNames.SKLOAD,
-      ioErrorMessage: "Failed to load the register values from the flash memory or the register values have not been saved in the flash memory.",
+      messageForFlashMemoryIOException: "Failed to load the register values from the flash memory or the register values have not been saved in the flash memory.",
       cancellationToken: cancellationToken
     );
 
   private async ValueTask<SkStackResponse> SendFlashMemoryCommand(
     ReadOnlyMemory<byte> command,
-    string ioErrorMessage,
+    string messageForFlashMemoryIOException,
     CancellationToken cancellationToken = default
   )
   {
@@ -228,7 +227,7 @@ partial class SkStackClient {
 
     resp.ThrowIfErrorStatus(
       (r, code, text) => code == SkStackErrorCode.ER10
-        ? new SkStackFlashMemoryIOException(r, code, text.Span, ioErrorMessage)
+        ? new SkStackFlashMemoryIOException(r, code, text.Span, messageForFlashMemoryIOException)
         : null
     );
 
