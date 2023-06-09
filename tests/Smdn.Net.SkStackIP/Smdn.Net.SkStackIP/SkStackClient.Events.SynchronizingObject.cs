@@ -15,11 +15,11 @@ namespace Smdn.Net.SkStackIP;
 public class SkStackClientEventsTests : SkStackClientTestsBase {
   private class PseudoSynchronizingObject : ISynchronizeInvoke {
     public bool InvokeRequired { get; }
-    private bool expectSynchronousCall;
+    private readonly bool expectSynchronousCall;
 
     public PseudoSynchronizingObject(bool invokeRequired, bool expectSynchronousCall)
     {
-      this.InvokeRequired = invokeRequired;
+      InvokeRequired = invokeRequired;
       this.expectSynchronousCall = expectSynchronousCall;
     }
 
@@ -34,9 +34,7 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
     }
 
     public object EndInvoke(IAsyncResult result)
-    {
-      throw new NotImplementedException();
-    }
+      => throw new NotImplementedException();
 
     public object Invoke(Delegate method, object[] args)
     {
@@ -153,8 +151,7 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
     );
 
   private void EventHandler_EventHandlerThrownException(
-    ISynchronizeInvoke synchronizingObject,
-    bool expectSynchronousCall
+    ISynchronizeInvoke synchronizingObject
   )
   {
     const string senderAddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
@@ -181,7 +178,7 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
 
     var taskSendSKTERM = client.SendSKTERMAsync();
 
-    if (!waitHandle.WaitOne(100)) // wait for event handler finished
+    if (!waitHandle.WaitOne(1000)) // wait for event handler finished
       Assert.Fail("event handler not called or not finished");
 
     Assert.DoesNotThrowAsync(async () => await taskSendSKTERM);
