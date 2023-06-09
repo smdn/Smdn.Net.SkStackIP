@@ -41,7 +41,9 @@ internal static class SkStackClientLoggerExtensions {
       level,
       SkStackClient.EventIdReceivingStatus,
       exception,
-      CreateLogMessage(prefix, command)
+      "{Prefix}{Command}",
+      prefix,
+      command.Span.ToControlCharsPicturizedString()
     );
   }
 
@@ -56,7 +58,9 @@ internal static class SkStackClientLoggerExtensions {
       level,
       SkStackClient.EventIdReceivingStatus,
       exception,
-      CreateLogMessage(prefix, sequence)
+      "{Prefix}{Sequence}",
+      prefix,
+      sequence.ToControlCharsPicturizedString()
     );
   }
 
@@ -71,6 +75,7 @@ internal static class SkStackClientLoggerExtensions {
       level,
       SkStackClient.EventIdReceivingStatus,
       exception,
+      "{Message}",
       message
     );
   }
@@ -88,7 +93,9 @@ internal static class SkStackClientLoggerExtensions {
     logger.Log(
       LogLevelCommand,
       SkStackClient.EventIdCommandSequence,
-      CreateLogMessage(PrefixCommand, sequence)
+      "{Prefix}{Sequence}",
+      PrefixCommand,
+      sequence.Span.ToControlCharsPicturizedString()
     );
   }
 
@@ -104,35 +111,11 @@ internal static class SkStackClientLoggerExtensions {
     logger.Log(
       LogLevelResponse,
       SkStackClient.EventIdResponseSequence,
-      CreateLogMessage(ReferenceEquals(marker, EchobackLineMarker) ? PrefixEchoback : PrefixResponse, sequence)
+      "{Prefix}{Sequence}",
+      ReferenceEquals(marker, EchobackLineMarker) ? PrefixEchoback : PrefixResponse,
+      sequence.ToControlCharsPicturizedString()
     );
   }
-
-  internal static string CreateLogMessage(string prefix, ReadOnlyMemory<byte> sequence)
-    => string.Create(
-      length: prefix.Length + sequence.Length,
-      state: (pfx: prefix, seq: sequence),
-      action: static (span, arg) => {
-        // copy prefix
-        arg.pfx.AsSpan().CopyTo(span);
-
-        // copy sequence
-        arg.seq.Span.TryPicturizeControlChars(span.Slice(arg.pfx.Length));
-      }
-    );
-
-  internal static string CreateLogMessage(string prefix, ReadOnlySequence<byte> sequence)
-    => string.Create(
-      length: (int)Math.Min(int.MaxValue, prefix.Length + sequence.Length),
-      state: (pfx: prefix, seq: sequence),
-      action: static (span, arg) => {
-        // copy prefix
-        arg.pfx.AsSpan().CopyTo(span);
-
-        // copy sequence
-        arg.seq.TryPicturizeControlChars(span.Slice(arg.pfx.Length));
-      }
-    );
 
   public static void LogInfoIPEventReceived(this ILogger logger, SkStackEvent ev)
   {
@@ -141,21 +124,33 @@ internal static class SkStackClientLoggerExtensions {
     if (!logger.IsEnabled(level))
       return;
 
-    var parameter = ev.Parameter switch {
-      0 => "Successful",
-      1 => "Failed",
-      2 => "Neighbor Solicitation",
-      _ => "Unknown",
-    };
-
-    logger.Log(
-      level,
-      SkStackClient.EventIdIPEventReceived,
-      ev.Number == SkStackEventNumber.UdpSendCompleted
-        ? $"IPv6: {ev.Number} - {parameter} (EVENT {(byte)ev.Number:X2}, PARAM {ev.Parameter}, {ev.SenderAddress})"
-        : $"IPv6: {ev.Number} (EVENT {(byte)ev.Number:X2}, {ev.SenderAddress})",
-      ev
-    );
+    if (ev.Number == SkStackEventNumber.UdpSendCompleted) {
+      logger.Log(
+        level,
+        SkStackClient.EventIdIPEventReceived,
+        "IPv6: {Number} - {Parameter} (EVENT {NumberInHex:X2}, PARAM {Parameter}, {SenderAddress})",
+        ev.Number,
+        ev.Parameter switch {
+          0 => "Successful",
+          1 => "Failed",
+          2 => "Neighbor Solicitation",
+          _ => "Unknown",
+        },
+        (byte)ev.Number,
+        ev.Parameter,
+        ev.SenderAddress
+      );
+    }
+    else {
+      logger.Log(
+        level,
+        SkStackClient.EventIdIPEventReceived,
+        "IPv6: {Number} (EVENT {NumberInHex:X2}, {SenderAddress})",
+        ev.Number,
+        (byte)ev.Number,
+        ev.SenderAddress
+      );
+    }
   }
 
   public static void LogInfoIPEventReceived(this ILogger logger, SkStackUdpReceiveEvent erxudp, ReadOnlySequence<byte> erxudpData)
@@ -165,17 +160,20 @@ internal static class SkStackClientLoggerExtensions {
     if (!logger.IsEnabled(level))
       return;
 
-    var prefix = erxudp.LocalEndPoint.Port switch {
-      SkStackKnownPortNumbers.EchonetLite => "ECHONET Lite/IPv6",
-      SkStackKnownPortNumbers.Pana => "PANA/IPv6",
-      _ => "IPv6",
-    };
-
     logger.Log(
       level,
       SkStackClient.EventIdIPEventReceived,
-      $"{prefix}: {erxudp.LocalEndPoint}←{erxudp.RemoteEndPoint} {erxudp.RemoteLinkLocalAddress} (secured: {erxudp.IsSecured}, length: {erxudpData.Length})",
-      erxudpData
+      "{Prefix}: {LocalEndPoint}←{RemoteEndPoint} {RemoteLinkLocalAddress} (secured: {IsSecured}, length: {Length})",
+      erxudp.LocalEndPoint.Port switch {
+        SkStackKnownPortNumbers.EchonetLite => "ECHONET Lite/IPv6",
+        SkStackKnownPortNumbers.Pana => "PANA/IPv6",
+        _ => "IPv6",
+      },
+      erxudp.LocalEndPoint,
+      erxudp.RemoteEndPoint,
+      erxudp.RemoteLinkLocalAddress,
+      erxudp.IsSecured,
+      erxudpData.Length
     );
   }
 
@@ -189,8 +187,10 @@ internal static class SkStackClientLoggerExtensions {
     logger.Log(
       level,
       SkStackClient.EventIdPanaEventReceived,
-      $"PANA: {ev.Number} (EVENT {(byte)ev.Number:X2}, {ev.SenderAddress})",
-      ev
+      "PANA: {Number} (EVENT {NumberInHex:X2}, {SenderAddress})",
+      ev.Number,
+      (byte)ev.Number,
+      ev.SenderAddress
     );
   }
 
@@ -204,8 +204,10 @@ internal static class SkStackClientLoggerExtensions {
     logger.Log(
       level,
       SkStackClient.EventIdAribStdT108EventReceived,
-      $"ARIB STD-T108: {ev.Number} (EVENT {(byte)ev.Number:X2}, {ev.SenderAddress})",
-      ev
+      "ARIB STD-T108: {Number} (EVENT {NumberInHex:X2}, {SenderAddress})",
+      ev.Number,
+      (byte)ev.Number,
+      ev.SenderAddress
     );
   }
 }

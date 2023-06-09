@@ -448,7 +448,7 @@ public static class SkStackTokenParser {
     }
 
     try {
-      return uint.Parse(str);
+      return uint.Parse(str, provider: null);
     }
     catch (Exception ex) {
       throw SkStackUnexpectedResponseException.CreateInvalidToken(token, "decimal number", ex);

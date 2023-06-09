@@ -79,7 +79,8 @@ internal static class SkStackCommandArgs {
     if (!number.TryFormat(
       charsSpan,
       out var charsWritten,
-      length == 0 ? "X" : stackalloc char[2] { 'X', (char)('0' + length) }
+      length == 0 ? "X" : stackalloc char[2] { 'X', (char)('0' + length) },
+      provider: null
     )) {
       return false;
     }

@@ -124,17 +124,15 @@ partial class SkStackClient {
       throw new ArgumentNullException(nameof(arguments));
 #endif
 
-    foreach (var argument in arguments) {
-      if (argument.IsEmpty)
-        throw new ArgumentException("cannot send command with empty argument", nameof(arguments));
-    }
-
     // write command
     command.CopyTo(writer.GetMemory(command.Length));
     writer.Advance(command.Length);
 
     // write arguments
     foreach (var argument in arguments) {
+      if (argument.IsEmpty)
+        throw new ArgumentException("cannot send command with empty argument", nameof(arguments));
+
       writer.GetSpan(1)[0] = SkStack.SP;
       writer.Advance(1);
 
