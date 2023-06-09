@@ -126,8 +126,7 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
   [Test]
   public void EventHandler_EventHandlerThrownException_WithoutSynchronizingObject()
     => EventHandler_EventHandlerThrownException(
-      synchronizingObject: null,
-      expectSynchronousCall: true
+      synchronizingObject: null
     );
 
   [Test]
@@ -136,8 +135,7 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
       synchronizingObject: new PseudoSynchronizingObject(
         invokeRequired: true,
         expectSynchronousCall: false
-      ),
-      expectSynchronousCall: false
+      )
     );
 
   [Test]
@@ -146,8 +144,7 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
       synchronizingObject: new PseudoSynchronizingObject(
         invokeRequired: false,
         expectSynchronousCall: true
-      ),
-      expectSynchronousCall: true
+      )
     );
 
   private void EventHandler_EventHandlerThrownException(
