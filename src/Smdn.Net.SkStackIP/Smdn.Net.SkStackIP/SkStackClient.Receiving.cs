@@ -76,13 +76,13 @@ partial class SkStackClient {
   private SemaphoreSlim streamReaderSemaphore;
 
 #pragma warning disable CA1502 // TODO: refactor
-  private async ValueTask<TResult> ReadAsync<TArg, TResult>(
+  private async ValueTask<TResult?> ReadAsync<TArg, TResult>(
     Func<ISkStackSequenceParserContext, TArg, TResult> parseSequence,
     TArg arg,
-    SkStackEventHandlerBase eventHandler,
+    SkStackEventHandlerBase? eventHandler,
     bool processOnlyERXUDP = false,
     CancellationToken cancellationToken = default,
-    [CallerMemberName] string callerMemberName = default
+    [CallerMemberName] string? callerMemberName = default
   )
   {
 #if DEBUG
@@ -130,7 +130,7 @@ partial class SkStackClient {
 
         parseSequenceContext.Update(buffer);
 
-        TResult result = default;
+        TResult? result = default;
 
         try {
           // process events which is received until this point
@@ -194,8 +194,8 @@ partial class SkStackClient {
 
   private async ValueTask<SkStackResponse<TPayload>> ReceiveResponseAsync<TPayload>(
     ReadOnlyMemory<byte> command,
-    SkStackSequenceParser<TPayload> parseResponsePayload,
-    SkStackEventHandlerBase commandEventHandler,
+    SkStackSequenceParser<TPayload?>? parseResponsePayload,
+    SkStackEventHandlerBase? commandEventHandler,
     SkStackProtocolSyntax syntax,
     CancellationToken cancellationToken
   )
@@ -253,7 +253,7 @@ partial class SkStackClient {
   }
 
   internal readonly struct ReceiveNotificationalEventResult {
-    public static readonly ReceiveNotificationalEventResult NotReceivedResult = new ReceiveNotificationalEventResult(~default(int));
+    public static readonly ReceiveNotificationalEventResult NotReceivedResult = new(~default(int));
     public static readonly ReceiveNotificationalEventResult ReceivedResult = default;
 
     public bool Received => value == ReceivedResult.value;
@@ -277,7 +277,7 @@ partial class SkStackClient {
       cancellationToken: cancellationToken
     );
 
-  private static object ParseEchobackLine(
+  private static object? ParseEchobackLine(
     ISkStackSequenceParserContext context,
     (ReadOnlyMemory<byte> Command, SkStackProtocolSyntax Syntax) args
   )

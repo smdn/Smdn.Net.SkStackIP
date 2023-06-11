@@ -32,7 +32,7 @@ public sealed class SkStackUdpReceiveResult : IDisposable {
   public void Dispose()
   {
     data?.Dispose();
-    data = null;
+    data = null!;
 
     GC.SuppressFinalize(this);
   }

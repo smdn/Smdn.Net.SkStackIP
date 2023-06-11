@@ -1,8 +1,5 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
-
-using System;
-
 namespace Smdn.Net.SkStackIP;
 
 /// <remarks>reference: BP35A1コマンドリファレンス 4.8. EVENT</remarks>

@@ -39,7 +39,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, ServiceProvider);
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(() => client.SendSKSETRBIDAsync(routeBID: (string)null));
+    Assert.Throws<ArgumentNullException>(() => client.SendSKSETRBIDAsync(routeBID: (string)null!));
 #pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());

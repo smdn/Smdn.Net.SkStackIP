@@ -97,9 +97,9 @@ partial class SkStackClient {
 
     async ValueTask<SkStackResponse> SKSENDTO()
     {
-      byte[] IPADDR = default;
-      byte[] PORT = default;
-      byte[] DATALEN = default;
+      byte[]? IPADDR = default;
+      byte[]? PORT = default;
+      byte[]? DATALEN = default;
 
       try {
         IPADDR = ArrayPool<byte>.Shared.Rent(SkStackCommandArgs.LengthOfIPADDR);

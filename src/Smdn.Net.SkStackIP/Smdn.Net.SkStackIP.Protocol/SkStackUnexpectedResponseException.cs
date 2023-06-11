@@ -10,25 +10,24 @@ using Smdn.Text.Unicode.ControlPictures;
 namespace Smdn.Net.SkStackIP.Protocol;
 
 public class SkStackUnexpectedResponseException : SkStackResponseException {
-  public string CausedText { get; }
+  public string? CausedText { get; }
 
-  public SkStackUnexpectedResponseException(string message, Exception innerException = null)
-    : base(message, innerException)
-  {
-  }
-
-  private SkStackUnexpectedResponseException(string causedText, string message, Exception innerException = null)
+  private SkStackUnexpectedResponseException(string? causedText, string message, Exception? innerException = null)
     : base(message, innerException)
   {
     CausedText = causedText;
   }
 
-  internal static SkStackUnexpectedResponseException CreateLackOfExpectedResponseText(Exception innerException = null)
-    => new($"lack of expected response text", innerException);
+  internal static SkStackUnexpectedResponseException CreateLackOfExpectedResponseText(Exception? innerException = null)
+    => new(
+      causedText: null,
+      message: "lack of expected response text",
+      innerException: innerException
+    );
 
   internal static SkStackUnexpectedResponseException CreateInvalidFormat(
     ReadOnlySpan<byte> text,
-    Exception innerException = null
+    Exception? innerException = null
   )
     => new(
       causedText: text.ToControlCharsPicturizedString(),
@@ -39,7 +38,7 @@ public class SkStackUnexpectedResponseException : SkStackResponseException {
   internal static SkStackUnexpectedResponseException CreateInvalidToken(
     ReadOnlySpan<byte> token,
     string expectedFormat,
-    Exception innerException = null
+    Exception? innerException = null
   )
     => new(
       causedText: token.ToControlCharsPicturizedString(),
@@ -50,7 +49,7 @@ public class SkStackUnexpectedResponseException : SkStackResponseException {
   internal static SkStackUnexpectedResponseException CreateInvalidToken(
     ReadOnlySequence<byte> token,
     string expectedFormat,
-    Exception innerException = null
+    Exception? innerException = null
   )
     => new(
       causedText: token.ToControlCharsPicturizedString(),
@@ -61,7 +60,7 @@ public class SkStackUnexpectedResponseException : SkStackResponseException {
   internal static SkStackUnexpectedResponseException CreateInvalidToken(
     string causedText,
     string expectedFormat,
-    Exception innerException = null
+    Exception? innerException = null
   )
     => new(
       causedText: causedText,
@@ -76,7 +75,9 @@ public class SkStackUnexpectedResponseException : SkStackResponseException {
   {
     if (subsequentEventCode != expectedEventCode) {
       throw new SkStackUnexpectedResponseException(
-        message: $"expected subsequent event code is {expectedEventCode}, but was {subsequentEventCode}"
+        causedText: null,
+        message: $"expected subsequent event code is {expectedEventCode}, but was {subsequentEventCode}",
+        innerException: null
       );
     }
   }

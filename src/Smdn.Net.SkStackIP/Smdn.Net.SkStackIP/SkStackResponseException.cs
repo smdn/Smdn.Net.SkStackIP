@@ -15,7 +15,7 @@ public class SkStackResponseException : InvalidOperationException {
   {
   }
 
-  public SkStackResponseException(string message, Exception innerException = null)
+  public SkStackResponseException(string message, Exception? innerException = null)
     : base(message: message, innerException: innerException)
   {
   }

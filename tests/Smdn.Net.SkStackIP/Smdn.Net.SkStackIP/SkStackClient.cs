@@ -83,7 +83,7 @@ public class SkStackClientTests {
 
   [Test]
   public void Create_FromSerialPortName_PortNameNull()
-    => Assert.Throws<ArgumentNullException>(() => new SkStackClient(serialPortName: null));
+    => Assert.Throws<ArgumentNullException>(() => new SkStackClient(serialPortName: null!));
 
   [Test]
   public void Create_FromSerialPortName_PortNameEmpty()
@@ -91,7 +91,7 @@ public class SkStackClientTests {
 
   [Test]
   public void Create_FromStream_StreamNull()
-    => Assert.Throws<ArgumentNullException>(() => new SkStackClient(stream: null));
+    => Assert.Throws<ArgumentNullException>(() => new SkStackClient(stream: null!));
 
   [Test]
   public void Create_FromStream_StreamNotWritable()

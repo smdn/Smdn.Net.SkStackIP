@@ -90,7 +90,7 @@ public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<
     FrequencyMHz = frequencyMHz;
   }
 
-  public override bool Equals(object obj)
+  public override bool Equals(object? obj)
     => obj switch {
       SkStackChannel channel => Equals(channel),
       _ => false,

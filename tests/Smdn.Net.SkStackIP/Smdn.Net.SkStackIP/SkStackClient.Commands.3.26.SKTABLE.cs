@@ -33,7 +33,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.IsNotNull(response, nameof(response));
     Assert.IsNotNull(response!.Payload);
-    Assert.AreEqual(3, response.Payload.Count);
+    Assert.AreEqual(3, response.Payload!.Count);
     Assert.AreEqual(
       IPAddress.Parse("FE80:0000:0000:0000:021D:1290:0003:AFE0"),
       response.Payload[0]
@@ -94,7 +94,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     var response = taskSendCommand.Result;
 
     Assert.IsNotNull(response.Payload);
-    Assert.AreEqual(2, response.Payload.Count);
+    Assert.AreEqual(2, response.Payload!.Count);
     Assert.AreEqual(
       IPAddress.Parse("FE80:0000:0000:0000:021D:1290:0003:AFE0"),
       response.Payload[0]
@@ -125,7 +125,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.IsNotNull(response, nameof(response));
     Assert.IsNotNull(response!.Payload);
-    Assert.AreEqual(0, response.Payload.Count);
+    Assert.AreEqual(0, response.Payload!.Count);
 
     Assert.That(
       stream.ReadSentData(),
@@ -147,7 +147,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.IsNotNull(response, nameof(response));
     Assert.IsNotNull(response!.Payload);
-    Assert.AreEqual(0, response.Payload.Count);
+    Assert.AreEqual(0, response.Payload!.Count);
 
     Assert.That(
       stream.ReadSentData(),
@@ -172,7 +172,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.IsNotNull(response, nameof(response));
     Assert.IsNotNull(response!.Payload);
-    Assert.AreEqual(2, response.Payload.Count);
+    Assert.AreEqual(2, response.Payload!.Count);
 
     Assert.IsTrue(response.Payload.ContainsKey(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")));
     Assert.IsTrue(response.Payload.ContainsKey(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5679")));
@@ -230,7 +230,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     var response = taskSendCommand.Result;
 
     Assert.IsNotNull(response.Payload);
-    Assert.AreEqual(1, response.Payload.Count);
+    Assert.AreEqual(1, response.Payload!.Count);
 
     Assert.IsTrue(response.Payload.ContainsKey(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")));
 
@@ -260,7 +260,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.IsNotNull(response, nameof(response));
     Assert.IsNotNull(response!.Payload);
-    Assert.AreEqual(0, response.Payload.Count);
+    Assert.AreEqual(0, response.Payload!.Count);
 
     Assert.That(
       stream.ReadSentData(),
@@ -283,7 +283,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.IsNotNull(response, nameof(response));
     Assert.IsNotNull(response!.Payload);
-    Assert.AreEqual(0, response.Payload.Count);
+    Assert.AreEqual(0, response.Payload!.Count);
 
     Assert.That(
       stream.ReadSentData(),
@@ -327,7 +327,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     var ports = response!.Payload;
 
     Assert.IsNotNull(ports);
-    Assert.AreEqual(6, ports.Count);
+    Assert.AreEqual(6, ports!.Count);
 
     Assert.AreEqual(3610, ports[0].Port, $"{nameof(SkStackUdpPort.Port)} #0");
     Assert.AreEqual(SkStackUdpPortHandle.Handle1, ports[0].Handle, $"{nameof(SkStackUdpPort.Handle)} #0");

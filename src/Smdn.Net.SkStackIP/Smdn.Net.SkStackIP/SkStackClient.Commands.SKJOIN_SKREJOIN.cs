@@ -1,6 +1,5 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
-
 using System;
 using System.Buffers;
 using System.Net;
@@ -51,12 +50,12 @@ partial class SkStackClient {
   )>
   SKJOIN_SKREJOIN(
     ReadOnlyMemory<byte> command,
-    IPAddress ipv6address,
+    IPAddress? ipv6address,
     CancellationToken cancellationToken
   )
   {
-    SkStackResponse resp = default;
-    byte[] IPADDR = default;
+    SkStackResponse resp;
+    byte[]? IPADDR = default;
     var eventHandler = new SKJOINEventHandler();
 
     try {
@@ -84,18 +83,24 @@ partial class SkStackClient {
 
     eventHandler.ThrowIfEstablishmentError();
 
-    return (resp, eventHandler.Address);
+#if DEBUG
+    if (eventHandler.Address is null)
+      throw new InvalidOperationException($"{eventHandler.Address} has not been set");
+#endif
+
+    return (resp, eventHandler.Address!);
   }
 
   private class SKJOINEventHandler : SkStackEventHandlerBase {
-    public bool IsSessionEstablishedSuccessfully { get; private set; } = false;
-    public IPAddress Address { get; private set; }
+    public bool HasAddressSet { get; private set; }
+    public IPAddress? Address { get; private set; }
+
     private SkStackEventNumber eventNumber;
 
     public void ThrowIfEstablishmentError()
     {
       if (eventNumber != SkStackEventNumber.PanaSessionEstablishmentCompleted)
-        throw new SkStackPanaSessionEstablishmentException($"PANA session establishment failed", Address, eventNumber);
+        throw new SkStackPanaSessionEstablishmentException($"PANA session establishment failed", Address!, eventNumber);
     }
 
     public override bool TryProcessEvent(SkStackEvent ev)
@@ -104,7 +109,11 @@ partial class SkStackClient {
         case SkStackEventNumber.PanaSessionEstablishmentCompleted:
         case SkStackEventNumber.PanaSessionEstablishmentError:
           eventNumber = ev.Number;
-          Address = ev.SenderAddress;
+#if DEBUG
+          if (!ev.HasSenderAddress)
+            throw new InvalidOperationException($"{nameof(ev.SenderAddress)} must not be null");
+#endif
+          Address = ev.SenderAddress!;
           return true;
 
         default:

@@ -33,14 +33,14 @@ public partial class SkStackClient :
   private readonly IBufferWriter<byte> writer;
   private PipeReader streamReader;
 
-  private readonly ILogger logger;
+  private readonly ILogger? logger;
 
-  private readonly ArrayBufferWriter<byte> logWriter;
+  private readonly ArrayBufferWriter<byte>? logWriter;
 
   public SkStackClient(
     string serialPortName,
     int baudRate = DefaultBaudRate,
-    IServiceProvider serviceProvider = null
+    IServiceProvider? serviceProvider = null
   )
     : this(
       stream: OpenSerialPortStream(serialPortName, baudRate),
@@ -78,7 +78,7 @@ public partial class SkStackClient :
 
   public SkStackClient(
     Stream stream,
-    IServiceProvider serviceProvider = null
+    IServiceProvider? serviceProvider = null
   )
   {
     if (stream is null)
@@ -131,16 +131,16 @@ public partial class SkStackClient :
   {
     if (disposing) {
       streamWriter?.Complete();
-      streamWriter = null;
+      streamWriter = null!;
 
       streamReader?.Complete();
-      streamReader = null;
+      streamReader = null!;
 
       stream?.Close();
-      stream = null;
+      stream = null!;
 
       streamReaderSemaphore?.Dispose();
-      streamReaderSemaphore = null;
+      streamReaderSemaphore = null!;
     }
   }
 }

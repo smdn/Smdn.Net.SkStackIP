@@ -59,7 +59,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       encryption: SkStackUdpEncryption.ForcePlainText
     ));
 
-  private async static Task<SkStackUdpPort> GetUdpPortAsync()
+  private static async Task<SkStackUdpPort> GetUdpPortAsync()
   {
     var stream = new PseudoSkStackStream();
 
@@ -76,7 +76,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     var response = await client.SendSKTABLEListeningPortListAsync();
 
-    return response.Payload[0];
+    return response.Payload![0];
   }
 
   [Test]
@@ -86,12 +86,10 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
-    IPEndPoint destination = null;
-
     var ex = Assert.ThrowsAsync<ArgumentNullException>(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
-        destination: destination,
+        destination: (IPEndPoint)null!,
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText
       )
@@ -109,12 +107,10 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, ServiceProvider);
 
-    IPAddress destinationAddress = null;
-
     var ex = Assert.ThrowsAsync<ArgumentNullException>(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
-        destinationAddress: destinationAddress,
+        destinationAddress: (IPAddress)null!,
         destinationPort: 0x0E1A,
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText

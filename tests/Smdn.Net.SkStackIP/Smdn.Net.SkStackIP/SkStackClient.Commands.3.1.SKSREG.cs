@@ -114,7 +114,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, ServiceProvider);
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(() => client.SendSKSREGAsync(null, (ushort)0x8888));
+    Assert.Throws<ArgumentNullException>(() => client.SendSKSREGAsync(null!, (ushort)0x8888));
 #pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
@@ -129,7 +129,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, ServiceProvider);
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(() => client.SendSKSREGAsync<ushort>(null));
+    Assert.Throws<ArgumentNullException>(() => client.SendSKSREGAsync<ushort>(null!));
 #pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());

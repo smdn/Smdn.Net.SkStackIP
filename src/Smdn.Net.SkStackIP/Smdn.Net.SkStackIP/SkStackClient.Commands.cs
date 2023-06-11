@@ -80,7 +80,7 @@ partial class SkStackClient {
 
     async ValueTask<SkStackResponse> Core()
     {
-      byte[] PWD = null;
+      byte[]? PWD = null;
 
       try {
         PWD = ArrayPool<byte>.Shared.Rent(length);
@@ -115,7 +115,7 @@ partial class SkStackClient {
 
     async ValueTask<SkStackResponse> SKSETPWD()
     {
-      byte[] LEN = default;
+      byte[]? LEN = default;
 
       try {
         LEN = ArrayPool<byte>.Shared.Rent(2);
@@ -154,7 +154,7 @@ partial class SkStackClient {
 
     async ValueTask<SkStackResponse> Core()
     {
-      byte[] ID = null;
+      byte[]? ID = null;
 
       try {
         ID = ArrayPool<byte>.Shared.Rent(length);
@@ -257,7 +257,7 @@ partial class SkStackClient {
 
         if (
           SkStackTokenParser.ExpectToken(ref reader, EVER) &&
-          SkStackTokenParser.ExpectCharArray(ref reader, out string version) &&
+          SkStackTokenParser.ExpectCharArray(ref reader, out string? version) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader)
         ) {
           context.Complete(reader);
@@ -285,7 +285,7 @@ partial class SkStackClient {
 
         if (
           SkStackTokenParser.ExpectToken(ref reader, EAPPVER) &&
-          SkStackTokenParser.ExpectCharArray(ref reader, out string appver) &&
+          SkStackTokenParser.ExpectCharArray(ref reader, out string? appver) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader)
         ) {
           context.Complete(reader);
@@ -325,7 +325,7 @@ partial class SkStackClient {
 
     async ValueTask<SkStackResponse<IPAddress>> SKLL64()
     {
-      byte[] ADDR64 = null;
+      byte[]? ADDR64 = null;
 
       try {
         ADDR64 = ArrayPool<byte>.Shared.Rent(SkStackCommandArgs.LengthOfADDR64);

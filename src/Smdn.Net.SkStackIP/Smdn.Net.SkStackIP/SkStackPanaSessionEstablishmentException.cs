@@ -12,7 +12,7 @@ public class SkStackPanaSessionEstablishmentException : SkStackPanaSessionExcept
     string message,
     IPAddress address,
     SkStackEventNumber eventNumber,
-    Exception innerException = null
+    Exception? innerException = null
   )
     : base(
       message: message,

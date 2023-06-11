@@ -33,8 +33,8 @@ partial class SkStackClient {
 
     async ValueTask<SkStackResponse> SKADDNBR()
     {
-      byte[] IPADDR = null;
-      byte[] MACADDR = null;
+      byte[]? IPADDR = null;
+      byte[]? MACADDR = null;
 
       try {
         IPADDR = ArrayPool<byte>.Shared.Rent(SkStackCommandArgs.LengthOfIPADDR);

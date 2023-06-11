@@ -3,12 +3,9 @@
 
 using System;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 

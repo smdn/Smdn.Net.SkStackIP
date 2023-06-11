@@ -15,7 +15,7 @@ public abstract class SkStackPanaSessionException : InvalidOperationException {
     string message,
     IPAddress address,
     SkStackEventNumber eventNumber,
-    Exception innerException = null
+    Exception? innerException = null
   )
     : base(
       message: message,

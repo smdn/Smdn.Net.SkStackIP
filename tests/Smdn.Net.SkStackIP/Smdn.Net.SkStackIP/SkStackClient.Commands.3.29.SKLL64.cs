@@ -91,7 +91,7 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, ServiceProvider);
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(() => client.SendSKLL64Async(macAddress: null));
+    Assert.Throws<ArgumentNullException>(() => client.SendSKLL64Async(macAddress: null!));
 #pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());

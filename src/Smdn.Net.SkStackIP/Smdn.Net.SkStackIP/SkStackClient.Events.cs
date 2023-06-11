@@ -30,7 +30,7 @@ partial class SkStackClient {
   }
 
   /// <value><see cref="IPAddress"/> of current PANA session peer. <see langword="null"/> if PANA session has been terminated, expired, or not been established.</value>
-  public IPAddress PanaSessionPeerAddress { get; private set; } = null;
+  public IPAddress? PanaSessionPeerAddress { get; private set; } = null;
 
 #pragma warning disable CA2012
   private static readonly ValueTask<bool> TrueResultValueTask =
@@ -54,7 +54,7 @@ partial class SkStackClient {
   /// <returns>true if the first event processed and consumed, otherwise false.</returns>
   private ValueTask<bool> ProcessEventsAsync(
     ISkStackSequenceParserContext context,
-    SkStackEventHandlerBase eventHandler // handles events that are triggered by commands
+    SkStackEventHandlerBase? eventHandler // handles events that are triggered by commands
   )
   {
     var reader = context.CreateReader();
@@ -192,17 +192,17 @@ partial class SkStackClient {
   }
 #pragma warning restore CA1502
 
-  public ISynchronizeInvoke SynchronizingObject { get; set; }
+  public ISynchronizeInvoke? SynchronizingObject { get; set; }
 
-  public event EventHandler<SkStackPanaSessionEventArgs> PanaSessionEstablished;
-  public event EventHandler<SkStackPanaSessionEventArgs> PanaSessionTerminated;
-  public event EventHandler<SkStackPanaSessionEventArgs> PanaSessionExpired;
+  public event EventHandler<SkStackPanaSessionEventArgs>? PanaSessionEstablished;
+  public event EventHandler<SkStackPanaSessionEventArgs>? PanaSessionTerminated;
+  public event EventHandler<SkStackPanaSessionEventArgs>? PanaSessionExpired;
 
   internal void RaiseEventPanaSessionEstablished(SkStackEvent baseEvent) => RaiseEventPanaSession(PanaSessionEstablished, baseEvent);
   internal void RaiseEventPanaSessionTerminated(SkStackEvent baseEvent) => RaiseEventPanaSession(PanaSessionTerminated, baseEvent);
   internal void RaiseEventPanaSessionExpired(SkStackEvent baseEvent) => RaiseEventPanaSession(PanaSessionExpired, baseEvent);
 
-  private void RaiseEventPanaSession(EventHandler<SkStackPanaSessionEventArgs> ev, SkStackEvent baseEvent)
+  private void RaiseEventPanaSession(EventHandler<SkStackPanaSessionEventArgs>? ev, SkStackEvent baseEvent)
   {
     if (ev is null)
       return; // return without creating event args if event hanlder is null
@@ -210,13 +210,13 @@ partial class SkStackClient {
     InvokeEvent(SynchronizingObject, ev, this, new SkStackPanaSessionEventArgs(baseEvent));
   }
 
-  public event EventHandler<SkStackEventArgs> Slept;
-  public event EventHandler<SkStackEventArgs> WokeUp;
+  public event EventHandler<SkStackEventArgs>? Slept;
+  public event EventHandler<SkStackEventArgs>? WokeUp;
 
   internal void RaiseEventSlept() => RaiseEvent(Slept, default);
   private void RaiseEventWokeUp(SkStackEvent baseEvent) => RaiseEvent(WokeUp, baseEvent);
 
-  private void RaiseEvent(EventHandler<SkStackEventArgs> ev, SkStackEvent baseEvent)
+  private void RaiseEvent(EventHandler<SkStackEventArgs>? ev, SkStackEvent baseEvent)
   {
     if (ev is null)
       return; // return without creating event args if event hanlder is null
@@ -225,7 +225,7 @@ partial class SkStackClient {
   }
 
   private static void InvokeEvent<TEventArgs>(
-    ISynchronizeInvoke synchronizingObject,
+    ISynchronizeInvoke? synchronizingObject,
     EventHandler<TEventArgs> ev,
     object sender,
     TEventArgs args

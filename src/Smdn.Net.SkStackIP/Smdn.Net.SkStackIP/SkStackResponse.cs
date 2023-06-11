@@ -2,13 +2,16 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
+using System.Diagnostics.CodeAnalysis;
+#endif
 
 using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;
 
 public class SkStackResponse<TPayload> : SkStackResponse {
-  public TPayload Payload { get; internal set; }
+  public TPayload? Payload { get; internal set; }
 
   internal SkStackResponse()
     : base()
@@ -30,7 +33,10 @@ public class SkStackResponse {
   private bool TryParseErrorStatus(
     out SkStackErrorCode errorCode,
     out ReadOnlyMemory<byte> errorText,
-    out string errorMessage
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
+    [NotNullWhen(true)]
+#endif
+    out string? errorMessage
   )
   {
     errorCode = default;
@@ -71,7 +77,7 @@ public class SkStackResponse {
   }
 
   internal void ThrowIfErrorStatus(
-    Func<SkStackResponse, SkStackErrorCode, ReadOnlyMemory<byte>, Exception> translateException
+    Func<SkStackResponse, SkStackErrorCode, ReadOnlyMemory<byte>, Exception?>? translateException
   )
   {
     if (!TryParseErrorStatus(out var errorCode, out var errorText, out var errorMessage))

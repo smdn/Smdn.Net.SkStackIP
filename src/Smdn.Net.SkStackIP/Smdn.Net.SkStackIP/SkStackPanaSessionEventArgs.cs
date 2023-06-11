@@ -8,7 +8,7 @@ using Smdn.Net.SkStackIP.Protocol;
 namespace Smdn.Net.SkStackIP;
 
 public sealed class SkStackPanaSessionEventArgs : SkStackEventArgs {
-  public IPAddress PanaSessionPeerAddress => SenderAddress;
+  public IPAddress PanaSessionPeerAddress => SenderAddress!;
 
   internal SkStackPanaSessionEventArgs(SkStackEvent baseEvent)
     : base(baseEvent)

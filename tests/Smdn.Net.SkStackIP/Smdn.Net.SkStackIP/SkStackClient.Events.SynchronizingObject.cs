@@ -48,8 +48,7 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
   [Test]
   public void EventHandler_WithoutSynchronizingObject()
     => EventHandler(
-      synchronizingObject: null,
-      expectSynchronousCall: true
+      synchronizingObject: null
     );
 
   [Test]
@@ -58,8 +57,7 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
       synchronizingObject: new PseudoSynchronizingObject(
         invokeRequired: true,
         expectSynchronousCall: false
-      ),
-      expectSynchronousCall: false
+      )
     );
 
   [Test]
@@ -68,13 +66,11 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
       synchronizingObject: new PseudoSynchronizingObject(
         invokeRequired: false,
         expectSynchronousCall: true
-      ),
-      expectSynchronousCall: true
+      )
     );
 
   private void EventHandler(
-    ISynchronizeInvoke synchronizingObject,
-    bool expectSynchronousCall
+    ISynchronizeInvoke synchronizingObject
   )
   {
     using var stream = new PseudoSkStackStream();

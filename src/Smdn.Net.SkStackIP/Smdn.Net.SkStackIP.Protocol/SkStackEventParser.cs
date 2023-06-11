@@ -1,10 +1,12 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
-
 using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Collections.ObjectModel; // ReadOnlyDictionary
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
+using System.Diagnostics.CodeAnalysis;
+#endif
 using System.Net;
 using System.Net.NetworkInformation;
 
@@ -83,7 +85,7 @@ internal static class SkStackEventParser {
     => throw new NotImplementedException();
 
   /// <remarks>reference: BP35A1コマンドリファレンス 4.3. EADDR</remarks>
-  public static IReadOnlyList<IPAddress> ExpectEADDR(
+  public static IReadOnlyList<IPAddress>? ExpectEADDR(
     ISkStackSequenceParserContext context
   )
   {
@@ -129,7 +131,7 @@ internal static class SkStackEventParser {
   );
 
   /// <remarks>reference: BP35A1コマンドリファレンス 4.4. ENEIGHBOR</remarks>
-  public static IReadOnlyDictionary<IPAddress, PhysicalAddress> ExpectENEIGHBOR(
+  public static IReadOnlyDictionary<IPAddress, PhysicalAddress>? ExpectENEIGHBOR(
     ISkStackSequenceParserContext context
   )
   {
@@ -250,7 +252,10 @@ internal static class SkStackEventParser {
   /// <remarks>reference: BP35A1コマンドリファレンス 4.6. EEDSCAN</remarks>
   public static bool ExpectEEDSCAN(
     ISkStackSequenceParserContext context,
-    out IReadOnlyDictionary<SkStackChannel, double> result
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
+    [NotNullWhen(true)]
+#endif
+    out IReadOnlyDictionary<SkStackChannel, double>? result
   )
   {
     result = default;
@@ -293,7 +298,7 @@ internal static class SkStackEventParser {
   }
 
   /// <remarks>reference: BP35A1コマンドリファレンス 4.7. EPORT</remarks>
-  public static IReadOnlyList<SkStackUdpPort> ExpectEPORT(
+  public static IReadOnlyList<SkStackUdpPort>? ExpectEPORT(
     ISkStackSequenceParserContext context
   )
   {
@@ -365,7 +370,7 @@ internal static class SkStackEventParser {
     if (SkStackTokenParser.ExpectUINT8(ref reader, out var num)) {
       var number = (SkStackEventNumber)num;
 
-      IPAddress sender = default;
+      IPAddress? sender = default;
       int parameter = default;
       SkStackEventCode expectedSubsequentEventCode = default;
 
@@ -391,7 +396,10 @@ internal static class SkStackEventParser {
       }
 
       if (SkStackTokenParser.ExpectEndOfLine(ref reader)) {
-        ev = new SkStackEvent(number, sender, parameter, expectedSubsequentEventCode);
+        ev = number == SkStackEventNumber.WakeupSignalReceived
+          ? SkStackEvent.CreateWakeupSignalReceived()
+          : SkStackEvent.Create(number, sender!, parameter, expectedSubsequentEventCode);
+
         context.Complete(reader);
         return OperationStatus.Done;
       }

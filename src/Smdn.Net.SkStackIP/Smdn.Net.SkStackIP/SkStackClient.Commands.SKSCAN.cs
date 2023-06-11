@@ -4,6 +4,9 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+#if SYSTEM_DIAGNOSTICS_CODEANALYSIS_MEMBERNOTNULLWHENATTRIBUTE
+using System.Diagnostics.CodeAnalysis;
+#endif
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,10 +18,21 @@ namespace Smdn.Net.SkStackIP;
 partial class SkStackClient {
 #pragma warning restore IDE0040
   private abstract class SKSCANEventHandler<TScanResult> : SkStackEventHandlerBase {
-    public TScanResult ScanResult { get; protected set; }
+    public bool HasScanResultSet { get; private set; }
+
+#if SYSTEM_DIAGNOSTICS_CODEANALYSIS_MEMBERNOTNULLWHENATTRIBUTE
+    [MemberNotNullWhen(true, nameof(HasScanResultSet))]
+#endif
+    public TScanResult? ScanResult { get; private set; }
 
     public abstract override bool TryProcessEvent(SkStackEvent ev);
     public abstract override void ProcessSubsequentEvent(ISkStackSequenceParserContext context);
+
+    public void SetScanResult(TScanResult scanResult)
+    {
+      HasScanResultSet = true;
+      ScanResult = scanResult;
+    }
   }
 
   /// <summary>`SKSCAN 0`</summary>
@@ -73,7 +87,7 @@ partial class SkStackClient {
       var reader = context.CreateReader(); // retain current buffer
 
       if (SkStackEventParser.ExpectEEDSCAN(context, out var result)) {
-        ScanResult = result;
+        SetScanResult(result);
         context.Complete();
       }
       else {
@@ -164,7 +178,7 @@ partial class SkStackClient {
     private readonly bool expectPairingId;
 
     private const int ExpectedMaxPanDescriptionCount = 1;
-    private List<SkStackPanDescription> scanResult = null;
+    private List<SkStackPanDescription>? scanResult = null;
 
     public SKSCANActiveScanEventHandler(bool expectPairingId)
     {
@@ -178,7 +192,9 @@ partial class SkStackClient {
           return false; // process subsequent event
 
         case SkStackEventNumber.ActiveScanCompleted:
-          ScanResult = (IReadOnlyList<SkStackPanDescription>)scanResult ?? Array.Empty<SkStackPanDescription>();
+          SetScanResult(
+            (IReadOnlyList<SkStackPanDescription>?)scanResult ?? Array.Empty<SkStackPanDescription>()
+          );
           return true; // completed
 
         default:
@@ -250,8 +266,8 @@ partial class SkStackClient {
     CancellationToken cancellationToken
   )
   {
-    SkStackResponse resp = default;
-    byte[] CHANNEL_MASK = default;
+    SkStackResponse resp;
+    byte[]? CHANNEL_MASK = default;
 
     try {
       CHANNEL_MASK = ArrayPool<byte>.Shared.Rent(8);
@@ -275,6 +291,11 @@ partial class SkStackClient {
         ArrayPool<byte>.Shared.Return(CHANNEL_MASK);
     }
 
-    return (resp, commandEventHandler.ScanResult);
+#if DEBUG
+    if (!commandEventHandler.HasScanResultSet)
+      throw new InvalidOperationException($"{commandEventHandler.ScanResult} has not been set");
+#endif
+
+    return (resp, commandEventHandler.ScanResult!);
   }
 }

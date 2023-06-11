@@ -59,7 +59,7 @@ partial class SkStackRegister {
 
     private static readonly ReadOnlyMemory<byte> ESREG = SkStack.ToByteSequence("ESREG");
 
-    internal TValue ParseESREG(
+    internal TValue? ParseESREG(
       ISkStackSequenceParserContext context
     )
     {

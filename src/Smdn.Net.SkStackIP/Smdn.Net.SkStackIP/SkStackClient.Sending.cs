@@ -16,8 +16,8 @@ partial class SkStackClient {
 #pragma warning restore IDE0040
   protected internal async ValueTask<SkStackResponse> SendCommandAsync(
     ReadOnlyMemory<byte> command,
-    IEnumerable<ReadOnlyMemory<byte>> arguments = null,
-    SkStackProtocolSyntax syntax = null,
+    IEnumerable<ReadOnlyMemory<byte>>? arguments = null,
+    SkStackProtocolSyntax? syntax = null,
     bool throwIfErrorStatus = true,
     CancellationToken cancellationToken = default
   )
@@ -38,9 +38,9 @@ partial class SkStackClient {
   /// <param name="arguments">can be null</param>
   protected internal ValueTask<SkStackResponse<TPayload>> SendCommandAsync<TPayload>(
     ReadOnlyMemory<byte> command,
-    IEnumerable<ReadOnlyMemory<byte>> arguments,
-    SkStackSequenceParser<TPayload> parseResponsePayload,
-    SkStackProtocolSyntax syntax = null,
+    IEnumerable<ReadOnlyMemory<byte>>? arguments,
+    SkStackSequenceParser<TPayload?> parseResponsePayload,
+    SkStackProtocolSyntax? syntax = null,
     bool throwIfErrorStatus = true,
     CancellationToken cancellationToken = default
   )
@@ -57,9 +57,9 @@ partial class SkStackClient {
   /// <param name="arguments">can be null</param>
   internal async ValueTask<SkStackResponse> SendCommandAsync(
     ReadOnlyMemory<byte> command,
-    IEnumerable<ReadOnlyMemory<byte>> arguments,
-    SkStackEventHandlerBase commandEventHandler,
-    SkStackProtocolSyntax syntax = null,
+    IEnumerable<ReadOnlyMemory<byte>>? arguments,
+    SkStackEventHandlerBase? commandEventHandler,
+    SkStackProtocolSyntax? syntax = null,
     bool throwIfErrorStatus = true,
     CancellationToken cancellationToken = default
   )
@@ -82,8 +82,8 @@ partial class SkStackClient {
   private ValueTask<SkStackResponse<TPayload>> SendCommandAsyncCore<TPayload>(
     ReadOnlyMemory<byte> command,
     IEnumerable<ReadOnlyMemory<byte>> arguments,
-    SkStackSequenceParser<TPayload> parseResponsePayload,
-    SkStackEventHandlerBase commandEventHandler,
+    SkStackSequenceParser<TPayload?>? parseResponsePayload,
+    SkStackEventHandlerBase? commandEventHandler,
     SkStackProtocolSyntax syntax,
     bool throwIfErrorStatus,
     CancellationToken cancellationToken
@@ -150,7 +150,7 @@ partial class SkStackClient {
     }
 
     // write command to logger
-    if (logWriter is not null) {
+    if (logger is not null && logWriter is not null) {
       logger.LogDebugCommand(logWriter.WrittenMemory);
       logWriter.Clear();
     }
@@ -158,8 +158,8 @@ partial class SkStackClient {
 
   private async ValueTask<SkStackResponse<TPayload>> FlushAndReceive<TPayload>(
     ReadOnlyMemory<byte> command,
-    SkStackSequenceParser<TPayload> parseResponsePayload,
-    SkStackEventHandlerBase commandEventHandler,
+    SkStackSequenceParser<TPayload?>? parseResponsePayload,
+    SkStackEventHandlerBase? commandEventHandler,
     SkStackProtocolSyntax syntax,
     bool throwIfErrorStatus,
     CancellationToken cancellationToken

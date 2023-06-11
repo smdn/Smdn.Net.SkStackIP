@@ -9,12 +9,16 @@ using Smdn.Net.SkStackIP.Protocol;
 namespace Smdn.Net.SkStackIP;
 
 public class SkStackEventArgs : EventArgs {
-  private protected IPAddress SenderAddress { get; }
+  private protected IPAddress? SenderAddress { get; }
   public SkStackEventNumber EventNumber { get; }
 
   internal SkStackEventArgs(SkStackEvent baseEvent)
   {
-    this.SenderAddress = baseEvent.SenderAddress;
-    this.EventNumber = baseEvent.Number;
+    EventNumber = baseEvent.Number;
+    SenderAddress = baseEvent.Number switch {
+      SkStackEventNumber.Undefined => null,
+      SkStackEventNumber.WakeupSignalReceived => null,
+      _ => baseEvent.SenderAddress ?? throw new InvalidOperationException($"{nameof(baseEvent.SenderAddress)} must not be null"),
+    };
   }
 }

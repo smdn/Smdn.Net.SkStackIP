@@ -217,9 +217,9 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
     SkStackUdpReceiveResult result2 = null;
 
     try {
-      Assert.DoesNotThrowAsync(async () => {
-        result1 = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
-      });
+      Assert.DoesNotThrowAsync(
+        async () => result1 = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token)
+      );
 
       Assert.IsNotNull(result1);
       Assert.That(
@@ -237,9 +237,9 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
     }
 
     try {
-      Assert.DoesNotThrowAsync(async () => {
-        result2 = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
-      });
+      Assert.DoesNotThrowAsync(
+        async () => result2 = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token)
+      );
 
       Assert.IsNotNull(result2);
       Assert.That(
@@ -273,9 +273,9 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
     SkStackUdpReceiveResult resultEchonetLite = null;
 
     try {
-      Assert.DoesNotThrowAsync(async () => {
-        resultEchonetLite = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
-      });
+      Assert.DoesNotThrowAsync(
+        async () => resultEchonetLite = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token)
+      );
 
       Assert.IsNotNull(resultEchonetLite);
       Assert.That(
@@ -295,9 +295,9 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
     SkStackUdpReceiveResult resultPana = null;
 
     try {
-      Assert.DoesNotThrowAsync(async () => {
-        resultPana = await client.UdpReceiveAsync(SkStackKnownPortNumbers.Pana, cts.Token);
-      });
+      Assert.DoesNotThrowAsync(
+        async () => resultPana = await client.UdpReceiveAsync(SkStackKnownPortNumbers.Pana, cts.Token)
+      );
 
       Assert.IsNotNull(resultPana);
       Assert.That(
@@ -342,13 +342,13 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
     );
 #pragma warning restore CA2012
 
-    using (var result = taskUdpReceive.Result) {
-      Assert.That(
-        result.Buffer,
-        Is.EqualTo("X".ToByteSequence()),
-        nameof(result)
-      );
-    }
+    using var result = taskUdpReceive.Result;
+
+    Assert.That(
+      result.Buffer,
+      Is.EqualTo("X".ToByteSequence()),
+      nameof(result)
+    );
   }
 
   [Test]
@@ -383,13 +383,13 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
     );
 #pragma warning restore CA2012
 
-    using (var result = taskUdpReceive.Result) {
-      Assert.That(
-        result.Buffer,
-        Is.EqualTo("\r\n".ToByteSequence()),
-        nameof(result)
-      );
-    }
+    using var result = taskUdpReceive.Result;
+
+    Assert.That(
+      result.Buffer,
+      Is.EqualTo("\r\n".ToByteSequence()),
+      nameof(result)
+    );
   }
 
   [Test]
@@ -436,13 +436,13 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
 
     Assert.IsTrue(taskSendCommand.Result.Success);
 
-    using (var result = taskUdpReceive.Result) {
-      Assert.That(
-        result.Buffer,
-        Is.EqualTo("01234567".ToByteSequence()),
-        nameof(result)
-      );
-    }
+    using var result = taskUdpReceive.Result;
+
+    Assert.That(
+      result.Buffer,
+      Is.EqualTo("01234567".ToByteSequence()),
+      nameof(result)
+    );
   }
 
   [Test]
@@ -464,9 +464,9 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
     SkStackUdpReceiveResult result = null;
 
     try {
-      Assert.DoesNotThrowAsync(async () => {
-        result = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token);
-      });
+      Assert.DoesNotThrowAsync(
+        async () => result = await client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite, cts.Token)
+      );
 
       Assert.IsNotNull(result);
       Assert.That(

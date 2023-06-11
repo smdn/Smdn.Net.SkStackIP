@@ -5,6 +5,9 @@ using System;
 using System.Buffers;
 using System.Buffers.Binary;
 using System.Collections.Generic;
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
+using System.Diagnostics.CodeAnalysis;
+#endif
 using System.IO.Pipelines;
 using System.Net;
 using System.Threading;
@@ -136,7 +139,7 @@ partial class SkStackClient {
         }
 
         if (readResult.IsCanceled)
-          return default;
+          throw new InvalidOperationException("pending read was cancelled");
 
         var buffer = readResult.Buffer;
 
@@ -157,7 +160,10 @@ partial class SkStackClient {
 
     static bool TryReadReceiveResult(
       ref ReadOnlySequence<byte> unreadSequence,
-      out SkStackUdpReceiveResult result
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
+      [NotNullWhen(true)]
+#endif
+      out SkStackUdpReceiveResult? result
     )
     {
       result = default;

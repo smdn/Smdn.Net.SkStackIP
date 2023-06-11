@@ -4,6 +4,9 @@
 using System;
 using System.Buffers;
 using System.Buffers.Binary;
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
+using System.Diagnostics.CodeAnalysis;
+#endif
 using System.Net;
 using System.Net.NetworkInformation;
 
@@ -22,7 +25,7 @@ public static class SkStackTokenParser {
     bool throwIfUnexpected,
     TArg arg,
     TryConvertTokenFunc<TArg, TResult> tryConvert,
-    out TResult result
+    out TResult? result
   )
   {
     result = default;
@@ -33,10 +36,8 @@ public static class SkStackTokenParser {
 
     var readerEOL = reader;
     var readerSP = reader;
-    ReadOnlySequence<byte> tokenDelimitByEOL;
-    ReadOnlySequence<byte> tokenDelimitBySP;
-    var foundTokenDelimitByEOL = readerEOL.TryReadTo(out tokenDelimitByEOL, SkStack.CRLFSpan);
-    var foundTokenDelimitBySP = readerSP.TryReadTo(out tokenDelimitBySP, SkStack.SP);
+    var foundTokenDelimitByEOL = readerEOL.TryReadTo(out ReadOnlySequence<byte> tokenDelimitByEOL, SkStack.CRLFSpan);
+    var foundTokenDelimitBySP = readerSP.TryReadTo(out ReadOnlySequence<byte> tokenDelimitBySP, SkStack.SP);
 
     if (foundTokenDelimitByEOL && foundTokenDelimitBySP) {
       // select shorter one
@@ -90,7 +91,10 @@ public static class SkStackTokenParser {
     ref SequenceReader<byte> reader,
     int length,
     Converter<ReadOnlySequence<byte>, TValue> converter,
-    out TValue value
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
+    [NotNullWhen(true)]
+#endif
+    out TValue? value
   )
     => OperationStatus.Done == TryConvertToken(
       reader: ref reader,
@@ -150,7 +154,11 @@ public static class SkStackTokenParser {
       );
     }
     catch (SkStackUnexpectedResponseException ex) {
-      throw SkStackUnexpectedResponseException.CreateInvalidToken(causedText: ex.CausedText, $"expected: '{expectedToken.Span.ToControlCharsPicturizedString()}'", ex);
+      throw SkStackUnexpectedResponseException.CreateInvalidToken(
+        causedText: ex.CausedText ?? "unexpected token",
+        $"expected: '{expectedToken.Span.ToControlCharsPicturizedString()}'",
+        ex
+      );
     }
   }
 
@@ -214,7 +222,10 @@ public static class SkStackTokenParser {
 
   public static bool ExpectCharArray(
     ref SequenceReader<byte> reader,
-    out string value
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
+    [NotNullWhen(true)]
+#endif
+    out string? value
   )
     => Expect(
       reader: ref reader,
@@ -275,12 +286,15 @@ public static class SkStackTokenParser {
     ref SequenceReader<byte> reader,
     int length,
     Converter<Memory<byte>, TValue> converter,
-    out TValue value
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
+    [NotNullWhen(true)]
+#endif
+    out TValue? value
   )
   {
     value = default;
 
-    byte[] buffer = null;
+    byte[]? buffer = null;
 
     try {
       var lengthOfUINT8Array = length * 2;
@@ -308,7 +322,10 @@ public static class SkStackTokenParser {
 
   public static bool ExpectIPADDR(
     ref SequenceReader<byte> reader,
-    out IPAddress value
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
+    [NotNullWhen(true)]
+#endif
+    out IPAddress? value
   )
     => Expect(
       reader: ref reader,
@@ -319,7 +336,10 @@ public static class SkStackTokenParser {
 
   public static bool ExpectADDR64(
     ref SequenceReader<byte> reader,
-    out PhysicalAddress value
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
+    [NotNullWhen(true)]
+#endif
+    out PhysicalAddress? value
   )
     => ExpectUINT8Array(
       reader: ref reader,

@@ -30,7 +30,7 @@ internal static class SkStackClientLoggerExtensions {
 
   private const LogLevel LogLevelReceivingStatusDefault = LogLevel.Trace;
 
-  public static void LogReceivingStatus(this ILogger logger, string prefix, ReadOnlyMemory<byte> command, Exception exception = null)
+  public static void LogReceivingStatus(this ILogger logger, string prefix, ReadOnlyMemory<byte> command, Exception? exception = null)
   {
     var level = exception is null ? LogLevelReceivingStatusDefault : LogLevel.Error;
 
@@ -47,7 +47,7 @@ internal static class SkStackClientLoggerExtensions {
     );
   }
 
-  public static void LogReceivingStatus(this ILogger logger, string prefix, ReadOnlySequence<byte> sequence, Exception exception = null)
+  public static void LogReceivingStatus(this ILogger logger, string prefix, ReadOnlySequence<byte> sequence, Exception? exception = null)
   {
     var level = exception is null ? LogLevelReceivingStatusDefault : LogLevel.Error;
 
@@ -64,7 +64,7 @@ internal static class SkStackClientLoggerExtensions {
     );
   }
 
-  public static void LogReceivingStatus(this ILogger logger, string message, Exception exception = null)
+  public static void LogReceivingStatus(this ILogger logger, string message, Exception? exception = null)
   {
     var level = exception is null ? LogLevelReceivingStatusDefault : LogLevel.Error;
 
@@ -103,7 +103,7 @@ internal static class SkStackClientLoggerExtensions {
 
   private const LogLevel LogLevelResponse = LogLevel.Debug;
 
-  public static void LogDebugResponse(this ILogger logger, ReadOnlySequence<byte> sequence, object marker)
+  public static void LogDebugResponse(this ILogger logger, ReadOnlySequence<byte> sequence, object? marker)
   {
     if (!logger.IsEnabled(LogLevelResponse))
       return;

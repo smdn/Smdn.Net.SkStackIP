@@ -13,17 +13,12 @@ public class SkStackErrorResponseException : SkStackResponseException {
   public SkStackErrorCode ErrorCode { get; }
   public string ErrorText { get; }
 
-  public SkStackErrorResponseException(string message, Exception innerException = null)
-    : base(message: message, innerException: innerException)
-  {
-  }
-
   internal SkStackErrorResponseException(
     SkStackResponse response,
     SkStackErrorCode errorCode,
     ReadOnlySpan<byte> errorText,
     string message,
-    Exception innerException = null
+    Exception? innerException = null
   )
     : base(
       message: errorText.IsEmpty

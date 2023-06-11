@@ -57,7 +57,7 @@ partial class SkStackClient {
     CancellationToken cancellationToken = default
   )
   {
-    byte[] PORT = null;
+    byte[]? PORT = null;
 
     try {
       PORT = ArrayPool<byte>.Shared.Rent(4);

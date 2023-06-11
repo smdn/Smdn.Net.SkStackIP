@@ -155,7 +155,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, ServiceProvider);
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(() => client.SendSKJOINAsync(ipv6address: null));
+    Assert.Throws<ArgumentNullException>(() => client.SendSKJOINAsync(ipv6address: null!));
 #pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
