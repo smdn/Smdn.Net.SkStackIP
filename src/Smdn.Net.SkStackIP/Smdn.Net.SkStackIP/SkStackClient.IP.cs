@@ -55,7 +55,8 @@ partial class SkStackClient {
     IPAddress remoteAddress,
     ReadOnlySequence<byte> data,
     int dataLength,
-    SkStackERXUDPDataFormat dataFormat
+    SkStackERXUDPDataFormat dataFormat,
+    CancellationToken cancellationToken
   )
   {
     if (!udpReceiveEventPipes.TryGetValue(localPort, out var pipe))
@@ -66,14 +67,15 @@ partial class SkStackClient {
       return default;
 #endif
 
-    return OnERXUDPAsyncCore(pipe.Writer, remoteAddress, data, dataLength, dataFormat);
+    return OnERXUDPAsyncCore(pipe.Writer, remoteAddress, data, dataLength, dataFormat, cancellationToken);
 
     static async ValueTask OnERXUDPAsyncCore(
       PipeWriter writer,
       IPAddress remoteAddress,
       ReadOnlySequence<byte> data,
       int dataLength,
-      SkStackERXUDPDataFormat dataFormat
+      SkStackERXUDPDataFormat dataFormat,
+      CancellationToken cancellationToken
     )
     {
       var packetLength = UdpReceiveEventLengthOfRemoteAddress + UdpReceiveEventLengthOfDataLength + dataLength;
@@ -100,7 +102,7 @@ partial class SkStackClient {
 
       writer.Advance(packetLength);
 
-      var result = await writer.FlushAsync(/*cancellationToken*/).ConfigureAwait(false);
+      var result = await writer.FlushAsync(cancellationToken).ConfigureAwait(false);
 
       if (result.IsCompleted)
         return;

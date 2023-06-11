@@ -5,6 +5,7 @@ using System;
 using System.Buffers;
 using System.ComponentModel;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Smdn.Net.SkStackIP.Protocol;
@@ -54,7 +55,8 @@ partial class SkStackClient {
   /// <returns>true if the first event processed and consumed, otherwise false.</returns>
   private ValueTask<bool> ProcessEventsAsync(
     ISkStackSequenceParserContext context,
-    SkStackEventHandlerBase? eventHandler // handles events that are triggered by commands
+    SkStackEventHandlerBase? eventHandler, // handles events that are triggered by commands
+    CancellationToken cancellationToken
   )
   {
     var reader = context.CreateReader();
@@ -178,7 +180,8 @@ partial class SkStackClient {
           remoteAddress: erxudp.RemoteEndPoint.Address,
           data: erxudpData,
           dataLength: erxudpDataLength,
-          dataFormat: erxudpDataFormat
+          dataFormat: erxudpDataFormat,
+          cancellationToken: cancellationToken
         ).ConfigureAwait(false);
 
         context.Continue();

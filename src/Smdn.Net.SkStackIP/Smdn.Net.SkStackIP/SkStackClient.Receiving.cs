@@ -136,7 +136,8 @@ partial class SkStackClient {
           // process events which is received until this point
           var eventProcessed = await ProcessEventsAsync(
             parseSequenceContext,
-            eventHandler
+            eventHandler,
+            cancellationToken
           ).ConfigureAwait(false);
 
           logger?.LogReceivingStatus($"      status: {parseSequenceContext.Status}");
