@@ -19,14 +19,14 @@ internal static class SkStackEventCodeNames {
       { SkStackEventCode.EVENT,       SkStack.ToByteSequence(nameof(SkStackEventCode.EVENT)) },
     };
 
-  public static ReadOnlyMemory<byte> ERXUDP =>    eventCodeAndNames[SkStackEventCode.ERXUDP];
-  public static ReadOnlyMemory<byte> EPONG =>     eventCodeAndNames[SkStackEventCode.EPONG];
-  public static ReadOnlyMemory<byte> EADDR =>     eventCodeAndNames[SkStackEventCode.EADDR];
+  public static ReadOnlyMemory<byte> ERXUDP => eventCodeAndNames[SkStackEventCode.ERXUDP];
+  public static ReadOnlyMemory<byte> EPONG => eventCodeAndNames[SkStackEventCode.EPONG];
+  public static ReadOnlyMemory<byte> EADDR => eventCodeAndNames[SkStackEventCode.EADDR];
   public static ReadOnlyMemory<byte> ENEIGHBOR => eventCodeAndNames[SkStackEventCode.ENEIGHBOR];
-  public static ReadOnlyMemory<byte> EPANDESC =>  eventCodeAndNames[SkStackEventCode.EPANDESC];
-  public static ReadOnlyMemory<byte> EEDSCAN =>   eventCodeAndNames[SkStackEventCode.EEDSCAN];
-  public static ReadOnlyMemory<byte> EPORT =>     eventCodeAndNames[SkStackEventCode.EPORT];
-  public static ReadOnlyMemory<byte> EVENT =>     eventCodeAndNames[SkStackEventCode.EVENT];
+  public static ReadOnlyMemory<byte> EPANDESC => eventCodeAndNames[SkStackEventCode.EPANDESC];
+  public static ReadOnlyMemory<byte> EEDSCAN => eventCodeAndNames[SkStackEventCode.EEDSCAN];
+  public static ReadOnlyMemory<byte> EPORT => eventCodeAndNames[SkStackEventCode.EPORT];
+  public static ReadOnlyMemory<byte> EVENT => eventCodeAndNames[SkStackEventCode.EVENT];
 
   public static bool TryGetEventName(SkStackEventCode eventCode, out ReadOnlyMemory<byte> eventName)
     => eventCodeAndNames.TryGetValue(eventCode, out eventName);

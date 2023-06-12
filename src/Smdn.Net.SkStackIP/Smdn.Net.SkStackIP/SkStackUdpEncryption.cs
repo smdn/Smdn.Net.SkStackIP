@@ -1,8 +1,6 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
 
-using System;
-
 namespace Smdn.Net.SkStackIP;
 
 /// <remarks>reference: BP35A1コマンドリファレンス 3.7. SKSENDTO</remarks>

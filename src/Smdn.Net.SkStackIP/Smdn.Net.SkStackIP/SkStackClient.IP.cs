@@ -106,7 +106,7 @@ partial class SkStackClient {
 
       if (result.IsCompleted)
         return;
-        // throw new InvalidOperationException("writer is completed");
+      // throw new InvalidOperationException("writer is completed");
     }
   }
 
@@ -130,7 +130,7 @@ partial class SkStackClient {
       CancellationToken cancellationToken
     )
     {
-      for (; ;) {
+      for (; ; ) {
         if (!pipeReader.TryRead(out var readResult)) {
           var receiveNotificationalEventResult = await thisClient.ReceiveNotificationalEventAsync(cancellationToken).ConfigureAwait(false);
 

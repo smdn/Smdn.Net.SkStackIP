@@ -31,6 +31,7 @@ public static partial class SkStackRegister {
   /*
    *  alias of SXX
    */
+
   /// <summary>Register number S02</summary>
   public static RegisterEntry<SkStackChannel> Channel => S02;
 
@@ -69,4 +70,4 @@ public static partial class SkStackRegister {
 
   /// <summary>Register number SFF</summary>
   public static RegisterEntry<bool> EnableAutoLoad => SFF;
- }
+}
