@@ -18,7 +18,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     SkStackResponse response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKSETRBIDAsync(routeBID: "00112233445566778899AABBCCDDEEFF"));
@@ -36,7 +36,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentNullException>(() => client.SendSKSETRBIDAsync(routeBID: (string)null!));
@@ -50,7 +50,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: string.Empty));
@@ -65,7 +65,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: ReadOnlyMemory<byte>.Empty));
@@ -81,7 +81,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: rbid));
@@ -98,7 +98,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: rbid.ToByteSequence()));

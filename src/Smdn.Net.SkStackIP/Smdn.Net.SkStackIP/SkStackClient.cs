@@ -6,7 +6,6 @@ using System.IO;
 using System.IO.Pipelines;
 using System.IO.Ports;
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using Smdn.Buffers;
@@ -40,11 +39,11 @@ public partial class SkStackClient :
   public SkStackClient(
     string serialPortName,
     int baudRate = DefaultBaudRate,
-    IServiceProvider? serviceProvider = null
+    ILogger? logger = null
   )
     : this(
       stream: OpenSerialPortStream(serialPortName, baudRate),
-      serviceProvider: serviceProvider
+      logger: logger
     )
   {
   }
@@ -78,7 +77,7 @@ public partial class SkStackClient :
 
   public SkStackClient(
     Stream stream,
-    IServiceProvider? serviceProvider = null
+    ILogger? logger = null
   )
   {
     if (stream is null)
@@ -99,7 +98,7 @@ public partial class SkStackClient :
       new(leaveOpen: true, bufferSize: 1024, minimumReadSize: 256)
     );
 
-    logger = serviceProvider?.GetService<ILoggerFactory>()?.CreateLogger<SkStackClient>();
+    this.logger = logger;
 
     if (logger is not null && logger.IsCommandLoggingEnabled()) {
       logWriter = new ArrayBufferWriter<byte>(initialCapacity: 64);

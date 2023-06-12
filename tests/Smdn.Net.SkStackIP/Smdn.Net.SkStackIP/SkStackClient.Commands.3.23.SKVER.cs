@@ -19,7 +19,7 @@ public class SkStackClientCommandsSKVERTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("EVER 1.2.10");
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     SkStackResponse<Version> response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKVERAsync());

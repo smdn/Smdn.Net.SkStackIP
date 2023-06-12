@@ -19,7 +19,7 @@ public class SkStackClientCommandsSKERASETests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     var response = await client.SendSKERASEAsync();
 
     Assert.That(

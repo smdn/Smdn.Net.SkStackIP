@@ -40,7 +40,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine($"5 {addressString}");
     }
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     Exception thrownExceptionInEventHandler = null;
     var raisedEventCount = 0;
 
@@ -112,7 +112,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine($"4 {addressString}");
     }
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     var raisedEventCount = 0;
 
     client.PanaSessionEstablished += (sender, e) => raisedEventCount++;
@@ -147,7 +147,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("FAIL ER10");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     var raisedEventCount = 0;
 
     client.PanaSessionEstablished += (sender, e) => raisedEventCount++;

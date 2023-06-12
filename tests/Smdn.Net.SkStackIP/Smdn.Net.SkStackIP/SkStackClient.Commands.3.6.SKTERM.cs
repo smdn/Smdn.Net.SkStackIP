@@ -39,7 +39,7 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
 
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     await JoinAsync(client, stream, addressString);
 
@@ -109,7 +109,7 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
 
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     await JoinAsync(client, stream, addressString);
 
@@ -174,7 +174,7 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
 
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     await JoinAsync(client, stream, addressString);
 

@@ -18,7 +18,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void ERXUDPDataFormat(SkStackERXUDPDataFormat format)
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     Assert.DoesNotThrow(() => client.ERXUDPDataFormat = format);
     Assert.AreEqual(client.ERXUDPDataFormat, format);
@@ -28,7 +28,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void ERXUDPDataFormat_InvalidValue(SkStackERXUDPDataFormat format)
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     Assert.Throws<ArgumentException>(() => client.ERXUDPDataFormat = format);
   }
@@ -38,7 +38,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void StartCapturingUdpReceiveEvents(int port)
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     Assert.DoesNotThrow(() => client.StartCapturingUdpReceiveEvents(port));
   }
@@ -50,7 +50,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void StartCapturingUdpReceiveEvents_PortOutOfRange(int port)
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     Assert.Throws<ArgumentOutOfRangeException>(() => client.StartCapturingUdpReceiveEvents(port));
   }
@@ -59,7 +59,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void StartCapturingUdpReceiveEvents_Disposed()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     client.Dispose();
 
@@ -71,7 +71,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void StopCapturingUdpReceiveEvents(int port)
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     Assert.DoesNotThrow(() => client.StopCapturingUdpReceiveEvents(port));
   }
@@ -83,7 +83,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void StopCapturingUdpReceiveEvents_PortOutOfRange(int port)
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     Assert.Throws<ArgumentOutOfRangeException>(() => client.StopCapturingUdpReceiveEvents(port));
   }
@@ -92,7 +92,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void StopCapturingUdpReceiveEvents_Disposed()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     client.Dispose();
 
@@ -106,7 +106,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void UdpReceiveAsync_PortOutOfRange(int port)
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentOutOfRangeException>(() => client.UdpReceiveAsync(port));
@@ -117,7 +117,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void UdpReceiveAsync_Disposed()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     client.Dispose();
 
@@ -130,7 +130,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void UdpReceiveAsync_NotCapturing()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<InvalidOperationException>(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.Pana));
@@ -141,7 +141,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void UdpReceiveAsync_CapturingEchonetLiteByDefault()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.DoesNotThrow(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
@@ -152,7 +152,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void UdpReceiveAsync_StoppedCapturing()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.DoesNotThrow(() => client.UdpReceiveAsync(SkStackKnownPortNumbers.EchonetLite));
@@ -169,7 +169,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void UdpReceiveAsync_NoUdpPacketReceived()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     Assert.ThrowsAsync<OperationCanceledException>(async () => {
       using var cts = new CancellationTokenSource();
@@ -184,7 +184,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void UdpReceiveAsync_NoUdpPacketReceived_EVENTReceived()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     stream.ResponseWriter.WriteLine($"EVENT 21 FE80:0000:0000:0000:021D:1290:1234:5678 00");
     stream.ResponseWriter.WriteLine($"EVENT 33 FE80:0000:0000:0000:021D:1290:1234:5678");
@@ -202,7 +202,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void UdpReceiveAsync()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
@@ -257,7 +257,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void UdpReceiveAsync_MultiplePorts()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
@@ -315,7 +315,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void UdpReceiveAsync_IncompleteLine()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
@@ -355,7 +355,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void UdpReceiveAsync_IncompleteLine_DataEndsWithCRLF_EndOfLineDelayed()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
@@ -396,7 +396,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void UdpReceiveAsync_SendCommandWhileAwaiting()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
 
@@ -449,7 +449,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void UdpReceiveAsync_DataFormat_HexASCIIText()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     client.ERXUDPDataFormat = SkStackERXUDPDataFormat.HexAsciiText;
 

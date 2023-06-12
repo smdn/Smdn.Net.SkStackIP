@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 using NUnit.Framework;
@@ -23,25 +22,9 @@ namespace Smdn.Net.SkStackIP;
 public class SkStackClientTests {
   private static readonly TimeSpan responseDelayInterval = TimeSpan.FromMilliseconds(50);
 
-  private IServiceProvider serviceProvider;
-
-  [SetUp]
-  public void SetUp()
-  {
-    var services = new ServiceCollection();
-
-    services.AddLogging(
-      builder => builder
-        .AddSimpleConsole(static options => options.SingleLine = true)
-        .AddFilter(static level => true/*level <= LogLevel.Trace*/)
-    );
-
-    serviceProvider = services.BuildServiceProvider();
-  }
-
   private class SkStackClientEx : SkStackClient {
-    public SkStackClientEx(Stream stream, IServiceProvider serviceProvider)
-      : base(stream, serviceProvider)
+    public SkStackClientEx(Stream stream, ILogger logger)
+      : base(stream, logger)
     {
     }
 
@@ -78,8 +61,8 @@ public class SkStackClientTests {
       );
   }
 
-  private static SkStackClientEx CreateClient(Stream stream, IServiceProvider serviceProvider)
-    => new(stream, serviceProvider);
+  private static SkStackClientEx CreateClient(Stream stream)
+    => new(stream, SkStackClientTestsBase.CreateLoggerForTestCase());
 
   [Test]
   public void Create_FromSerialPortName_PortNameNull()
@@ -117,7 +100,7 @@ public class SkStackClientTests {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    var client = CreateClient(stream, serviceProvider: serviceProvider);
+    var client = CreateClient(stream);
 
     Assert.DoesNotThrowAsync(async () => await client.SendCommandAsync("TEST"), $"{nameof(client.SendCommandAsync)} before {nameof(client.Dispose)}");
 
@@ -133,7 +116,7 @@ public class SkStackClientTests {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
 
     Assert.ThrowsAsync<ArgumentException>(async () => await client.SendCommandAsync(string.Empty));
 
@@ -147,7 +130,7 @@ public class SkStackClientTests {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
 
     SkStackResponse resp = default;
 
@@ -171,7 +154,7 @@ public class SkStackClientTests {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
 
     Assert.ThrowsAsync<ArgumentException>(async () => {
       await client.SendCommandAsync(
@@ -190,7 +173,7 @@ public class SkStackClientTests {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var resp = await client.SendCommandAsync("TEST");
 
     Assert.That(
@@ -227,7 +210,7 @@ public class SkStackClientTests {
 
     var syntax = new EndOfCommandLineSyntax(commandLineTerminator);
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var resp = await client.SendCommandAsync(
       command: "TEST",
       arguments: null,
@@ -249,7 +232,7 @@ public class SkStackClientTests {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var resp = await client.SendCommandAsync(
       "TEST",
       new[] {
@@ -275,7 +258,7 @@ public class SkStackClientTests {
     stream.ResponseWriter.WriteLine("TEST");
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var resp = await client.SendCommandAsync("TEST");
 
     Assert.That(
@@ -294,7 +277,7 @@ public class SkStackClientTests {
     stream.ResponseWriter.WriteLine("TEST ARG1 ARG2 ARG3");
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var resp = await client.SendCommandAsync(
       "TEST",
       new[] {
@@ -320,7 +303,7 @@ public class SkStackClientTests {
     stream.ResponseWriter.WriteLine("TEST2");
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var resp = await client.SendCommandAsync(
       command: "TEST",
       arguments: null,
@@ -359,7 +342,7 @@ public class SkStackClientTests {
     stream.ResponseWriter.WriteLine("OK"); // will be treated as payload
     stream.ResponseWriter.WriteLine("TEST echoback of next command"); // will be treated as status line
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var resp = await client.SendCommandAsync(
       command: "TEST",
       arguments: null,
@@ -397,7 +380,7 @@ public class SkStackClientTests {
     stream.ResponseWriter.WriteLine("UNEXPECTEDTOKEN");
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
 
     var ex = Assert.ThrowsAsync<SkStackUnexpectedResponseException>(async () => {
       await client.SendCommandAsync(
@@ -455,7 +438,7 @@ public class SkStackClientTests {
 
     var syntax = new EndOfStatusLineSyntax(lineTerminator);
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var resp = await client.SendCommandAsync(
       command: "TEST",
       arguments: null,
@@ -479,7 +462,7 @@ public class SkStackClientTests {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var resp = await client.SendCommandAsync("TEST");
 
     Assert.That(
@@ -499,7 +482,7 @@ public class SkStackClientTests {
 
     stream.ResponseWriter.WriteLine("OK DONE");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var resp = await client.SendCommandAsync("TEST");
 
     Assert.That(
@@ -519,7 +502,7 @@ public class SkStackClientTests {
 
     stream.ResponseWriter.WriteLine("FAIL");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var resp = await client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
     Assert.That(
@@ -539,7 +522,7 @@ public class SkStackClientTests {
 
     stream.ResponseWriter.WriteLine("FAIL REASON");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var resp = await client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
     Assert.That(
@@ -574,7 +557,7 @@ public class SkStackClientTests {
 
     stream.ResponseWriter.WriteLine($"FAIL {errorCodeString}");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var ex = Assert.ThrowsAsync<TExpectedException>(
       async () => await client.SendCommandAsync("TEST", throwIfErrorStatus: true)
     );
@@ -600,7 +583,7 @@ public class SkStackClientTests {
 
     stream.ResponseWriter.WriteLine("FAIL ER01 error text");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var ex = Assert.ThrowsAsync<SkStackErrorResponseException>(
       async () => await client.SendCommandAsync("TEST", throwIfErrorStatus: true)
     );
@@ -626,7 +609,7 @@ public class SkStackClientTests {
 
     stream.ResponseWriter.WriteLine("ERROR undefined status");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
 
     var resp = await client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
@@ -654,7 +637,7 @@ public class SkStackClientTests {
     stream.ResponseWriter.WriteLine("LINE3");
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = CreateClient(stream, serviceProvider: serviceProvider);
+    using var client = CreateClient(stream);
     var resp = await client.SendCommandAsync(
       command: "TEST",
       arguments: null,
@@ -700,7 +683,7 @@ public class SkStackClientTests {
       stream.ResponseWriter.WriteLine();
     }
 
-    var client = CreateClient(stream, serviceProvider: serviceProvider);
+    var client = CreateClient(stream);
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false).AsTask();
@@ -729,7 +712,7 @@ public class SkStackClientTests {
       stream.ResponseWriter.Write("\n");
     }
 
-    var client = CreateClient(stream, serviceProvider: serviceProvider);
+    var client = CreateClient(stream);
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false).AsTask();
@@ -762,7 +745,7 @@ public class SkStackClientTests {
       stream.ResponseWriter.WriteLine("OK");
     }
 
-    var client = CreateClient(stream, serviceProvider: serviceProvider);
+    var client = CreateClient(stream);
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false).AsTask();
@@ -801,7 +784,7 @@ public class SkStackClientTests {
       stream.ResponseWriter.WriteLine("OK");
     }
 
-    var client = CreateClient(stream, serviceProvider: serviceProvider);
+    var client = CreateClient(stream);
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync(
@@ -862,7 +845,7 @@ public class SkStackClientTests {
       stream.ResponseWriter.WriteLine("OK");
     }
 
-    var client = CreateClient(stream, serviceProvider: serviceProvider);
+    var client = CreateClient(stream);
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync(
@@ -903,7 +886,7 @@ public class SkStackClientTests {
       stream.ResponseWriter.WriteLine("OK");
     }
 
-    var client = CreateClient(stream, serviceProvider: serviceProvider);
+    var client = CreateClient(stream);
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync(

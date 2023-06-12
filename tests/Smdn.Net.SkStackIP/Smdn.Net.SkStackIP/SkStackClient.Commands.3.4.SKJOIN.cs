@@ -43,7 +43,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine($"25 {addressString}");
     }
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
@@ -118,7 +118,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine($"{addressString}");
     }
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
     Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
 
@@ -152,7 +152,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentNullException>(() => client.SendSKJOINAsync(ipv6address: null!));
@@ -168,7 +168,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKJOINAsync(ipv6address: IPAddress.Loopback));

@@ -21,7 +21,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     SkStackResponse response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKSETPWDAsync("0123456789AB"));
@@ -39,7 +39,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentNullException>(() => client.SendSKSETPWDAsync(password: (string)null!));
@@ -53,7 +53,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: string.Empty));
@@ -67,7 +67,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: ReadOnlyMemory<byte>.Empty));
@@ -81,7 +81,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012"));
@@ -95,7 +95,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012".ToByteSequence()));

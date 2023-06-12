@@ -22,7 +22,7 @@ public class SkStackClientCommandsSKINFOTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("EINFO FE80:0000:0000:0000:021D:1290:1234:5678 001D129012345678 21 8888 FFFE");
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     var response = await client.SendSKINFOAsync();
 
     Assert.That(
@@ -60,7 +60,7 @@ public class SkStackClientCommandsSKINFOTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine("OK");
     }
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendSKINFOAsync().AsTask();

@@ -26,7 +26,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("FE80:0000:0000:0000:021D:1290:0003:AFE2");
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     SkStackResponse<IReadOnlyList<IPAddress>> response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
@@ -81,7 +81,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine();
     }
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendSKTABLEAvailableAddressListAsync().AsTask();
@@ -118,7 +118,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("EADDR");
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     SkStackResponse<IReadOnlyList<IPAddress>> response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
@@ -140,7 +140,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     SkStackResponse<IReadOnlyList<IPAddress>> response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
@@ -165,7 +165,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("FE80:0000:0000:0000:021D:1290:1234:5679 001D129012345679 FFFF");
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>> response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
@@ -217,7 +217,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine();
     }
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendSKTABLENeighborCacheListAsync().AsTask();
@@ -253,7 +253,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("ENEIGHBOR");
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>> response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
@@ -276,7 +276,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>> response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
@@ -317,7 +317,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, ServiceProvider);
+    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     SkStackResponse<IReadOnlyList<SkStackUdpPort>> response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEListeningPortListAsync());
