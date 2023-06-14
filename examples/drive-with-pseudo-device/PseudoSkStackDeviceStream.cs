@@ -17,19 +17,19 @@ class PseudoSkStackDeviceStream : Stream {
     set => throw new NotSupportedException();
   }
 
-  private Pipe readStreamPipe;
-  private Stream readStreamReaderStream;
-  private Stream readStreamWriterStream;
+  private readonly Pipe readStreamPipe;
+  private readonly Stream readStreamReaderStream;
+  private readonly Stream readStreamWriterStream;
 
   public PseudoSkStackDeviceStream()
   {
-    this.readStreamPipe = new Pipe(
+    readStreamPipe = new Pipe(
       new PipeOptions(
         useSynchronizationContext: false
       )
     );
-    this.readStreamReaderStream = readStreamPipe.Reader.AsStream();
-    this.readStreamWriterStream = readStreamPipe.Writer.AsStream();
+    readStreamReaderStream = readStreamPipe.Reader.AsStream();
+    readStreamWriterStream = readStreamPipe.Writer.AsStream();
   }
 
   public Stream GetWriterStream() => readStreamWriterStream;
