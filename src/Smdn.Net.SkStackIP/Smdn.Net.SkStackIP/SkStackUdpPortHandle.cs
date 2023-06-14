@@ -5,11 +5,13 @@
 namespace Smdn.Net.SkStackIP;
 
 /// <remarks>
-/// reference: BP35A1コマンドリファレンス
-/// 3.7. SKSENDTO
-/// 3.19. SKUDPPORT
-/// 4.7. EPORT
-/// 5. 待ち受けポート番号
+///   <para>See below for detailed specifications.</para>
+///   <list type="bullet">
+///     <item><description>'BP35A1コマンドリファレンス 3.7. SKSENDTO'</description></item>
+///     <item><description>'BP35A1コマンドリファレンス 3.19. SKUDPPORT'</description></item>
+///     <item><description>'BP35A1コマンドリファレンス 4.7. EPORT'</description></item>
+///     <item><description>'BP35A1コマンドリファレンス 5. 待ち受けポート番号'</description></item>
+///   </list>
 /// </remarks>
 public enum SkStackUdpPortHandle : byte {
   Handle1 = 1,

@@ -16,6 +16,18 @@ namespace Smdn.Net.SkStackIP;
 partial class SkStackClient {
 #pragma warning restore IDE0040
   private SkStackERXUDPDataFormat erxudpDataFormat = SkStackERXUDPDataFormat.Raw; // RAW as default
+
+  /// <summary>
+  /// Gets or sets the format of the data part in event <c>ERXUDP</c>.
+  /// </summary>
+  /// <remarks>
+  ///   <para>See below for detailed specifications.</para>
+  ///   <list type="bullet">
+  ///     <item><description>'BP35A1コマンドリファレンス 3.30. WOPT (プロダクト設定コマンド)'</description></item>
+  ///     <item><description>'BP35A1コマンドリファレンス 4.1. ERXUDP'</description></item>
+  ///   </list>
+  /// </remarks>
+  /// <seealso cref="SkStackERXUDPDataFormat"/>
   public SkStackERXUDPDataFormat ERXUDPDataFormat {
     get => erxudpDataFormat;
     set {
@@ -30,7 +42,8 @@ partial class SkStackClient {
     }
   }
 
-  /// <value><see cref="IPAddress"/> of current PANA session peer. <see langword="null"/> if PANA session has been terminated, expired, or not been established.</value>
+  /// <summary>Gets the <see cref="IPAddress"/> of current PANA session peer.</summary>
+  /// <value><see langword="null"/> if PANA session has been terminated, expired, or not been established.</value>
   public IPAddress? PanaSessionPeerAddress { get; private set; } = null;
 
 #pragma warning disable CA2012
@@ -52,7 +65,7 @@ partial class SkStackClient {
   private delegate bool ProcessNotificationalEventsFunc(ISkStackSequenceParserContext context);
 
 #pragma warning disable CA1502 // TODO: refactor
-  /// <returns>true if the first event processed and consumed, otherwise false.</returns>
+  /// <returns><see langword="true"/> if the first event processed and consumed, otherwise <see langword="false"/>.</returns>
   private ValueTask<bool> ProcessEventsAsync(
     ISkStackSequenceParserContext context,
     SkStackEventHandlerBase? eventHandler, // handles events that are triggered by commands
@@ -195,10 +208,24 @@ partial class SkStackClient {
   }
 #pragma warning restore CA1502
 
+  /// <summary>
+  /// Gets or sets the object used to marshal the event handler calls that are issued when an event received.
+  /// </summary>
   public ISynchronizeInvoke? SynchronizingObject { get; set; }
 
+  /// <summary>
+  /// Occurs when a PANA session is established.
+  /// </summary>
   public event EventHandler<SkStackPanaSessionEventArgs>? PanaSessionEstablished;
+
+  /// <summary>
+  /// Occurs when a PANA session is terminated.
+  /// </summary>
   public event EventHandler<SkStackPanaSessionEventArgs>? PanaSessionTerminated;
+
+  /// <summary>
+  /// Occurs when a PANA session is expired.
+  /// </summary>
   public event EventHandler<SkStackPanaSessionEventArgs>? PanaSessionExpired;
 
   internal void RaiseEventPanaSessionEstablished(SkStackEvent baseEvent) => RaiseEventPanaSession(PanaSessionEstablished, baseEvent);
@@ -213,7 +240,16 @@ partial class SkStackClient {
     InvokeEvent(SynchronizingObject, ev, this, new SkStackPanaSessionEventArgs(baseEvent));
   }
 
+  /// <summary>
+  /// Occurs when a device enters sleep mode.
+  /// </summary>
+  /// <seealso cref="SendSKDSLEEPAsync"/>
   public event EventHandler<SkStackEventArgs>? Slept;
+
+  /// <summary>
+  /// Occurs when a device returns from sleep mode.
+  /// </summary>
+  /// <seealso cref="SendSKDSLEEPAsync"/>
   public event EventHandler<SkStackEventArgs>? WokeUp;
 
   internal void RaiseEventSlept() => RaiseEvent(Slept, default);

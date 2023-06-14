@@ -6,7 +6,9 @@ using System.Net.NetworkInformation;
 
 namespace Smdn.Net.SkStackIP.Protocol;
 
-/// <remarks>reference: BP35A1コマンドリファレンス 4.1. ERXUDP</remarks>
+/// <remarks>
+///   <para>See 'BP35A1コマンドリファレンス 4.1. ERXUDP' for detailed specifications.</para>
+/// </remarks>
 internal readonly struct SkStackUdpReceiveEvent {
   public IPEndPoint RemoteEndPoint { get; }
   public IPEndPoint LocalEndPoint { get; }

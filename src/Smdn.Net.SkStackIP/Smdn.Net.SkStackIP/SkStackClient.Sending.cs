@@ -14,6 +14,12 @@ namespace Smdn.Net.SkStackIP;
 #pragma warning disable IDE0040
 partial class SkStackClient {
 #pragma warning restore IDE0040
+  /// <summary>Sends a command.</summary>
+  /// <param name="command">The command to be sent.</param>
+  /// <param name="arguments">The arguments for the command. Can be <see langword="null"/>.</param>
+  /// <param name="syntax">The <see cref="SkStackProtocolSyntax"/> that describes the command syntax.</param>
+  /// <param name="throwIfErrorStatus">The <see langword="bool"/> value that specifies whether throw exception if the response status is error.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   protected internal async ValueTask<SkStackResponse> SendCommandAsync(
     ReadOnlyMemory<byte> command,
     IEnumerable<ReadOnlyMemory<byte>>? arguments = null,
@@ -35,7 +41,14 @@ partial class SkStackClient {
     return resp;
   }
 
-  /// <param name="arguments">can be null</param>
+  /// <summary>Sends a command.</summary>
+  /// <typeparam name="TPayload">The type of response payload. See <paramref name="parseResponsePayload"/>.</typeparam>
+  /// <param name="command">The command to be sent.</param>
+  /// <param name="arguments">The arguments for the command. Can be <see langword="null"/>.</param>
+  /// <param name="parseResponsePayload">The delegate for parsing the response payload. If <see langword="null"/>, parsing response payload will not be attempted.</param>
+  /// <param name="syntax">The <see cref="SkStackProtocolSyntax"/> that describes the command syntax.</param>
+  /// <param name="throwIfErrorStatus">The <see langword="bool"/> value that specifies whether throw exception if the response status is error.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   protected internal ValueTask<SkStackResponse<TPayload>> SendCommandAsync<TPayload>(
     ReadOnlyMemory<byte> command,
     IEnumerable<ReadOnlyMemory<byte>>? arguments,
@@ -54,7 +67,13 @@ partial class SkStackClient {
       cancellationToken: cancellationToken
     );
 
-  /// <param name="arguments">can be null</param>
+  /// <summary>Sends a command.</summary>
+  /// <param name="command">The command to be sent.</param>
+  /// <param name="arguments">The arguments for the command. Can be <see langword="null"/>.</param>
+  /// <param name="commandEventHandler">The <see cref="SkStackEventHandlerBase" /> that handles the events that will occur until the response is received.</param>
+  /// <param name="syntax">The <see cref="SkStackProtocolSyntax"/> that describes the command syntax.</param>
+  /// <param name="throwIfErrorStatus">The <see langword="bool"/> value that specifies whether throw exception if the response status is error.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   internal async ValueTask<SkStackResponse> SendCommandAsync(
     ReadOnlyMemory<byte> command,
     IEnumerable<ReadOnlyMemory<byte>>? arguments,
@@ -77,8 +96,15 @@ partial class SkStackClient {
     return resp;
   }
 
-  /// <param name="parseResponsePayload">If null, parsing response payload will not be attempted.</param>
-  /// <param name="expectsStatusResponse">If true, expects that response has its status line.</param>
+  /// <summary>Sends a command.</summary>
+  /// <typeparam name="TPayload">The type of response payload. See <paramref name="parseResponsePayload"/>.</typeparam>
+  /// <param name="command">The command to be sent.</param>
+  /// <param name="arguments">The arguments for the command. Can be <see langword="null"/>.</param>
+  /// <param name="parseResponsePayload">The delegate for parsing the response payload. If <see langword="null"/>, parsing response payload will not be attempted.</param>
+  /// <param name="commandEventHandler">The <see cref="SkStackEventHandlerBase" /> that handles the events that will occur until the response is received.</param>
+  /// <param name="syntax">The <see cref="SkStackProtocolSyntax"/> that describes the command syntax.</param>
+  /// <param name="throwIfErrorStatus">The <see langword="bool"/> value that specifies whether throw exception if the response status is error.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   private ValueTask<SkStackResponse<TPayload>> SendCommandAsyncCore<TPayload>(
     ReadOnlyMemory<byte> command,
     IEnumerable<ReadOnlyMemory<byte>> arguments,

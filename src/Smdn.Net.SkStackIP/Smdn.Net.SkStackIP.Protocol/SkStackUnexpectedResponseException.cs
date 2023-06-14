@@ -9,7 +9,14 @@ using Smdn.Text.Unicode.ControlPictures;
 
 namespace Smdn.Net.SkStackIP.Protocol;
 
+/// <summary>
+/// The exception that is thrown when the <see cref="SkStackClient"/> received unexpected response.
+/// </summary>
+/// <seealso cref="SkStackTokenParser"/>
 public class SkStackUnexpectedResponseException : SkStackResponseException {
+  /// <summary>
+  /// Gets the token or text of the response that caused the exception.
+  /// </summary>
   public string? CausedText { get; }
 
   private SkStackUnexpectedResponseException(string? causedText, string message, Exception? innerException = null)

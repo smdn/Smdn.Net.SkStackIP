@@ -13,8 +13,12 @@ namespace Smdn.Net.SkStackIP;
 #pragma warning disable IDE0040
 partial class SkStackClient {
 #pragma warning restore IDE0040
-  /// <summary>`SKTABLE 1`</summary>
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.26. SKTABLE</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKTABLE 1</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.26. SKTABLE' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse<IReadOnlyList<IPAddress>>> SendSKTABLEAvailableAddressListAsync(
     CancellationToken cancellationToken = default
   )
@@ -26,8 +30,12 @@ partial class SkStackClient {
       cancellationToken: cancellationToken
     );
 
-  /// <summary>`SKTABLE 2`</summary>
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.26. SKTABLE</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKTABLE 2</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.26. SKTABLE' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>>> SendSKTABLENeighborCacheListAsync(
     CancellationToken cancellationToken = default
   )
@@ -39,8 +47,12 @@ partial class SkStackClient {
       cancellationToken: cancellationToken
     );
 
-  /// <summary>`SKTABLE E`</summary>
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.26. SKTABLE</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKTABLE E</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.26. SKTABLE' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse<IReadOnlyList<SkStackUdpPort>>> SendSKTABLEListeningPortListAsync(
     CancellationToken cancellationToken = default
   )

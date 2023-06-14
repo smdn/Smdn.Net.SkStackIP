@@ -12,7 +12,12 @@ namespace Smdn.Net.SkStackIP;
 #pragma warning disable IDE0040
 partial class SkStackClient {
 #pragma warning restore IDE0040
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.6. SKTERM</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKTERM</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.6. SKTERM' for detailed specifications.</para>
+  /// </remarks>
   public async ValueTask<(
     SkStackResponse Response,
     bool IsCompletedSuccessfully

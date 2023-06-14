@@ -8,7 +8,9 @@ using System.Net;
 
 namespace Smdn.Net.SkStackIP.Protocol;
 
-/// <remarks>reference: BP35A1コマンドリファレンス 4.8. EVENT</remarks>
+/// <remarks>
+///   <para>See 'BP35A1コマンドリファレンス 4.8. EVENT' for detailed specifications.</para>
+/// </remarks>
 internal readonly struct SkStackEvent {
   public static SkStackEvent Create(
     SkStackEventNumber number,

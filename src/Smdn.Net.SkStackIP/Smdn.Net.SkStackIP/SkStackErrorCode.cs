@@ -3,7 +3,9 @@
 
 namespace Smdn.Net.SkStackIP;
 
-/// <remarks>reference: BP35A1コマンドリファレンス 7. エラーコード</remarks>
+/// <remarks>
+///   <para>See 'BP35A1コマンドリファレンス 7. エラーコード' for detailed specifications.</para>
+/// </remarks>
 public enum SkStackErrorCode {
   Undefined = 0,
 

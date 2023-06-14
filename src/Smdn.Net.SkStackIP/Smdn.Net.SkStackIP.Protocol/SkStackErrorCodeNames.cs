@@ -6,7 +6,9 @@ using System.Collections.Generic;
 
 namespace Smdn.Net.SkStackIP.Protocol;
 
-/// <remarks>reference: BP35A1コマンドリファレンス 7. エラーコード</remarks>
+/// <remarks>
+///   <para>See 'BP35A1コマンドリファレンス 7. エラーコード' for detailed specifications.</para>
+/// </remarks>
 internal static class SkStackErrorCodeNames {
   private static readonly IReadOnlyDictionary<SkStackErrorCode, ReadOnlyMemory<byte>> errorCodeAndNames =
     new Dictionary<SkStackErrorCode, ReadOnlyMemory<byte>>() {

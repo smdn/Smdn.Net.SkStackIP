@@ -13,7 +13,9 @@ using System.Net.NetworkInformation;
 namespace Smdn.Net.SkStackIP.Protocol;
 
 internal static class SkStackEventParser {
-  /// <remarks>reference: BP35A1コマンドリファレンス 4.1. ERXUDP</remarks>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 4.1. ERXUDP' for detailed specifications.</para>
+  /// </remarks>
   public static OperationStatus TryExpectERXUDP(
     ISkStackSequenceParserContext context,
     SkStackERXUDPDataFormat erxudpDataFormat,
@@ -78,13 +80,17 @@ internal static class SkStackEventParser {
     return OperationStatus.NeedMoreData;
   }
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 4.2. EPONG</remarks>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 4.2. EPONG' for detailed specifications.</para>
+  /// </remarks>
   public static bool ExpectEPONG(
     ISkStackSequenceParserContext context
   )
     => throw new NotImplementedException();
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 4.3. EADDR</remarks>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 4.3. EADDR' for detailed specifications.</para>
+  /// </remarks>
   public static IReadOnlyList<IPAddress>? ExpectEADDR(
     ISkStackSequenceParserContext context
   )
@@ -130,7 +136,9 @@ internal static class SkStackEventParser {
     new Dictionary<IPAddress, PhysicalAddress>(capacity: 0)
   );
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 4.4. ENEIGHBOR</remarks>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 4.4. ENEIGHBOR' for detailed specifications.</para>
+  /// </remarks>
   public static IReadOnlyDictionary<IPAddress, PhysicalAddress>? ExpectENEIGHBOR(
     ISkStackSequenceParserContext context
   )
@@ -175,7 +183,9 @@ internal static class SkStackEventParser {
     return default;
   }
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 4.5. EPANDESC</remarks>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 4.5. EPANDESC' for detailed specifications.</para>
+  /// </remarks>
   public static bool ExpectEPANDESC(
     ISkStackSequenceParserContext context,
     bool expectPairingId,
@@ -249,7 +259,9 @@ internal static class SkStackEventParser {
   private static readonly ReadOnlyMemory<byte> EPANDESCPrefixLQI          = SkStack.ToByteSequence("  LQI:");
   private static readonly ReadOnlyMemory<byte> EPANDESCPrefixPairID       = SkStack.ToByteSequence("  PairID:");
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 4.6. EEDSCAN</remarks>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 4.6. EEDSCAN' for detailed specifications.</para>
+  /// </remarks>
   public static bool ExpectEEDSCAN(
     ISkStackSequenceParserContext context,
 #if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
@@ -297,7 +309,9 @@ internal static class SkStackEventParser {
     return false;
   }
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 4.7. EPORT</remarks>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 4.7. EPORT' for detailed specifications.</para>
+  /// </remarks>
   public static IReadOnlyList<SkStackUdpPort>? ExpectEPORT(
     ISkStackSequenceParserContext context
   )
@@ -353,7 +367,9 @@ internal static class SkStackEventParser {
     return default;
   }
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 4.8. EVENT</remarks>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 4.8. EVENT' for detailed specifications.</para>
+  /// </remarks>
   public static OperationStatus TryExpectEVENT(
     ISkStackSequenceParserContext context,
     out SkStackEvent ev

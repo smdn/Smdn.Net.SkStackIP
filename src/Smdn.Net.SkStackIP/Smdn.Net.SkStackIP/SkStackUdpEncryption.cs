@@ -3,7 +3,9 @@
 
 namespace Smdn.Net.SkStackIP;
 
-/// <remarks>reference: BP35A1コマンドリファレンス 3.7. SKSENDTO</remarks>
+/// <remarks>
+///   <para>See 'BP35A1コマンドリファレンス 3.7. SKSENDTO' for detailed specifications.</para>
+/// </remarks>
 public enum SkStackUdpEncryption : byte {
   ForcePlainText = 0x00,
   ForceEncrypt = 0x01,

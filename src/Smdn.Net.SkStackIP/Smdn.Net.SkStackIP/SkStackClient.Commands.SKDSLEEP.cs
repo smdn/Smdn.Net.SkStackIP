@@ -12,7 +12,14 @@ namespace Smdn.Net.SkStackIP;
 #pragma warning disable IDE0040
 partial class SkStackClient {
 #pragma warning restore IDE0040
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.27. SKDSLEEP</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKDSLEEP</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.27. SKDSLEEP' for detailed specifications.</para>
+  /// </remarks>
+  /// <seealso cref="Slept"/>
+  /// <seealso cref="WokeUp"/>
   public ValueTask<SkStackResponse> SendSKDSLEEPAsync(
     bool waitUntilWakeUp = false,
     CancellationToken cancellationToken = default

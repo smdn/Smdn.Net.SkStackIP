@@ -14,7 +14,12 @@ namespace Smdn.Net.SkStackIP;
 #pragma warning disable IDE0040
 partial class SkStackClient {
 #pragma warning restore IDE0040
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.4. SKJOIN</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKJOIN</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.4. SKJOIN' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse> SendSKJOINAsync(
     IPAddress ipv6address,
     CancellationToken cancellationToken = default
@@ -35,7 +40,12 @@ partial class SkStackClient {
     }
   }
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.5. SKREJOIN</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKREJOIN</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.5. SKREJOIN' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<(
     SkStackResponse Response,
     IPAddress Address
@@ -100,7 +110,7 @@ partial class SkStackClient {
     public void ThrowIfEstablishmentError()
     {
       if (eventNumber != SkStackEventNumber.PanaSessionEstablishmentCompleted)
-        throw new SkStackPanaSessionEstablishmentException($"PANA session establishment failed", Address!, eventNumber);
+        throw new SkStackPanaSessionEstablishmentException($"PANA session establishment failed.", Address!, eventNumber);
     }
 
     public override bool TryProcessEvent(SkStackEvent ev)

@@ -3,10 +3,13 @@
 
 namespace Smdn.Net.SkStackIP;
 
-/// <remarks>reference: BP35A1コマンドリファレンス 3.30. WOPT (プロダクト設定コマンド)</remarks>
+/// <remarks>
+///   <para>See 'BP35A1コマンドリファレンス 3.30. WOPT (プロダクト設定コマンド)' for detailed specifications.</para>
+/// </remarks>
 public enum SkStackERXUDPDataFormat {
-  /// <summary>raw binary format</summary>
+  /// <summary>Use raw binary format.</summary>
   Raw,
-  /// <summary>hexadecimal text format</summary>
+
+  /// <summary>Use hexadecimal text format.</summary>
   HexAsciiText,
 }

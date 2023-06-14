@@ -5,7 +5,9 @@ using System;
 
 namespace Smdn.Net.SkStackIP;
 
-/// <remarks>reference: BP35A1コマンドリファレンス 3.1. SKSREG</remarks>
+/// <remarks>
+///   <para>See 'BP35A1コマンドリファレンス 3.1. SKSREG' for detailed specifications.</para>
+/// </remarks>
 public static partial class SkStackRegister {
   private static readonly (bool IsReadable, bool IsWritable) RW = (IsReadable: true, IsWritable: true);
   private static readonly (bool IsReadable, bool IsWritable) R = (IsReadable: true, IsWritable: false);
@@ -32,42 +34,42 @@ public static partial class SkStackRegister {
    *  alias of SXX
    */
 
-  /// <summary>Register number S02</summary>
+  /// <remarks>This property is an alias for the register number <see cref="S02"/>.</remarks>
   public static RegisterEntry<SkStackChannel> Channel => S02;
 
-  /// <summary>Register number S03</summary>
+  /// <remarks>This property is an alias for the register number <see cref="S03"/>.</remarks>
   [CLSCompliant(false)] public static RegisterEntry<ushort> PanID => S03;
 
-  /// <summary>Register number S07</summary>
+  /// <remarks>This property is an alias for the register number <see cref="S07"/>.</remarks>
   [CLSCompliant(false)] public static RegisterEntry<uint> FrameCounter => S07;
 
-  /// <summary>Register number S0A</summary>
+  /// <remarks>This property is an alias for the register number <see cref="S0A"/>.</remarks>
   public static RegisterEntry<ReadOnlyMemory<byte>> PairingID => S0A;
 
-  /// <summary>Register number S15</summary>
+  /// <remarks>This property is an alias for the register number <see cref="S15"/>.</remarks>
   public static RegisterEntry<bool> RespondBeaconRequest => S15;
 
-  /// <summary>Register number S16</summary>
+  /// <remarks>This property is an alias for the register number <see cref="S16"/>.</remarks>
   [CLSCompliant(false)] public static RegisterEntry<TimeSpan> PanaSessionLifetimeInSeconds => S16;
 
-  /// <summary>Register number S17</summary>
+  /// <remarks>This property is an alias for the register number <see cref="S17"/>.</remarks>
   public static RegisterEntry<bool> EnableAutoReauthentication => S17;
 
-  /// <summary>Register number SA0</summary>
+  /// <remarks>This property is an alias for the register number <see cref="SA0"/>.</remarks>
   public static RegisterEntry<bool> EncryptIPMulticast => SA0;
 
-  /// <summary>Register number SA1</summary>
+  /// <remarks>This property is an alias for the register number <see cref="SA1"/>.</remarks>
   public static RegisterEntry<bool> AcceptIcmpEcho => SA1;
 
-  /// <summary>Register number SFB</summary>
+  /// <remarks>This property is an alias for the register number <see cref="SFB"/>.</remarks>
   public static RegisterEntry<bool> IsSendingRestricted => SFB;
 
-  /// <summary>Register number SFD</summary>
+  /// <remarks>This property is an alias for the register number <see cref="SFD"/>.</remarks>
   [CLSCompliant(false)] public static RegisterEntry<ulong> AccumulatedSendTimeInMilliseconds => SFD;
 
-  /// <summary>Register number SFE</summary>
+  /// <remarks>This property is an alias for the register number <see cref="SFE"/>.</remarks>
   public static RegisterEntry<bool> EnableEchoback => SFE;
 
-  /// <summary>Register number SFF</summary>
+  /// <remarks>This property is an alias for the register number <see cref="SFF"/>.</remarks>
   public static RegisterEntry<bool> EnableAutoLoad => SFF;
 }

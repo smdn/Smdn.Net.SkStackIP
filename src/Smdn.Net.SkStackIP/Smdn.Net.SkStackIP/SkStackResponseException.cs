@@ -4,6 +4,9 @@ using System;
 
 namespace Smdn.Net.SkStackIP;
 
+/// <summary>
+/// The exception that is thrown when the <see cref="SkStackClient"/> received an invalid or an unexpected response.
+/// </summary>
 public class SkStackResponseException : InvalidOperationException {
   public SkStackResponseException()
     : base()

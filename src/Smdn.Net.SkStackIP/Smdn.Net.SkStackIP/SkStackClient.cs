@@ -13,12 +13,19 @@ using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;
 
+/// <summary>
+/// Provides a client implementation that sends SKSTACK-IP commands and receives responses and handles events.
+/// </summary>
 public partial class SkStackClient :
   IDisposable
 {
   /*
    * static members
    */
+
+  /// <summary>
+  /// The default baud rate for the <see cref="SerialPort"/>.
+  /// </summary>
   public const int DefaultBaudRate = 115200;
 
   private static readonly TimeSpan ContinuousReadingInterval = TimeSpan.FromMilliseconds(10); // TODO: make configurable
@@ -36,6 +43,16 @@ public partial class SkStackClient :
 
   private readonly ArrayBufferWriter<byte>? logWriter;
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="SkStackClient"/> class with specifying the serial port name.
+  /// </summary>
+  /// <param name="serialPortName">
+  /// A <see cref="string"/> that holds the serial port name for communicating with the device that implements the SKSTACK-IP protocol.
+  /// </param>
+  /// <param name="baudRate">
+  /// A <see cref="int"/> value that represents the baud rate of the serial port for communicating with the device.
+  /// </param>
+  /// <param name="logger">The <see cref="ILogger"/> to report the situation.</param>
   public SkStackClient(
     string serialPortName,
     int baudRate = DefaultBaudRate,
@@ -75,6 +92,13 @@ public partial class SkStackClient :
     return port.BaseStream;
   }
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="SkStackClient"/> class with specifying the serial port name.
+  /// </summary>
+  /// <param name="stream">
+  /// The data stream for transmitting SKSTACK-IP protocol.
+  /// </param>
+  /// <param name="logger">The <see cref="ILogger"/> to report the situation.</param>
   public SkStackClient(
     Stream stream,
     ILogger? logger = null

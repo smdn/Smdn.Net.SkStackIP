@@ -7,6 +7,10 @@ using System.Net;
 
 namespace Smdn.Net.SkStackIP;
 
+/// <summary>
+/// The exception that represents an error on the establishment of a PANA session.
+/// </summary>
+/// <seealso cref="SkStackClient.SendSKJOINAsync"/>
 public class SkStackPanaSessionEstablishmentException : SkStackPanaSessionException {
   internal SkStackPanaSessionEstablishmentException(
     string message,

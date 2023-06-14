@@ -25,6 +25,13 @@ partial class SkStackClient {
     capacity: SkStackUdpPort.NumberOfPorts
   );
 
+  /// <summary>
+  /// Starts capturing <c>ERXUDP</c> events for the specified port number and
+  /// allocates buffer for reading and writing the received data.
+  /// </summary>
+  /// <param name="port">The port number to start capturing <c>ERXUDP</c> events.</param>
+  /// <seealso cref="UdpReceiveAsync"/>
+  /// <seealso cref="StopCapturingUdpReceiveEvents"/>
   public void StartCapturingUdpReceiveEvents(int port)
   {
     ThrowIfDisposed();
@@ -36,6 +43,11 @@ partial class SkStackClient {
     }
   }
 
+  /// <summary>
+  /// Stops capturing <c>ERXUDP</c> events for the specified port number.
+  /// </summary>
+  /// <param name="port">The port number to stop capturing <c>ERXUDP</c> events.</param>
+  /// <seealso cref="UdpReceiveAsync"/>
   public void StopCapturingUdpReceiveEvents(int port)
   {
     ThrowIfDisposed();
@@ -110,6 +122,20 @@ partial class SkStackClient {
     }
   }
 
+  /// <summary>
+  /// Receives UDP data for the port number that has started capturing <c>ERXUDP</c> events.
+  /// </summary>
+  /// <param name="port">The port number to receive UDP data.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  /// <returns>
+  /// A <see cref="ValueTask{SkStackUdpReceiveResult}"/> representing the result of receiving.
+  /// </returns>
+  /// <remarks>
+  /// The returned <see cref="SkStackUdpReceiveResult"/> from this method should be disposed by the caller.
+  /// </remarks>
+  /// <seealso cref="StartCapturingUdpReceiveEvents"/>
+  /// <seealso cref="StopCapturingUdpReceiveEvents"/>
+  /// <seealso cref="SkStackUdpReceiveResult"/>
   public ValueTask<SkStackUdpReceiveResult> UdpReceiveAsync(
     int port,
     CancellationToken cancellationToken = default

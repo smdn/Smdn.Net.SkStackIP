@@ -6,8 +6,10 @@ using System;
 
 namespace Smdn.Net.SkStackIP;
 
-/// <summary>Represents error code ER04.</summary>
-/// <remarks>reference: BP35A1コマンドリファレンス 7. エラーコード</remarks>
+/// <summary>Describes the error code <c>ER04</c>.</summary>
+/// <remarks>
+///   <para>See 'BP35A1コマンドリファレンス 7. エラーコード' for detailed specifications.</para>
+/// </remarks>
 public class SkStackCommandNotSupportedException : SkStackErrorResponseException {
   internal SkStackCommandNotSupportedException(
     SkStackResponse response,

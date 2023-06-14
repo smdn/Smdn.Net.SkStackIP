@@ -7,7 +7,9 @@ using System.Collections.Generic;
 
 namespace Smdn.Net.SkStackIP;
 
-/// <remarks>reference: BP35A1コマンドリファレンス 6. 周波数とチャネル番号</remarks>
+/// <remarks>
+///   <para>See 'BP35A1コマンドリファレンス 6. 周波数とチャネル番号' for detailed specifications.</para>
+/// </remarks>
 public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<SkStackChannel> {
   public static readonly IReadOnlyDictionary<int, SkStackChannel> Channels = new Dictionary<int, SkStackChannel> {
     { 33, new(channelNumber: 33, frequencyMHz: 922.5m) },

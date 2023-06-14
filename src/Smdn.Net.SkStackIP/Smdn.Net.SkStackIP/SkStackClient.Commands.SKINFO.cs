@@ -13,7 +13,12 @@ namespace Smdn.Net.SkStackIP;
 #pragma warning disable IDE0040
 partial class SkStackClient {
 #pragma warning restore IDE0040
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.2. SKINFO</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKINFO</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.2. SKINFO' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse<(
     IPAddress LinkLocalAddress,
     PhysicalAddress MacAddress,

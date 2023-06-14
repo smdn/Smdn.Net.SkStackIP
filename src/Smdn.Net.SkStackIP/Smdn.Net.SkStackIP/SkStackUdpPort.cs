@@ -5,7 +5,9 @@ using System;
 
 namespace Smdn.Net.SkStackIP;
 
-/// <remarks>reference: BP35A1コマンドリファレンス 5. 待ち受けポート番号</remarks>
+/// <remarks>
+///   <para>See 'BP35A1コマンドリファレンス 5. 待ち受けポート番号' for detailed specifications.</para>
+/// </remarks>
 public readonly struct SkStackUdpPort {
   internal const int NumberOfPorts = 6;
   internal static readonly SkStackUdpPortHandle HandleMin = SkStackUdpPortHandle.Handle1;

@@ -35,8 +35,12 @@ partial class SkStackClient {
     }
   }
 
-  /// <summary>`SKSCAN 0`</summary>
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKSCAN 0</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.9. SKSCAN' for detailed specifications.</para>
+  /// </remarks>
   [CLSCompliant(false)]
   public ValueTask<(
     SkStackResponse Response,
@@ -54,8 +58,12 @@ partial class SkStackClient {
       cancellationToken: cancellationToken
     );
 
-  /// <summary>`SKSCAN 0`</summary>
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKSCAN 0</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.9. SKSCAN' for detailed specifications.</para>
+  /// </remarks>
   [CLSCompliant(false)]
   public ValueTask<(
     SkStackResponse Response,
@@ -96,8 +104,12 @@ partial class SkStackClient {
     }
   }
 
-  /// <summary>`SKSCAN 2`</summary>
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKSCAN 2</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.9. SKSCAN' for detailed specifications.</para>
+  /// </remarks>
   [CLSCompliant(false)]
   public ValueTask<(
     SkStackResponse Response,
@@ -115,8 +127,12 @@ partial class SkStackClient {
       cancellationToken: cancellationToken
     );
 
-  /// <summary>`SKSCAN 2`</summary>
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKSCAN 2</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.9. SKSCAN' for detailed specifications.</para>
+  /// </remarks>
   [CLSCompliant(false)]
   public ValueTask<(
     SkStackResponse Response,
@@ -134,8 +150,12 @@ partial class SkStackClient {
       cancellationToken: cancellationToken
     );
 
-  /// <summary>`SKSCAN 3`</summary>
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKSCAN 3</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.9. SKSCAN' for detailed specifications.</para>
+  /// </remarks>
   [CLSCompliant(false)]
   public ValueTask<(
     SkStackResponse Response,
@@ -154,8 +174,12 @@ partial class SkStackClient {
       cancellationToken: cancellationToken
     );
 
-  /// <summary>`SKSCAN 3`</summary>
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.9. SKSCAN</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKSCAN 3</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.9. SKSCAN' for detailed specifications.</para>
+  /// </remarks>
   [CLSCompliant(false)]
   public ValueTask<(
     SkStackResponse Response,
@@ -237,8 +261,37 @@ partial class SkStackClient {
   private static TimeSpan ToSKSCANDuration(int factor)
     => TimeSpan.FromMilliseconds(9.6) * (Math.Pow(2.0, factor) + 1);
 
+  /// <summary>
+  /// The minimum scan duration for each channel in <c>SKSCAN</c> command.
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.9. SKSCAN' for detailed specifications.</para>
+  /// </remarks>
+  /// <seealso cref="SendSKSCANActiveScanAsync(TimeSpan, uint, CancellationToken)"/>
+  /// <seealso cref="SendSKSCANActiveScanPairAsync(TimeSpan, uint, CancellationToken)"/>
+  /// <seealso cref="SendSKSCANEnergyDetectScanAsync(TimeSpan, uint, CancellationToken)"/>
   public static readonly TimeSpan SKSCANMinDuration = ToSKSCANDuration(SKSCANMinDurationFactor);
+
+  /// <summary>
+  /// The maximum scan duration for each channel in <c>SKSCAN</c> command.
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.9. SKSCAN' for detailed specifications.</para>
+  /// </remarks>
+  /// <seealso cref="SendSKSCANActiveScanAsync(TimeSpan, uint, CancellationToken)"/>
+  /// <seealso cref="SendSKSCANActiveScanPairAsync(TimeSpan, uint, CancellationToken)"/>
+  /// <seealso cref="SendSKSCANEnergyDetectScanAsync(TimeSpan, uint, CancellationToken)"/>
   public static readonly TimeSpan SKSCANMaxDuration = ToSKSCANDuration(SKSCANMaxDurationFactor);
+
+  /// <summary>
+  /// The default scan duration for each channel in <c>SKSCAN</c> command.
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.9. SKSCAN' for detailed specifications.</para>
+  /// </remarks>
+  /// <seealso cref="SendSKSCANActiveScanAsync(TimeSpan, uint, CancellationToken)"/>
+  /// <seealso cref="SendSKSCANActiveScanPairAsync(TimeSpan, uint, CancellationToken)"/>
+  /// <seealso cref="SendSKSCANEnergyDetectScanAsync(TimeSpan, uint, CancellationToken)"/>
   public static readonly TimeSpan SKSCANDefaultDuration = ToSKSCANDuration(SKSCANDefaultDurationFactor);
 
   private static byte TranslateToSKSCANDurationFactorOrThrowIfOutOfRange(TimeSpan duration, string paramName)

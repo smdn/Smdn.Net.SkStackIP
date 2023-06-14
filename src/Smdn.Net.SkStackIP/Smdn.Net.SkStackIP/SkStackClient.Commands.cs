@@ -16,8 +16,13 @@ namespace Smdn.Net.SkStackIP;
 #pragma warning disable IDE0040
 partial class SkStackClient {
 #pragma warning restore IDE0040
-  /// <summary>sets the value of register <paramref name="register"/> to <paramref name="value"/></value>
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.1. SKSREG</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKSREG</c>.</para>
+  ///   <para>Sets the value of the register specified by <paramref name="register"/> to <paramref name="value"/>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.1. SKSREG' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse> SendSKSREGAsync<TValue>(
     SkStackRegister.RegisterEntry<TValue> register,
     TValue value,
@@ -39,8 +44,14 @@ partial class SkStackClient {
     );
   }
 
-  /// <summary>gets the value of register <paramref name="register"/></value>
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.1. SKSREG</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKSREG</c>.</para>
+  ///   <para>Gets the value of the register specified by <paramref name="register"/>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.1. SKSREG' for detailed specifications.</para>
+  /// </remarks>
+  /// <seealso cref="SkStackRegister"/>
   public ValueTask<SkStackResponse<TValue>> SendSKSREGAsync<TValue>(
     SkStackRegister.RegisterEntry<TValue> register,
     CancellationToken cancellationToken = default
@@ -60,9 +71,21 @@ partial class SkStackClient {
     );
   }
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.8. SKPING</remarks>
+#if false
+  /// <summary>
+  ///   <para>Sends a command <c>SKPING</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.8. SKPING' for detailed specifications.</para>
+  /// </remarks>
+#endif
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.16. SKSETPWD</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKSETPWD</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.16. SKSETPWD' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse> SendSKSETPWDAsync(
     string password,
     CancellationToken cancellationToken = default
@@ -102,7 +125,12 @@ partial class SkStackClient {
   private const int SKSETPWDMinLength = 1;
   private const int SKSETPWDMaxLength = 32;
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.16. SKSETPWD</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKSETPWD</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.16. SKSETPWD' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse> SendSKSETPWDAsync(
     ReadOnlyMemory<byte> password,
     CancellationToken cancellationToken = default
@@ -136,7 +164,12 @@ partial class SkStackClient {
     }
   }
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.17. SKSETRBID</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKSETRBID</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.17. SKSETRBID' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse> SendSKSETRBIDAsync(
     string routeBID,
     CancellationToken cancellationToken = default
@@ -175,7 +208,12 @@ partial class SkStackClient {
 
   private const int SKSETRBIDLengthOfID = 32;
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.17. SKSETRBID</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKSETRBID</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.17. SKSETRBID' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse> SendSKSETRBIDAsync(
     ReadOnlyMemory<byte> routeBID,
     CancellationToken cancellationToken = default
@@ -192,7 +230,12 @@ partial class SkStackClient {
     );
   }
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.20. SKSAVE</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKSAVE</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.20. SKSAVE' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse> SendSKSAVEAsync(
     CancellationToken cancellationToken = default
   )
@@ -202,7 +245,12 @@ partial class SkStackClient {
       cancellationToken: cancellationToken
     );
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.21. SKLOAD</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKLOAD</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.21. SKLOAD' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse> SendSKLOADAsync(
     CancellationToken cancellationToken = default
   )
@@ -234,7 +282,12 @@ partial class SkStackClient {
     return resp;
   }
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.22. SKERASE</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKERASE</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.22. SKERASE' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse> SendSKERASEAsync(
     CancellationToken cancellationToken = default
   )
@@ -245,7 +298,12 @@ partial class SkStackClient {
       cancellationToken: cancellationToken
     );
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.23. SKVER</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKVER</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.23. SKVER' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse<Version>> SendSKVERAsync(
     CancellationToken cancellationToken = default
   )
@@ -273,7 +331,12 @@ partial class SkStackClient {
 
   private static readonly ReadOnlyMemory<byte> EVER = SkStack.ToByteSequence(nameof(EVER));
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.24. SKAPPVER</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKAPPVER</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.24. SKAPPVER' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse<string>> SendSKAPPVERAsync(
     CancellationToken cancellationToken = default
   )
@@ -301,7 +364,12 @@ partial class SkStackClient {
 
   private static readonly ReadOnlyMemory<byte> EAPPVER = SkStack.ToByteSequence(nameof(EAPPVER));
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.25. SKRESET</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKRESET</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.25. SKRESET' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse> SendSKRESETAsync(
     CancellationToken cancellationToken = default
   )
@@ -312,7 +380,12 @@ partial class SkStackClient {
       cancellationToken: cancellationToken
     );
 
-  /// <remarks>reference: BP35A1コマンドリファレンス 3.29. SKLL64</remarks>
+  /// <summary>
+  ///   <para>Sends a command <c>SKLL64</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.29. SKLL64' for detailed specifications.</para>
+  /// </remarks>
   public ValueTask<SkStackResponse<IPAddress>> SendSKLL64Async(
     PhysicalAddress macAddress,
     CancellationToken cancellationToken = default
