@@ -42,6 +42,8 @@ public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<
     { 60, new(channelNumber: 60, frequencyMHz: 927.9m) },
   };
 
+  public static readonly SkStackChannel Empty;
+
   public static SkStackChannel Channel33 => Channels[33];
   public static SkStackChannel Channel34 => Channels[34];
   public static SkStackChannel Channel35 => Channels[35];
@@ -85,6 +87,8 @@ public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<
   public int ChannelNumber { get; }
   public decimal FrequencyMHz { get; }
   internal byte RegisterS02Value => (byte)ChannelNumber;
+
+  public bool IsEmpty => Equals(Empty);
 
   private SkStackChannel(int channelNumber, decimal frequencyMHz)
   {
