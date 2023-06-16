@@ -40,7 +40,7 @@ partial class SkStackClient {
           SkStackTokenParser.ExpectIPADDR(ref reader, out var linkLocalAddress) &&
           SkStackTokenParser.ExpectADDR64(ref reader, out var macAddress) &&
           SkStackTokenParser.ExpectCHANNEL(ref reader, out var channel) &&
-          SkStackTokenParser.ExpectUINT16(ref reader, out var panID) &&
+          SkStackTokenParser.ExpectUINT16(ref reader, out var panId) &&
           SkStackTokenParser.ExpectADDR16(ref reader, out var addr16) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader)
         ) {
@@ -49,7 +49,7 @@ partial class SkStackClient {
             linkLocalAddress,
             macAddress,
             channel,
-            (int)panID,
+            (int)panId,
             (int)addr16
           );
         }

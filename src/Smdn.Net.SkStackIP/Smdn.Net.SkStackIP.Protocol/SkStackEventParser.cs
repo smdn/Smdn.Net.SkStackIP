@@ -209,7 +209,7 @@ internal static class SkStackEventParser {
         SkStackTokenParser.ExpectUINT8(ref reader, out var channelPage) &&
         SkStackTokenParser.ExpectEndOfLine(ref reader) &&
 
-        SkStackTokenParser.ExpectSequence(ref reader, EPANDESCPrefixPanID) &&
+        SkStackTokenParser.ExpectSequence(ref reader, EPANDESCPrefixPanId) &&
         SkStackTokenParser.ExpectUINT16(ref reader, out var panId) &&
         SkStackTokenParser.ExpectEndOfLine(ref reader) &&
 
@@ -225,7 +225,7 @@ internal static class SkStackEventParser {
 
         if (expectPairingId) {
           if (!(
-            SkStackTokenParser.ExpectSequence(ref reader, EPANDESCPrefixPairID) &&
+            SkStackTokenParser.ExpectSequence(ref reader, EPANDESCPrefixPairId) &&
             SkStackTokenParser.ExpectUINT32(ref reader, out pairingId) && // instead of CHAR[8]
             SkStackTokenParser.ExpectEndOfLine(ref reader)
           )) {
@@ -254,10 +254,10 @@ internal static class SkStackEventParser {
 
   private static readonly ReadOnlyMemory<byte> EPANDESCPrefixChannel      = SkStack.ToByteSequence("  Channel:");
   private static readonly ReadOnlyMemory<byte> EPANDESCPrefixChannelPage  = SkStack.ToByteSequence("  Channel Page:");
-  private static readonly ReadOnlyMemory<byte> EPANDESCPrefixPanID        = SkStack.ToByteSequence("  Pan ID:");
+  private static readonly ReadOnlyMemory<byte> EPANDESCPrefixPanId        = SkStack.ToByteSequence("  Pan ID:");
   private static readonly ReadOnlyMemory<byte> EPANDESCPrefixAddress      = SkStack.ToByteSequence("  Addr:");
   private static readonly ReadOnlyMemory<byte> EPANDESCPrefixLQI          = SkStack.ToByteSequence("  LQI:");
-  private static readonly ReadOnlyMemory<byte> EPANDESCPrefixPairID       = SkStack.ToByteSequence("  PairID:");
+  private static readonly ReadOnlyMemory<byte> EPANDESCPrefixPairId       = SkStack.ToByteSequence("  PairID:");
 
   /// <remarks>
   ///   <para>See 'BP35A1コマンドリファレンス 4.6. EEDSCAN' for detailed specifications.</para>

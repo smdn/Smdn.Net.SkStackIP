@@ -294,7 +294,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     Assert.AreEqual(0x8888, scanResult[0].Id, nameof(SkStackPanDescription.Id));
     Assert.AreEqual(new PhysicalAddress(new byte[] {0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01}), scanResult[0].MacAddress);
     Assert.That(scanResult[0].RSSI, Is.EqualTo(-42.395).Within(0.001));
-    Assert.AreEqual(0xAABBCCDD, scanResult[0].PairingID);
+    Assert.AreEqual(0xAABBCCDD, scanResult[0].PairingId, nameof(SkStackPanDescription.PairingId));
 
     Assert.That(
       stream.ReadSentData(),
@@ -463,7 +463,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     Assert.AreEqual(0x8888, scanResult[0].Id, nameof(SkStackPanDescription.Id));
     Assert.AreEqual(new PhysicalAddress(new byte[] {0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01}), scanResult[0].MacAddress);
     Assert.That(scanResult[0].RSSI, Is.EqualTo(-42.395).Within(0.001));
-    Assert.AreEqual(0, scanResult[0].PairingID);
+    Assert.AreEqual(0, scanResult[0].PairingId, nameof(SkStackPanDescription.PairingId));
 
     Assert.That(
       stream.ReadSentData(),

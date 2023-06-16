@@ -174,33 +174,33 @@ partial class SkStackClient {
   {
     var length = SkStack.DefaultEncoding.GetByteCount(id.Span);
 
-    if (length != SKSETRBIDLengthOfID)
-      throw new ArgumentException($"length of `{nameof(id)}` must be exact {SKSETRBIDLengthOfID}", nameof(id));
+    if (length != SKSETRBIDLengthOfId)
+      throw new ArgumentException($"length of `{nameof(id)}` must be exact {SKSETRBIDLengthOfId}", nameof(id));
 
     return Core();
 
     async ValueTask<SkStackResponse> Core()
     {
-      byte[]? ID = null;
+      byte[]? _id = null;
 
       try {
-        ID = ArrayPool<byte>.Shared.Rent(length);
+        _id = ArrayPool<byte>.Shared.Rent(length);
 
-        var lengthOfID = SkStack.DefaultEncoding.GetBytes(id.Span, ID.AsSpan());
+        var lengthOfId = SkStack.DefaultEncoding.GetBytes(id.Span, _id.AsSpan());
 
         return await SendSKSETRBIDAsync(
-          id: ID.AsMemory(0, lengthOfID),
+          id: _id.AsMemory(0, lengthOfId),
           cancellationToken: cancellationToken
         ).ConfigureAwait(false);
       }
       finally {
-        if (ID is not null)
-          ArrayPool<byte>.Shared.Return(ID, clearArray: true);
+        if (_id is not null)
+          ArrayPool<byte>.Shared.Return(_id, clearArray: true);
       }
     }
   }
 
-  private const int SKSETRBIDLengthOfID = 32;
+  private const int SKSETRBIDLengthOfId = 32;
 
   /// <summary>
   ///   <para>Sends a command <c>SKSETRBID</c>.</para>
@@ -213,8 +213,8 @@ partial class SkStackClient {
     CancellationToken cancellationToken = default
   )
   {
-    if (id.Length != SKSETRBIDLengthOfID)
-      throw new ArgumentException($"length of `{nameof(id)}` must be exact {SKSETRBIDLengthOfID}", nameof(id));
+    if (id.Length != SKSETRBIDLengthOfId)
+      throw new ArgumentException($"length of `{nameof(id)}` must be exact {SKSETRBIDLengthOfId}", nameof(id));
 
     return SendCommandAsync(
       command: SkStackCommandNames.SKSETRBID,

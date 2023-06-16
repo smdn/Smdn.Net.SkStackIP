@@ -38,13 +38,13 @@ public static partial class SkStackRegister {
   public static RegisterEntry<SkStackChannel> Channel => S02;
 
   /// <remarks>This property is an alias for the register number <see cref="S03"/>.</remarks>
-  [CLSCompliant(false)] public static RegisterEntry<ushort> PanID => S03;
+  [CLSCompliant(false)] public static RegisterEntry<ushort> PanId => S03;
 
   /// <remarks>This property is an alias for the register number <see cref="S07"/>.</remarks>
   [CLSCompliant(false)] public static RegisterEntry<uint> FrameCounter => S07;
 
   /// <remarks>This property is an alias for the register number <see cref="S0A"/>.</remarks>
-  public static RegisterEntry<ReadOnlyMemory<byte>> PairingID => S0A;
+  public static RegisterEntry<ReadOnlyMemory<byte>> PairingId => S0A;
 
   /// <remarks>This property is an alias for the register number <see cref="S15"/>.</remarks>
   public static RegisterEntry<bool> RespondBeaconRequest => S15;
