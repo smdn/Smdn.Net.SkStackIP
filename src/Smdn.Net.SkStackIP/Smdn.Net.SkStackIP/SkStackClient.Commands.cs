@@ -168,14 +168,14 @@ partial class SkStackClient {
   ///   <para>See 'BP35A1コマンドリファレンス 3.17. SKSETRBID' for detailed specifications.</para>
   /// </remarks>
   public ValueTask<SkStackResponse> SendSKSETRBIDAsync(
-    ReadOnlyMemory<char> routeBID,
+    ReadOnlyMemory<char> id,
     CancellationToken cancellationToken = default
   )
   {
-    var length = SkStack.DefaultEncoding.GetByteCount(routeBID.Span);
+    var length = SkStack.DefaultEncoding.GetByteCount(id.Span);
 
     if (length != SKSETRBIDLengthOfID)
-      throw new ArgumentException($"length of `{nameof(routeBID)}` must be exact {SKSETRBIDLengthOfID}", nameof(routeBID));
+      throw new ArgumentException($"length of `{nameof(id)}` must be exact {SKSETRBIDLengthOfID}", nameof(id));
 
     return Core();
 
@@ -186,10 +186,10 @@ partial class SkStackClient {
       try {
         ID = ArrayPool<byte>.Shared.Rent(length);
 
-        var lengthOfID = SkStack.DefaultEncoding.GetBytes(routeBID.Span, ID.AsSpan());
+        var lengthOfID = SkStack.DefaultEncoding.GetBytes(id.Span, ID.AsSpan());
 
         return await SendSKSETRBIDAsync(
-          routeBID: ID.AsMemory(0, lengthOfID),
+          id: ID.AsMemory(0, lengthOfID),
           cancellationToken: cancellationToken
         ).ConfigureAwait(false);
       }
@@ -209,16 +209,16 @@ partial class SkStackClient {
   ///   <para>See 'BP35A1コマンドリファレンス 3.17. SKSETRBID' for detailed specifications.</para>
   /// </remarks>
   public ValueTask<SkStackResponse> SendSKSETRBIDAsync(
-    ReadOnlyMemory<byte> routeBID,
+    ReadOnlyMemory<byte> id,
     CancellationToken cancellationToken = default
   )
   {
-    if (routeBID.Length != SKSETRBIDLengthOfID)
-      throw new ArgumentException($"length of `{nameof(routeBID)}` must be exact {SKSETRBIDLengthOfID}", nameof(routeBID));
+    if (id.Length != SKSETRBIDLengthOfID)
+      throw new ArgumentException($"length of `{nameof(id)}` must be exact {SKSETRBIDLengthOfID}", nameof(id));
 
     return SendCommandAsync(
       command: SkStackCommandNames.SKSETRBID,
-      arguments: SkStackCommandArgs.CreateEnumerable(routeBID),
+      arguments: SkStackCommandArgs.CreateEnumerable(id),
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken
     );
