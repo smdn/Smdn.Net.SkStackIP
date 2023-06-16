@@ -2,9 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Collections.Generic;
-using System.Net.NetworkInformation;
-using System.Threading.Tasks;
 
 using NUnit.Framework;
 
@@ -24,7 +21,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     SkStackResponse response = null;
 
-    Assert.DoesNotThrowAsync(async () => response = await client.SendSKSETPWDAsync("0123456789AB"));
+    Assert.DoesNotThrowAsync(async () => response = await client.SendSKSETPWDAsync("0123456789AB".AsMemory()));
 
     Assert.IsNotNull(response);
 
@@ -35,35 +32,21 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
   }
 
   [Test]
-  public void SKSETPWD_Password_String_Null()
+  public void SKSETPWD_Password_ReadOnlyMemoryOfChar_Empty()
   {
     var stream = new PseudoSkStackStream();
 
     using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(() => client.SendSKSETPWDAsync(password: (string)null!));
+    Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: string.Empty.AsMemory()));
 #pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }
 
   [Test]
-  public void SKSETPWD_Password_String_Empty()
-  {
-    var stream = new PseudoSkStackStream();
-
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
-
-#pragma warning disable CA2012
-    Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: string.Empty));
-#pragma warning restore CA2012
-
-    Assert.IsEmpty(stream.ReadSentData());
-  }
-
-  [Test]
-  public void SKSETPWD_Password_ReadOnlyByteMemory_Empty()
+  public void SKSETPWD_Password_ReadOnlyMemoryOfByte_Empty()
   {
     var stream = new PseudoSkStackStream();
 
@@ -77,21 +60,21 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
   }
 
   [Test]
-  public void SKSETPWD_Password_String_TooLong()
+  public void SKSETPWD_Password_ReadOnlyMemoryOfChar_TooLong()
   {
     var stream = new PseudoSkStackStream();
 
     using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012"));
+    Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012".AsMemory()));
 #pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
   }
 
   [Test]
-  public void SKSETPWD_Password_ReadOnlyByteMemory_TooLong()
+  public void SKSETPWD_Password_ReadOnlyMemoryOfByte_TooLong()
   {
     var stream = new PseudoSkStackStream();
 

@@ -87,14 +87,11 @@ partial class SkStackClient {
   ///   <para>See 'BP35A1コマンドリファレンス 3.16. SKSETPWD' for detailed specifications.</para>
   /// </remarks>
   public ValueTask<SkStackResponse> SendSKSETPWDAsync(
-    string password,
+    ReadOnlyMemory<char> password,
     CancellationToken cancellationToken = default
   )
   {
-    if (password is null)
-      throw new ArgumentNullException(nameof(password));
-
-    var length = SkStack.DefaultEncoding.GetByteCount(password);
+    var length = SkStack.DefaultEncoding.GetByteCount(password.Span);
 
     if (length is not (>= SKSETPWDMinLength and <= SKSETPWDMaxLength))
       throw new ArgumentException($"length of `{nameof(password)}` must be in range of {SKSETPWDMinLength}~{SKSETPWDMaxLength}", nameof(password));
@@ -108,7 +105,7 @@ partial class SkStackClient {
       try {
         PWD = ArrayPool<byte>.Shared.Rent(length);
 
-        var lengthOfPWD = SkStack.DefaultEncoding.GetBytes(password.AsSpan(), PWD.AsSpan());
+        var lengthOfPWD = SkStack.DefaultEncoding.GetBytes(password.Span, PWD.AsSpan());
 
         return await SendSKSETPWDAsync(
           password: PWD.AsMemory(0, lengthOfPWD),
@@ -171,14 +168,11 @@ partial class SkStackClient {
   ///   <para>See 'BP35A1コマンドリファレンス 3.17. SKSETRBID' for detailed specifications.</para>
   /// </remarks>
   public ValueTask<SkStackResponse> SendSKSETRBIDAsync(
-    string routeBID,
+    ReadOnlyMemory<char> routeBID,
     CancellationToken cancellationToken = default
   )
   {
-    if (routeBID is null)
-      throw new ArgumentNullException(nameof(routeBID));
-
-    var length = SkStack.DefaultEncoding.GetByteCount(routeBID);
+    var length = SkStack.DefaultEncoding.GetByteCount(routeBID.Span);
 
     if (length != SKSETRBIDLengthOfID)
       throw new ArgumentException($"length of `{nameof(routeBID)}` must be exact {SKSETRBIDLengthOfID}", nameof(routeBID));
@@ -192,7 +186,7 @@ partial class SkStackClient {
       try {
         ID = ArrayPool<byte>.Shared.Rent(length);
 
-        var lengthOfID = SkStack.DefaultEncoding.GetBytes(routeBID.AsSpan(), ID.AsSpan());
+        var lengthOfID = SkStack.DefaultEncoding.GetBytes(routeBID.Span, ID.AsSpan());
 
         return await SendSKSETRBIDAsync(
           routeBID: ID.AsMemory(0, lengthOfID),

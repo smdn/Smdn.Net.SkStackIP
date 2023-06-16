@@ -21,7 +21,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, CreateLoggerForTestCase());
     SkStackResponse response = null;
 
-    Assert.DoesNotThrowAsync(async () => response = await client.SendSKSETRBIDAsync(routeBID: "00112233445566778899AABBCCDDEEFF"));
+    Assert.DoesNotThrowAsync(async () => response = await client.SendSKSETRBIDAsync(routeBID: "00112233445566778899AABBCCDDEEFF".AsMemory()));
 
     Assert.IsNotNull(response);
 
@@ -32,20 +32,6 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
   }
 
   [Test]
-  public void SKSETRBID_RBID_String_Null()
-  {
-    var stream = new PseudoSkStackStream();
-
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
-
-#pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(() => client.SendSKSETRBIDAsync(routeBID: (string)null!));
-#pragma warning restore CA2012
-
-    Assert.IsEmpty(stream.ReadSentData());
-  }
-
-  [Test]
   public void SKSETRBID_RBID_String_Empty()
   {
     var stream = new PseudoSkStackStream();
@@ -53,7 +39,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: string.Empty));
+    Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: string.Empty.AsMemory()));
 #pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
@@ -61,7 +47,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
 
   [Test]
-  public void SKSETRBID_RBID_ReadOnlyByteMemory_Empty()
+  public void SKSETRBID_RBID_ReadOnlyMemoryOfByte_Empty()
   {
     var stream = new PseudoSkStackStream();
 
@@ -77,14 +63,14 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
   [TestCase("0")]
   [TestCase("00112233445566778899AABBCCDDEEF")]
   [TestCase("00112233445566778899AABBCCDDEEFFF")]
-  public void SKSETRBID_InvalidLengthOfRBID_String(string rbid)
+  public void SKSETRBID_InvalidLengthOfRBID_ReadOnlyMemoryOfChar(string rbid)
   {
     var stream = new PseudoSkStackStream();
 
     using var client = new SkStackClient(stream, CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: rbid));
+    Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(routeBID: rbid.AsMemory()));
 #pragma warning restore CA2012
 
     Assert.IsEmpty(stream.ReadSentData());
@@ -94,7 +80,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
   [TestCase("0")]
   [TestCase("00112233445566778899AABBCCDDEEF")]
   [TestCase("00112233445566778899AABBCCDDEEFFF")]
-  public void SKSETRBID_InvalidLengthOfRBID_ReadOnlyByteMemory(string rbid)
+  public void SKSETRBID_InvalidLengthOfRBID_ReadOnlyMemoryOfByte(string rbid)
   {
     var stream = new PseudoSkStackStream();
 
