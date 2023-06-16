@@ -9,7 +9,7 @@ namespace Smdn.Net.SkStackIP;
 public readonly struct SkStackPanDescription {
   public SkStackChannel Channel { get; }
   public int ChannelPage { get; }
-  public int PanID { get; }
+  public int Id { get; }
   public PhysicalAddress MacAddress { get; }
   public double RSSI { get; }
   [CLSCompliant(false)] public uint PairingID { get; }
@@ -17,7 +17,7 @@ public readonly struct SkStackPanDescription {
   internal SkStackPanDescription(
     SkStackChannel channel,
     int channelPage,
-    int panId,
+    int id,
     PhysicalAddress macAddress,
     double rssi,
     uint pairingId
@@ -25,12 +25,12 @@ public readonly struct SkStackPanDescription {
   {
     this.Channel = channel;
     this.ChannelPage = channelPage;
-    this.PanID = panId;
+    this.Id = id;
     this.MacAddress = macAddress;
     this.RSSI = rssi;
     this.PairingID = pairingId;
   }
 
   public override string ToString()
-    => $"{Channel}, Channel page: {ChannelPage}, PAN ID: 0x{PanID:X4}, MAC address: {MacAddress}, Pairing ID: {PairingID:X8}, RSSI: {RSSI:N1}";
+    => $"{Channel}, Channel page: {ChannelPage}, PAN ID: 0x{Id:X4}, MAC address: {MacAddress}, Pairing ID: {PairingID:X8}, RSSI: {RSSI:N1}";
 }

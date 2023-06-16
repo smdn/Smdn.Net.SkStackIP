@@ -237,7 +237,7 @@ internal static class SkStackEventParser {
         pandesc = new SkStackPanDescription(
           channel: SkStackChannel.FindByChannelNumber(channel),
           channelPage: channelPage,
-          panId: panId,
+          id: panId,
           macAddress: macAddress,
           rssi: SkStackLQI.ToRSSI(lqi),
           pairingId: expectPairingId ? pairingId : default
