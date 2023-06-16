@@ -4,7 +4,6 @@
 using System;
 using System.Buffers;
 using System.ComponentModel;
-using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,10 +40,6 @@ partial class SkStackClient {
       erxudpDataFormat = value;
     }
   }
-
-  /// <summary>Gets the <see cref="IPAddress"/> of current PANA session peer.</summary>
-  /// <value><see langword="null"/> if PANA session has been terminated, expired, or not been established.</value>
-  public IPAddress? PanaSessionPeerAddress { get; private set; } = null;
 
 #pragma warning disable CA2012
   private static readonly ValueTask<bool> TrueResultValueTask =
