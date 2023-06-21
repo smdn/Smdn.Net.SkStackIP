@@ -14,32 +14,6 @@ namespace Smdn.Net.SkStackIP;
 #pragma warning disable IDE0040
 partial class SkStackClient {
 #pragma warning restore IDE0040
-  private SkStackERXUDPDataFormat erxudpDataFormat = SkStackERXUDPDataFormat.Raw; // RAW as default
-
-  /// <summary>
-  /// Gets or sets the format of the data part in event <c>ERXUDP</c>.
-  /// </summary>
-  /// <remarks>
-  ///   <para>See below for detailed specifications.</para>
-  ///   <list type="bullet">
-  ///     <item><description>'BP35A1コマンドリファレンス 3.30. WOPT (プロダクト設定コマンド)'</description></item>
-  ///     <item><description>'BP35A1コマンドリファレンス 4.1. ERXUDP'</description></item>
-  ///   </list>
-  /// </remarks>
-  /// <seealso cref="SkStackERXUDPDataFormat"/>
-  public SkStackERXUDPDataFormat ERXUDPDataFormat {
-    get => erxudpDataFormat;
-    set {
-#if SYSTEM_ENUM_ISDEFINED_OF_TENUM
-      if (!Enum.IsDefined(value))
-#else
-      if (!Enum.IsDefined(typeof(SkStackERXUDPDataFormat), value))
-#endif
-        throw new ArgumentException($"undefined value of {nameof(SkStackERXUDPDataFormat)}", nameof(ERXUDPDataFormat));
-
-      erxudpDataFormat = value;
-    }
-  }
 
 #pragma warning disable CA2012
   private static readonly ValueTask<bool> TrueResultValueTask =
