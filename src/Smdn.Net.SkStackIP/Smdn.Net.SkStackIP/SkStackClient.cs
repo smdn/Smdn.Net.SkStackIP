@@ -33,8 +33,6 @@ public partial class SkStackClient :
   /*
    * instance members
    */
-  private Stream stream;
-
   private PipeWriter streamWriter;
   private readonly IBufferWriter<byte> writer;
   private PipeReader streamReader;
@@ -60,6 +58,7 @@ public partial class SkStackClient :
   )
     : this(
       stream: OpenSerialPortStream(serialPortName, baudRate),
+      leaveStreamOpen: false, // should close the opened stream
       logger: logger
     )
   {
@@ -93,35 +92,64 @@ public partial class SkStackClient :
   }
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="SkStackClient"/> class with specifying the serial port name.
+  /// Initializes a new instance of the <see cref="SkStackClient"/> class with specifying the <see cref="Stream"/> for transmitting SKSTACK-IP protocol.
   /// </summary>
   /// <param name="stream">
   /// The data stream for transmitting SKSTACK-IP protocol.
   /// </param>
+  /// <param name="leaveStreamOpen">
+  /// A <see langworkd="bool"/> value specifying whether the <paramref name="stream"/> should be left open or not when disposing instance.
+  /// </param>
   /// <param name="logger">The <see cref="ILogger"/> to report the situation.</param>
   public SkStackClient(
     Stream stream,
+    bool leaveStreamOpen = true,
+    ILogger? logger = null
+  )
+    : this(
+      sender: PipeWriter.Create(
+        ValidateStream(stream, nameof(stream)),
+        new(leaveOpen: leaveStreamOpen, minimumBufferSize: 64)
+      ),
+      receiver: PipeReader.Create(
+        stream,
+        new(leaveOpen: leaveStreamOpen, bufferSize: 1024, minimumReadSize: 256)
+      ),
+      logger: logger
+    )
+  {
+  }
+
+  private static Stream ValidateStream(Stream stream, string paramNameOfStream)
+  {
+    if (stream is null)
+      throw new ArgumentNullException(paramName: paramNameOfStream);
+    if (!stream.CanRead)
+      throw new ArgumentException(message: $"{nameof(stream)} must be readable stream", paramName: paramNameOfStream);
+    if (!stream.CanWrite)
+      throw new ArgumentException(message: $"{nameof(stream)} must be writable stream", paramName: paramNameOfStream);
+
+    return stream;
+  }
+
+  /// <summary>
+  /// Initializes a new instance of the <see cref="SkStackClient"/> class with specifying the <see cref="PipeWriter"/> and <see cref="PipeReader"/>.
+  /// </summary>
+  /// <param name="sender">
+  /// A <see cref="PipeWriter"/> for sending SKSTACK-IP protocol commands.
+  /// </param>
+  /// <param name="receiver">
+  /// A <see cref="PipeReader"/> for receiving SKSTACK-IP protocol responses.
+  /// </param>
+  /// <param name="logger">The <see cref="ILogger"/> to report the situation.</param>
+  public SkStackClient(
+    PipeWriter sender,
+    PipeReader receiver,
     ILogger? logger = null
   )
   {
-    if (stream is null)
-      throw new ArgumentNullException(nameof(stream));
-    if (!stream.CanRead)
-      throw new ArgumentException($"{nameof(stream)} must be readable stream", nameof(stream));
-    if (!stream.CanWrite)
-      throw new ArgumentException($"{nameof(stream)} must be writable stream", nameof(stream));
-
-    this.stream = stream;
-
-    streamWriter = PipeWriter.Create(
-      stream,
-      new(leaveOpen: true, minimumBufferSize: 64)
-    );
-    streamReader = PipeReader.Create(
-      stream,
-      new(leaveOpen: true, bufferSize: 1024, minimumReadSize: 256)
-    );
-
+    streamReader = receiver ?? throw new ArgumentNullException(nameof(receiver));
+    streamWriter = sender ?? throw new ArgumentNullException(nameof(sender));
     this.logger = logger;
 
     if (logger is not null && logger.IsCommandLoggingEnabled()) {
@@ -140,7 +168,7 @@ public partial class SkStackClient :
 
   private void ThrowIfDisposed()
   {
-    if (stream is null)
+    if (streamWriter is null)
       throw new ObjectDisposedException(GetType().FullName);
   }
 
@@ -158,9 +186,6 @@ public partial class SkStackClient :
 
       streamReader?.Complete();
       streamReader = null!;
-
-      stream?.Close();
-      stream = null!;
 
       streamReaderSemaphore?.Dispose();
       streamReaderSemaphore = null!;

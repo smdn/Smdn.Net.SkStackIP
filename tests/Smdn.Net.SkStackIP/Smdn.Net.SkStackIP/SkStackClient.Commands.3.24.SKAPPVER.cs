@@ -19,7 +19,7 @@ public class SkStackClientCommandsSKAPPVERTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("EAPPVER rev26e");
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     SkStackResponse<string> response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKAPPVERAsync());

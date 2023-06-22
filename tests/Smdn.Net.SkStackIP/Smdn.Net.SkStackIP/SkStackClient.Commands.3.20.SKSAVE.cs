@@ -19,7 +19,7 @@ public class SkStackClientCommandsSKSAVETests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     var response = await client.SendSKSAVEAsync();
 
     Assert.That(
@@ -37,7 +37,7 @@ public class SkStackClientCommandsSKSAVETests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("FAIL ER10");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     var ex = Assert.ThrowsAsync<SkStackFlashMemoryIOException>(async () => await client.SendSKSAVEAsync());
 
@@ -56,7 +56,7 @@ public class SkStackClientCommandsSKSAVETests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("FAIL ER01");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     var ex = Assert.ThrowsAsync<SkStackErrorResponseException>(async () => await client.SendSKSAVEAsync());
 

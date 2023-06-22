@@ -18,7 +18,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     SkStackResponse response = null;
     SkStackUdpPort port = default;
 
@@ -45,7 +45,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     SkStackResponse response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKUDPPORTUnsetAsync(SkStackUdpPortHandle.Handle3));
@@ -68,7 +68,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle1, port));
@@ -84,7 +84,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     var ex = Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTAsync(handle, 0x0001));
@@ -102,7 +102,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     var ex = Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTUnsetAsync(handle));

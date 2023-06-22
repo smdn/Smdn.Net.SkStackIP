@@ -48,7 +48,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("FAIL");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(async () => {
       await client.SendSKSCANEnergyDetectScanAsync(
@@ -83,7 +83,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("FAIL");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(async () => {
       await client.SendSKSCANEnergyDetectScanAsync(durationFactor: durationFactor);
@@ -104,7 +104,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("FAIL");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => {
       await client.SendSKSCANEnergyDetectScanAsync(
@@ -125,7 +125,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("FAIL");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => {
       await client.SendSKSCANEnergyDetectScanAsync(durationFactor: durationFactor);
@@ -143,7 +143,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("FAIL");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(async () => {
       await client.SendSKSCANEnergyDetectScanAsync(
@@ -172,7 +172,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
       // [VER 1.2.10, APPVER rev26e] EEDSCAN responds extra CRLF
       stream.ResponseWriter.WriteLine();
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     IReadOnlyDictionary<SkStackChannel, double> scanResult = default;
 
     Assert.DoesNotThrowAsync(async () => {
@@ -275,7 +275,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
     }
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendSKSCANActiveScanPairAsync().AsTask();
@@ -316,7 +316,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
     }
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendSKSCANActiveScanPairAsync().AsTask();
@@ -374,7 +374,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
     }
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendSKSCANActiveScanPairAsync().AsTask();
@@ -444,7 +444,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
     }
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendSKSCANActiveScanAsync().AsTask();
@@ -485,7 +485,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
     }
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendSKSCANActiveScanAsync().AsTask();

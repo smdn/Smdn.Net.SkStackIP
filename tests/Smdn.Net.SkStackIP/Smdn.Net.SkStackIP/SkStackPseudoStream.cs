@@ -19,24 +19,25 @@ internal class PseudoSkStackStream : Stream {
     get => throw new NotSupportedException();
     set => throw new NotSupportedException();
   }
+  public bool IsClosed => writeStream is null;
 
-  private Pipe readStreamPipe;
-  private Stream readStreamReaderStream;
-  private Stream readStreamWriterStream;
-  private TextWriter readStreamWriter;
+  private readonly Pipe readStreamPipe;
+  private readonly Stream readStreamReaderStream;
+  private readonly Stream readStreamWriterStream;
+  private readonly TextWriter readStreamWriter;
   private Stream writeStream;
 
   public PseudoSkStackStream()
   {
-    this.readStreamPipe = new Pipe(
+    readStreamPipe = new Pipe(
       new PipeOptions(
         useSynchronizationContext: false
       )
     );
-    this.writeStream = new MemoryStream();
-    this.readStreamReaderStream = readStreamPipe.Reader.AsStream();
-    this.readStreamWriterStream = readStreamPipe.Writer.AsStream();
-    this.readStreamWriter = new StreamWriter(readStreamWriterStream, Encoding.ASCII) {
+    writeStream = new MemoryStream();
+    readStreamReaderStream = readStreamPipe.Reader.AsStream();
+    readStreamWriterStream = readStreamPipe.Writer.AsStream();
+    readStreamWriter = new StreamWriter(readStreamWriterStream, Encoding.ASCII) {
       NewLine = "\r\n",
       AutoFlush = true,
     };
@@ -55,15 +56,21 @@ internal class PseudoSkStackStream : Stream {
     try {
       writeStream.Position = 0L;
 
-      using (var stream = new MemoryStream()) {
-        writeStream.CopyTo(stream);
+      using var stream = new MemoryStream();
 
-        return stream.ToArray();
-      }
+      writeStream.CopyTo(stream);
+
+      return stream.ToArray();
     }
     finally {
       writeStream.Position = 0L;
     }
+  }
+
+  public override void Close()
+  {
+    writeStream?.Close();
+    writeStream = null;
   }
 
   public override long Seek(long offset, SeekOrigin origin) => throw new NotImplementedException();

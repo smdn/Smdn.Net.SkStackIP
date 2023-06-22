@@ -19,7 +19,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     SkStackResponse response = default;
 
@@ -84,7 +84,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     var ex = Assert.ThrowsAsync<ArgumentNullException>(
       async () => await client.SendSKSENDTOAsync(
@@ -105,7 +105,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     var ex = Assert.ThrowsAsync<ArgumentNullException>(
       async () => await client.SendSKSENDTOAsync(
@@ -130,7 +130,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     var ex = Assert.ThrowsAsync<ArgumentOutOfRangeException>(
       async () => await client.SendSKSENDTOAsync(
@@ -159,7 +159,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     Assert.DoesNotThrowAsync(
       async () => await client.SendSKSENDTOAsync(
@@ -182,7 +182,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     var ex = Assert.ThrowsAsync<ArgumentOutOfRangeException>(
       async () => await client.SendSKSENDTOAsync(
@@ -207,7 +207,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     Assert.DoesNotThrowAsync(
       async () => await client.SendSKSENDTOAsync(
@@ -230,7 +230,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     var ex = Assert.ThrowsAsync<ArgumentException>(
       async () => await client.SendSKSENDTOAsync(
@@ -252,7 +252,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     var ex = Assert.ThrowsAsync<ArgumentException>(
       async () => await client.SendSKSENDTOAsync(
@@ -275,7 +275,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("FAIL ER10");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(
       async () => await client.SendSKSENDTOAsync(
@@ -307,7 +307,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine("OK");
     }
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendSKSENDTOAsync(
@@ -338,7 +338,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     stream.ResponseWriter.Write("\r\n"); // echoback line only with CRLF
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     var resp = await client.SendSKSENDTOAsync(
       handle: SkStackUdpPortHandle.Handle1,

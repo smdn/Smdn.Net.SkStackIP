@@ -36,7 +36,7 @@ public class SkStackClientEventsEVENTTests : SkStackClientTestsBase {
     var address = IPAddress.Parse(addressString);
 
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     await JoinAsync(client, stream, addressString);
 
@@ -79,7 +79,7 @@ public class SkStackClientEventsEVENTTests : SkStackClientTestsBase {
     var address = IPAddress.Parse(addressString);
 
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     await JoinAsync(client, stream, addressString);
 

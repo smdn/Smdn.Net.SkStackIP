@@ -20,7 +20,7 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     Exception thrownExceptionInSleptEventHandler = null;
     Exception thrownExceptionInWokeUpEventHandler = null;
     var raisedSleptEventCount = 0;
@@ -81,7 +81,7 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine();
     }
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     Exception thrownExceptionInSleptEventHandler = null;
     Exception thrownExceptionInWokeUpEventHandler = null;
     var raisedSleptEventCount = 0;

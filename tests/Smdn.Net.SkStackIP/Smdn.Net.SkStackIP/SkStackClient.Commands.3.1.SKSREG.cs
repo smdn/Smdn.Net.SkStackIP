@@ -20,7 +20,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     var response = await sendSKSREGSetAsync(client);
 
     Assert.That(
@@ -47,7 +47,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine(responsePayload);
     stream.ResponseWriter.WriteLine("OK");
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     var response = await sendSKSREGGetAsync(client);
 
     Assert.IsNotNull(response.Payload);
@@ -111,7 +111,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentNullException>(() => client.SendSKSREGAsync(null!, (ushort)0x8888));
@@ -126,7 +126,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<ArgumentNullException>(() => client.SendSKSREGAsync<ushort>(null!));
@@ -139,7 +139,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<InvalidOperationException>(() => sendSKSREGSetAsync(client));
@@ -159,7 +159,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
     Assert.Throws<TArgumentException>(() => sendSKSREGSetAsync(client));

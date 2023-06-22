@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipelines;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ public class SkStackClientTests {
 
   private class SkStackClientEx : SkStackClient {
     public SkStackClientEx(Stream stream, ILogger logger)
-      : base(stream, logger)
+      : base(stream, logger: logger)
     {
     }
 
@@ -65,22 +66,22 @@ public class SkStackClientTests {
     => new(stream, SkStackClientTestsBase.CreateLoggerForTestCase());
 
   [Test]
-  public void Create_FromSerialPortName_PortNameNull()
+  public void Ctor_WithSerialPortName_PortNameNull()
     => Assert.Throws<ArgumentNullException>(() => new SkStackClient(serialPortName: null!));
 
   [Test]
-  public void Create_FromSerialPortName_PortNameEmpty()
+  public void Ctor_WithSerialPortName_PortNameEmpty()
     => Assert.Throws<ArgumentException>(() => new SkStackClient(serialPortName: string.Empty));
 
   [Test]
-  public void Create_FromStream_StreamNull()
+  public void Ctor_WithStream_StreamNull()
     => Assert.Throws<ArgumentNullException>(() => new SkStackClient(stream: null!));
 
   [Test]
-  public void Create_FromStream_StreamNotWritable()
-    => Assert.Throws<ArgumentException>(() => new SkStackClient(stream: new System.IO.MemoryStream(Array.Empty<byte>(), writable: false)));
+  public void Ctor_WithStream_StreamNotWritable()
+    => Assert.Throws<ArgumentException>(() => new SkStackClient(stream: new MemoryStream(Array.Empty<byte>(), writable: false)));
 
-  private class UnreadableMemoryStream : System.IO.MemoryStream {
+  private class UnreadableMemoryStream : MemoryStream {
     public override bool CanRead => false;
 
     public UnreadableMemoryStream()
@@ -90,8 +91,36 @@ public class SkStackClientTests {
   }
 
   [Test]
-  public void Create_FromStream_StreamNotReadable()
+  public void Ctor_WithStream_StreamNotReadable()
     => Assert.Throws<ArgumentException>(() => new SkStackClient(stream: new UnreadableMemoryStream()));
+
+  [TestCase(true)]
+  [TestCase(false)]
+  public void Ctor_WithStream_LeaveStreamOpen(bool leaveStreamOpen)
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream: stream, leaveStreamOpen: leaveStreamOpen);
+
+    client.Dispose();
+
+    Assert.AreEqual(!leaveStreamOpen, stream.IsClosed, nameof(stream.IsClosed));
+  }
+
+  [Test]
+  public void Ctor_WithPipeReaderWriter_SenderNull()
+  {
+    var pipe = new Pipe();
+
+    Assert.Throws<ArgumentNullException>(() => new SkStackClient(sender: null!, receiver: pipe.Reader));
+  }
+
+  [Test]
+  public void Ctor_WithPipeReaderWriter_ReceiverNull()
+  {
+    var pipe = new Pipe();
+
+    Assert.Throws<ArgumentNullException>(() => new SkStackClient(sender: pipe.Writer, receiver: null));
+  }
 
   [Test]
   public void Dispose()

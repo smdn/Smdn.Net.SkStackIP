@@ -74,7 +74,7 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
   )
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     client.SynchronizingObject = synchronizingObject;
 
@@ -150,7 +150,7 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
     const string senderAddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
 
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, CreateLoggerForTestCase());
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     using var waitHandle = new ManualResetEvent(false);
     var raisedEventCount = 0;
