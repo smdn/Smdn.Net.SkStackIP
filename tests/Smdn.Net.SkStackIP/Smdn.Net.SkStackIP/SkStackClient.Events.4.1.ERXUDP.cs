@@ -213,8 +213,8 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
 
     cts.CancelAfter(TimeSpan.FromSeconds(1.0));
 
-    SkStackUdpReceiveResult result1 = null;
-    SkStackUdpReceiveResult result2 = null;
+    SkStackReceiveUdpResult result1 = null;
+    SkStackReceiveUdpResult result2 = null;
 
     try {
       Assert.DoesNotThrowAsync(
@@ -270,7 +270,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
 
     cts.CancelAfter(TimeSpan.FromSeconds(1.0));
 
-    SkStackUdpReceiveResult resultEchonetLite = null;
+    SkStackReceiveUdpResult resultEchonetLite = null;
 
     try {
       Assert.DoesNotThrowAsync(
@@ -292,7 +292,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
       resultEchonetLite?.Dispose();
     }
 
-    SkStackUdpReceiveResult resultPana = null;
+    SkStackReceiveUdpResult resultPana = null;
 
     try {
       Assert.DoesNotThrowAsync(
@@ -461,7 +461,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
 
     cts.CancelAfter(TimeSpan.FromSeconds(1.0));
 
-    SkStackUdpReceiveResult result = null;
+    SkStackReceiveUdpResult result = null;
 
     try {
       Assert.DoesNotThrowAsync(
