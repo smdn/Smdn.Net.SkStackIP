@@ -64,7 +64,7 @@ public partial class SkStackClient :
   {
   }
 
-  private static Stream OpenSerialPortStream(string serialPortName, int baudRate)
+  protected static Stream OpenSerialPortStream(string serialPortName, int baudRate)
   {
     if (serialPortName is null)
       throw new ArgumentNullException(nameof(serialPortName));
@@ -166,7 +166,7 @@ public partial class SkStackClient :
     StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite);
   }
 
-  private void ThrowIfDisposed()
+  protected void ThrowIfDisposed()
   {
     if (streamWriter is null)
       throw new ObjectDisposedException(GetType().FullName);
