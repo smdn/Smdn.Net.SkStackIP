@@ -57,7 +57,7 @@ partial class SkStackClient {
   /// allocates buffer for reading and writing the received data.
   /// </summary>
   /// <param name="port">The port number to start capturing <c>ERXUDP</c> events.</param>
-  /// <seealso cref="UdpReceiveAsync"/>
+  /// <seealso cref="ReceiveUdpAsync"/>
   /// <seealso cref="StopCapturingUdpReceiveEvents"/>
   public void StartCapturingUdpReceiveEvents(int port)
   {
@@ -74,7 +74,7 @@ partial class SkStackClient {
   /// Stops capturing <c>ERXUDP</c> events for the specified port number.
   /// </summary>
   /// <param name="port">The port number to stop capturing <c>ERXUDP</c> events.</param>
-  /// <seealso cref="UdpReceiveAsync"/>
+  /// <seealso cref="ReceiveUdpAsync"/>
   public void StopCapturingUdpReceiveEvents(int port)
   {
     ThrowIfDisposed();
@@ -155,15 +155,15 @@ partial class SkStackClient {
   /// <param name="port">The port number to receive UDP data.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   /// <returns>
-  /// A <see cref="ValueTask{SkStackUdpReceiveResult}"/> representing the result of receiving.
+  /// A <see cref="ValueTask{SkStackReceiveUdpResult}"/> representing the result of receiving.
   /// </returns>
   /// <remarks>
-  /// The returned <see cref="SkStackUdpReceiveResult"/> from this method should be disposed by the caller.
+  /// The returned <see cref="SkStackReceiveUdpResult"/> from this method should be disposed by the caller.
   /// </remarks>
   /// <seealso cref="StartCapturingUdpReceiveEvents"/>
   /// <seealso cref="StopCapturingUdpReceiveEvents"/>
-  /// <seealso cref="SkStackUdpReceiveResult"/>
-  public ValueTask<SkStackUdpReceiveResult> UdpReceiveAsync(
+  /// <seealso cref="SkStackReceiveUdpResult"/>
+  public ValueTask<SkStackReceiveUdpResult> ReceiveUdpAsync(
     int port,
     CancellationToken cancellationToken = default
   )
@@ -175,9 +175,9 @@ partial class SkStackClient {
     if (!udpReceiveEventPipes.TryGetValue(port, out var pipe))
       throw new InvalidOperationException($"The port number {port} is not configured to capture receiving events. Call the method `{nameof(StartCapturingUdpReceiveEvents)}` first.");
 
-    return UdpReceiveAsyncCore(this, pipe.Reader, cancellationToken);
+    return ReceiveUdpAsyncCore(this, pipe.Reader, cancellationToken);
 
-    static async ValueTask<SkStackUdpReceiveResult> UdpReceiveAsyncCore(
+    static async ValueTask<SkStackReceiveUdpResult> ReceiveUdpAsyncCore(
       SkStackClient thisClient,
       PipeReader pipeReader,
       CancellationToken cancellationToken
@@ -218,7 +218,7 @@ partial class SkStackClient {
 #if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
       [NotNullWhen(true)]
 #endif
-      out SkStackUdpReceiveResult? result
+      out SkStackReceiveUdpResult? result
     )
     {
       result = default;
@@ -253,7 +253,7 @@ partial class SkStackClient {
       unreadSequence = reader.GetUnreadSequence();
 
 #pragma warning disable CA2000
-      result = new SkStackUdpReceiveResult(
+      result = new(
         remoteAddress: remoteAddress,
         length: dataLength,
         data: data

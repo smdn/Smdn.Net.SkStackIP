@@ -9,13 +9,13 @@ namespace Smdn.Net.SkStackIP;
 
 /// <summary>
 /// The type that represents the data received by <c>ERXUDP</c> events.
-/// This type is used for the return value as a result of the method <seealso cref="SkStackClient.UdpReceiveAsync"/>.
+/// This type is used for the return value as a result of the method <seealso cref="SkStackClient.ReceiveUdpAsync"/>.
 /// </summary>
 /// <remarks>
-/// The returned <see cref="SkStackUdpReceiveResult"/> from the method <seealso cref="SkStackClient.UdpReceiveAsync"/> should be disposed by the caller.
+/// The returned <see cref="SkStackReceiveUdpResult"/> from the method <seealso cref="SkStackClient.ReceiveUdpAsync"/> should be disposed by the caller.
 /// </remarks>
-/// <seealso cref="SkStackClient.UdpReceiveAsync"/>
-public sealed class SkStackUdpReceiveResult : IDisposable {
+/// <seealso cref="SkStackClient.ReceiveUdpAsync"/>
+public sealed class SkStackReceiveUdpResult : IDisposable {
   /// <summary>
   /// Gets the remote address of the UDP packet.
   /// </summary>
@@ -29,7 +29,7 @@ public sealed class SkStackUdpReceiveResult : IDisposable {
   /// </summary>
   public ReadOnlyMemory<byte> Buffer => (data ?? throw new ObjectDisposedException(GetType().FullName)).Memory.Slice(0, length);
 
-  internal SkStackUdpReceiveResult(
+  internal SkStackReceiveUdpResult(
     IPAddress remoteAddress,
     int length,
     IMemoryOwner<byte> data
@@ -40,7 +40,7 @@ public sealed class SkStackUdpReceiveResult : IDisposable {
     this.data = data;
   }
 
-  ~SkStackUdpReceiveResult()
+  ~SkStackReceiveUdpResult()
     => Dispose();
 
   public void Dispose()
