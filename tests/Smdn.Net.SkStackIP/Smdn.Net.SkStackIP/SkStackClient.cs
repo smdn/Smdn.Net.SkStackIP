@@ -122,6 +122,25 @@ public class SkStackClientTests {
     Assert.Throws<ArgumentNullException>(() => new SkStackClient(sender: pipe.Writer, receiver: null));
   }
 
+  [TestCase(SkStackERXUDPDataFormat.Binary)]
+  [TestCase(SkStackERXUDPDataFormat.HexAsciiText)]
+  public void Ctor_ERXUDPDataFormat(SkStackERXUDPDataFormat format)
+  {
+    Assert.DoesNotThrow(() => {
+      using var client = new SkStackClient(Stream.Null, erxudpDataFormat: format);
+
+      Assert.AreEqual(format, client.ERXUDPDataFormat, nameof(client.ERXUDPDataFormat));
+    });
+  }
+
+  [TestCase(-1)]
+  public void Ctor_ERXUDPDataFormat_InvalidValue(SkStackERXUDPDataFormat format)
+  {
+    Assert.Throws<ArgumentException>(() => {
+      using var client = new SkStackClient(Stream.Null, erxudpDataFormat: format);
+    });
+  }
+
   [Test]
   public void Dispose()
   {

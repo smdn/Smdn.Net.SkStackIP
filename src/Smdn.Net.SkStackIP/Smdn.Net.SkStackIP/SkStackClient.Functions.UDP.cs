@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 #endif
 using System.IO.Pipelines;
+using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -57,6 +58,75 @@ partial class SkStackClient {
   private readonly Dictionary<int/*port*/, Pipe> udpReceiveEventPipes = new(
     capacity: SkStackUdpPort.NumberOfPorts
   );
+
+  public async ValueTask<IReadOnlyList<SkStackUdpPort>> GetListeningUdpPortListAsync(
+    CancellationToken cancellationToken = default
+  )
+  {
+    var resp = await SendSKTABLEListeningPortListAsync(
+      cancellationToken: cancellationToken
+    ).ConfigureAwait(false);
+
+    var portList = resp.Payload!;
+
+    return portList.Where(static p => !p.IsUnused).ToArray();
+  }
+
+  public async ValueTask<IReadOnlyList<SkStackUdpPortHandle>> GetUnusedUdpPortHandleListAsync(
+    CancellationToken cancellationToken = default
+  )
+  {
+    var resp = await SendSKTABLEListeningPortListAsync(
+      cancellationToken: cancellationToken
+    ).ConfigureAwait(false);
+
+    var portList = resp.Payload!;
+
+    return portList.Where(static p => p.IsUnused).Select(static p => p.Handle).ToArray();
+  }
+
+  public async ValueTask<SkStackUdpPort> PrepareUdpPortAsync(
+    int port,
+    CancellationToken cancellationToken = default
+  )
+  {
+    static bool TryFindPort(
+      IReadOnlyList<SkStackUdpPort> ports,
+      Predicate<SkStackUdpPort> predicate,
+      out SkStackUdpPort port)
+    {
+      port = default;
+
+      foreach (var p in ports) {
+        if (predicate(p)) {
+          port = p;
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    var respSKTABLE = await SendSKTABLEListeningPortListAsync(
+      cancellationToken: cancellationToken
+    ).ConfigureAwait(false);
+    var listeningPortList = respSKTABLE.Payload!;
+
+    if (TryFindPort(listeningPortList, p => p.Port == port, out var requestedListeningPort))
+      return requestedListeningPort;
+
+    if (TryFindPort(listeningPortList, static p => p.IsUnused, out var unusedPort)) {
+      var (resp, newlyListeningPort) = await SendSKUDPPORTAsync(
+        handle: unusedPort.Handle,
+        port: port,
+        cancellationToken: cancellationToken
+      ).ConfigureAwait(false);
+
+      return newlyListeningPort;
+    }
+
+    throw new InvalidOperationException("there are no unused port");
+  }
 
   /// <summary>
   /// Starts capturing <c>ERXUDP</c> events for the specified port number and
