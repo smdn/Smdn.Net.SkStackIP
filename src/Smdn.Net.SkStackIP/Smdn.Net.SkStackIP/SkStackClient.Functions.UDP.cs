@@ -46,11 +46,11 @@ partial class SkStackClient {
   )
   {
 #if SYSTEM_ENUM_ISDEFINED_OF_TENUM
-      if (!Enum.IsDefined(value))
+    if (!Enum.IsDefined(value))
 #else
-      if (!Enum.IsDefined(typeof(SkStackERXUDPDataFormat), value))
+    if (!Enum.IsDefined(typeof(SkStackERXUDPDataFormat), value))
 #endif
-        throw new ArgumentException(message: $"undefined value of {nameof(SkStackERXUDPDataFormat)}", paramName: paramNameForValue);
+      throw new ArgumentException(message: $"undefined value of {nameof(SkStackERXUDPDataFormat)}", paramName: paramNameForValue);
 
     return value;
   }
