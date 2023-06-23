@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -13,24 +14,57 @@ namespace Smdn.Net.SkStackIP;
 
 [TestFixture]
 public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
-  [TestCase(SkStackERXUDPDataFormat.Raw)]
+  [TestCase(SkStackERXUDPDataFormat.Binary)]
   [TestCase(SkStackERXUDPDataFormat.HexAsciiText)]
-  public void ERXUDPDataFormat(SkStackERXUDPDataFormat format)
+  public void Ctor_ERXUDPDataFormat(SkStackERXUDPDataFormat format)
   {
-    using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    Assert.DoesNotThrow(() => {
+      using var client = new SkStackClient(Stream.Null, erxudpDataFormat: format);
 
-    Assert.DoesNotThrow(() => client.ERXUDPDataFormat = format);
+      Assert.AreEqual(format, client.ERXUDPDataFormat, nameof(client.ERXUDPDataFormat));
+    });
+  }
+
+  [TestCase(-1)]
+  public void Ctor_ERXUDPDataFormat_InvalidValue(SkStackERXUDPDataFormat format)
+  {
+    Assert.Throws<ArgumentException>(() => {
+      using var client = new SkStackClient(Stream.Null, erxudpDataFormat: format);
+    });
+  }
+
+  private class ERXUDPDataFormatSkStackClient : SkStackClient {
+    public ERXUDPDataFormatSkStackClient()
+      : base(
+        stream: Stream.Null,
+        leaveStreamOpen: true,
+        logger: null
+      )
+    {
+    }
+
+    public void SetERXUDPDataFormat(SkStackERXUDPDataFormat newFormat)
+      => ERXUDPDataFormat = newFormat;
+  }
+
+  [TestCase(SkStackERXUDPDataFormat.Binary)]
+  [TestCase(SkStackERXUDPDataFormat.HexAsciiText)]
+  public void ERXUDPDataFormat_Set(SkStackERXUDPDataFormat format)
+  {
+    using var client = new ERXUDPDataFormatSkStackClient();
+
+    Assert.DoesNotThrow(() => client.SetERXUDPDataFormat(format));
     Assert.AreEqual(client.ERXUDPDataFormat, format);
   }
 
   [TestCase(-1)]
-  public void ERXUDPDataFormat_InvalidValue(SkStackERXUDPDataFormat format)
+  public void ERXUDPDataFormat_Set_InvalidValue(SkStackERXUDPDataFormat format)
   {
-    using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var client = new ERXUDPDataFormatSkStackClient();
 
-    Assert.Throws<ArgumentException>(() => client.ERXUDPDataFormat = format);
+    var ex = Assert.Throws<ArgumentException>(() => client.SetERXUDPDataFormat(format));
+
+    Assert.AreEqual(nameof(client.ERXUDPDataFormat), ex!.ParamName, nameof(ex.ParamName));
   }
 
   [TestCase(SkStackKnownPortNumbers.EchonetLite)]
@@ -204,7 +238,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
+    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Binary);
 
     stream.ResponseWriter.WriteLine("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 01234567");
     stream.ResponseWriter.WriteLine("ERXUDP FE80:0000:0000:0000:021D:1290:1234:5679 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 89ABCDEF");
@@ -259,7 +293,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
+    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Binary);
 
     client.StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.Pana);
 
@@ -317,7 +351,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
+    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Binary);
 
     async Task RaiseERXUDPAsync()
     {
@@ -357,7 +391,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
+    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Binary);
 
     async Task RaiseERXUDPAsync()
     {
@@ -398,7 +432,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Raw);
+    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Binary);
 
     async Task CompleteResponseAndRaiseERXUDPAsync()
     {
@@ -449,9 +483,7 @@ public class SkStackClientEventsERXUDPTests : SkStackClientTestsBase {
   public void ReceiveUdpAsync_DataFormat_HexASCIIText()
   {
     using var stream = new PseudoSkStackStream();
-    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-
-    client.ERXUDPDataFormat = SkStackERXUDPDataFormat.HexAsciiText;
+    using var client = new SkStackClient(stream, erxudpDataFormat: SkStackERXUDPDataFormat.HexAsciiText, logger: CreateLoggerForTestCase());
 
     Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.HexAsciiText);
 

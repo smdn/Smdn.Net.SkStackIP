@@ -21,7 +21,7 @@ namespace Smdn.Net.SkStackIP;
 #pragma warning disable IDE0040
 partial class SkStackClient {
 #pragma warning restore IDE0040
-  private SkStackERXUDPDataFormat erxudpDataFormat = SkStackERXUDPDataFormat.Raw; // RAW as default
+  private SkStackERXUDPDataFormat erxudpDataFormat;
 
   /// <summary>
   /// Gets or sets the format of the data part in event <c>ERXUDP</c>.
@@ -36,16 +36,22 @@ partial class SkStackClient {
   /// <seealso cref="SkStackERXUDPDataFormat"/>
   public SkStackERXUDPDataFormat ERXUDPDataFormat {
     get => erxudpDataFormat;
-    set {
+    protected set => erxudpDataFormat = ValidateERXUDPDataFormat(value, nameof(ERXUDPDataFormat));
+  }
+
+  private static SkStackERXUDPDataFormat ValidateERXUDPDataFormat(
+    SkStackERXUDPDataFormat value,
+    string paramNameForValue
+  )
+  {
 #if SYSTEM_ENUM_ISDEFINED_OF_TENUM
       if (!Enum.IsDefined(value))
 #else
       if (!Enum.IsDefined(typeof(SkStackERXUDPDataFormat), value))
 #endif
-        throw new ArgumentException($"undefined value of {nameof(SkStackERXUDPDataFormat)}", nameof(ERXUDPDataFormat));
+        throw new ArgumentException(message: $"undefined value of {nameof(SkStackERXUDPDataFormat)}", paramName: paramNameForValue);
 
-      erxudpDataFormat = value;
-    }
+    return value;
   }
 
   private readonly Dictionary<int/*port*/, Pipe> udpReceiveEventPipes = new(
@@ -128,7 +134,7 @@ partial class SkStackClient {
       BinaryPrimitives.WriteUInt16LittleEndian(memory.Span.Slice(UdpReceiveEventLengthOfRemoteAddress), (ushort)dataLength);
 
       // BYTE[n]: data
-      if (dataFormat == SkStackERXUDPDataFormat.Raw) {
+      if (dataFormat == SkStackERXUDPDataFormat.Binary) {
         data.CopyTo(memory.Span.Slice(UdpReceiveEventLengthOfRemoteAddress + UdpReceiveEventLengthOfDataLength));
       }
       else {

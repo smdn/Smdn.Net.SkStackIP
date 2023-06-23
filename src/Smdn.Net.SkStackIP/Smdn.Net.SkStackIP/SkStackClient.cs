@@ -50,15 +50,20 @@ public partial class SkStackClient :
   /// <param name="baudRate">
   /// A <see cref="int"/> value that represents the baud rate of the serial port for communicating with the device.
   /// </param>
+  /// <param name="erxudpDataFormat">
+  /// A value that specifies the format of the data part received in the event <c>ERXUDP</c>. See <see cref="SkStackERXUDPDataFormat"/>.
+  /// </param>
   /// <param name="logger">The <see cref="ILogger"/> to report the situation.</param>
   public SkStackClient(
     string serialPortName,
     int baudRate = DefaultBaudRate,
+    SkStackERXUDPDataFormat erxudpDataFormat = default,
     ILogger? logger = null
   )
     : this(
       stream: OpenSerialPortStream(serialPortName, baudRate),
       leaveStreamOpen: false, // should close the opened stream
+      erxudpDataFormat: erxudpDataFormat,
       logger: logger
     )
   {
@@ -100,10 +105,14 @@ public partial class SkStackClient :
   /// <param name="leaveStreamOpen">
   /// A <see langworkd="bool"/> value specifying whether the <paramref name="stream"/> should be left open or not when disposing instance.
   /// </param>
+  /// <param name="erxudpDataFormat">
+  /// A value that specifies the format of the data part received in the event <c>ERXUDP</c>. See <see cref="SkStackERXUDPDataFormat"/>.
+  /// </param>
   /// <param name="logger">The <see cref="ILogger"/> to report the situation.</param>
   public SkStackClient(
     Stream stream,
     bool leaveStreamOpen = true,
+    SkStackERXUDPDataFormat erxudpDataFormat = default,
     ILogger? logger = null
   )
     : this(
@@ -115,6 +124,7 @@ public partial class SkStackClient :
         stream,
         new(leaveOpen: leaveStreamOpen, bufferSize: 1024, minimumReadSize: 256)
       ),
+      erxudpDataFormat: erxudpDataFormat,
       logger: logger
     )
   {
@@ -141,15 +151,20 @@ public partial class SkStackClient :
   /// <param name="receiver">
   /// A <see cref="PipeReader"/> for receiving SKSTACK-IP protocol responses.
   /// </param>
+  /// <param name="erxudpDataFormat">
+  /// A value that specifies the format of the data part received in the event <c>ERXUDP</c>. See <see cref="SkStackERXUDPDataFormat"/>.
+  /// </param>
   /// <param name="logger">The <see cref="ILogger"/> to report the situation.</param>
   public SkStackClient(
     PipeWriter sender,
     PipeReader receiver,
+    SkStackERXUDPDataFormat erxudpDataFormat = default,
     ILogger? logger = null
   )
   {
     streamReader = receiver ?? throw new ArgumentNullException(nameof(receiver));
     streamWriter = sender ?? throw new ArgumentNullException(nameof(sender));
+    this.erxudpDataFormat = ValidateERXUDPDataFormat(erxudpDataFormat, nameof(erxudpDataFormat));
     this.logger = logger;
 
     if (logger is not null && logger.IsCommandLoggingEnabled()) {

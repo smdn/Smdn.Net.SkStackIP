@@ -7,9 +7,9 @@ namespace Smdn.Net.SkStackIP;
 ///   <para>See 'BP35A1コマンドリファレンス 3.30. WOPT (プロダクト設定コマンド)' for detailed specifications.</para>
 /// </remarks>
 public enum SkStackERXUDPDataFormat {
-  /// <summary>Use raw binary format.</summary>
-  Raw,
+  /// <summary>The data part of <c>ERXUDP</c> is displayed in binary format.</summary>
+  Binary = 0,
 
-  /// <summary>Use hexadecimal text format.</summary>
-  HexAsciiText,
+  /// <summary>The data part of <c>ERXUDP</c> is displayed in hex ASCII format.</summary>
+  HexAsciiText = 1,
 }
