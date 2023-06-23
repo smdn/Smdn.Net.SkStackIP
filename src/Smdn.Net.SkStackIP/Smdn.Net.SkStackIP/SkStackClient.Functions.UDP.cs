@@ -229,21 +229,22 @@ partial class SkStackClient {
   /// Receives UDP data for the port number that has started capturing <c>ERXUDP</c> events.
   /// </summary>
   /// <param name="port">The port number to receive UDP data.</param>
+  /// <param name="buffer">The <see cref="IBufferWriter{Byte}"/> that the received UDP data is written to.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   /// <returns>
-  /// A <see cref="ValueTask{SkStackReceiveUdpResult}"/> representing the result of receiving.
+  /// A <see cref="ValueTask{IPAddress}"/> representing the source address of the received UDP data.
   /// </returns>
-  /// <remarks>
-  /// The returned <see cref="SkStackReceiveUdpResult"/> from this method should be disposed by the caller.
-  /// </remarks>
   /// <seealso cref="StartCapturingUdpReceiveEvents"/>
   /// <seealso cref="StopCapturingUdpReceiveEvents"/>
-  /// <seealso cref="SkStackReceiveUdpResult"/>
-  public ValueTask<SkStackReceiveUdpResult> ReceiveUdpAsync(
+  public ValueTask<IPAddress> ReceiveUdpAsync(
     int port,
+    IBufferWriter<byte> buffer,
     CancellationToken cancellationToken = default
   )
   {
+    if (buffer is null)
+      throw new ArgumentNullException(nameof(buffer));
+
     ThrowIfDisposed();
 
     SkStackUdpPort.ThrowIfPortNumberIsOutOfRangeOrUnused(port, nameof(port));
@@ -251,11 +252,12 @@ partial class SkStackClient {
     if (!udpReceiveEventPipes.TryGetValue(port, out var pipe))
       throw new InvalidOperationException($"The port number {port} is not configured to capture receiving events. Call the method `{nameof(StartCapturingUdpReceiveEvents)}` first.");
 
-    return ReceiveUdpAsyncCore(this, pipe.Reader, cancellationToken);
+    return ReceiveUdpAsyncCore(this, pipe.Reader, buffer, cancellationToken);
 
-    static async ValueTask<SkStackReceiveUdpResult> ReceiveUdpAsyncCore(
+    static async ValueTask<IPAddress> ReceiveUdpAsyncCore(
       SkStackClient thisClient,
       PipeReader pipeReader,
+      IBufferWriter<byte> bufferWriter,
       CancellationToken cancellationToken
     )
     {
@@ -272,13 +274,13 @@ partial class SkStackClient {
         if (readResult.IsCanceled)
           throw new InvalidOperationException("pending read was cancelled");
 
-        var buffer = readResult.Buffer;
+        var receivedDataSequence = readResult.Buffer;
 
-        if (TryReadReceiveResult(ref buffer, out var result)) {
+        if (TryReadReceiveResult(ref receivedDataSequence, bufferWriter, out var remoteAddress)) {
           // advance the buffer to the position where the reading finished
-          pipeReader.AdvanceTo(consumed: buffer.Start);
+          pipeReader.AdvanceTo(consumed: receivedDataSequence.Start);
 
-          return result;
+          return remoteAddress;
         }
         else {
           // mark entire buffer as examined to receive the subsequent data
@@ -290,16 +292,17 @@ partial class SkStackClient {
     }
 
     static bool TryReadReceiveResult(
-      ref ReadOnlySequence<byte> unreadSequence,
+      ref ReadOnlySequence<byte> receivedDataSequence,
+      IBufferWriter<byte> buffer,
 #if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
       [NotNullWhen(true)]
 #endif
-      out SkStackReceiveUdpResult? result
+      out IPAddress? remoteAddress
     )
     {
-      result = default;
+      remoteAddress = default;
 
-      var reader = new SequenceReader<byte>(unreadSequence);
+      var reader = new SequenceReader<byte>(receivedDataSequence);
 
       if (reader.Remaining < UdpReceiveEventLengthOfRemoteAddress + UdpReceiveEventLengthOfDataLength)
         return false; // need more
@@ -310,7 +313,7 @@ partial class SkStackClient {
       reader.TryCopyTo(remoteAddressBytes);
       reader.Advance(UdpReceiveEventLengthOfRemoteAddress);
 
-      var remoteAddress = new IPAddress(remoteAddressBytes);
+      remoteAddress = new(remoteAddressBytes);
 
       // UINT16: length of data
       reader.TryReadLittleEndian(out short signedLengthOfData);
@@ -321,20 +324,13 @@ partial class SkStackClient {
       if (reader.Remaining < dataLength)
         return false; // need more
 
-      var data = MemoryPool<byte>.Shared.Rent(dataLength);
+      reader.TryCopyTo(buffer.GetSpan(sizeHint: dataLength).Slice(0, dataLength));
 
-      reader.TryCopyTo(data.Memory.Span.Slice(0, dataLength));
+      buffer.Advance(dataLength);
+
       reader.Advance(dataLength);
 
-      unreadSequence = reader.GetUnreadSequence();
-
-#pragma warning disable CA2000
-      result = new(
-        remoteAddress: remoteAddress,
-        length: dataLength,
-        data: data
-      );
-#pragma warning restore CA2000
+      receivedDataSequence = reader.GetUnreadSequence();
 
       return true;
     }
