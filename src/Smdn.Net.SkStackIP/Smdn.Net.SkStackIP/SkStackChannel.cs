@@ -73,9 +73,6 @@ public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<
   public static SkStackChannel Channel59 => Channels[59];
   public static SkStackChannel Channel60 => Channels[60];
 
-  internal static SkStackChannel FindByRegisterS02Value(byte registerValue)
-    => FindByChannelNumber(registerValue);
-
   internal static SkStackChannel FindByChannelNumber(int channelNumber, string? paramNameOfChannelNumber = null)
     => Channels.TryGetValue(channelNumber, out var channel)
       ? channel
