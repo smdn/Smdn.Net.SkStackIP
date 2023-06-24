@@ -366,7 +366,7 @@ public static class SkStackTokenParser {
     value = default;
 
     if (ExpectUINT8(ref reader, out var ch)) {
-      value = SkStackChannel.FindByChannelNumber(ch);
+      value = SkStackChannel.FindByChannelNumber(ch, nameof(ch));
       return true;
     }
 

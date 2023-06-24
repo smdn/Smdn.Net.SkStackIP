@@ -235,7 +235,7 @@ internal static class SkStackEventParser {
         }
 
         pandesc = new SkStackPanDescription(
-          channel: SkStackChannel.FindByChannelNumber(channel),
+          channel: SkStackChannel.FindByChannelNumber(channel, nameof(channel)),
           channelPage: channelPage,
           id: panId,
           macAddress: macAddress,
@@ -287,7 +287,7 @@ internal static class SkStackEventParser {
           SkStackTokenParser.ExpectUINT8(ref reader, out var channel) &&
           SkStackTokenParser.ExpectUINT8(ref reader, out var lqi)
         ) {
-          ret[SkStackChannel.FindByChannelNumber(channel)] = SkStackLQI.ToRSSI(lqi);
+          ret[SkStackChannel.FindByChannelNumber(channel, nameof(channel))] = SkStackLQI.ToRSSI(lqi);
         }
         else {
           context.SetAsIncomplete();

@@ -76,10 +76,14 @@ public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<
   internal static SkStackChannel FindByRegisterS02Value(byte registerValue)
     => FindByChannelNumber(registerValue);
 
-  internal static SkStackChannel FindByChannelNumber(int channelNumber)
+  internal static SkStackChannel FindByChannelNumber(int channelNumber, string? paramNameOfChannelNumber = null)
     => Channels.TryGetValue(channelNumber, out var channel)
       ? channel
-      : throw new ArgumentOutOfRangeException(nameof(channelNumber), channelNumber, "undefined channel");
+      : throw new ArgumentOutOfRangeException(
+          paramName: paramNameOfChannelNumber ?? nameof(channelNumber),
+          actualValue: channelNumber,
+          message: "undefined channel"
+        );
 
   /*
    * instance members
