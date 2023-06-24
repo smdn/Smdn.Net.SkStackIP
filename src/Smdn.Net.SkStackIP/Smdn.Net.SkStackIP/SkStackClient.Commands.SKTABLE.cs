@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading;
@@ -56,11 +57,25 @@ partial class SkStackClient {
   public ValueTask<SkStackResponse<IReadOnlyList<SkStackUdpPort>>> SendSKTABLEListeningPortListAsync(
     CancellationToken cancellationToken = default
   )
-    => SendCommandAsync(
-      command: SkStackCommandNames.SKTABLE,
-      arguments: SkStackCommandArgs.CreateEnumerable(SkStackCommandArgs.GetHex(0xE)),
-      parseResponsePayload: SkStackEventParser.ExpectEPORT,
-      throwIfErrorStatus: true,
-      cancellationToken: cancellationToken
-    );
+  {
+    return SendSKTABLEListeningPortListAsyncCore();
+
+    async ValueTask<SkStackResponse<IReadOnlyList<SkStackUdpPort>>> SendSKTABLEListeningPortListAsyncCore()
+    {
+      var resp = await SendCommandAsync(
+        command: SkStackCommandNames.SKTABLE,
+        arguments: SkStackCommandArgs.CreateEnumerable(SkStackCommandArgs.GetHex(0xE)),
+        parseResponsePayload: SkStackEventParser.ExpectEPORT,
+        throwIfErrorStatus: true,
+        cancellationToken: cancellationToken
+      ).ConfigureAwait(false);
+
+      var portList = resp.Payload!;
+
+      // store or update the port handle for ECHONET Lite each time the EPORT is received
+      udpPortHandleForEchonetLite = portList.FirstOrDefault(static p => p.Port == SkStackKnownPortNumbers.EchonetLite).Handle;
+
+      return resp;
+    }
+  }
 }
