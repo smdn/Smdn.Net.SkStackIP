@@ -14,6 +14,7 @@ namespace Smdn.Net.SkStackIP;
 ///   </list>
 /// </remarks>
 public enum SkStackUdpPortHandle : byte {
+  None = 0,
   Handle1 = 1,
   Handle2 = 2,
   Handle3 = 3,

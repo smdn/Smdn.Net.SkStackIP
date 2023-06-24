@@ -24,7 +24,7 @@ partial class SkStackClient {
     CancellationToken cancellationToken = default
   )
   {
-    SkStackUdpPort.ThrowIfPortHandleIsNotDefined(handle, nameof(handle));
+    SkStackUdpPort.ThrowIfPortHandleIsOutOfRange(handle, nameof(handle));
     SkStackUdpPort.ThrowIfPortNumberIsOutOfRangeOrUnused(port, nameof(port));
 
     return SendSKUDPPORTAsyncCore(
@@ -45,7 +45,7 @@ partial class SkStackClient {
     CancellationToken cancellationToken = default
   )
   {
-    SkStackUdpPort.ThrowIfPortHandleIsNotDefined(handle, nameof(handle));
+    SkStackUdpPort.ThrowIfPortHandleIsOutOfRange(handle, nameof(handle));
 
     return Core();
 

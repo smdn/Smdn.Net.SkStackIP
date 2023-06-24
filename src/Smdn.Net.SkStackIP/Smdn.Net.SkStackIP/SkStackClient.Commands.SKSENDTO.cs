@@ -98,7 +98,7 @@ partial class SkStackClient {
     const int minDataLength = 0x0001;
     const int maxDataLength = 0x04D0;
 
-    SkStackUdpPort.ThrowIfPortHandleIsNotDefined(handle, nameof(handle));
+    SkStackUdpPort.ThrowIfPortHandleIsOutOfRange(handle, nameof(handle));
 #if SYSTEM_ENUM_ISDEFINED_OF_TENUM
     if (!Enum.IsDefined(encryption))
 #else

@@ -30,14 +30,13 @@ public readonly struct SkStackUdpPort {
   public override string ToString()
     => $"{Port} (#{(byte)Handle})";
 
-  internal static void ThrowIfPortHandleIsNotDefined(SkStackUdpPortHandle handle, string paramName)
+  internal static bool IsPortHandleIsOutOfRange(SkStackUdpPortHandle handle)
+    => handle is < SkStackUdpPortHandle.Handle1 or > SkStackUdpPortHandle.Handle6;
+
+  internal static void ThrowIfPortHandleIsOutOfRange(SkStackUdpPortHandle handle, string paramName)
   {
-#if SYSTEM_ENUM_ISDEFINED_OF_TENUM
-    if (!Enum.IsDefined(handle))
-#else
-    if (!Enum.IsDefined(typeof(SkStackUdpPortHandle), handle))
-#endif
-      throw new ArgumentOutOfRangeException(paramName, handle, $"undefined value of {nameof(SkStackUdpPortHandle)}");
+    if (IsPortHandleIsOutOfRange(handle))
+      throw new ArgumentOutOfRangeException(paramName: paramName, actualValue: handle, message: $"invalid value of {nameof(SkStackUdpPortHandle)}");
   }
 
   internal static void ThrowIfPortNumberIsOutOfRange(int portNumber, string paramName)
