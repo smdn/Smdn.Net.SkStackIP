@@ -46,6 +46,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+    Assert.IsFalse(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
 
     Exception thrownExceptionInEventHandler = null;
     var raisedEventCount = 0;
@@ -58,6 +59,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
         Assert.AreEqual(SkStackEventNumber.PanaSessionEstablishmentCompleted, e.EventNumber, nameof(e.EventNumber));
         Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
         Assert.AreEqual(client.PanaSessionPeerAddress, e.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+        Assert.IsTrue(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
         raisedEventCount++;
       }
       catch (Exception ex) {
@@ -77,6 +79,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
 
     Assert.AreEqual(client.PanaSessionPeerAddress, address, nameof(client.PanaSessionPeerAddress));
+    Assert.IsTrue(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
 
     var response = taskSendCommand.Result;
 
@@ -121,6 +124,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+    Assert.IsFalse(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
 
     var raisedEventCount = 0;
 
@@ -138,6 +142,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     Assert.AreEqual(0, raisedEventCount, nameof(raisedEventCount));
 
     Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
+    Assert.IsFalse(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
 
     Assert.That(
       stream.ReadSentData(),

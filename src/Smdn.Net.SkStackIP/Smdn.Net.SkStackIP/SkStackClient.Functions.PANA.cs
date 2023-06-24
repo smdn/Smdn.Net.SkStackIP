@@ -12,6 +12,10 @@ partial class SkStackClient {
   /// <value><see langword="null"/> if PANA session has been terminated, expired, or not been established.</value>
   public IPAddress? PanaSessionPeerAddress { get; private set; }
 
+  /// <summary>Gets a value indicating whether or not the PANA session is alive.</summary>
+  /// <value><see langword="true"/> if PANA session is established and alive, <see langword="false"/> if PANA session has been terminated, expired, or not been established.</value>
+  public bool IsPanaSessionAlive => PanaSessionPeerAddress is not null;
+
   protected internal void ThrowIfPanaSessionAlreadyEstablished()
   {
     if (PanaSessionPeerAddress is not null)
