@@ -75,7 +75,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     Assert.IsNotNull(listeningPortList, nameof(listeningPortList));
     CollectionAssert.AreEqual(
-      listeningPortList.Select(static p => (p.Handle, p.Port)),
+      listeningPortList!.Select(static p => (p.Handle, p.Port)),
       new[] {
         (SkStackUdpPortHandle.Handle1, 1),
         (SkStackUdpPortHandle.Handle3, 3),
@@ -347,7 +347,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(() => client.ReceiveUdpAsync(port: 1, buffer: null));
+    Assert.Throws<ArgumentNullException>(() => client.ReceiveUdpAsync(port: 1, buffer: null!));
 #pragma warning restore CA2012
   }
 

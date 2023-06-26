@@ -119,7 +119,7 @@ public class SkStackClientTests {
   {
     var pipe = new Pipe();
 
-    Assert.Throws<ArgumentNullException>(() => new SkStackClient(sender: pipe.Writer, receiver: null));
+    Assert.Throws<ArgumentNullException>(() => new SkStackClient(sender: pipe.Writer, receiver: null!));
   }
 
   [TestCase(SkStackERXUDPDataFormat.Binary)]
