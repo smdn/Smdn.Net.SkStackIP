@@ -108,6 +108,7 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
     );
 
     await Task.Delay(interval);
+    await Task.Delay(TimeSpan.FromMilliseconds(500));
 
     Assert.DoesNotThrowAsync(
       async () => await client.SaveFlashMemoryAsync(
