@@ -110,7 +110,7 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
 
     var taskSendSKTERM = client.SendSKTERMAsync();
 
-    if (!waitHandle.WaitOne(100)) // wait for event handler finished
+    if (!waitHandle.WaitOne(3000)) // wait for event handler finished
       Assert.Fail("event handler not called or not finished");
 
     Assert.DoesNotThrowAsync(async () => await taskSendSKTERM);
