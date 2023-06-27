@@ -20,7 +20,7 @@ using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
 namespace Smdn.Net.SkStackIP;
 
 [TestFixture]
-public class SkStackClientTests {
+public class SkStackClientTests : SkStackClientTestsBase {
   private static readonly TimeSpan responseDelayInterval = TimeSpan.FromMilliseconds(50);
 
   private class SkStackClientEx : SkStackClient {
@@ -62,8 +62,8 @@ public class SkStackClientTests {
       );
   }
 
-  private static SkStackClientEx CreateClient(Stream stream)
-    => new(stream, SkStackClientTestsBase.CreateLoggerForTestCase());
+  private SkStackClientEx CreateClient(Stream stream)
+    => new(stream, CreateLoggerForTestCase());
 
   [Test]
   public void Ctor_WithSerialPortName_PortNameNull()

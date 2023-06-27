@@ -3,10 +3,12 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 
 using Microsoft.Extensions.Logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Interfaces;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -19,6 +21,10 @@ public class SkStackClientTestsBase {
   }
 
   private class TestContextLogger : ILogger {
+    private readonly List<string> logs = new();
+
+    public IReadOnlyList<string> Logs => logs;
+
     public TestContextLogger()
     {
     }
@@ -34,25 +40,53 @@ public class SkStackClientTestsBase {
       Func<TState, Exception?, string> formatter
     )
     {
-      TestContext.WriteLine(
-        "{0:o} {1}:[{2}] {3}",
-        DateTimeOffset.Now,
-        logLevel switch {
-          LogLevel.Trace => "trce",
-          LogLevel.Debug => "dbug",
-          LogLevel.Information => "info",
-          LogLevel.Warning => "warn",
-          LogLevel.Error => "fail",
-          LogLevel.Critical => "crit",
-          LogLevel.None => "none",
-          _ => "????",
-        },
-        eventId.Id,
-        formatter(state, exception)
+      logs.Add(
+        string.Format(
+          provider: null,
+          format: "{0:o} {1}:[{2}] {3}",
+          DateTimeOffset.Now,
+          logLevel switch {
+            LogLevel.Trace => "trce",
+            LogLevel.Debug => "dbug",
+            LogLevel.Information => "info",
+            LogLevel.Warning => "warn",
+            LogLevel.Error => "fail",
+            LogLevel.Critical => "crit",
+            LogLevel.None => "none",
+            _ => "????",
+          },
+          eventId.Id,
+          formatter(state, exception)
+        )
       );
     }
   }
 
-  public static ILogger CreateLoggerForTestCase()
-    => new TestContextLogger();
+  [TearDown]
+  public virtual void TearDown()
+  {
+    var status = TestContext.CurrentContext.Result.Outcome.Status;
+
+    if (status == TestStatus.Passed)
+      return;
+
+    if (loggerForTestCase is null)
+      return;
+
+
+    TestContext.WriteLine("{0}: {1}", status, TestContext.CurrentContext.Test.FullName);
+
+    foreach (var log in loggerForTestCase.Logs) {
+      TestContext.WriteLine(log);
+    }
+  }
+
+  private TestContextLogger? loggerForTestCase;
+
+  public ILogger CreateLoggerForTestCase()
+  {
+    loggerForTestCase ??= new();
+
+    return loggerForTestCase;
+  }
 }
