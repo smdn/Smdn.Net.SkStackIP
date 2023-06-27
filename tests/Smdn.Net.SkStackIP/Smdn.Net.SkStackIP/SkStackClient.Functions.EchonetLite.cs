@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: 2023 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
+#nullable enable
 
 using System;
 using System.Buffers;

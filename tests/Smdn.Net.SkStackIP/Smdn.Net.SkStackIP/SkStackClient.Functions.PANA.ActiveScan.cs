@@ -1,5 +1,7 @@
 // SPDX-FileCopyrightText: 2023 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
@@ -65,7 +67,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     using var cts = new CancellationTokenSource(DefaultTimeOut);
-    IReadOnlyList<SkStackPanDescription> scanResult = null;
+    IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
     Assert.DoesNotThrowAsync(async () => {
       scanResult = await client.ActiveScanAsync(
@@ -115,7 +117,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     using var cts = new CancellationTokenSource(DefaultTimeOut);
-    IReadOnlyList<SkStackPanDescription> scanResult = null;
+    IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
     Assert.DoesNotThrowAsync(async () => {
       scanResult = await client.ActiveScanAsync(
@@ -208,7 +210,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     using var cts = new CancellationTokenSource(DefaultTimeOut);
-    IReadOnlyList<SkStackPanDescription> scanResult = null;
+    IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
     Assert.DoesNotThrowAsync(async () => {
       scanResult = await client.ActiveScanAsync(
