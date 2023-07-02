@@ -3,6 +3,7 @@
 using System;
 using System.Collections;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Threading;
 
 using Microsoft.Extensions.Logging;
@@ -207,6 +208,49 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.That(
       stream.ReadSentData(),
       Is.EqualTo($"SKSETRBID {rbid}\r\nSKSETPWD {password.Length:X} {password}\r\nSKADDNBR {paaAddress} {expectedMacAddress}\r\n".ToByteSequence())
+    );
+  }
+
+  [TestCase("FDFFFFFFFFFFFFFF", "FE80:0000:0000:0000:FFFF:FFFF:FFFF:FFFF")]
+  [TestCase("001D129012345678", "FE80:0000:0000:0000:021D:1290:1234:5678")]
+  public void AuthenticateAsPanaClientAsync_ResolvePaaAddressIfMacAddressSupplied(
+    string paaMacAddress,
+    string paaAddress
+  )
+  {
+    const string rbid = "00112233445566778899AABBCCDDEEFF";
+    const string password = "0123456789AB";
+
+    using var stream = new PseudoSkStackStream();
+
+    // SKLL64
+    stream.ResponseWriter.WriteLine(paaAddress);
+    // SKSETRBID
+    stream.ResponseWriter.WriteLine("OK");
+    // SKSETPWD
+    stream.ResponseWriter.WriteLine("OK");
+    // SKADDNBR
+    stream.ResponseWriter.WriteLine("FAIL ER01 error");
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.ThrowsAsync<SkStackErrorResponseException>(
+#pragma warning disable CA2012
+      async () => await client.AuthenticateAsPanaClientAsync(
+        rbid: rbid.AsMemory(),
+        password: password.AsMemory(),
+        paaMacAddress: PhysicalAddress.Parse(paaMacAddress),
+        channel: SkStackChannel.Channel33,
+        panId: 0,
+        cancellationToken: cts.Token
+      )
+#pragma warning restore CA2012
+    );
+
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo($"SKLL64 {paaMacAddress}\r\nSKSETRBID {rbid}\r\nSKSETPWD {password.Length:X} {password}\r\nSKADDNBR {paaAddress} {paaMacAddress}\r\n".ToByteSequence())
     );
   }
 
@@ -587,12 +631,91 @@ partial class SkStackClientFunctionsPanaTests {
 
     var pan = default(SkStackPanDescription);
 
-    Assert.Throws<ArgumentOutOfRangeException>(
+    Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
         password: "0123456789AB".AsMemory(),
         pan: pan
+      ),
+#pragma warning restore CA2012
+      Throws.InstanceOf<ArgumentException>()
+    );
+  }
+
+  [Test]
+  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ThrowIfPanaSessionAlreadyEstablished()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = CreateClientPanaSessionEstablished(stream, CreateLoggerForTestCase());
+
+    Assert.Throws<InvalidOperationException>(
+#pragma warning disable CA2012
+      () => client.AuthenticateAsPanaClientAsync(
+        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
+        password: "0123456789AB".AsMemory(),
+        paaMacAddress: PhysicalAddress.None,
+        channelNumber: SkStackChannel.Channel33.ChannelNumber,
+        panId: SkStackRegister.PanId.MinValue
+      )
+#pragma warning restore CA2012
+    );
+  }
+
+  [Test]
+  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ArgumentException_PAAAddressNull()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    Assert.Throws<ArgumentNullException>(
+#pragma warning disable CA2012
+      () => client.AuthenticateAsPanaClientAsync(
+        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
+        password: "0123456789AB".AsMemory(),
+        paaMacAddress: null!,
+        channelNumber: SkStackChannel.Channel33.ChannelNumber,
+        panId: SkStackRegister.PanId.MinValue
+      )
+#pragma warning restore CA2012
+    );
+  }
+
+  [TestCase(32)]
+  [TestCase(61)]
+  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ArgumentException_ChannelOutOfRange(int channelNumber)
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    Assert.Throws<ArgumentOutOfRangeException>(
+#pragma warning disable CA2012
+      () => client.AuthenticateAsPanaClientAsync(
+        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
+        password: "0123456789AB".AsMemory(),
+        paaMacAddress: PhysicalAddress.None,
+        channelNumber: channelNumber,
+        panId: SkStackRegister.PanId.MinValue
+      )
+#pragma warning restore CA2012
+    );
+  }
+
+  [TestCase(-1)]
+  [TestCase(0x_1_0000)]
+  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ArgumentException_PanIdOutOfRange(int panId)
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    Assert.Throws<ArgumentOutOfRangeException>(
+#pragma warning disable CA2012
+      () => client.AuthenticateAsPanaClientAsync(
+        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
+        password: "0123456789AB".AsMemory(),
+        paaMacAddress: PhysicalAddress.None,
+        channelNumber: SkStackChannel.Channel33.ChannelNumber,
+        panId: panId
       )
 #pragma warning restore CA2012
     );

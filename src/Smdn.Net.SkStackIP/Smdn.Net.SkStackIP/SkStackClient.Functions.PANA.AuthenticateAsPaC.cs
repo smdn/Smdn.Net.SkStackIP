@@ -26,7 +26,7 @@ partial class SkStackClient {
     return AuthenticateAsPanaClientAsyncCore(
       rbid: rbid,
       password: password,
-      paaAddress: null,
+      getPaaAddressTask: default,
       channel: null,
       panId: null,
       scanOptions: scanOptions ?? SkStackActiveScanOptions.Default,
@@ -49,7 +49,7 @@ partial class SkStackClient {
     return AuthenticateAsPanaClientAsyncCore(
       rbid: rbid,
       password: password,
-      paaAddress: paaAddress ?? throw new ArgumentNullException(nameof(paaAddress)),
+      getPaaAddressTask: new(paaAddress ?? throw new ArgumentNullException(nameof(paaAddress))),
       channel: SkStackChannel.FindByChannelNumber(channelNumber, nameof(channelNumber)),
       panId: ValidatePanIdAndThrowIfInvalid(panId, nameof(panId)),
       scanOptions: SkStackActiveScanOptions.Null, // scanning will not be performed and therefore this will not be referenced
@@ -64,31 +64,69 @@ partial class SkStackClient {
     SkStackPanDescription pan,
     CancellationToken cancellationToken = default
   )
+    => AuthenticateAsPanaClientAsync(
+      rbid: rbid,
+      password: password,
+      paaMacAddress: pan.MacAddress,
+      channel: pan.Channel,
+      panId: pan.Id,
+      cancellationToken: cancellationToken
+    );
+
+  /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
+  public ValueTask AuthenticateAsPanaClientAsync(
+    ReadOnlyMemory<char> rbid,
+    ReadOnlyMemory<char> password,
+    PhysicalAddress paaMacAddress,
+    SkStackChannel channel,
+    int panId,
+    CancellationToken cancellationToken = default
+  )
   {
     ThrowIfPanaSessionAlreadyEstablished();
 
-    var channel = SkStackChannel.FindByChannelNumber(pan.Channel.ChannelNumber, nameof(pan));
-    var panId = ValidatePanIdAndThrowIfInvalid(pan.Id, nameof(pan));
-
-    return Core();
-
-    async ValueTask Core()
-    {
-      var paaAddress = await ConvertToIPv6LinkLocalAddressAsync(
-        pan.MacAddress,
+    return AuthenticateAsPanaClientAsyncCore(
+      rbid: rbid,
+      password: password,
+#pragma warning disable CA2012, CS8620
+      getPaaAddressTask: ConvertToIPv6LinkLocalAddressAsync(
+        paaMacAddress ?? throw new ArgumentNullException(nameof(paaMacAddress)),
         cancellationToken
-      ).ConfigureAwait(false);
+      ),
+#pragma warning restore CA2012, CS8620
+      channel: channel,
+      panId: ValidatePanIdAndThrowIfInvalid(panId, nameof(panId)),
+      scanOptions: SkStackActiveScanOptions.Null, // scanning will not be performed and therefore this will not be referenced
+      cancellationToken: cancellationToken
+    );
+  }
 
-      await AuthenticateAsPanaClientAsyncCore(
-        rbid: rbid,
-        password: password,
-        paaAddress: paaAddress,
-        channel: channel,
-        panId: panId,
-        scanOptions: SkStackActiveScanOptions.Null, // scanning will not be performed and therefore this will not be referenced
-        cancellationToken: cancellationToken
-      ).ConfigureAwait(false);
-    }
+  /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
+  public ValueTask AuthenticateAsPanaClientAsync(
+    ReadOnlyMemory<char> rbid,
+    ReadOnlyMemory<char> password,
+    PhysicalAddress paaMacAddress,
+    int channelNumber,
+    int panId,
+    CancellationToken cancellationToken = default
+  )
+  {
+    ThrowIfPanaSessionAlreadyEstablished();
+
+    return AuthenticateAsPanaClientAsyncCore(
+      rbid: rbid,
+      password: password,
+#pragma warning disable CA2012, CS8620
+      getPaaAddressTask: ConvertToIPv6LinkLocalAddressAsync(
+        paaMacAddress ?? throw new ArgumentNullException(nameof(paaMacAddress)),
+        cancellationToken
+      ),
+#pragma warning restore CA2012, CS8620
+      channel: SkStackChannel.FindByChannelNumber(channelNumber, nameof(channelNumber)),
+      panId: ValidatePanIdAndThrowIfInvalid(panId, nameof(panId)),
+      scanOptions: SkStackActiveScanOptions.Null, // scanning will not be performed and therefore this will not be referenced
+      cancellationToken: cancellationToken
+    );
   }
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
@@ -109,7 +147,7 @@ partial class SkStackClient {
     return AuthenticateAsPanaClientAsyncCore(
       rbid: rbid,
       password: password,
-      paaAddress: paaAddress ?? throw new ArgumentNullException(nameof(paaAddress)),
+      getPaaAddressTask: new(paaAddress ?? throw new ArgumentNullException(nameof(paaAddress))),
       channel: channel,
       panId: ValidatePanIdAndThrowIfInvalid(panId, nameof(panId)),
       scanOptions: SkStackActiveScanOptions.Null, // scanning will not be performed and therefore this will not be referenced
@@ -130,9 +168,9 @@ partial class SkStackClient {
   /// </summary>
   /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
   /// <param name="password">A password ID used for PANA authentication.</param>
-  /// <param name="paaAddress">
-  /// An IP address of the PANA Authentication Agent (PAA).
-  /// If <see langword="null"/>, an active scan will be performed to discover the PAAs.
+  /// <param name="getPaaAddressTask">
+  /// An <see cref="ValueTask{IPAddress}"/> that returns IP address of the PANA Authentication Agent (PAA).
+  /// If returns <see langword="null"/>, an active scan will be performed to discover the PAAs.
   /// </param>
   /// <param name="channel">A channel number to be used.</param>
   /// <param name="panId">A PAN ID.</param>
@@ -141,13 +179,15 @@ partial class SkStackClient {
   private async ValueTask AuthenticateAsPanaClientAsyncCore(
     ReadOnlyMemory<char> rbid,
     ReadOnlyMemory<char> password,
-    IPAddress? paaAddress,
+    ValueTask<IPAddress?> getPaaAddressTask,
     SkStackChannel? channel,
     int? panId,
     SkStackActiveScanOptions scanOptions,
     CancellationToken cancellationToken = default
   )
   {
+    var paaAddress = await getPaaAddressTask.ConfigureAwait(false);
+
     await SetRouteBCredentialAsync(
       rbid: rbid,
       rbidParamName: nameof(rbid),
