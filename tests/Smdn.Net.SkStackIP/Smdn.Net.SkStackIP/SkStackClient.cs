@@ -66,14 +66,6 @@ public class SkStackClientTests : SkStackClientTestsBase {
     => new(stream, CreateLoggerForTestCase());
 
   [Test]
-  public void Ctor_WithSerialPortName_PortNameNull()
-    => Assert.Throws<ArgumentNullException>(() => new SkStackClient(serialPortName: null!));
-
-  [Test]
-  public void Ctor_WithSerialPortName_PortNameEmpty()
-    => Assert.Throws<ArgumentException>(() => new SkStackClient(serialPortName: string.Empty));
-
-  [Test]
   public void Ctor_WithStream_StreamNull()
     => Assert.Throws<ArgumentNullException>(() => new SkStackClient(stream: null!));
 
