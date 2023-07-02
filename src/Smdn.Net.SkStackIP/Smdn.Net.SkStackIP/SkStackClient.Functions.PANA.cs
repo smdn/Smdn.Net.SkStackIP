@@ -68,15 +68,27 @@ partial class SkStackClient {
     }
   }
 
-  // <returns><see langword="true"/> if terminated successfully, otherwise <see langword="false"/> (timed out).</returns>
-  public async ValueTask<bool> TerminatePanaSessionAsync(
+  /// <summary>
+  /// Terminates the currently established PANA session by sending <c>SKTERM</c> command.
+  /// </summary>
+  /// <exception cref="InvalidOperationException">PANA session has already expired or has not been established yet.</exception>
+  /// <returns><see langword="true"/> if terminated successfully, otherwise <see langword="false"/> (timed out).</returns>
+  public ValueTask<bool> TerminatePanaSessionAsync(
     CancellationToken cancellationToken = default
   )
   {
-    var (_, isCompletedSuccessfully) = await SendSKTERMAsync(
-      cancellationToken: cancellationToken
-    ).ConfigureAwait(false);
+    ThrowIfDisposed();
+    ThrowIfPanaSessionIsNotEstablished();
 
-    return isCompletedSuccessfully;
+    return TerminatePanaSessionAsyncCore();
+
+    async ValueTask<bool> TerminatePanaSessionAsyncCore()
+    {
+      var (_, isCompletedSuccessfully) = await SendSKTERMAsync(
+        cancellationToken: cancellationToken
+      ).ConfigureAwait(false);
+
+      return isCompletedSuccessfully;
+    }
   }
 }
