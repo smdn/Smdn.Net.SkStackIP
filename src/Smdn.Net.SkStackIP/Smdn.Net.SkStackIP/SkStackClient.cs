@@ -8,7 +8,6 @@ using System.IO.Pipelines;
 using Microsoft.Extensions.Logging;
 
 using Smdn.Buffers;
-using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;
 
