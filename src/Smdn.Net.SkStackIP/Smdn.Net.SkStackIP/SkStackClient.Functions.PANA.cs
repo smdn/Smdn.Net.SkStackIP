@@ -69,7 +69,7 @@ partial class SkStackClient {
   }
 
   // <returns><see langword="true"/> if terminated successfully, otherwise <see langword="false"/> (timed out).</returns>
-  public async ValueTask<bool> TerminatePanaSession(
+  public async ValueTask<bool> TerminatePanaSessionAsync(
     CancellationToken cancellationToken = default
   )
   {
