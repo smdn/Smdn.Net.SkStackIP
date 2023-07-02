@@ -11,7 +11,7 @@ public readonly struct SkStackPanDescription {
   public int ChannelPage { get; }
   public int Id { get; }
   public PhysicalAddress MacAddress { get; }
-  public double RSSI { get; }
+  public decimal RSSI { get; }
   [CLSCompliant(false)] public uint PairingId { get; }
 
   internal SkStackPanDescription(
@@ -19,7 +19,7 @@ public readonly struct SkStackPanDescription {
     int channelPage,
     int id,
     PhysicalAddress macAddress,
-    double rssi,
+    decimal rssi,
     uint pairingId
   )
   {
@@ -32,5 +32,5 @@ public readonly struct SkStackPanDescription {
   }
 
   public override string ToString()
-    => $"{Channel}, Channel page: {ChannelPage}, PAN ID: 0x{Id:X4}, MAC address: {MacAddress}, Pairing ID: {PairingId:X8}, RSSI: {RSSI:N1}";
+    => $"{Channel}, Channel page: {ChannelPage}, PAN ID: 0x{Id:X4}, MAC address: {MacAddress}, Pairing ID: 0x{PairingId:X8}, RSSI: {RSSI:N2} dB";
 }

@@ -267,7 +267,7 @@ internal static class SkStackEventParser {
 #if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
     [NotNullWhen(true)]
 #endif
-    out IReadOnlyDictionary<SkStackChannel, double>? result
+    out IReadOnlyDictionary<SkStackChannel, decimal>? result
   )
   {
     result = default;
@@ -278,7 +278,7 @@ internal static class SkStackEventParser {
       SkStackTokenParser.ExpectToken(ref reader, SkStackEventCodeNames.EEDSCAN) &&
       SkStackTokenParser.ExpectEndOfLine(ref reader)
     ) {
-      var ret = new Dictionary<SkStackChannel, double>(SkStackChannel.Channels.Count);
+      var ret = new Dictionary<SkStackChannel, decimal>(SkStackChannel.Channels.Count);
 
       result = ret;
 

@@ -173,7 +173,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine();
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    IReadOnlyDictionary<SkStackChannel, double> scanResult = default;
+    IReadOnlyDictionary<SkStackChannel, decimal> scanResult = default;
 
     Assert.DoesNotThrowAsync(async () => {
       (_, scanResult) = await client.SendSKSCANEnergyDetectScanAsync();
@@ -183,39 +183,39 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     Assert.AreEqual(28, scanResult!.Count);
 
     var expectedValues = new[] {
-      new { Channel = 0x21, LQI = 0x04, RSSI = -103.17 },
-      new { Channel = 0x22, LQI = 0x04, RSSI = -103.17 },
-      new { Channel = 0x23, LQI = 0x03, RSSI = -103.445 },
-      new { Channel = 0x24, LQI = 0x02, RSSI = -103.72 },
-      new { Channel = 0x25, LQI = 0x05, RSSI = -102.895 },
-      new { Channel = 0x26, LQI = 0x06, RSSI = -102.62 },
-      new { Channel = 0x27, LQI = 0x05, RSSI = -102.895 },
-      new { Channel = 0x28, LQI = 0x11, RSSI = -99.595 },
-      new { Channel = 0x29, LQI = 0x10, RSSI = -99.87 },
-      new { Channel = 0x2A, LQI = 0x0B, RSSI = -101.245 },
-      new { Channel = 0x2B, LQI = 0x10, RSSI = -99.87 },
-      new { Channel = 0x2C, LQI = 0x0C, RSSI = -100.97 },
-      new { Channel = 0x2D, LQI = 0x09, RSSI = -101.795 },
-      new { Channel = 0x2E, LQI = 0x0A, RSSI = -101.52 },
-      new { Channel = 0x2F, LQI = 0x07, RSSI = -102.345 },
-      new { Channel = 0x30, LQI = 0x06, RSSI = -102.62 },
-      new { Channel = 0x31, LQI = 0x05, RSSI = -102.895 },
-      new { Channel = 0x32, LQI = 0x06, RSSI = -102.62 },
-      new { Channel = 0x33, LQI = 0x03, RSSI = -103.445 },
-      new { Channel = 0x34, LQI = 0x03, RSSI = -103.445 },
-      new { Channel = 0x35, LQI = 0x03, RSSI = -103.445 },
-      new { Channel = 0x36, LQI = 0x02, RSSI = -103.72 },
-      new { Channel = 0x37, LQI = 0x03, RSSI = -103.445 },
-      new { Channel = 0x38, LQI = 0x03, RSSI = -103.445 },
-      new { Channel = 0x39, LQI = 0x02, RSSI = -103.72 },
-      new { Channel = 0x3A, LQI = 0x04, RSSI = -103.17 },
-      new { Channel = 0x3B, LQI = 0x06, RSSI = -102.62 },
-      new { Channel = 0x3C, LQI = 0x02, RSSI = -103.72 },
+      new { Channel = 0x21, LQI = 0x04, RSSI = -103.17m },
+      new { Channel = 0x22, LQI = 0x04, RSSI = -103.17m },
+      new { Channel = 0x23, LQI = 0x03, RSSI = -103.445m },
+      new { Channel = 0x24, LQI = 0x02, RSSI = -103.72m },
+      new { Channel = 0x25, LQI = 0x05, RSSI = -102.895m },
+      new { Channel = 0x26, LQI = 0x06, RSSI = -102.62m },
+      new { Channel = 0x27, LQI = 0x05, RSSI = -102.895m },
+      new { Channel = 0x28, LQI = 0x11, RSSI = -99.595m },
+      new { Channel = 0x29, LQI = 0x10, RSSI = -99.87m },
+      new { Channel = 0x2A, LQI = 0x0B, RSSI = -101.245m },
+      new { Channel = 0x2B, LQI = 0x10, RSSI = -99.87m },
+      new { Channel = 0x2C, LQI = 0x0C, RSSI = -100.97m },
+      new { Channel = 0x2D, LQI = 0x09, RSSI = -101.795m },
+      new { Channel = 0x2E, LQI = 0x0A, RSSI = -101.52m },
+      new { Channel = 0x2F, LQI = 0x07, RSSI = -102.345m },
+      new { Channel = 0x30, LQI = 0x06, RSSI = -102.62m },
+      new { Channel = 0x31, LQI = 0x05, RSSI = -102.895m },
+      new { Channel = 0x32, LQI = 0x06, RSSI = -102.62m },
+      new { Channel = 0x33, LQI = 0x03, RSSI = -103.445m },
+      new { Channel = 0x34, LQI = 0x03, RSSI = -103.445m },
+      new { Channel = 0x35, LQI = 0x03, RSSI = -103.445m },
+      new { Channel = 0x36, LQI = 0x02, RSSI = -103.72m },
+      new { Channel = 0x37, LQI = 0x03, RSSI = -103.445m },
+      new { Channel = 0x38, LQI = 0x03, RSSI = -103.445m },
+      new { Channel = 0x39, LQI = 0x02, RSSI = -103.72m },
+      new { Channel = 0x3A, LQI = 0x04, RSSI = -103.17m },
+      new { Channel = 0x3B, LQI = 0x06, RSSI = -102.62m },
+      new { Channel = 0x3C, LQI = 0x02, RSSI = -103.72m },
     };
 
     foreach (var expectedValue in expectedValues) {
       Assert.IsTrue(scanResult.TryGetValue(SkStackChannel.Channels[expectedValue.Channel], out var rssi), $"channel #{expectedValue.Channel}");
-      Assert.That(rssi, Is.EqualTo(expectedValue.RSSI).Within(0.5), $"channel #{expectedValue.Channel} RSSI");
+      Assert.AreEqual(rssi, expectedValue.RSSI, $"channel #{expectedValue.Channel} RSSI");
     }
 
     Assert.That(
@@ -293,7 +293,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     Assert.AreEqual(0x09, scanResult[0].ChannelPage);
     Assert.AreEqual(0x8888, scanResult[0].Id, nameof(SkStackPanDescription.Id));
     Assert.AreEqual(new PhysicalAddress(new byte[] {0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01}), scanResult[0].MacAddress);
-    Assert.That(scanResult[0].RSSI, Is.EqualTo(-42.395).Within(0.001));
+    Assert.AreEqual(scanResult[0].RSSI, -42.395m);
     Assert.AreEqual(0xAABBCCDD, scanResult[0].PairingId, nameof(SkStackPanDescription.PairingId));
 
     Assert.That(
@@ -462,7 +462,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     Assert.AreEqual(0x09, scanResult[0].ChannelPage);
     Assert.AreEqual(0x8888, scanResult[0].Id, nameof(SkStackPanDescription.Id));
     Assert.AreEqual(new PhysicalAddress(new byte[] {0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01}), scanResult[0].MacAddress);
-    Assert.That(scanResult[0].RSSI, Is.EqualTo(-42.395).Within(0.001));
+    Assert.AreEqual(scanResult[0].RSSI, -42.395m);
     Assert.AreEqual(0, scanResult[0].PairingId, nameof(SkStackPanDescription.PairingId));
 
     Assert.That(

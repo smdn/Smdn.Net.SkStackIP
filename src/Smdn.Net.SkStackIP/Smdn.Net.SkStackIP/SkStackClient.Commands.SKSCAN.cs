@@ -44,7 +44,7 @@ partial class SkStackClient {
   [CLSCompliant(false)]
   public ValueTask<(
     SkStackResponse Response,
-    IReadOnlyDictionary<SkStackChannel, double> ScanResult
+    IReadOnlyDictionary<SkStackChannel, decimal> ScanResult
   )> SendSKSCANEnergyDetectScanAsync(
     TimeSpan duration = default,
     uint channelMask = SKSCANDefaultChannelMask,
@@ -67,7 +67,7 @@ partial class SkStackClient {
   [CLSCompliant(false)]
   public ValueTask<(
     SkStackResponse Response,
-    IReadOnlyDictionary<SkStackChannel, double> ScanResult
+    IReadOnlyDictionary<SkStackChannel, decimal> ScanResult
   )> SendSKSCANEnergyDetectScanAsync(
     int durationFactor,
     uint channelMask = SKSCANDefaultChannelMask,
@@ -81,7 +81,7 @@ partial class SkStackClient {
       cancellationToken: cancellationToken
     );
 
-  private class SKSCANEnergyDetectScanEventHandler : SKSCANEventHandler<IReadOnlyDictionary<SkStackChannel, double>> {
+  private class SKSCANEnergyDetectScanEventHandler : SKSCANEventHandler<IReadOnlyDictionary<SkStackChannel, decimal>> {
     public override bool TryProcessEvent(SkStackEvent ev)
     {
       if (ev.Number == SkStackEventNumber.EnergyDetectScanCompleted)

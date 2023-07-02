@@ -7,5 +7,5 @@ internal static class SkStackLQI {
   /// <remarks>
   ///   <para>See 'BP35A1コマンドリファレンス 4.6. EEDSCAN' for detailed specifications.</para>
   /// </remarks>
-  public static double ToRSSI(int lqi) => (0.275 * lqi) - 104.27;
+  public static decimal ToRSSI(int lqi) => (0.275m * lqi) - 104.27m;
 }
