@@ -4,7 +4,6 @@ using System;
 using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
-using System.IO.Ports;
 
 using Microsoft.Extensions.Logging;
 
@@ -22,12 +21,6 @@ public partial class SkStackClient :
   /*
    * static members
    */
-
-  /// <summary>
-  /// The default baud rate for the <see cref="SerialPort"/>.
-  /// </summary>
-  public const int DefaultBaudRate = 115200;
-
   private static readonly TimeSpan ContinuousReadingInterval = TimeSpan.FromMilliseconds(10); // TODO: make configurable
 
   /*
@@ -40,61 +33,6 @@ public partial class SkStackClient :
   private readonly ILogger? logger;
 
   private readonly ArrayBufferWriter<byte>? logWriter;
-
-  /// <summary>
-  /// Initializes a new instance of the <see cref="SkStackClient"/> class with specifying the serial port name.
-  /// </summary>
-  /// <param name="serialPortName">
-  /// A <see cref="string"/> that holds the serial port name for communicating with the device that implements the SKSTACK-IP protocol.
-  /// </param>
-  /// <param name="baudRate">
-  /// A <see cref="int"/> value that represents the baud rate of the serial port for communicating with the device.
-  /// </param>
-  /// <param name="erxudpDataFormat">
-  /// A value that specifies the format of the data part received in the event <c>ERXUDP</c>. See <see cref="SkStackERXUDPDataFormat"/>.
-  /// </param>
-  /// <param name="logger">The <see cref="ILogger"/> to report the situation.</param>
-  public SkStackClient(
-    string serialPortName,
-    int baudRate = DefaultBaudRate,
-    SkStackERXUDPDataFormat erxudpDataFormat = default,
-    ILogger? logger = null
-  )
-    : this(
-      stream: OpenSerialPortStream(serialPortName, baudRate),
-      leaveStreamOpen: false, // should close the opened stream
-      erxudpDataFormat: erxudpDataFormat,
-      logger: logger
-    )
-  {
-  }
-
-  protected static Stream OpenSerialPortStream(string serialPortName, int baudRate)
-  {
-    if (serialPortName is null)
-      throw new ArgumentNullException(nameof(serialPortName));
-    if (serialPortName.Length == 0)
-      throw new ArgumentException("must be non-empty string", nameof(serialPortName));
-
-#pragma warning disable CA2000
-    var port = new SerialPort(
-      portName: serialPortName,
-      baudRate: baudRate,
-      parity: Parity.None,
-      dataBits: 8
-      // stopBits: StopBits.None
-    ) {
-      Handshake = Handshake.None, // TODO: RequestToSend
-      DtrEnable = false,
-      RtsEnable = false,
-      NewLine = SkStack.DefaultEncoding.GetString(SkStack.CRLFSpan),
-    };
-#pragma warning restore CA2000
-
-    port.Open();
-
-    return port.BaseStream;
-  }
 
   /// <summary>
   /// Initializes a new instance of the <see cref="SkStackClient"/> class with specifying the <see cref="Stream"/> for transmitting SKSTACK-IP protocol.
