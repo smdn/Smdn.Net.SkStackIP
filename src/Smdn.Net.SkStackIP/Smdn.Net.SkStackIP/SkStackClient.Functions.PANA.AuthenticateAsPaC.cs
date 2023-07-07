@@ -245,15 +245,15 @@ partial class SkStackClient {
     int panIdNotNull;
 
     if (needToFindPanaAuthenticationAgent) {
-      var pan = await FindPanaAuthenticationAgentAsync(
+      var peer = await FindPanaAuthenticationAgentAsync(
         paaAddress: paaAddress,
         scanOptions: scanOptions,
         cancellationToken: cancellationToken
       ).ConfigureAwait(false);
 
-      channelNotNull = pan.Channel;
-      panIdNotNull = pan.Id;
-      paaMacAddressNotNull = pan.MacAddress;
+      channelNotNull = peer.Channel;
+      panIdNotNull = peer.Id;
+      paaMacAddressNotNull = peer.MacAddress;
 
       if (paaAddress is null) {
         var respSKLL64 = await SendSKLL64Async(
