@@ -14,7 +14,7 @@ namespace Smdn.Net.SkStackIP;
 partial class SkStackClient {
 #pragma warning restore IDE0040
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
-  public ValueTask AuthenticateAsPanaClientAsync(
+  public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<char> rbid,
     ReadOnlyMemory<char> password,
     SkStackActiveScanOptions? scanOptions = null,
@@ -35,7 +35,7 @@ partial class SkStackClient {
   }
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
-  public ValueTask AuthenticateAsPanaClientAsync(
+  public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<char> rbid,
     ReadOnlyMemory<char> password,
     IPAddress paaAddress,
@@ -58,7 +58,7 @@ partial class SkStackClient {
   }
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
-  public ValueTask AuthenticateAsPanaClientAsync(
+  public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<char> rbid,
     ReadOnlyMemory<char> password,
     SkStackPanDescription pan,
@@ -74,7 +74,7 @@ partial class SkStackClient {
     );
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
-  public ValueTask AuthenticateAsPanaClientAsync(
+  public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<char> rbid,
     ReadOnlyMemory<char> password,
     PhysicalAddress paaMacAddress,
@@ -102,7 +102,7 @@ partial class SkStackClient {
   }
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
-  public ValueTask AuthenticateAsPanaClientAsync(
+  public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<char> rbid,
     ReadOnlyMemory<char> password,
     PhysicalAddress paaMacAddress,
@@ -130,7 +130,7 @@ partial class SkStackClient {
   }
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
-  public ValueTask AuthenticateAsPanaClientAsync(
+  public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<char> rbid,
     ReadOnlyMemory<char> password,
     IPAddress paaAddress,
@@ -176,7 +176,13 @@ partial class SkStackClient {
   /// <param name="panId">A PAN ID.</param>
   /// <param name="scanOptions">Options such as scanning behavior when performing active scanning.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
-  private async ValueTask AuthenticateAsPanaClientAsyncCore(
+  /// <returns>
+  /// A <see cref="ValueTask{SkStackPanaSessionInfo}"/> representing the established PANA session information.
+  /// </returns>
+  /// <seealso cref="SkStackPanaSessionInfo"/>
+  /// <seealso cref="PanaSessionPeerAddress"/>
+  /// <seealso cref="IsPanaSessionAlive"/>
+  private async ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsyncCore(
     ReadOnlyMemory<char> rbid,
     ReadOnlyMemory<char> password,
     ValueTask<IPAddress?> getPaaAddressTask,
@@ -196,6 +202,7 @@ partial class SkStackClient {
       cancellationToken: cancellationToken
     ).ConfigureAwait(false);
 
+    PhysicalAddress? paaMacAddress = null;
     var needToFindPanaAuthenticationAgent = true;
 
     // If PAA address is IPv6 link local, construct MAC address from it and add to the neighbor address table.
@@ -211,9 +218,11 @@ partial class SkStackClient {
 
           macAddressMemory.Span[0] &= 0b_1111_1101;
 
+          paaMacAddress = new PhysicalAddress(macAddressMemory.ToArray());
+
           await SendSKADDNBRAsync(
             ipv6Address: paaAddress,
-            macAddress: new PhysicalAddress(macAddressMemory.ToArray()),
+            macAddress: paaMacAddress,
             cancellationToken: cancellationToken
           ).ConfigureAwait(false);
 
@@ -231,6 +240,7 @@ partial class SkStackClient {
     needToFindPanaAuthenticationAgent |= !panId.HasValue;
 
     IPAddress paaAddressNotNull;
+    PhysicalAddress paaMacAddressNotNull;
     SkStackChannel channelNotNull;
     int panIdNotNull;
 
@@ -243,10 +253,11 @@ partial class SkStackClient {
 
       channelNotNull = pan.Channel;
       panIdNotNull = pan.Id;
+      paaMacAddressNotNull = pan.MacAddress;
 
       if (paaAddress is null) {
         var respSKLL64 = await SendSKLL64Async(
-          macAddress: pan.MacAddress,
+          macAddress: paaMacAddressNotNull,
           cancellationToken: cancellationToken
         ).ConfigureAwait(false);
 
@@ -254,7 +265,7 @@ partial class SkStackClient {
 
         await SendSKADDNBRAsync(
           ipv6Address: paaAddressNotNull,
-          macAddress: pan.MacAddress,
+          macAddress: paaMacAddressNotNull,
           cancellationToken: cancellationToken
         ).ConfigureAwait(false);
       }
@@ -266,6 +277,8 @@ partial class SkStackClient {
 #if DEBUG
       if (paaAddress is null)
         throw new InvalidOperationException($"{nameof(paaAddress)} is null");
+      if (paaMacAddress is null)
+        throw new InvalidOperationException($"{nameof(paaMacAddress)} is null");
       if (!channel.HasValue)
         throw new InvalidOperationException($"{nameof(channel)} is null");
       if (!panId.HasValue)
@@ -273,13 +286,14 @@ partial class SkStackClient {
 #endif
 
       paaAddressNotNull = paaAddress!;
+      paaMacAddressNotNull = paaMacAddress!;
       channelNotNull = channel.Value!;
       panIdNotNull = panId.Value!;
     }
 
     // Set channel and PAN ID if needed.
     var resp = await SendSKINFOAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-    var (_, _, currentChannel, currentPanId, _) = resp.Payload;
+    var (localAddress, localMacAddress, currentChannel, currentPanId, _) = resp.Payload;
 
     if (!currentChannel.Equals(channelNotNull)) {
       await SendSKSREGAsync(
@@ -302,6 +316,15 @@ partial class SkStackClient {
       ipv6address: paaAddressNotNull,
       cancellationToken: cancellationToken
     ).ConfigureAwait(false);
+
+    return new(
+      localAddress: localAddress,
+      localMacAddress: localMacAddress,
+      peerAddress: paaAddressNotNull,
+      peerMacAddress: paaMacAddressNotNull,
+      channel: channelNotNull,
+      panId: panIdNotNull
+    );
   }
 
   private ValueTask<SkStackPanDescription> FindPanaAuthenticationAgentAsync(

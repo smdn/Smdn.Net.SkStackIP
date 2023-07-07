@@ -1,5 +1,7 @@
 // SPDX-FileCopyrightText: 2023 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Net;
@@ -35,8 +37,8 @@ partial class SkStackClientFunctionsPanaTests {
     const string password = "0123456789AB";
     const int paaChannel = 0x21;
     const int paaPanId = 0x8888;
-    const string paaIPv6Address = "FE80:0000:0000:0000:021D:1290:1234:5678";
-    const string paaMacAddress = "12345678ABCDEF01";
+    const string paaIPv6Address = "FE80:0000:0000:0000:1034:5678:ABCD:EF01";
+    const string paaMacAddress = "10345678ABCDEF01";
     const string paaPairId = "12345678";
 
     bool exceptPanaSessionEstablishmentException;
@@ -86,8 +88,10 @@ partial class SkStackClientFunctionsPanaTests {
     var client = new SkStackClient(stream, logger: logger);
     using var cts = new CancellationTokenSource(DefaultTimeOut);
 
+    SkStackPanaSessionInfo? panaSession = null;
+
     Assert.That(
-      async () => await client.AuthenticateAsPanaClientAsync(
+      async () => panaSession = await client.AuthenticateAsPanaClientAsync(
         rbid: rbid.AsMemory(),
         password: password.AsMemory(),
         scanOptions: SkStackActiveScanOptions.Default,
@@ -97,6 +101,16 @@ partial class SkStackClientFunctionsPanaTests {
         ? Throws.TypeOf<SkStackPanaSessionEstablishmentException>()
         : Throws.Nothing
     );
+
+    if (!exceptPanaSessionEstablishmentException) {
+      Assert.IsNotNull(panaSession);
+      Assert.AreEqual(IPAddress.Parse(selfIPv6Address), panaSession!.LocalAddress, nameof(panaSession.LocalAddress));
+      Assert.AreEqual(PhysicalAddress.Parse(selfMacAddress), panaSession!.LocalMacAddress, nameof(panaSession.LocalMacAddress));
+      Assert.AreEqual(IPAddress.Parse(paaIPv6Address), panaSession!.PeerAddress, nameof(panaSession.PeerAddress));
+      Assert.AreEqual(PhysicalAddress.Parse(paaMacAddress), panaSession!.PeerMacAddress, nameof(panaSession.PeerMacAddress));
+      Assert.AreEqual(SkStackChannel.Channels[paaChannel], panaSession!.Channel, nameof(panaSession.Channel));
+      Assert.AreEqual(paaPanId, panaSession!.PanId, nameof(panaSession.PanId));
+    }
 
     Assert.That(
       stream.ReadSentData(),
@@ -117,6 +131,95 @@ partial class SkStackClientFunctionsPanaTests {
     );
 
     return client;
+  }
+
+  [Test]
+  public void AuthenticateAsPanaClientAsync_WithoutPAA()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = CreateClientAndAuthenticateAsPanaClient(
+      stream,
+      SkStackEventNumber.PanaSessionEstablishmentCompleted,
+      CreateLoggerForTestCase()
+    );
+  }
+
+  [Test]
+  public void AuthenticateAsPanaClientAsync_WithPAAAddress()
+  {
+    const string selfIPv6Address = "FE80:0000:0000:0000:021D:1290:0003:C890";
+    const string selfMacAddress = "001D129012345678";
+    const string rbid = "00112233445566778899AABBCCDDEEFF";
+    const string password = "0123456789AB";
+    const int paaChannel = 0x21;
+    const int paaPanId = 0x8888;
+    const string paaIPv6Address = "FE80:0000:0000:0000:1034:5678:ABCD:EF01";
+    const string paaMacAddress = "10345678ABCDEF01";
+
+    using var stream = new PseudoSkStackStream();
+
+    // SKSETRBID
+    stream.ResponseWriter.WriteLine("OK");
+    // SKSETPWD
+    stream.ResponseWriter.WriteLine("OK");
+    // SKADDNBR
+    stream.ResponseWriter.WriteLine("OK");
+    // SKINFO
+    stream.ResponseWriter.WriteLine($"EINFO {selfIPv6Address} {selfMacAddress} {0x22:X2} {0x9999:X4} FFFE");
+    stream.ResponseWriter.WriteLine("OK");
+    // SKSREG S02 <paa-channel>
+    stream.ResponseWriter.WriteLine("OK");
+    // SKSREG S03 <pan-id>
+    stream.ResponseWriter.WriteLine("OK");
+    // SKJOIN
+    stream.ResponseWriter.WriteLine("OK");
+    stream.ResponseWriter.WriteLine($"EVENT 21 {selfIPv6Address} 02"); // UDP: Neighbor Solcitation
+    stream.ResponseWriter.WriteLine($"EVENT 02 {selfIPv6Address}"); // Neighbor Advertisement received
+    stream.ResponseWriter.WriteLine($"ERXUDP {selfIPv6Address} {paaIPv6Address} 02CC 02CC {paaMacAddress} 0 0001 0");
+    stream.ResponseWriter.WriteLine($"EVENT 21 {selfIPv6Address} 00"); // UDP: ACK
+    stream.ResponseWriter.WriteLine($"ERXUDP {selfIPv6Address} {paaIPv6Address} 02CC 02CC {paaMacAddress} 0 0001 0");
+    stream.ResponseWriter.WriteLine($"EVENT 25 {selfIPv6Address}"); // PANA Session establishment completed/failed
+
+    var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    SkStackPanaSessionInfo? panaSession = null;
+
+    Assert.DoesNotThrowAsync(
+      async () => panaSession = await client.AuthenticateAsPanaClientAsync(
+        rbid: rbid.AsMemory(),
+        password: password.AsMemory(),
+        paaAddress: IPAddress.Parse(paaIPv6Address),
+        channelNumber: paaChannel,
+        panId: paaPanId,
+        cancellationToken: cts.Token
+      )
+    );
+
+    Assert.IsNotNull(panaSession);
+    Assert.AreEqual(IPAddress.Parse(selfIPv6Address), panaSession!.LocalAddress, nameof(panaSession.LocalAddress));
+    Assert.AreEqual(PhysicalAddress.Parse(selfMacAddress), panaSession!.LocalMacAddress, nameof(panaSession.LocalMacAddress));
+    Assert.AreEqual(IPAddress.Parse(paaIPv6Address), panaSession!.PeerAddress, nameof(panaSession.PeerAddress));
+    Assert.AreEqual(PhysicalAddress.Parse(paaMacAddress), panaSession!.PeerMacAddress, nameof(panaSession.PeerMacAddress));
+    Assert.AreEqual(SkStackChannel.Channels[paaChannel], panaSession!.Channel, nameof(panaSession.Channel));
+    Assert.AreEqual(paaPanId, panaSession!.PanId, nameof(panaSession.PanId));
+
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo(
+        (
+          $"SKSETRBID {rbid}\r\n" +
+          $"SKSETPWD {password.Length:X} {password}\r\n" +
+          $"SKADDNBR {paaIPv6Address} {paaMacAddress}\r\n" +
+          "SKINFO\r\n" +
+          $"SKSREG S02 {paaChannel:X2}\r\n" +
+          $"SKSREG S03 {paaPanId:X4}\r\n" +
+          $"SKJOIN {paaIPv6Address}\r\n"
+
+        ).ToByteSequence()
+      )
+    );
   }
 
   [Test]
