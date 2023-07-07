@@ -194,6 +194,9 @@ partial class SkStackClient {
   {
     var paaAddress = await getPaaAddressTask.ConfigureAwait(false);
 
+    if (paaAddress is not null && !paaAddress.IsIPv6LinkLocal)
+      throw new NotSupportedException($"Supplied IP address is not an IPv6 link local address. PAA Address: {paaAddress}");
+
     await SetRouteBCredentialAsync(
       rbid: rbid,
       rbidParamName: nameof(rbid),
@@ -206,7 +209,7 @@ partial class SkStackClient {
     var needToFindPanaAuthenticationAgent = true;
 
     // If PAA address is IPv6 link local, construct MAC address from it and add to the neighbor address table.
-    if (paaAddress is not null && paaAddress.IsIPv6LinkLocal) {
+    if (paaAddress is not null) {
       byte[]? linkLocalAddressBytes = null;
 
       try {

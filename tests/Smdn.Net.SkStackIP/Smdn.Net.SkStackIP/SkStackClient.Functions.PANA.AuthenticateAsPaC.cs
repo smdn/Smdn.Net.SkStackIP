@@ -689,6 +689,33 @@ partial class SkStackClientFunctionsPanaTests {
     );
   }
 
+  private static System.Collections.IEnumerable YieldTestCases_AuthenticateAsPanaClientAsync_WithPAAAddress_NotSupportedException_AddressIsNotIPv6LinkLocal()
+  {
+    yield return new object[] { IPAddress.None };
+    yield return new object[] { IPAddress.Loopback };
+    yield return new object[] { IPAddress.IPv6None };
+    yield return new object[] { IPAddress.IPv6Loopback };
+  }
+
+  [TestCaseSource(nameof(YieldTestCases_AuthenticateAsPanaClientAsync_WithPAAAddress_NotSupportedException_AddressIsNotIPv6LinkLocal))]
+  public void AuthenticateAsPanaClientAsync_WithPAAAddress_NotSupportedException_AddressIsNotIPv6LinkLocal(
+    IPAddress paaAddress
+  )
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    Assert.ThrowsAsync<NotSupportedException>(
+      async () => await client.AuthenticateAsPanaClientAsync(
+        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
+        password: "0123456789AB".AsMemory(),
+        paaAddress: paaAddress,
+        channelNumber: SkStackChannel.Channel33.ChannelNumber,
+        panId: 0x1234
+      )
+    );
+  }
+
   [TestCase(-1)]
   [TestCase(0x_1_0000)]
   public void AuthenticateAsPanaClientAsync_WithPAAAddress_ArgumentException_PanIdOutOfRange(int panId)
