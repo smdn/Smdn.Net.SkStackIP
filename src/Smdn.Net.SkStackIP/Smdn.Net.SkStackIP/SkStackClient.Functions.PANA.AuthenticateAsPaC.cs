@@ -14,6 +14,10 @@ namespace Smdn.Net.SkStackIP;
 partial class SkStackClient {
 #pragma warning restore IDE0040
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
+  /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
+  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="scanOptions">Options such as scanning behavior when performing active scanning.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<byte> rbid,
     ReadOnlyMemory<byte> password,
@@ -35,6 +39,12 @@ partial class SkStackClient {
   }
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
+  /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
+  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="paaAddress">An <see cref="IPAddress"/> representing the IP address of the PANA Authentication Agent (PAA).</param>
+  /// <param name="channelNumber">A channel number to be used for PANA session.</param>
+  /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<byte> rbid,
     ReadOnlyMemory<byte> password,
@@ -58,6 +68,10 @@ partial class SkStackClient {
   }
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
+  /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
+  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="pan">A <see cref="SkStackPanDescription"/> representing the address of the PANA Authentication Agent (PAA), PAN ID, and channel used for PANA session.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<byte> rbid,
     ReadOnlyMemory<byte> password,
@@ -74,6 +88,12 @@ partial class SkStackClient {
     );
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
+  /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
+  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="paaMacAddress">A <see cref="PhysicalAddress"/> representing the MAC address of the PANA Authentication Agent (PAA).</param>
+  /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
+  /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<byte> rbid,
     ReadOnlyMemory<byte> password,
@@ -102,6 +122,12 @@ partial class SkStackClient {
   }
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
+  /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
+  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="paaMacAddress">A <see cref="PhysicalAddress"/> representing the MAC address of the PANA Authentication Agent (PAA).</param>
+  /// <param name="channelNumber">A channel number to be used for PANA session.</param>
+  /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<byte> rbid,
     ReadOnlyMemory<byte> password,
@@ -130,6 +156,12 @@ partial class SkStackClient {
   }
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
+  /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
+  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="paaAddress">An <see cref="IPAddress"/> representing the IP address of the PANA Authentication Agent (PAA).</param>
+  /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
+  /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<byte> rbid,
     ReadOnlyMemory<byte> password,
@@ -172,16 +204,21 @@ partial class SkStackClient {
   /// An <see cref="ValueTask{IPAddress}"/> that returns IP address of the PANA Authentication Agent (PAA).
   /// If returns <see langword="null"/>, an active scan will be performed to discover the PAAs.
   /// </param>
-  /// <param name="channel">A channel number to be used.</param>
-  /// <param name="panId">A PAN ID.</param>
+  /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
+  /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
   /// <param name="scanOptions">Options such as scanning behavior when performing active scanning.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   /// <returns>
   /// A <see cref="ValueTask{SkStackPanaSessionInfo}"/> representing the established PANA session information.
   /// </returns>
   /// <seealso cref="SkStackPanaSessionInfo"/>
+  /// <seealso cref="SkStackRegister.Channel"/>
+  /// <seealso cref="SkStackRegister.PanId"/>
   /// <seealso cref="PanaSessionPeerAddress"/>
   /// <seealso cref="IsPanaSessionAlive"/>
+  /// <seealso cref="SendSKJOINAsync"/>
+  /// <seealso cref="SendSKSETRBIDAsync(ReadOnlyMemory{byte}, CancellationToken)"/>
+  /// <seealso cref="SendSKSETPWDAsync(ReadOnlyMemory{byte}, CancellationToken)"/>
   private async ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsyncCore(
     ReadOnlyMemory<byte> rbid,
     ReadOnlyMemory<byte> password,
