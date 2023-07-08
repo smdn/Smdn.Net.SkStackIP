@@ -53,14 +53,41 @@ partial class SkStackClient {
     int panId,
     CancellationToken cancellationToken = default
   )
+    => AuthenticateAsPanaClientAsync(
+      rbid: rbid,
+      password: password,
+      paaAddress: paaAddress,
+      channel: SkStackChannel.FindByChannelNumber(channelNumber, nameof(channelNumber)),
+      panId: panId,
+      cancellationToken: cancellationToken
+    );
+
+  /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
+  /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
+  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="paaAddress">An <see cref="IPAddress"/> representing the IP address of the PANA Authentication Agent (PAA).</param>
+  /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
+  /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
+    ReadOnlyMemory<byte> rbid,
+    ReadOnlyMemory<byte> password,
+    IPAddress paaAddress,
+    SkStackChannel channel,
+    int panId,
+    CancellationToken cancellationToken = default
+  )
   {
     ThrowIfPanaSessionAlreadyEstablished();
+
+    if (channel.IsEmpty)
+      throw new ArgumentException(message: "invalid channel (empty channel)", paramName: nameof(channel));
 
     return AuthenticateAsPanaClientAsyncCore(
       rbid: rbid,
       password: password,
       getPaaAddressTask: new(paaAddress ?? throw new ArgumentNullException(nameof(paaAddress))),
-      channel: SkStackChannel.FindByChannelNumber(channelNumber, nameof(channelNumber)),
+      channel: channel,
       panId: ValidatePanIdAndThrowIfInvalid(panId, nameof(panId)),
       scanOptions: SkStackActiveScanOptions.Null, // scanning will not be performed and therefore this will not be referenced
       cancellationToken: cancellationToken
@@ -91,40 +118,6 @@ partial class SkStackClient {
   /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
   /// <param name="password">A password ID used for PANA authentication.</param>
   /// <param name="paaMacAddress">A <see cref="PhysicalAddress"/> representing the MAC address of the PANA Authentication Agent (PAA).</param>
-  /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
-  /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
-  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
-  public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
-    ReadOnlyMemory<byte> rbid,
-    ReadOnlyMemory<byte> password,
-    PhysicalAddress paaMacAddress,
-    SkStackChannel channel,
-    int panId,
-    CancellationToken cancellationToken = default
-  )
-  {
-    ThrowIfPanaSessionAlreadyEstablished();
-
-    return AuthenticateAsPanaClientAsyncCore(
-      rbid: rbid,
-      password: password,
-#pragma warning disable CA2012, CS8620
-      getPaaAddressTask: ConvertToIPv6LinkLocalAddressAsync(
-        paaMacAddress ?? throw new ArgumentNullException(nameof(paaMacAddress)),
-        cancellationToken
-      ),
-#pragma warning restore CA2012, CS8620
-      channel: channel,
-      panId: ValidatePanIdAndThrowIfInvalid(panId, nameof(panId)),
-      scanOptions: SkStackActiveScanOptions.Null, // scanning will not be performed and therefore this will not be referenced
-      cancellationToken: cancellationToken
-    );
-  }
-
-  /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
-  /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
-  /// <param name="password">A password ID used for PANA authentication.</param>
-  /// <param name="paaMacAddress">A <see cref="PhysicalAddress"/> representing the MAC address of the PANA Authentication Agent (PAA).</param>
   /// <param name="channelNumber">A channel number to be used for PANA session.</param>
   /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
@@ -136,6 +129,30 @@ partial class SkStackClient {
     int panId,
     CancellationToken cancellationToken = default
   )
+    => AuthenticateAsPanaClientAsync(
+      rbid: rbid,
+      password: password,
+      paaMacAddress: paaMacAddress,
+      channel: SkStackChannel.FindByChannelNumber(channelNumber, nameof(channelNumber)),
+      panId: panId,
+      cancellationToken: cancellationToken
+    );
+
+  /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
+  /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
+  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="paaMacAddress">A <see cref="PhysicalAddress"/> representing the MAC address of the PANA Authentication Agent (PAA).</param>
+  /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
+  /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
+    ReadOnlyMemory<byte> rbid,
+    ReadOnlyMemory<byte> password,
+    PhysicalAddress paaMacAddress,
+    SkStackChannel channel,
+    int panId,
+    CancellationToken cancellationToken = default
+  )
   {
     ThrowIfPanaSessionAlreadyEstablished();
 
@@ -148,38 +165,6 @@ partial class SkStackClient {
         cancellationToken
       ),
 #pragma warning restore CA2012, CS8620
-      channel: SkStackChannel.FindByChannelNumber(channelNumber, nameof(channelNumber)),
-      panId: ValidatePanIdAndThrowIfInvalid(panId, nameof(panId)),
-      scanOptions: SkStackActiveScanOptions.Null, // scanning will not be performed and therefore this will not be referenced
-      cancellationToken: cancellationToken
-    );
-  }
-
-  /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
-  /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
-  /// <param name="password">A password ID used for PANA authentication.</param>
-  /// <param name="paaAddress">An <see cref="IPAddress"/> representing the IP address of the PANA Authentication Agent (PAA).</param>
-  /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
-  /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
-  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
-  public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
-    ReadOnlyMemory<byte> rbid,
-    ReadOnlyMemory<byte> password,
-    IPAddress paaAddress,
-    SkStackChannel channel,
-    int panId,
-    CancellationToken cancellationToken = default
-  )
-  {
-    ThrowIfPanaSessionAlreadyEstablished();
-
-    if (channel.IsEmpty)
-      throw new ArgumentException(message: "invalid channel (empty channel)", paramName: nameof(channel));
-
-    return AuthenticateAsPanaClientAsyncCore(
-      rbid: rbid,
-      password: password,
-      getPaaAddressTask: new(paaAddress ?? throw new ArgumentNullException(nameof(paaAddress))),
       channel: channel,
       panId: ValidatePanIdAndThrowIfInvalid(panId, nameof(panId)),
       scanOptions: SkStackActiveScanOptions.Null, // scanning will not be performed and therefore this will not be referenced
