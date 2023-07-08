@@ -33,8 +33,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.DoesNotThrowAsync(async () => {
       scanResult = await client.ActiveScanAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cts.Token
       );
@@ -71,8 +71,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.DoesNotThrowAsync(async () => {
       scanResult = await client.ActiveScanAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cts.Token
       );
@@ -121,8 +121,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.DoesNotThrowAsync(async () => {
       scanResult = await client.ActiveScanAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cts.Token
       );
@@ -167,8 +167,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.DoesNotThrowAsync(async () => {
       scanResult = await client.ActiveScanAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 2, 4, 6 }),
         cancellationToken: cts.Token
       );
@@ -214,8 +214,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.DoesNotThrowAsync(async () => {
       scanResult = await client.ActiveScanAsync(
-        rbid  : "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid  : "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 2, 4, 6 }),
         cancellationToken: cts.Token
       );

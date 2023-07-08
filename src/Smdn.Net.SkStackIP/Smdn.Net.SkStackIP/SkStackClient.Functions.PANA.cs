@@ -40,9 +40,9 @@ partial class SkStackClient {
   }
 
   private async ValueTask SetRouteBCredentialAsync(
-    ReadOnlyMemory<char>? rbid,
+    ReadOnlyMemory<byte>? rbid,
     string rbidParamName,
-    ReadOnlyMemory<char>? password,
+    ReadOnlyMemory<byte>? password,
     string passwordParamName,
     CancellationToken cancellationToken
   )

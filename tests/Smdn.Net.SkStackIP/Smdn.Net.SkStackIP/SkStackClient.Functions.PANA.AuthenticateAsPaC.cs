@@ -92,8 +92,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.That(
       async () => panaSession = await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.AsMemory(),
-        password: password.AsMemory(),
+        rbid: rbid.ToByteSequence(),
+        password: password.ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Default,
         cancellationToken: cts.Token
       ),
@@ -188,8 +188,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.DoesNotThrowAsync(
       async () => panaSession = await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.AsMemory(),
-        password: password.AsMemory(),
+        rbid: rbid.ToByteSequence(),
+        password: password.ToByteSequence(),
         paaAddress: IPAddress.Parse(paaIPv6Address),
         channelNumber: paaChannel,
         panId: paaPanId,
@@ -257,8 +257,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.ThrowsAsync<SkStackErrorResponseException>(
 #pragma warning disable CA2012
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.AsMemory(),
-        password: password.AsMemory(),
+        rbid: rbid.ToByteSequence(),
+        password: password.ToByteSequence(),
         scanOptions: null,
         cancellationToken: cts.Token
       )
@@ -298,8 +298,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.ThrowsAsync<SkStackErrorResponseException>(
 #pragma warning disable CA2012
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.AsMemory(),
-        password: password.AsMemory(),
+        rbid: rbid.ToByteSequence(),
+        password: password.ToByteSequence(),
         paaAddress: IPAddress.Parse(paaAddress),
         channel: SkStackChannel.Channel33,
         panId: 0,
@@ -341,8 +341,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.ThrowsAsync<SkStackErrorResponseException>(
 #pragma warning disable CA2012
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.AsMemory(),
-        password: password.AsMemory(),
+        rbid: rbid.ToByteSequence(),
+        password: password.ToByteSequence(),
         paaMacAddress: PhysicalAddress.Parse(paaMacAddress),
         channel: SkStackChannel.Channel33,
         panId: 0,
@@ -366,8 +366,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.Throws<InvalidOperationException>(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         scanOptions: null
       )
 #pragma warning restore CA2012
@@ -411,8 +411,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.ThrowsAsync<InvalidOperationException>(
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.AsMemory(),
-        password: password.AsMemory(),
+        rbid: rbid.ToByteSequence(),
+        password: password.ToByteSequence(),
         scanOptions: null,
         cancellationToken: cts.Token
       )
@@ -456,8 +456,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.ThrowsAsync<InvalidOperationException>(
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.AsMemory(),
-        password: password.AsMemory(),
+        rbid: rbid.ToByteSequence(),
+        password: password.ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cts.Token
       )
@@ -541,8 +541,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.AsMemory(),
-        password: password.AsMemory(),
+        rbid: rbid.ToByteSequence(),
+        password: password.ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cts.Token
       )
@@ -606,8 +606,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.AsMemory(),
-        password: password.AsMemory(),
+        rbid: rbid.ToByteSequence(),
+        password: password.ToByteSequence(),
         paaAddress: IPAddress.Parse(paaAddress),
         channel: SkStackChannel.Channels[channel],
         panId: panId,
@@ -640,8 +640,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.Throws<InvalidOperationException>(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         paaAddress: IPAddress.IPv6Any,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: SkStackRegister.PanId.MinValue
@@ -659,8 +659,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.Throws<ArgumentNullException>(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         paaAddress: null!,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: SkStackRegister.PanId.MinValue
@@ -679,8 +679,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.Throws<ArgumentOutOfRangeException>(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         paaAddress: IPAddress.IPv6Any,
         channelNumber: channelNumber,
         panId: SkStackRegister.PanId.MinValue
@@ -707,8 +707,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.ThrowsAsync<NotSupportedException>(
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         paaAddress: paaAddress,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: 0x1234
@@ -726,8 +726,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.Throws<ArgumentOutOfRangeException>(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         paaAddress: IPAddress.IPv6Any,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: panId
@@ -745,8 +745,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.Throws<InvalidOperationException>(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         pan: default
       )
 #pragma warning restore CA2012
@@ -764,8 +764,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         pan: pan
       ),
 #pragma warning restore CA2012
@@ -782,8 +782,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.Throws<InvalidOperationException>(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         paaMacAddress: PhysicalAddress.None,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: SkStackRegister.PanId.MinValue
@@ -801,8 +801,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.Throws<ArgumentNullException>(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         paaMacAddress: null!,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: SkStackRegister.PanId.MinValue
@@ -821,8 +821,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.Throws<ArgumentOutOfRangeException>(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         paaMacAddress: PhysicalAddress.None,
         channelNumber: channelNumber,
         panId: SkStackRegister.PanId.MinValue
@@ -841,8 +841,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.Throws<ArgumentOutOfRangeException>(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
-        rbid: "00112233445566778899AABBCCDDEEFF".AsMemory(),
-        password: "0123456789AB".AsMemory(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
         paaMacAddress: PhysicalAddress.None,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: panId

@@ -11,8 +11,8 @@ namespace Smdn.Net.SkStackIP;
 partial class SkStackClient {
 #pragma warning restore IDE0040
   public ValueTask<IReadOnlyList<SkStackPanDescription>> ActiveScanAsync(
-    ReadOnlyMemory<char> rbid,
-    ReadOnlyMemory<char> password,
+    ReadOnlyMemory<byte> rbid,
+    ReadOnlyMemory<byte> password,
     SkStackActiveScanOptions? scanOptions = null,
     CancellationToken cancellationToken = default
   )
@@ -24,8 +24,8 @@ partial class SkStackClient {
     );
 
   private async ValueTask<IReadOnlyList<SkStackPanDescription>> ActiveScanAsyncCore(
-    ReadOnlyMemory<char>? rbid,
-    ReadOnlyMemory<char>? password,
+    ReadOnlyMemory<byte>? rbid,
+    ReadOnlyMemory<byte>? password,
     IEnumerable<int> scanDurationFactorGenerator,
     CancellationToken cancellationToken = default
   )

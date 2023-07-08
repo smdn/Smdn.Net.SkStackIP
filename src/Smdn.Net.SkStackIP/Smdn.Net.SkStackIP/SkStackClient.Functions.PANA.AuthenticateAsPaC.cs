@@ -15,8 +15,8 @@ partial class SkStackClient {
 #pragma warning restore IDE0040
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
-    ReadOnlyMemory<char> rbid,
-    ReadOnlyMemory<char> password,
+    ReadOnlyMemory<byte> rbid,
+    ReadOnlyMemory<byte> password,
     SkStackActiveScanOptions? scanOptions = null,
     CancellationToken cancellationToken = default
   )
@@ -36,8 +36,8 @@ partial class SkStackClient {
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
-    ReadOnlyMemory<char> rbid,
-    ReadOnlyMemory<char> password,
+    ReadOnlyMemory<byte> rbid,
+    ReadOnlyMemory<byte> password,
     IPAddress paaAddress,
     int channelNumber,
     int panId,
@@ -59,8 +59,8 @@ partial class SkStackClient {
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
-    ReadOnlyMemory<char> rbid,
-    ReadOnlyMemory<char> password,
+    ReadOnlyMemory<byte> rbid,
+    ReadOnlyMemory<byte> password,
     SkStackPanDescription pan,
     CancellationToken cancellationToken = default
   )
@@ -75,8 +75,8 @@ partial class SkStackClient {
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
-    ReadOnlyMemory<char> rbid,
-    ReadOnlyMemory<char> password,
+    ReadOnlyMemory<byte> rbid,
+    ReadOnlyMemory<byte> password,
     PhysicalAddress paaMacAddress,
     SkStackChannel channel,
     int panId,
@@ -103,8 +103,8 @@ partial class SkStackClient {
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
-    ReadOnlyMemory<char> rbid,
-    ReadOnlyMemory<char> password,
+    ReadOnlyMemory<byte> rbid,
+    ReadOnlyMemory<byte> password,
     PhysicalAddress paaMacAddress,
     int channelNumber,
     int panId,
@@ -131,8 +131,8 @@ partial class SkStackClient {
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
-    ReadOnlyMemory<char> rbid,
-    ReadOnlyMemory<char> password,
+    ReadOnlyMemory<byte> rbid,
+    ReadOnlyMemory<byte> password,
     IPAddress paaAddress,
     SkStackChannel channel,
     int panId,
@@ -183,8 +183,8 @@ partial class SkStackClient {
   /// <seealso cref="PanaSessionPeerAddress"/>
   /// <seealso cref="IsPanaSessionAlive"/>
   private async ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsyncCore(
-    ReadOnlyMemory<char> rbid,
-    ReadOnlyMemory<char> password,
+    ReadOnlyMemory<byte> rbid,
+    ReadOnlyMemory<byte> password,
     ValueTask<IPAddress?> getPaaAddressTask,
     SkStackChannel? channel,
     int? panId,
