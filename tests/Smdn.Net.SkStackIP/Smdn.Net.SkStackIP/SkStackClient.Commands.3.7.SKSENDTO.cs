@@ -3,6 +3,7 @@
 
 using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -13,31 +14,222 @@ namespace Smdn.Net.SkStackIP;
 
 [TestFixture]
 public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
-  private void SKSENDTO_IPADDR_PORT(Func<SkStackClient, ValueTask<SkStackResponse>> testAction)
+  private const string TestDestinationIPAddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
+
+  [TestCase(0, true)]
+  [TestCase(1, false)]
+  public void SKSENDTO_EVENT21(
+    int event21param,
+    bool expectedCompleteResult
+  )
   {
     var stream = new PseudoSkStackStream();
 
+    stream.ResponseWriter.WriteLine($"EVENT 21 {TestDestinationIPAddressString} {event21param:X2}");
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     SkStackResponse response = default;
+    bool isCompletedSuccessfully = default;
 
-    Assert.DoesNotThrowAsync(async () => response = await testAction(client));
+    Assert.DoesNotThrowAsync(
+      async () => (response, isCompletedSuccessfully) = await client.SendSKSENDTOAsync(
+        handle: SkStackUdpPortHandle.Handle1,
+        destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
+        data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
+        encryption: SkStackUdpEncryption.ForcePlainText
+      )
+    );
 
     Assert.IsNotNull(response, nameof(response));
-    Assert.IsTrue(response!.Success);
+    Assert.IsTrue(response!.Success, nameof(response.Success));
+    Assert.AreEqual(expectedCompleteResult, isCompletedSuccessfully, nameof(isCompletedSuccessfully));
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSENDTO 1 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0 0005 01234".ToByteSequence())
+      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
+    );
+  }
+
+  [Test]
+  public void SKSENDTO_EVENT21_NeighborSolicitation()
+  {
+    var stream = new PseudoSkStackStream();
+
+    stream.ResponseWriter.WriteLine($"EVENT 21 {TestDestinationIPAddressString} 02"); // Neighbor Solicitation
+    stream.ResponseWriter.WriteLine($"EVENT 21 {TestDestinationIPAddressString} 00"); // Success
+    stream.ResponseWriter.WriteLine("OK");
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    SkStackResponse response = default;
+    bool isCompletedSuccessfully = default;
+
+    Assert.DoesNotThrowAsync(
+      async () => (response, isCompletedSuccessfully) = await client.SendSKSENDTOAsync(
+        handle: SkStackUdpPortHandle.Handle1,
+        destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
+        data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
+        encryption: SkStackUdpEncryption.ForcePlainText
+      )
+    );
+
+    Assert.IsNotNull(response, nameof(response));
+    Assert.IsTrue(response!.Success, nameof(response.Success));
+    Assert.IsTrue(isCompletedSuccessfully, nameof(isCompletedSuccessfully));
+
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
+    );
+  }
+
+  [TestCase(true)]
+  [TestCase(false)]
+  public void SKSENDTO_EVENT21_FinalSendResultEventNotReceived(
+    bool precedeNeighborSolicitation
+  )
+  {
+    var stream = new PseudoSkStackStream();
+
+    if (precedeNeighborSolicitation)
+      stream.ResponseWriter.WriteLine($"EVENT 21 {TestDestinationIPAddressString} 02");
+
+    stream.ResponseWriter.WriteLine("OK");
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    Assert.ThrowsAsync<InvalidOperationException>(
+      async () => await client.SendSKSENDTOAsync(
+        handle: SkStackUdpPortHandle.Handle1,
+        destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
+        data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
+        encryption: SkStackUdpEncryption.ForcePlainText
+      )
+    );
+
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
+    );
+  }
+
+  [Test]
+  public void SKSENDTO_EVENT21_MostRecentResultMustBeReturned()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    var testCaseNumber = 0;
+
+    foreach (var (event21param, expectedCompleteResult, precedeNeighborSolicitation) in new[] {
+      (0, true, false),
+      (1, false, false),
+      (1, false, false),
+      (0, true, true),
+      (1, false, true),
+    }) {
+      if (precedeNeighborSolicitation)
+        stream.ResponseWriter.WriteLine($"EVENT 21 {TestDestinationIPAddressString} 02"); // Neighbor Solicitation
+
+      stream.ResponseWriter.WriteLine($"EVENT 21 {TestDestinationIPAddressString} {event21param:X2}"); // Success/Failure
+      stream.ResponseWriter.WriteLine("OK");
+
+      SkStackResponse response = default;
+      bool isCompletedSuccessfully = default;
+
+      Assert.DoesNotThrowAsync(
+        async () => (response, isCompletedSuccessfully) = await client.SendSKSENDTOAsync(
+          handle: SkStackUdpPortHandle.Handle1,
+          destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
+          data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
+          encryption: SkStackUdpEncryption.ForcePlainText
+        ),
+        $"case #{testCaseNumber}"
+      );
+
+      Assert.IsNotNull(response, $"case #{testCaseNumber} " + nameof(response));
+      Assert.IsTrue(response!.Success, $"case #{testCaseNumber} " + nameof(response.Success));
+      Assert.AreEqual(expectedCompleteResult, isCompletedSuccessfully, $"case #{testCaseNumber} " + nameof(isCompletedSuccessfully));
+
+      Assert.That(
+        stream.ReadSentData(),
+        Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence()),
+        $"case #{testCaseNumber}"
+      );
+
+      stream.ClearSentData();
+
+      testCaseNumber++;
+    }
+  }
+
+  [TestCase(0, true)]
+  [TestCase(1, false)]
+  public void SKSENDTO_EVENT21_FromIrrelevantSenderMustBeIgnored(
+    int event21param,
+    bool expectedCompleteResult
+  )
+  {
+    var stream = new PseudoSkStackStream();
+
+    stream.ResponseWriter.WriteLine($"EVENT 21 2001:0DB8:0000:0000:0000:0000:0000:0001 {event21param:X2}");
+    stream.ResponseWriter.WriteLine($"EVENT 21 {TestDestinationIPAddressString} {event21param:X2}");
+    stream.ResponseWriter.WriteLine($"EVENT 21 2001:0DB8:0000:0000:0000:0000:0000:0002 {event21param:X2}");
+    stream.ResponseWriter.WriteLine("OK");
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    SkStackResponse response = default;
+    bool isCompletedSuccessfully = default;
+
+    Assert.DoesNotThrowAsync(
+      async () => (response, isCompletedSuccessfully) = await client.SendSKSENDTOAsync(
+        handle: SkStackUdpPortHandle.Handle1,
+        destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
+        data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
+        encryption: SkStackUdpEncryption.ForcePlainText
+      )
+    );
+
+    Assert.IsNotNull(response, nameof(response));
+    Assert.IsTrue(response!.Success, nameof(response.Success));
+    Assert.AreEqual(expectedCompleteResult, isCompletedSuccessfully, nameof(isCompletedSuccessfully));
+
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
+    );
+  }
+
+  private void SKSENDTO_IPADDR_PORT(Func<SkStackClient, ValueTask<(SkStackResponse, bool)>> testAction)
+  {
+    var stream = new PseudoSkStackStream();
+
+    stream.ResponseWriter.WriteLine($"EVENT 21 {TestDestinationIPAddressString} 00");
+    stream.ResponseWriter.WriteLine("OK");
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    SkStackResponse response = default;
+    bool isCompletedSuccessfully = default;
+
+    Assert.DoesNotThrowAsync(async () => (response, isCompletedSuccessfully) = await testAction(client));
+
+    Assert.IsNotNull(response, nameof(response));
+    Assert.IsTrue(response!.Success);
+    Assert.IsTrue(isCompletedSuccessfully, nameof(isCompletedSuccessfully));
+
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
     );
   }
 
   [Test] public void SKSENDTO_IPADDR_PORT_IPEndPoint()
     => SKSENDTO_IPADDR_PORT(client => client.SendSKSENDTOAsync(
       handle: SkStackUdpPortHandle.Handle1,
-      destination: new IPEndPoint(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), 0x0E1A),
+      destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
       data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
       encryption: SkStackUdpEncryption.ForcePlainText
     ));
@@ -45,7 +237,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
   [Test] public void SKSENDTO_IPADDR_PORT_IPAddressAndPort()
     => SKSENDTO_IPADDR_PORT(client => client.SendSKSENDTOAsync(
       handle: SkStackUdpPortHandle.Handle1,
-      destinationAddress: IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"),
+      destinationAddress: IPAddress.Parse(TestDestinationIPAddressString),
       destinationPort: 0x0E1A,
       data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
       encryption: SkStackUdpEncryption.ForcePlainText
@@ -54,7 +246,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
   [Test] public void SKSENDTO_IPADDR_PORT_UdpPort()
     => SKSENDTO_IPADDR_PORT(async client => await client.SendSKSENDTOAsync(
       port: await GetUdpPortAsync(),
-      destination: new IPEndPoint(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), 0x0E1A),
+      destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
       data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
       encryption: SkStackUdpEncryption.ForcePlainText
     ));
@@ -135,7 +327,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     var ex = Assert.ThrowsAsync<ArgumentOutOfRangeException>(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
-        destinationAddress: IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"),
+        destinationAddress: IPAddress.Parse(TestDestinationIPAddressString),
         destinationPort: destinationPort,
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText
@@ -157,6 +349,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
+    stream.ResponseWriter.WriteLine($"EVENT 21 {TestDestinationIPAddressString} 00");
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
@@ -164,7 +357,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     Assert.DoesNotThrowAsync(
       async () => await client.SendSKSENDTOAsync(
         handle: handle,
-        destination: new IPEndPoint(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), 0x0E1A),
+        destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.EncryptIfAble
       )
@@ -172,7 +365,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSENDTO {expectedHandle} FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 2 0005 01234".ToByteSequence())
+      Is.EqualTo($"SKSENDTO {expectedHandle} {TestDestinationIPAddressString} 0E1A 2 0005 01234".ToByteSequence())
     );
   }
 
@@ -205,6 +398,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
   {
     var stream = new PseudoSkStackStream();
 
+    stream.ResponseWriter.WriteLine($"EVENT 21 {TestDestinationIPAddressString} 00");
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
@@ -212,7 +406,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     Assert.DoesNotThrowAsync(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
-        destination: new IPEndPoint(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), 0x0E1A),
+        destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: sec
       )
@@ -220,7 +414,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSENDTO 1 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A {expectedSec} 0005 01234".ToByteSequence())
+      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A {expectedSec} 0005 01234".ToByteSequence())
     );
   }
 
@@ -235,7 +429,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     var ex = Assert.ThrowsAsync<ArgumentException>(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
-        destination: new IPEndPoint(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), 0x0E1A),
+        destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: sec
       )
@@ -257,7 +451,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     var ex = Assert.ThrowsAsync<ArgumentException>(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
-        destination: new IPEndPoint(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), 0x0E1A),
+        destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
         data: new byte[datalen],
         encryption: SkStackUdpEncryption.ForcePlainText
       )
@@ -280,7 +474,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     Assert.ThrowsAsync<SkStackErrorResponseException>(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
-        destination: new IPEndPoint(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), 0x0E1A),
+        destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText
       )
@@ -288,7 +482,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSENDTO 1 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0 0005 01234".ToByteSequence())
+      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
     );
   }
 
@@ -300,10 +494,11 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     async Task CompleteResponseAsync()
     {
       stream.ResponseWriter.Write("S"); await Task.Delay(ResponseDelayInterval);
-      stream.ResponseWriter.Write("KSENDTO 1 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0 0002 "); await Task.Delay(ResponseDelayInterval);
+      stream.ResponseWriter.Write($"KSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0002 "); await Task.Delay(ResponseDelayInterval);
       stream.ResponseWriter.WriteLine();
       await Task.Delay(ResponseDelayInterval);
 
+      stream.ResponseWriter.WriteLine($"EVENT 21 {TestDestinationIPAddressString} 00");
       stream.ResponseWriter.WriteLine("OK");
     }
 
@@ -312,7 +507,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 #pragma warning disable CA2012
     var taskSendCommand = client.SendSKSENDTOAsync(
       handle: SkStackUdpPortHandle.Handle1,
-      destination: new IPEndPoint(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), 0x0E1A),
+      destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
       data: new byte[] { (byte)'\r', (byte)'\n', },
       encryption: SkStackUdpEncryption.ForcePlainText
     ).AsTask();
@@ -320,14 +515,15 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
 #pragma warning restore CA2012
 
-    var resp = taskSendCommand.Result;
+    var (response, isCompletedSuccessfully) = taskSendCommand.Result;
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSENDTO 1 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0 0002 \r\n".ToByteSequence())
+      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0002 \r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
+    Assert.IsTrue(response.Success, nameof(response.Success));
+    Assert.IsTrue(isCompletedSuccessfully, nameof(isCompletedSuccessfully));
   }
 
   [Test]
@@ -336,22 +532,24 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     var stream = new PseudoSkStackStream();
 
     stream.ResponseWriter.Write("\r\n"); // echoback line only with CRLF
+    stream.ResponseWriter.WriteLine($"EVENT 21 {TestDestinationIPAddressString} 00");
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    var resp = await client.SendSKSENDTOAsync(
+    var (response, isCompletedSuccessfully) = await client.SendSKSENDTOAsync(
       handle: SkStackUdpPortHandle.Handle1,
-      destination: new IPEndPoint(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), 0x0E1A),
+      destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
       data: new byte[] { (byte)'\r', (byte)'\n', },
       encryption: SkStackUdpEncryption.ForcePlainText
     );
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSENDTO 1 FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0 0002 \r\n".ToByteSequence())
+      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0002 \r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
+    Assert.IsTrue(response.Success, nameof(response.Success));
+    Assert.IsTrue(isCompletedSuccessfully, nameof(isCompletedSuccessfully));
   }
 }

@@ -3,7 +3,9 @@
 
 using System;
 using System.Buffers;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -31,7 +33,7 @@ partial class SkStackClient {
 #endif
 #pragma warning restore CA2012
 
-  private delegate bool ProcessNotificationalEventsFunc(ISkStackSequenceParserContext context);
+  private readonly Dictionary<IPAddress, bool> lastUdpSendResult = new(capacity: 2);
 
 #pragma warning disable CA1502 // TODO: refactor
   /// <returns><see langword="true"/> if the first event processed and consumed, otherwise <see langword="false"/>.</returns>
@@ -126,6 +128,27 @@ partial class SkStackClient {
             subsequentEventCode: ev.ExpectedSubsequentEventCode,
             expectedEventCode: SkStackEventCode.EPANDESC
           );
+          break;
+
+        case SkStackEventNumber.UdpSendCompleted:
+#if DEBUG
+          if (!ev.HasSenderAddress)
+            throw new InvalidOperationException($"{nameof(ev.SenderAddress)} must not be null");
+#endif
+          switch (ev.Parameter) {
+            case 0: // success
+              lastUdpSendResult[ev.SenderAddress!] = true;
+              break;
+
+            case 1: // failed
+              lastUdpSendResult[ev.SenderAddress!] = false;
+              break;
+
+            case 2: // performed Neighbor Solicitation
+            default:
+              break; // nothing to do
+          }
+
           break;
 
         case SkStackEventNumber.EnergyDetectScanCompleted:

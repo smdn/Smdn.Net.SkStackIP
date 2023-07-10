@@ -149,6 +149,9 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     stream.ClearSentData();
 
     // SKSENDTO
+    var senderAddress = client.PanaSessionPeerAddress!.ToLongFormatString();
+
+    stream.ResponseWriter.WriteLine($"EVENT 21 {senderAddress} 00");
     stream.ResponseWriter.WriteLine("OK");
 
     using var cts = new CancellationTokenSource(DefaultTimeOut);

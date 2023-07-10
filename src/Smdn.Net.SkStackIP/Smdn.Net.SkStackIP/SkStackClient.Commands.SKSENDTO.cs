@@ -19,7 +19,10 @@ partial class SkStackClient {
   /// <remarks>
   ///   <para>See 'BP35A1コマンドリファレンス 3.7. SKSENDTO' for detailed specifications.</para>
   /// </remarks>
-  public ValueTask<SkStackResponse> SendSKSENDTOAsync(
+  public ValueTask<(
+    SkStackResponse Response,
+    bool IsCompletedSuccessfully
+  )> SendSKSENDTOAsync(
     SkStackUdpPort port,
     IPEndPoint destination,
     ReadOnlyMemory<byte> data,
@@ -41,7 +44,10 @@ partial class SkStackClient {
   /// <remarks>
   ///   <para>See 'BP35A1コマンドリファレンス 3.7. SKSENDTO' for detailed specifications.</para>
   /// </remarks>
-  public ValueTask<SkStackResponse> SendSKSENDTOAsync(
+  public ValueTask<(
+    SkStackResponse Response,
+    bool IsCompletedSuccessfully
+  )> SendSKSENDTOAsync(
     SkStackUdpPort port,
     IPAddress destinationAddress,
     int destinationPort,
@@ -64,7 +70,10 @@ partial class SkStackClient {
   /// <remarks>
   ///   <para>See 'BP35A1コマンドリファレンス 3.7. SKSENDTO' for detailed specifications.</para>
   /// </remarks>
-  public ValueTask<SkStackResponse> SendSKSENDTOAsync(
+  public ValueTask<(
+    SkStackResponse Response,
+    bool IsCompletedSuccessfully
+  )> SendSKSENDTOAsync(
     SkStackUdpPortHandle handle,
     IPEndPoint destination,
     ReadOnlyMemory<byte> data,
@@ -86,7 +95,10 @@ partial class SkStackClient {
   /// <remarks>
   ///   <para>See 'BP35A1コマンドリファレンス 3.7. SKSENDTO' for detailed specifications.</para>
   /// </remarks>
-  public ValueTask<SkStackResponse> SendSKSENDTOAsync(
+  public ValueTask<(
+    SkStackResponse Response,
+    bool IsCompletedSuccessfully
+  )> SendSKSENDTOAsync(
     SkStackUdpPortHandle handle,
     IPAddress destinationAddress,
     int destinationPort,
@@ -115,7 +127,7 @@ partial class SkStackClient {
 
     return SKSENDTO();
 
-    async ValueTask<SkStackResponse> SKSENDTO()
+    async ValueTask<(SkStackResponse, bool)> SKSENDTO()
     {
       byte[]? IPADDR = default;
       byte[]? PORT = default;
@@ -130,20 +142,37 @@ partial class SkStackClient {
         SkStackCommandArgs.TryConvertToUINT16(PORT, (ushort)destinationPort, out var lengthOfPORT, zeroPadding: true);
         SkStackCommandArgs.TryConvertToUINT16(DATALEN, (ushort)data.Length, out var lengthOfDATALEN, zeroPadding: true);
 
-        return await SendCommandAsync(
-          command: SkStackCommandNames.SKSENDTO,
-          arguments: SkStackCommandArgs.CreateEnumerable(
-            SkStackCommandArgs.GetHex((byte)handle),
-            IPADDR.AsMemory(0, lengthOfIPADDR),
-            PORT.AsMemory(0, lengthOfPORT),
-            SkStackCommandArgs.GetHex((byte)encryption),
-            DATALEN.AsMemory(0, lengthOfDATALEN),
-            data
-          ),
-          syntax: SkStackProtocolSyntax.SKSENDTO, // SKSENDTO must terminate the command line without CRLF
-          throwIfErrorStatus: true,
-          cancellationToken: cancellationToken
-        ).ConfigureAwait(false);
+        SkStackResponse response;
+        bool hasUdpSendResultStored;
+        bool isCompletedSuccessfully;
+
+        try {
+          response = await SendCommandAsync(
+            command: SkStackCommandNames.SKSENDTO,
+            arguments: SkStackCommandArgs.CreateEnumerable(
+              SkStackCommandArgs.GetHex((byte)handle),
+              IPADDR.AsMemory(0, lengthOfIPADDR),
+              PORT.AsMemory(0, lengthOfPORT),
+              SkStackCommandArgs.GetHex((byte)encryption),
+              DATALEN.AsMemory(0, lengthOfDATALEN),
+              data
+            ),
+            syntax: SkStackProtocolSyntax.SKSENDTO, // SKSENDTO must terminate the command line without CRLF
+            throwIfErrorStatus: true,
+            cancellationToken: cancellationToken
+          ).ConfigureAwait(false);
+        }
+        finally {
+          hasUdpSendResultStored = lastUdpSendResult.Remove(
+            destinationAddress,
+            out isCompletedSuccessfully
+          );
+        }
+
+        if (!hasUdpSendResultStored) // in case of FAIL
+          throw new InvalidOperationException("can not confirm the result of sending");
+
+        return (response, isCompletedSuccessfully);
       }
       finally {
         if (IPADDR is not null)
