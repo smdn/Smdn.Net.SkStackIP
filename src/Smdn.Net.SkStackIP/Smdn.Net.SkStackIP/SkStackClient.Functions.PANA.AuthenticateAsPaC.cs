@@ -312,8 +312,13 @@ partial class SkStackClient {
 
       paaAddressNotNull = paaAddress!;
       paaMacAddressNotNull = paaMacAddress!;
+
+#if !DEBUG
+#pragma warning disable CS8629
+#endif
       channelNotNull = channel.Value!;
       panIdNotNull = panId.Value!;
+#pragma warning restore CS8629
     }
 
     // Set channel and PAN ID if needed.
