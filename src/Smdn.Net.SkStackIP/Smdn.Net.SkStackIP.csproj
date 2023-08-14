@@ -31,6 +31,7 @@ SPDX-License-Identifier: MIT
   <ItemGroup>
     <PackageReference Include="System.IO.Pipelines" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Polly.Core" Version="8.0.0-alpha.8" />
     <PackageReference Include="Smdn.Fundamental.Buffer" Version="[3.0.4,4.0.0)" />
     <PackageReference Include="Smdn.Fundamental.ControlPicture" Version="[3.0.0.1,4.0.0)" />
     <PackageReference Include="Smdn.Fundamental.Encoding.Buffer" Version="[3.0.0,4.0.0)" Condition="$(TargetFramework.StartsWith('netstandard'))" />

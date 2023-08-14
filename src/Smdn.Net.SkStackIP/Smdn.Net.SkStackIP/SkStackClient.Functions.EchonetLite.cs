@@ -7,6 +7,8 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Polly;
+
 namespace Smdn.Net.SkStackIP;
 
 #pragma warning disable IDE0040
@@ -39,8 +41,10 @@ partial class SkStackClient {
     );
   }
 
+  [CLSCompliant(false)] // ResilienceStrategy is not CLS compliant
   public ValueTask SendUdpEchonetLiteAsync(
     ReadOnlyMemory<byte> buffer,
+    ResilienceStrategy? resilienceStrategy = null,
     CancellationToken cancellationToken = default
   )
   {
@@ -50,15 +54,20 @@ partial class SkStackClient {
     ThrowIfDisposed();
     ThrowIfPanaSessionIsNotEstablished();
 
-    return SendUdpEchonetLiteAsyncCore(
-      thisClient: this,
-      udpPortHandleForEchonetLite: udpPortHandleForEchonetLite,
+    resilienceStrategy ??= EmptyResilienceStrategy.Instance;
+
+    return resilienceStrategy.ExecuteAsync(
+      ct => SendUdpEchonetLiteAsyncCore(
+        thisClient: this,
+        udpPortHandleForEchonetLite: udpPortHandleForEchonetLite,
 #if SYSTEM_DIAGNOSTICS_CODEANALYSIS_MEMBERNOTNULLATTRIBUTE
-      peerAddress: PanaSessionPeerAddress,
+        peerAddress: PanaSessionPeerAddress,
 #else
-      peerAddress: PanaSessionPeerAddress!,
+        peerAddress: PanaSessionPeerAddress!,
 #endif
-      buffer: buffer,
+        buffer: buffer,
+        cancellationToken: ct
+      ),
       cancellationToken: cancellationToken
     );
 
@@ -70,7 +79,7 @@ partial class SkStackClient {
       CancellationToken cancellationToken
     )
     {
-      _ = await thisClient.SendSKSENDTOAsync(
+      var (_, isCompletedSuccessfully) = await thisClient.SendSKSENDTOAsync(
         handle: udpPortHandleForEchonetLite,
         destinationAddress: peerAddress,
         destinationPort: SkStackKnownPortNumbers.EchonetLite,
@@ -78,6 +87,25 @@ partial class SkStackClient {
         encryption: SkStackUdpEncryption.ForceEncrypt,
         cancellationToken: cancellationToken
       ).ConfigureAwait(false);
+
+      if (!isCompletedSuccessfully) {
+        throw new SkStackUdpSendFailedException(
+          message: $"Failed to send ECHONET Lite frame. (Handle: {udpPortHandleForEchonetLite}, Peer: {peerAddress})",
+          portHandle: udpPortHandleForEchonetLite,
+          peerAddress: peerAddress
+        );
+      }
     }
+  }
+
+  private sealed class EmptyResilienceStrategy : ResilienceStrategy {
+    public static readonly ResilienceStrategy Instance = new EmptyResilienceStrategy();
+
+    protected override ValueTask<Outcome<TResult>> ExecuteCore<TResult, TState>(
+      Func<ResilienceContext, TState, ValueTask<Outcome<TResult>>> callback,
+      ResilienceContext context,
+      TState state
+    )
+      => callback(context, state);
   }
 }
