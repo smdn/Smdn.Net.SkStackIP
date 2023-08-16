@@ -54,7 +54,7 @@ partial class SkStackClient {
     ThrowIfDisposed();
     ThrowIfPanaSessionIsNotEstablished();
 
-    resilienceStrategy ??= EmptyResilienceStrategy.Instance;
+    resilienceStrategy ??= NullResilienceStrategy.Instance;
 
     return resilienceStrategy.ExecuteAsync(
       ct => SendUdpEchonetLiteAsyncCore(
@@ -96,16 +96,5 @@ partial class SkStackClient {
         );
       }
     }
-  }
-
-  private sealed class EmptyResilienceStrategy : ResilienceStrategy {
-    public static readonly ResilienceStrategy Instance = new EmptyResilienceStrategy();
-
-    protected override ValueTask<Outcome<TResult>> ExecuteCore<TResult, TState>(
-      Func<ResilienceContext, TState, ValueTask<Outcome<TResult>>> callback,
-      ResilienceContext context,
-      TState state
-    )
-      => callback(context, state);
   }
 }
