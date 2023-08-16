@@ -26,6 +26,7 @@ SPDX-License-Identifier: MIT
 
   <PropertyGroup Label="package properties">
     <PackageTags>SKSTACK,SKSTACK-IP</PackageTags>
+    <GenerateNupkgReadmeFileDependsOnTargets>$(GenerateNupkgReadmeFileDependsOnTargets);GenerateReadmeFileContent</GenerateNupkgReadmeFileDependsOnTargets>
   </PropertyGroup>
 
   <ItemGroup>
@@ -37,4 +38,26 @@ SPDX-License-Identifier: MIT
     <PackageReference Include="Smdn.Fundamental.Encoding.Buffer" Version="[3.0.0,4.0.0)" Condition="$(TargetFramework.StartsWith('netstandard'))" />
     <PackageReference Include="Smdn.Fundamental.PrintableEncoding.Hexadecimal" Version="[3.0.0,4.0.0)" />
   </ItemGroup>
+
+  <ItemGroup>
+    <!-- Third party notice -->
+    <None
+      Include="$(MSBuildThisFileDirectory)..\..\ThirdPartyNotices.md"
+      Pack="true"
+      PackagePath="ThirdPartyNotices.md"
+      CopyToOutputDirectory="None"
+    />
+  </ItemGroup>
+
+  <Target Name="GenerateReadmeFileContent" DependsOnTargets="ReadReadmeFileNoticeSectionContent">
+    <PropertyGroup>
+      <PackageReadmeFileContent><![CDATA[# $(PackageId) $(PackageVersion)
+## Contributing
+This project welcomes contributions, feedbacks and suggestions. You can contribute to this project by submitting [Issues]($(RepositoryUrl)/issues/new/choose) or [Pull Requests]($(RepositoryUrl)/pulls/) on the [GitHub repository]($(RepositoryUrl)).
+
+## Notice
+$(ReadmeFileNoticeSectionContent)
+]]></PackageReadmeFileContent>
+    </PropertyGroup>
+  </Target>
 </Project>
