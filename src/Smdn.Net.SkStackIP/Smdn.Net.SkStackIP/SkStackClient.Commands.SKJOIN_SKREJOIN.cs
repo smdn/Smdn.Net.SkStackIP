@@ -110,7 +110,7 @@ partial class SkStackClient {
     public void ThrowIfEstablishmentError()
     {
       if (eventNumber != SkStackEventNumber.PanaSessionEstablishmentCompleted)
-        throw new SkStackPanaSessionEstablishmentException($"PANA session establishment failed.", Address!, eventNumber);
+        throw new SkStackPanaSessionEstablishmentException($"PANA session establishment failed. (0x{eventNumber:X})", Address!, eventNumber);
     }
 
     public override bool TryProcessEvent(SkStackEvent ev)
