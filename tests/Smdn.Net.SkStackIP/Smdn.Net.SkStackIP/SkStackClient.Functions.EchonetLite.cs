@@ -161,7 +161,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     var buffer = Encoding.ASCII.GetBytes("012345");
 
     Assert.DoesNotThrowAsync(
-      async () => await client.SendUdpEchonetLiteAsync(buffer, resilienceStrategy: null, cts.Token)
+      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: null, cts.Token)
     );
 
     var expectedDestinationAddress = client.PanaSessionPeerAddress!.ToLongFormatString();
@@ -206,7 +206,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     var buffer = Encoding.ASCII.GetBytes("012345");
 
     var ex = Assert.ThrowsAsync<SkStackUdpSendFailedException>(
-      async () => await client.SendUdpEchonetLiteAsync(buffer, resilienceStrategy: null, cts.Token)
+      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: null, cts.Token)
     )!;
 
     Assert.AreEqual(client.PanaSessionPeerAddress!, ex.PeerAddress, nameof(ex.PeerAddress));
@@ -253,12 +253,12 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine("OK");
     }
 
-    var strategy = new CompositeStrategyBuilder()
+    var resiliencePipeline = new ResiliencePipelineBuilder()
       .AddRetry(
         new RetryStrategyOptions {
           ShouldHandle = new PredicateBuilder().Handle<SkStackUdpSendFailedException>(),
-          RetryCount = maxSendAttempt - 1,
-          BaseDelay = TimeSpan.FromSeconds(0),
+          MaxRetryAttempts = maxSendAttempt - 1,
+          Delay = TimeSpan.FromSeconds(0),
         }
       )
       .Build();
@@ -267,7 +267,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     var buffer = Encoding.ASCII.GetBytes("012345");
 
     var ex = Assert.ThrowsAsync<SkStackUdpSendFailedException>(
-      async () => await client.SendUdpEchonetLiteAsync(buffer, resilienceStrategy: strategy, cts.Token)
+      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: resiliencePipeline, cts.Token)
     )!;
 
     Assert.AreEqual(client.PanaSessionPeerAddress!, ex.PeerAddress, nameof(ex.PeerAddress));

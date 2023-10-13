@@ -41,10 +41,10 @@ partial class SkStackClient {
     );
   }
 
-  [CLSCompliant(false)] // ResilienceStrategy is not CLS compliant
+  [CLSCompliant(false)] // ResiliencePipeline is not CLS compliant
   public ValueTask SendUdpEchonetLiteAsync(
     ReadOnlyMemory<byte> buffer,
-    ResilienceStrategy? resilienceStrategy = null,
+    ResiliencePipeline? resiliencePipeline = null,
     CancellationToken cancellationToken = default
   )
   {
@@ -54,9 +54,9 @@ partial class SkStackClient {
     ThrowIfDisposed();
     ThrowIfPanaSessionIsNotEstablished();
 
-    resilienceStrategy ??= NullResilienceStrategy.Instance;
+    resiliencePipeline ??= ResiliencePipeline.Empty;
 
-    return resilienceStrategy.ExecuteAsync(
+    return resiliencePipeline.ExecuteAsync(
       ct => SendUdpEchonetLiteAsyncCore(
         thisClient: this,
         udpPortHandleForEchonetLite: udpPortHandleForEchonetLite,
