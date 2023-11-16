@@ -77,7 +77,20 @@ public static class SkStackTokenParser {
 
     bool converted;
 
-    (converted, result) = tryConvert(token, arg);
+    try {
+      (converted, result) = tryConvert(token, arg);
+    }
+    catch (SkStackUnexpectedResponseException) {
+      throw; // rethrow
+    }
+    catch (Exception ex) {
+      result = default;
+
+      throw SkStackUnexpectedResponseException.CreateInvalidFormat(
+        token: token,
+        innerException: ex
+      );
+    }
 
     if (!converted)
       return OperationStatus.InvalidData;

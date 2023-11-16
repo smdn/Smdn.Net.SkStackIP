@@ -33,12 +33,12 @@ public class SkStackUnexpectedResponseException : SkStackResponseException {
     );
 
   internal static SkStackUnexpectedResponseException CreateInvalidFormat(
-    ReadOnlySpan<byte> text,
+    ReadOnlySequence<byte> token,
     Exception? innerException = null
   )
     => new(
-      causedText: text.ToControlCharsPicturizedString(),
-      message: $"unexpected response format: '{text.ToControlCharsPicturizedString()}'",
+      causedText: token.ToControlCharsPicturizedString(),
+      message: $"unexpected response format: '{token.ToControlCharsPicturizedString()}'",
       innerException: innerException
     );
 
