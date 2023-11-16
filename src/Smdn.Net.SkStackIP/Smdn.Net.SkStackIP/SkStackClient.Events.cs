@@ -167,7 +167,13 @@ partial class SkStackClient {
       return TrueResultValueTask;
     }
 
-    var statusERXUDP = SkStackEventParser.TryExpectERXUDP(context, erxudpDataFormat, out var erxudp, out var erxudpData, out var erxudpDataLength);
+    var statusERXUDP = SkStackEventParser.TryExpectERXUDP(
+      context,
+      erxudpDataFormat,
+      out var erxudp,
+      out var erxudpData,
+      out var erxudpDataLength
+    );
 
     if (statusERXUDP == OperationStatus.NeedMoreData) {
       context.SetAsIncomplete();
