@@ -100,7 +100,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<InvalidOperationException>(
+    Assert.ThrowsAsync<SkStackUdpSendResultIndeterminateException>(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
         destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),

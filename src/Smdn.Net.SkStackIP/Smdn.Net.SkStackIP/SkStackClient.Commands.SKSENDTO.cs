@@ -169,8 +169,8 @@ partial class SkStackClient {
           );
         }
 
-        if (!hasUdpSendResultStored) // in case of FAIL
-          throw new InvalidOperationException("can not confirm the result of sending");
+        if (!hasUdpSendResultStored) // in case when the 'EVENT 21' was not raised after SKSENDTO
+          throw new SkStackUdpSendResultIndeterminateException();
 
         return (response, isCompletedSuccessfully);
       }
