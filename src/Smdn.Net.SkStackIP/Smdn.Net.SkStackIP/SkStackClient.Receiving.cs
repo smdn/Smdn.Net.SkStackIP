@@ -97,7 +97,7 @@ partial class SkStackClient {
     logger?.LogReceivingStatus($"{callerMemberName} entered");
 
     try {
-      logger?.LogReceivingStatus($"  begin read sequence");
+      logger?.LogReceivingStatus($"{callerMemberName} reading");
 
       for (; ; ) {
         var reparse = parseSequenceContext.Status switch {
@@ -106,59 +106,64 @@ partial class SkStackClient {
         };
 
         ReadOnlySequence<byte> buffer;
-
-        if (reparse) {
-          logger?.LogReceivingStatus($"    reparse buffered sequence");
-
-          // reparse previous data sequence
-          buffer = parseSequenceContext.UnparsedSequence;
-        }
-        else {
-          logger?.LogReceivingStatus($"    read sequence from stream");
-          logger?.LogReceivingStatus("      buffered: ", parseSequenceContext.UnparsedSequence);
-
-          // receive data sequence and parse it
-          var readResult = await streamReader.ReadAsync(cancellationToken).ConfigureAwait(false);
-
-          if (readResult.IsCanceled)
-            throw new OperationCanceledException("canceled");
-
-          buffer = readResult.Buffer;
-        }
-
-        logger?.LogReceivingStatus("      sequence: ", buffer);
-
-        parseSequenceContext.Update(buffer);
-
         TResult? result = default;
+        IDisposable? scopeReadAndParse = null;
 
         try {
-          // process events which is received until this point
-          var eventProcessed = await ProcessEventsAsync(
-            parseSequenceContext,
-            eventHandler,
-            cancellationToken
-          ).ConfigureAwait(false);
+          if (reparse) {
+            scopeReadAndParse = logger?.BeginScope($"{callerMemberName} reparse buffered sequence");
 
-          logger?.LogReceivingStatus($"      status: {parseSequenceContext.Status}");
-
-          if (eventProcessed) {
-            if (processOnlyERXUDP && parseSequenceContext.Status == ParseSequenceStatus.Continueing)
-              (parseSequenceContext as ISkStackSequenceParserContext).Complete(); // reset status as Completed to stop reading
+            // reparse previous data sequence
+            buffer = parseSequenceContext.UnparsedSequence;
           }
-          else if (parseSequenceContext.Status != ParseSequenceStatus.Incomplete) {
-            // if buffered data sequence does not contain any events, parse it with the specified parser
-            logger?.LogReceivingStatus($"      parser: {parseSequence.Method}");
+          else {
+            scopeReadAndParse = logger?.BeginScope($"{callerMemberName} read sequence from stream");
+            logger?.LogReceivingStatus("buffered: ", parseSequenceContext.UnparsedSequence);
 
-            result = parseSequence(parseSequenceContext, arg);
+            // receive data sequence and parse it
+            var readResult = await streamReader.ReadAsync(cancellationToken).ConfigureAwait(false);
 
-            logger?.LogReceivingStatus($"      status: {parseSequenceContext.Status}");
+            if (readResult.IsCanceled)
+              throw new OperationCanceledException("canceled");
+
+            buffer = readResult.Buffer;
+          }
+
+          logger?.LogReceivingStatus("sequence: ", buffer);
+
+          parseSequenceContext.Update(buffer);
+
+          try {
+            // process events which is received until this point
+            var eventProcessed = await ProcessEventsAsync(
+              parseSequenceContext,
+              eventHandler,
+              cancellationToken
+            ).ConfigureAwait(false);
+
+            logger?.LogReceivingStatus($"status: {parseSequenceContext.Status}");
+
+            if (eventProcessed) {
+              if (processOnlyERXUDP && parseSequenceContext.Status == ParseSequenceStatus.Continueing)
+                (parseSequenceContext as ISkStackSequenceParserContext).Complete(); // reset status as Completed to stop reading
+            }
+            else if (parseSequenceContext.Status != ParseSequenceStatus.Incomplete) {
+              // if buffered data sequence does not contain any events, parse it with the specified parser
+              logger?.LogReceivingStatus($"parser: {parseSequence.Method.Name} -- {parseSequence.Method}");
+
+              result = parseSequence(parseSequenceContext, arg);
+
+              logger?.LogReceivingStatus($"parse status: {parseSequenceContext.Status}");
+            }
+          }
+          catch (SkStackUnexpectedResponseException ex) {
+            logger?.LogReceivingStatus("unexpected response: ", buffer, ex);
+
+            throw;
           }
         }
-        catch (SkStackUnexpectedResponseException ex) {
-          logger?.LogReceivingStatus("      unexpected response: ", buffer, ex);
-
-          throw;
+        finally {
+          scopeReadAndParse?.Dispose();
         }
 
         var (markAsExamined, advanceIfConsumed, returnResult, delay) = parseSequenceContext.Status switch {
@@ -184,7 +189,9 @@ partial class SkStackClient {
 
         if (delay)
           await Task.Delay(ContinuousReadingInterval).ConfigureAwait(false);
-      }
+
+        logger?.LogReceivingStatus($"{callerMemberName} continue reading");
+      } // for infinite
     }
     finally {
       logger?.LogReceivingStatus($"{callerMemberName} exited");

@@ -4,6 +4,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
 using Microsoft.Extensions.Logging;
 
@@ -15,21 +17,49 @@ namespace Smdn.Net.SkStackIP;
 public class SkStackClientTestsBase {
   protected static readonly TimeSpan ResponseDelayInterval = TimeSpan.FromMilliseconds(25);
 
+#if false
   private sealed class NullLoggerScope : IDisposable {
     public static readonly NullLoggerScope Instance = new();
     public void Dispose() { }
   }
+#endif
 
   private class TestContextLogger : ILogger {
     private readonly List<string> logs = new();
 
     public IReadOnlyList<string> Logs => logs;
 
+    private readonly struct Scope : IDisposable {
+      private readonly Stack<Scope> owner;
+      public string State { get; }
+
+      public Scope(Stack<Scope> owner, string state)
+      {
+        this.owner = owner;
+        State = state;
+      }
+
+      public void Dispose()
+      {
+        owner.Pop();
+      }
+    }
+
+    private readonly Stack<Scope> scopes = new();
+
     public TestContextLogger()
     {
     }
 
-    public IDisposable BeginScope<TState>(TState state) => NullLoggerScope.Instance;
+    public IDisposable BeginScope<TState>(TState state)
+    {
+      var newScope = new Scope(scopes, state?.ToString() ?? "(null)");
+
+      scopes.Push(newScope);
+
+      return newScope;
+    }
+
     public bool IsEnabled(LogLevel logLevel) => true;
 
     public void Log<TState>(
@@ -43,7 +73,7 @@ public class SkStackClientTestsBase {
       logs.Add(
         string.Format(
           provider: null,
-          format: "{0:o} {1}:[{2}] {3}",
+          format: "{0:o} {1}:[{2}] {3}{4}",
           DateTimeOffset.Now,
           logLevel switch {
             LogLevel.Trace => "trce",
@@ -56,9 +86,25 @@ public class SkStackClientTestsBase {
             _ => "????",
           },
           eventId.Id,
+          GetScopeString(),
           formatter(state, exception)
         )
       );
+    }
+
+    private string GetScopeString()
+    {
+      if (scopes.Count == 0)
+        return string.Empty;
+
+      var sb = new StringBuilder();
+
+      foreach (var scope in scopes.Reverse()) {
+        sb.Append(scope.State);
+        sb.Append(" -> ");
+      }
+
+      return sb.ToString();
     }
   }
 
