@@ -176,8 +176,8 @@ partial class SkStackClient {
     }
 
     // write command to logger
-    if (logger is not null && logWriter is not null) {
-      logger.LogDebugCommand(logWriter.WrittenMemory);
+    if (Logger is not null && logWriter is not null) {
+      Logger.LogDebugCommand(logWriter.WrittenMemory);
       logWriter.Clear();
     }
   }

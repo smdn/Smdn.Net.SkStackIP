@@ -29,7 +29,7 @@ public partial class SkStackClient :
   private readonly IBufferWriter<byte> writer;
   private PipeReader streamReader;
 
-  private readonly ILogger? logger;
+  protected ILogger? Logger { get; }
 
   private readonly ArrayBufferWriter<byte>? logWriter;
 
@@ -102,9 +102,9 @@ public partial class SkStackClient :
     streamReader = receiver ?? throw new ArgumentNullException(nameof(receiver));
     streamWriter = sender ?? throw new ArgumentNullException(nameof(sender));
     this.erxudpDataFormat = ValidateERXUDPDataFormat(erxudpDataFormat, nameof(erxudpDataFormat));
-    this.logger = logger;
+    Logger = logger;
 
-    if (logger is not null && logger.IsCommandLoggingEnabled()) {
+    if (Logger is not null && Logger.IsCommandLoggingEnabled()) {
       logWriter = new ArrayBufferWriter<byte>(initialCapacity: 64);
       writer = DuplicateBufferWriter.Create(streamWriter, logWriter);
     }

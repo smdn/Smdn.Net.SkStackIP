@@ -24,6 +24,8 @@ public class SkStackClientTests : SkStackClientTestsBase {
   private static readonly TimeSpan responseDelayInterval = TimeSpan.FromMilliseconds(50);
 
   private class SkStackClientEx : SkStackClient {
+    public new ILogger Logger => base.Logger;
+
     public SkStackClientEx(Stream stream, ILogger logger)
       : base(stream, logger: logger)
     {
@@ -131,6 +133,23 @@ public class SkStackClientTests : SkStackClientTestsBase {
     Assert.Throws<ArgumentException>(() => {
       using var client = new SkStackClient(Stream.Null, erxudpDataFormat: format);
     });
+  }
+
+  private static System.Collections.IEnumerable YieldTestCases_Logger()
+  {
+    yield return new object[] { Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance };
+    yield return new object[] { null };
+  }
+
+  [TestCaseSource(nameof(YieldTestCases_Logger))]
+  public void Logger(ILogger logger)
+  {
+    using var client = new SkStackClientEx(Stream.Null, logger);
+
+    if (logger is null)
+      Assert.IsNull(client.Logger, nameof(client.Logger));
+    else
+      Assert.AreSame(logger, client.Logger, nameof(client.Logger));
   }
 
   [Test]

@@ -90,14 +90,14 @@ partial class SkStackClient {
       throw new ArgumentNullException(nameof(parseSequence));
 #endif
 
-    logger?.LogReceivingStatus($"{callerMemberName} waiting");
+    Logger?.LogReceivingStatus($"{callerMemberName} waiting");
 
     await streamReaderSemaphore.WaitAsync().ConfigureAwait(false);
 
-    logger?.LogReceivingStatus($"{callerMemberName} entered");
+    Logger?.LogReceivingStatus($"{callerMemberName} entered");
 
     try {
-      logger?.LogReceivingStatus($"{callerMemberName} reading");
+      Logger?.LogReceivingStatus($"{callerMemberName} reading");
 
       for (; ; ) {
         var reparse = parseSequenceContext.Status switch {
@@ -111,14 +111,15 @@ partial class SkStackClient {
 
         try {
           if (reparse) {
-            scopeReadAndParse = logger?.BeginScope($"{callerMemberName} reparse buffered sequence");
+            scopeReadAndParse = Logger?.BeginScope($"{callerMemberName} reparse buffered sequence");
 
             // reparse previous data sequence
             buffer = parseSequenceContext.UnparsedSequence;
           }
           else {
-            scopeReadAndParse = logger?.BeginScope($"{callerMemberName} read sequence from stream");
-            logger?.LogReceivingStatus("buffered: ", parseSequenceContext.UnparsedSequence);
+            scopeReadAndParse = Logger?.BeginScope($"{callerMemberName} read sequence from stream");
+
+            Logger?.LogReceivingStatus("buffered: ", parseSequenceContext.UnparsedSequence);
 
             // receive data sequence and parse it
             var readResult = await streamReader.ReadAsync(cancellationToken).ConfigureAwait(false);
@@ -129,7 +130,7 @@ partial class SkStackClient {
             buffer = readResult.Buffer;
           }
 
-          logger?.LogReceivingStatus("sequence: ", buffer);
+          Logger?.LogReceivingStatus("sequence: ", buffer);
 
           parseSequenceContext.Update(buffer);
 
@@ -141,7 +142,7 @@ partial class SkStackClient {
               cancellationToken
             ).ConfigureAwait(false);
 
-            logger?.LogReceivingStatus($"status: {parseSequenceContext.Status}");
+            Logger?.LogReceivingStatus($"status: {parseSequenceContext.Status}");
 
             if (eventProcessed) {
               if (processOnlyERXUDP && parseSequenceContext.Status == ParseSequenceStatus.Continueing)
@@ -149,15 +150,15 @@ partial class SkStackClient {
             }
             else if (parseSequenceContext.Status != ParseSequenceStatus.Incomplete) {
               // if buffered data sequence does not contain any events, parse it with the specified parser
-              logger?.LogReceivingStatus($"parser: {parseSequence.Method.Name} -- {parseSequence.Method}");
+              Logger?.LogReceivingStatus($"parser: {parseSequence.Method.Name} -- {parseSequence.Method}");
 
               result = parseSequence(parseSequenceContext, arg);
 
-              logger?.LogReceivingStatus($"parse status: {parseSequenceContext.Status}");
+              Logger?.LogReceivingStatus($"parse status: {parseSequenceContext.Status}");
             }
           }
           catch (SkStackUnexpectedResponseException ex) {
-            logger?.LogReceivingStatus("unexpected response: ", buffer, ex);
+            Logger?.LogReceivingStatus("unexpected response: ", buffer, ex);
 
             throw;
           }
@@ -180,7 +181,7 @@ partial class SkStackClient {
 
         if (advanceIfConsumed && parseSequenceContext.IsConsumed(buffer)) {
           // advance the buffer to the position where parsing finished
-          logger?.LogDebugResponse(buffer.Slice(0, parseSequenceContext.UnparsedSequence.Start), result);
+          Logger?.LogDebugResponse(buffer.Slice(0, parseSequenceContext.UnparsedSequence.Start), result);
           streamReader.AdvanceTo(consumed: parseSequenceContext.UnparsedSequence.Start);
         }
 
@@ -190,11 +191,11 @@ partial class SkStackClient {
         if (delay)
           await Task.Delay(ContinuousReadingInterval).ConfigureAwait(false);
 
-        logger?.LogReceivingStatus($"{callerMemberName} continue reading");
+        Logger?.LogReceivingStatus($"{callerMemberName} continue reading");
       } // for infinite
     }
     finally {
-      logger?.LogReceivingStatus($"{callerMemberName} exited");
+      Logger?.LogReceivingStatus($"{callerMemberName} exited");
       streamReaderSemaphore.Release();
     }
   }
@@ -208,7 +209,7 @@ partial class SkStackClient {
     CancellationToken cancellationToken
   )
   {
-    logger?.LogReceivingStatus($"{nameof(ReceiveResponseAsync)} ", command);
+    Logger?.LogReceivingStatus($"{nameof(ReceiveResponseAsync)} ", command);
 
     // try read and parse echoback
     await ReadAsync(
@@ -247,7 +248,7 @@ partial class SkStackClient {
     if (commandEventHandler is not null && commandEventHandler.DoContinueHandlingEvents(response.Status)) {
       const int parseSequenceEmptyResult = default;
 
-      logger?.LogReceivingStatus($"{nameof(ReceiveResponseAsync)} {commandEventHandler.GetType().Name}");
+      Logger?.LogReceivingStatus($"{nameof(ReceiveResponseAsync)} {commandEventHandler.GetType().Name}");
 
       await ReadAsync(
         parseSequence: static (context, handler) => { handler.ProcessSubsequentEvent(context); return parseSequenceEmptyResult; },
