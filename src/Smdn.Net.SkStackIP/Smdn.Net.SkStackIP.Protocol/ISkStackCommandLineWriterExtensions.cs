@@ -115,6 +115,13 @@ internal static class ISkStackCommandLineWriterExtensions {
       write: static (t, w) => w.WriteToken(t)
     );
 
+  public static void WriteMaskedToken(this ISkStackCommandLineWriter writer, ReadOnlySpan<char> token)
+    => WriteDefaultEncodingToken(
+      writer,
+      token,
+      write: static (t, w) => w.WriteMaskedToken(t)
+    );
+
   private static void WriteDefaultEncodingToken(
     ISkStackCommandLineWriter writer,
     ReadOnlySpan<char> token,

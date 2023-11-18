@@ -6,4 +6,5 @@ namespace Smdn.Net.SkStackIP.Protocol;
 
 public interface ISkStackCommandLineWriter {
   void WriteToken(ReadOnlySpan<byte> token);
+  void WriteMaskedToken(ReadOnlySpan<byte> token);
 }

@@ -133,4 +133,7 @@ public class SkStackClientTestsBase {
 
     return loggerForTestCase;
   }
+
+  public IReadOnlyList<string>? GetLogsForTestCase()
+    => loggerForTestCase?.Logs;
 }

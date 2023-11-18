@@ -46,4 +46,26 @@ internal sealed class SkStackCommandLineWriter : ISkStackCommandLineWriter {
       writerForLog.Write(token);
     }
   }
+
+  public void WriteMaskedToken(ReadOnlySpan<byte> token)
+  {
+    if (token.IsEmpty)
+      throw new ArgumentException("cannot be empty", paramName: nameof(token));
+
+    writer.GetSpan(1)[0] = SkStack.SP;
+    writer.Advance(1);
+
+    writer.Write(token);
+
+    if (writerForLog is not null) {
+      writerForLog.GetSpan(1)[0] = SkStack.SP;
+      writerForLog.Advance(1);
+
+      const int maskLength = 4;
+      const byte maskByte = (byte)'*';
+
+      writerForLog.GetSpan(maskLength).Slice(0, maskLength).Fill(maskByte);
+      writerForLog.Advance(maskLength);
+    }
+  }
 }

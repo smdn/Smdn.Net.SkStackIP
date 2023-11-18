@@ -103,7 +103,7 @@ partial class SkStackClient {
       command: SkStackCommandNames.SKSETPWD,
       writeArguments: writer => {
         writer.WriteTokenUINT8((byte)password.Length, zeroPadding: false);
-        writer.WriteToken(password.Span);
+        writer.WriteMaskedToken(password.Span);
       },
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken
@@ -128,7 +128,7 @@ partial class SkStackClient {
       command: SkStackCommandNames.SKSETPWD,
       writeArguments: writer => {
         writer.WriteTokenUINT8((byte)password.Length, zeroPadding: false);
-        writer.WriteToken(password.Span);
+        writer.WriteMaskedToken(password.Span);
       },
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken
