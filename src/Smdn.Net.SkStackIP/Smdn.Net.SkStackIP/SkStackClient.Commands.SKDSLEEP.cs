@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,7 +25,7 @@ partial class SkStackClient {
   )
     => SendCommandAsync(
       command: SkStackCommandNames.SKDSLEEP,
-      arguments: Array.Empty<ReadOnlyMemory<byte>>(),
+      writeArguments: null,
       commandEventHandler: new SKDSLEEPEventHandler(this, waitUntilWakeUp),
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken

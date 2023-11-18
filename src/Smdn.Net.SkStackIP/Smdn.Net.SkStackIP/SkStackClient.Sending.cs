@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,13 +14,13 @@ partial class SkStackClient {
 #pragma warning restore IDE0040
   /// <summary>Sends a command.</summary>
   /// <param name="command">The command to be sent.</param>
-  /// <param name="arguments">The arguments for the command. Can be <see langword="null"/>.</param>
+  /// <param name="writeArguments">The <see cref="Action{ISkStackCommandLineWriter}"/> for write command arguments to the buffer. Can be <see langword="null"/> if command has no arguments.</param>
   /// <param name="syntax">The <see cref="SkStackProtocolSyntax"/> that describes the command syntax.</param>
   /// <param name="throwIfErrorStatus">The <see langword="bool"/> value that specifies whether throw exception if the response status is error.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   protected internal async ValueTask<SkStackResponse> SendCommandAsync(
     ReadOnlyMemory<byte> command,
-    IEnumerable<ReadOnlyMemory<byte>>? arguments = null,
+    Action<ISkStackCommandLineWriter>? writeArguments = null,
     SkStackProtocolSyntax? syntax = null,
     bool throwIfErrorStatus = true,
     CancellationToken cancellationToken = default
@@ -30,7 +28,7 @@ partial class SkStackClient {
   {
     var resp = await SendCommandAsyncCore<SkStackResponse.NullPayload>(
       command: command,
-      arguments: arguments ?? Enumerable.Empty<ReadOnlyMemory<byte>>(),
+      writeArguments: writeArguments,
       parseResponsePayload: null,
       commandEventHandler: null,
       syntax: syntax ?? SkStackProtocolSyntax.Default,
@@ -44,14 +42,14 @@ partial class SkStackClient {
   /// <summary>Sends a command.</summary>
   /// <typeparam name="TPayload">The type of response payload. See <paramref name="parseResponsePayload"/>.</typeparam>
   /// <param name="command">The command to be sent.</param>
-  /// <param name="arguments">The arguments for the command. Can be <see langword="null"/>.</param>
+  /// <param name="writeArguments">The <see cref="Action{ISkStackCommandLineWriter}"/> for write command arguments to the buffer. Can be <see langword="null"/> if command has no arguments.</param>
   /// <param name="parseResponsePayload">The delegate for parsing the response payload. If <see langword="null"/>, parsing response payload will not be attempted.</param>
   /// <param name="syntax">The <see cref="SkStackProtocolSyntax"/> that describes the command syntax.</param>
   /// <param name="throwIfErrorStatus">The <see langword="bool"/> value that specifies whether throw exception if the response status is error.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   protected internal ValueTask<SkStackResponse<TPayload>> SendCommandAsync<TPayload>(
     ReadOnlyMemory<byte> command,
-    IEnumerable<ReadOnlyMemory<byte>>? arguments,
+    Action<ISkStackCommandLineWriter>? writeArguments,
     SkStackSequenceParser<TPayload?> parseResponsePayload,
     SkStackProtocolSyntax? syntax = null,
     bool throwIfErrorStatus = true,
@@ -59,7 +57,7 @@ partial class SkStackClient {
   )
     => SendCommandAsyncCore(
       command: command,
-      arguments: arguments ?? Enumerable.Empty<ReadOnlyMemory<byte>>(),
+      writeArguments: writeArguments,
       parseResponsePayload: parseResponsePayload ?? throw new ArgumentNullException(nameof(parseResponsePayload)),
       commandEventHandler: null,
       syntax: syntax ?? SkStackProtocolSyntax.Default,
@@ -69,14 +67,14 @@ partial class SkStackClient {
 
   /// <summary>Sends a command.</summary>
   /// <param name="command">The command to be sent.</param>
-  /// <param name="arguments">The arguments for the command. Can be <see langword="null"/>.</param>
+  /// <param name="writeArguments">The <see cref="Action{ISkStackCommandLineWriter}"/> for write command arguments to the buffer. Can be <see langword="null"/> if command has no arguments.</param>
   /// <param name="commandEventHandler">The <see cref="SkStackEventHandlerBase" /> that handles the events that will occur until the response is received.</param>
   /// <param name="syntax">The <see cref="SkStackProtocolSyntax"/> that describes the command syntax.</param>
   /// <param name="throwIfErrorStatus">The <see langword="bool"/> value that specifies whether throw exception if the response status is error.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   internal async ValueTask<SkStackResponse> SendCommandAsync(
     ReadOnlyMemory<byte> command,
-    IEnumerable<ReadOnlyMemory<byte>>? arguments,
+    Action<ISkStackCommandLineWriter>? writeArguments,
     SkStackEventHandlerBase? commandEventHandler,
     SkStackProtocolSyntax? syntax = null,
     bool throwIfErrorStatus = true,
@@ -85,7 +83,7 @@ partial class SkStackClient {
   {
     var resp = await SendCommandAsyncCore<SkStackResponse.NullPayload>(
       command: command,
-      arguments: arguments ?? Enumerable.Empty<ReadOnlyMemory<byte>>(),
+      writeArguments: writeArguments,
       parseResponsePayload: null,
       commandEventHandler: commandEventHandler,
       syntax: syntax ?? SkStackProtocolSyntax.Default,
@@ -99,7 +97,7 @@ partial class SkStackClient {
   /// <summary>Sends a command.</summary>
   /// <typeparam name="TPayload">The type of response payload. See <paramref name="parseResponsePayload"/>.</typeparam>
   /// <param name="command">The command to be sent.</param>
-  /// <param name="arguments">The arguments for the command. Can be <see langword="null"/>.</param>
+  /// <param name="writeArguments">The <see cref="Action{ISkStackCommandLineWriter}"/> for write command arguments to the buffer. Can be <see langword="null"/> if command has no arguments.</param>
   /// <param name="parseResponsePayload">The delegate for parsing the response payload. If <see langword="null"/>, parsing response payload will not be attempted.</param>
   /// <param name="commandEventHandler">The <see cref="SkStackEventHandlerBase" /> that handles the events that will occur until the response is received.</param>
   /// <param name="syntax">The <see cref="SkStackProtocolSyntax"/> that describes the command syntax.</param>
@@ -107,7 +105,7 @@ partial class SkStackClient {
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   private ValueTask<SkStackResponse<TPayload>> SendCommandAsyncCore<TPayload>(
     ReadOnlyMemory<byte> command,
-    IEnumerable<ReadOnlyMemory<byte>> arguments,
+    Action<ISkStackCommandLineWriter>? writeArguments,
     SkStackSequenceParser<TPayload?>? parseResponsePayload,
     SkStackEventHandlerBase? commandEventHandler,
     SkStackProtocolSyntax syntax,
@@ -122,7 +120,7 @@ partial class SkStackClient {
     // write command line
     WriteCommandLine(
       command,
-      arguments,
+      writeArguments,
       syntax
     );
 
@@ -139,27 +137,19 @@ partial class SkStackClient {
 
   private void WriteCommandLine(
     ReadOnlyMemory<byte> command,
-    IEnumerable<ReadOnlyMemory<byte>> arguments,
+    Action<ISkStackCommandLineWriter>? writeArguments,
     SkStackProtocolSyntax syntax
   )
   {
     if (command.IsEmpty)
       throw new ArgumentException("must be non-empty byte sequence", nameof(command));
-#if DEBUG
-    if (arguments is null)
-      throw new ArgumentNullException(nameof(arguments));
-#endif
 
     // write command
     commandLineWriter.Write(command.Span);
 
     // write arguments
-    foreach (var argument in arguments) {
-      if (argument.IsEmpty)
-        throw new ArgumentException("cannot send command with empty argument", nameof(arguments));
-
-      commandLineWriter.WriteToken(argument.Span);
-    }
+    if (writeArguments is not null)
+      writeArguments(commandLineWriter);
 
     // write end of command line
     if (!syntax.EndOfCommandLine.IsEmpty)

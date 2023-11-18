@@ -1,7 +1,5 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
-using System;
-using System.Buffers;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,11 +25,22 @@ partial class SkStackClient {
     SkStackUdpPort.ThrowIfPortHandleIsOutOfRange(handle, nameof(handle));
     SkStackUdpPort.ThrowIfPortNumberIsOutOfRangeOrUnused(port, nameof(port));
 
-    return SendSKUDPPORTAsyncCore(
-      handle: handle,
-      port: port,
-      cancellationToken: cancellationToken
-    );
+    return SKUDPPORT();
+
+    async ValueTask<(SkStackResponse Response, SkStackUdpPort UdpPort)> SKUDPPORT()
+    {
+      var resp = await SendCommandAsync(
+        command: SkStackCommandNames.SKUDPPORT,
+        writeArguments: writer => {
+          writer.WriteTokenHex((byte)handle);
+          writer.WriteTokenUINT16((ushort)port, zeroPadding: true);
+        },
+        throwIfErrorStatus: true,
+        cancellationToken: cancellationToken
+      ).ConfigureAwait(false);
+
+      return (resp, new SkStackUdpPort(handle, port));
+    }
   }
 
   /// <summary>
@@ -47,48 +56,14 @@ partial class SkStackClient {
   {
     SkStackUdpPort.ThrowIfPortHandleIsOutOfRange(handle, nameof(handle));
 
-    return Core();
-
-    async ValueTask<SkStackResponse> Core()
-    {
-      var (resp, _) = await SendSKUDPPORTAsyncCore(
-        handle: handle,
-        port: SkStackKnownPortNumbers.SetUnused,
-        cancellationToken: cancellationToken
-      ).ConfigureAwait(false);
-
-      return resp;
-    }
-  }
-
-  private async ValueTask<(SkStackResponse Response, SkStackUdpPort UdpPort)> SendSKUDPPORTAsyncCore(
-    SkStackUdpPortHandle handle,
-    int port,
-    CancellationToken cancellationToken = default
-  )
-  {
-    byte[]? PORT = null;
-
-    try {
-      PORT = ArrayPool<byte>.Shared.Rent(4);
-
-      SkStackCommandArgs.TryConvertToUINT16(PORT, (ushort)port, out var lengthOfPORT, zeroPadding: true);
-
-      var resp = await SendCommandAsync(
-        command: SkStackCommandNames.SKUDPPORT,
-        arguments: SkStackCommandArgs.CreateEnumerable(
-          SkStackCommandArgs.GetHex((int)handle),
-          PORT.AsMemory(0, lengthOfPORT)
-        ),
-        throwIfErrorStatus: true,
-        cancellationToken: cancellationToken
-      ).ConfigureAwait(false);
-
-      return (resp, new SkStackUdpPort(handle, port));
-    }
-    finally {
-      if (PORT is not null)
-        ArrayPool<byte>.Shared.Return(PORT);
-    }
+    return SendCommandAsync(
+      command: SkStackCommandNames.SKUDPPORT,
+      writeArguments: writer => {
+        writer.WriteTokenHex((byte)handle);
+        writer.WriteTokenUINT16(SkStackKnownPortNumbers.SetUnused, zeroPadding: true);
+      },
+      throwIfErrorStatus: true,
+      cancellationToken: cancellationToken
+    );
   }
 }

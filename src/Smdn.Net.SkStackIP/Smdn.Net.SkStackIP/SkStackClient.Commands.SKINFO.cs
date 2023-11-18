@@ -31,7 +31,7 @@ partial class SkStackClient {
   )
     => SendCommandAsync(
       command: SkStackCommandNames.SKINFO,
-      arguments: null,
+      writeArguments: null,
       parseResponsePayload: static context => {
         var reader = context.CreateReader();
 

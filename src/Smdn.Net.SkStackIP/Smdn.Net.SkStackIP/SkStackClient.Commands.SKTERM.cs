@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
 
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +28,7 @@ partial class SkStackClient {
 
     var resp = await SendCommandAsync(
       command: SkStackCommandNames.SKTERM,
-      arguments: Array.Empty<ReadOnlyMemory<byte>>(),
+      writeArguments: null,
       commandEventHandler: eventHandler,
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken

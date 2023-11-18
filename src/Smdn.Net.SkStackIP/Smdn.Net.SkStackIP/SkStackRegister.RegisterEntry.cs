@@ -20,8 +20,8 @@ partial class SkStackRegister {
     public TValue MinValue { get; }
     public TValue MaxValue { get; }
 
-    internal delegate ReadOnlyMemory<byte> CreateSKSREGArgumentFunc(TValue value);
-    internal CreateSKSREGArgumentFunc CreateSKSREGArgument { get; }
+    internal delegate void WriteSKSREGArgumentFunc(ISkStackCommandLineWriter writer, TValue value);
+    private WriteSKSREGArgumentFunc WriteSKSREGArgument { get; }
 
     private protected delegate bool ExpectValueFunc(ref SequenceReader<byte> reader, out TValue value);
     private ExpectValueFunc ExpectValue { get; }
@@ -30,12 +30,12 @@ partial class SkStackRegister {
       string name,
       (bool isReadable, bool isWritable) readWrite,
       (TValue minValue, TValue maxValue) valueRange,
-      CreateSKSREGArgumentFunc createSKSREGArgument,
+      WriteSKSREGArgumentFunc writeSKSREGArgument,
       ExpectValueFunc expectValue
     )
     {
-      if (readWrite.isWritable && createSKSREGArgument is null)
-        throw new ArgumentNullException(nameof(createSKSREGArgument));
+      if (readWrite.isWritable && writeSKSREGArgument is null)
+        throw new ArgumentNullException(nameof(writeSKSREGArgument));
       if (readWrite.isReadable && expectValue is null)
         throw new ArgumentNullException(nameof(expectValue));
 
@@ -45,7 +45,7 @@ partial class SkStackRegister {
       IsWritable = readWrite.isWritable;
       MinValue = valueRange.minValue;
       MaxValue = valueRange.maxValue;
-      CreateSKSREGArgument = createSKSREGArgument;
+      WriteSKSREGArgument = writeSKSREGArgument;
       ExpectValue = expectValue;
     }
 
@@ -77,6 +77,9 @@ partial class SkStackRegister {
       context.SetAsIncomplete();
       return default;
     }
+
+    public void WriteValueTo(ISkStackCommandLineWriter writer, TValue value)
+      => WriteSKSREGArgument(writer, value);
   }
 
   private abstract class ComparableValueRegisterEntry<TValue> :
@@ -87,14 +90,14 @@ partial class SkStackRegister {
       string name,
       (bool isReadable, bool isWritable) readWrite,
       (TValue minValue, TValue maxValue) valueRange,
-      CreateSKSREGArgumentFunc createSKSREGArgument,
+      WriteSKSREGArgumentFunc writeSKSREGArgument,
       ExpectValueFunc expectValue
     )
       : base(
         name: name,
         readWrite: readWrite,
         valueRange: valueRange,
-        createSKSREGArgument: createSKSREGArgument,
+        writeSKSREGArgument: writeSKSREGArgument,
         expectValue: expectValue
       )
     {
@@ -113,7 +116,7 @@ partial class SkStackRegister {
         name: name,
         readWrite: readWrite,
         valueRange: (minValue: false, maxValue: true),
-        createSKSREGArgument: static (value) => SkStackCommandArgs.GetHex(value ? 1 : 0),
+        writeSKSREGArgument: static (writer, value) => writer.WriteTokenBinary(value),
         expectValue: SkStackTokenParser.ExpectBinary
       )
     {
@@ -133,7 +136,7 @@ partial class SkStackRegister {
         name: name,
         readWrite: readWrite,
         valueRange: valueRange,
-        createSKSREGArgument: static (value) => SkStackCommandArgs.ConvertToUINT8(value),
+        writeSKSREGArgument: static (writer, value) => writer.WriteTokenUINT8(value),
         expectValue: SkStackTokenParser.ExpectUINT8
       )
     {
@@ -151,7 +154,7 @@ partial class SkStackRegister {
         name: name,
         readWrite: readWrite,
         valueRange: valueRange,
-        createSKSREGArgument: static (value) => SkStackCommandArgs.ConvertToUINT8(value.RegisterS02Value),
+        writeSKSREGArgument: static (writer, value) => writer.WriteTokenUINT8(value.RegisterS02Value),
         expectValue: SkStackTokenParser.ExpectCHANNEL
       )
     {
@@ -168,7 +171,7 @@ partial class SkStackRegister {
         name: name,
         readWrite: readWrite,
         valueRange: valueRange,
-        createSKSREGArgument: static (value) => SkStackCommandArgs.ConvertToUINT16(value),
+        writeSKSREGArgument: static (writer, value) => writer.WriteTokenUINT16(value),
         expectValue: SkStackTokenParser.ExpectUINT16
       )
     {
@@ -185,7 +188,7 @@ partial class SkStackRegister {
         name: name,
         readWrite: readWrite,
         valueRange: valueRange,
-        createSKSREGArgument: static (value) => SkStackCommandArgs.ConvertToUINT32(value),
+        writeSKSREGArgument: static (writer, value) => writer.WriteTokenUINT32(value),
         expectValue: SkStackTokenParser.ExpectUINT32
       )
     {
@@ -205,7 +208,7 @@ partial class SkStackRegister {
           minValue: TimeSpan.FromSeconds(valueRange.minValue),
           maxValue: TimeSpan.FromSeconds(valueRange.maxValue)
         ),
-        createSKSREGArgument: static (value) => SkStackCommandArgs.ConvertToUINT32((uint)value.TotalSeconds),
+        writeSKSREGArgument: static (writer, value) => writer.WriteTokenUINT32((uint)value.TotalSeconds),
         expectValue: ExpectValue
       )
     {
@@ -237,7 +240,7 @@ partial class SkStackRegister {
         name: name,
         readWrite: readWrite,
         valueRange: valueRange,
-        createSKSREGArgument: static (value) => SkStackCommandArgs.ConvertToUINT64(value),
+        writeSKSREGArgument: static (writer, value) => writer.WriteTokenUINT64(value),
         expectValue: SkStackTokenParser.ExpectUINT64
       )
     {
@@ -258,7 +261,7 @@ partial class SkStackRegister {
         name: name,
         readWrite: readWrite,
         valueRange: default,
-        createSKSREGArgument: static (value) => value,
+        writeSKSREGArgument: static (writer, value) => writer.WriteToken(value.Span),
         expectValue: SkStackTokenParser.ExpectCharArray
       )
     {

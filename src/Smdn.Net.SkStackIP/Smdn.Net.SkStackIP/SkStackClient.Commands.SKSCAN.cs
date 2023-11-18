@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 using System;
-using System.Buffers;
 using System.Collections.Generic;
 #if SYSTEM_DIAGNOSTICS_CODEANALYSIS_MEMBERNOTNULLWHENATTRIBUTE
 using System.Diagnostics.CodeAnalysis;
@@ -319,30 +318,17 @@ partial class SkStackClient {
     CancellationToken cancellationToken
   )
   {
-    SkStackResponse resp;
-    byte[]? CHANNEL_MASK = default;
-
-    try {
-      CHANNEL_MASK = ArrayPool<byte>.Shared.Rent(8);
-
-      SkStackCommandArgs.TryConvertToUINT32(CHANNEL_MASK, channelMask, out var lengthChannelMask, zeroPadding: true);
-
-      resp = await SendCommandAsync(
-        command: SkStackCommandNames.SKSCAN,
-        arguments: SkStackCommandArgs.CreateEnumerable(
-          SkStackCommandArgs.GetHex((byte)mode),
-          CHANNEL_MASK.AsMemory(0, lengthChannelMask),
-          SkStackCommandArgs.GetHex(durationFactor)
-        ),
-        commandEventHandler: commandEventHandler,
-        throwIfErrorStatus: true,
-        cancellationToken: cancellationToken
-      ).ConfigureAwait(false);
-    }
-    finally {
-      if (CHANNEL_MASK is not null)
-        ArrayPool<byte>.Shared.Return(CHANNEL_MASK);
-    }
+    var resp = await SendCommandAsync(
+      command: SkStackCommandNames.SKSCAN,
+      writeArguments: writer => {
+        writer.WriteTokenHex((byte)mode);
+        writer.WriteTokenUINT32(channelMask, zeroPadding: true);
+        writer.WriteTokenHex(durationFactor);
+      },
+      commandEventHandler: commandEventHandler,
+      throwIfErrorStatus: true,
+      cancellationToken: cancellationToken
+    ).ConfigureAwait(false);
 
 #if DEBUG
     if (!commandEventHandler.HasScanResultSet)

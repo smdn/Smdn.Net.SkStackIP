@@ -5,7 +5,7 @@ using System.Buffers;
 
 namespace Smdn.Net.SkStackIP.Protocol;
 
-internal sealed class SkStackCommandLineWriter {
+internal sealed class SkStackCommandLineWriter : ISkStackCommandLineWriter {
   private readonly IBufferWriter<byte> writer;
   private readonly IBufferWriter<byte>? writerForLog;
 

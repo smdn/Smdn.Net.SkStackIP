@@ -3,7 +3,6 @@
 #pragma warning disable CA1506 // TODO: refactor
 
 using System;
-using System.Buffers;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading;
@@ -38,7 +37,10 @@ partial class SkStackClient {
 
     return SendCommandAsync(
       command: SkStackCommandNames.SKSREG,
-      arguments: SkStackCommandArgs.CreateEnumerable(register.SREG, register.CreateSKSREGArgument(value)),
+      writeArguments: writer => {
+        writer.WriteToken(register.SREG.Span);
+        register.WriteValueTo(writer, value);
+      },
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken
     );
@@ -64,7 +66,7 @@ partial class SkStackClient {
 
     return SendCommandAsync(
       command: SkStackCommandNames.SKSREG,
-      arguments: SkStackCommandArgs.CreateEnumerable(register.SREG),
+      writeArguments: writer => writer.WriteToken(register.SREG.Span),
       parseResponsePayload: register.ParseESREG,
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken
@@ -80,6 +82,9 @@ partial class SkStackClient {
   /// </remarks>
 #endif
 
+  private const int SKSETPWDMinLength = 1;
+  private const int SKSETPWDMaxLength = 32;
+
   /// <summary>
   ///   <para>Sends a command <c>SKSETPWD</c>.</para>
   /// </summary>
@@ -91,36 +96,19 @@ partial class SkStackClient {
     CancellationToken cancellationToken = default
   )
   {
-    var length = SkStack.DefaultEncoding.GetByteCount(password.Span);
-
-    if (length is not (>= SKSETPWDMinLength and <= SKSETPWDMaxLength))
+    if (password.Length is not (>= SKSETPWDMinLength and <= SKSETPWDMaxLength))
       throw new ArgumentException($"length of `{nameof(password)}` must be in range of {SKSETPWDMinLength}~{SKSETPWDMaxLength}", nameof(password));
 
-    return Core();
-
-    async ValueTask<SkStackResponse> Core()
-    {
-      byte[]? PWD = null;
-
-      try {
-        PWD = ArrayPool<byte>.Shared.Rent(length);
-
-        var lengthOfPWD = SkStack.DefaultEncoding.GetBytes(password.Span, PWD.AsSpan());
-
-        return await SendSKSETPWDAsync(
-          password: PWD.AsMemory(0, lengthOfPWD),
-          cancellationToken: cancellationToken
-        ).ConfigureAwait(false);
-      }
-      finally {
-        if (PWD is not null)
-          ArrayPool<byte>.Shared.Return(PWD, clearArray: true);
-      }
-    }
+    return SendCommandAsync(
+      command: SkStackCommandNames.SKSETPWD,
+      writeArguments: writer => {
+        writer.WriteTokenUINT8((byte)password.Length, zeroPadding: false);
+        writer.WriteToken(password.Span);
+      },
+      throwIfErrorStatus: true,
+      cancellationToken: cancellationToken
+    );
   }
-
-  private const int SKSETPWDMinLength = 1;
-  private const int SKSETPWDMaxLength = 32;
 
   /// <summary>
   ///   <para>Sends a command <c>SKSETPWD</c>.</para>
@@ -136,30 +124,18 @@ partial class SkStackClient {
     if (password.Length is not (>= SKSETPWDMinLength and <= SKSETPWDMaxLength))
       throw new ArgumentException($"length of `{nameof(password)}` must be in range of {SKSETPWDMinLength}~{SKSETPWDMaxLength}", nameof(password));
 
-    return SKSETPWD();
-
-    async ValueTask<SkStackResponse> SKSETPWD()
-    {
-      byte[]? LEN = default;
-
-      try {
-        LEN = ArrayPool<byte>.Shared.Rent(2);
-
-        SkStackCommandArgs.TryConvertToUINT8(LEN, (byte)password.Length, out var lengthOfLEN, zeroPadding: false);
-
-        return await SendCommandAsync(
-          command: SkStackCommandNames.SKSETPWD,
-          arguments: SkStackCommandArgs.CreateEnumerable(LEN.AsMemory(0, lengthOfLEN), password),
-          throwIfErrorStatus: true,
-          cancellationToken: cancellationToken
-        ).ConfigureAwait(false);
-      }
-      finally {
-        if (LEN is not null)
-          ArrayPool<byte>.Shared.Return(LEN);
-      }
-    }
+    return SendCommandAsync(
+      command: SkStackCommandNames.SKSETPWD,
+      writeArguments: writer => {
+        writer.WriteTokenUINT8((byte)password.Length, zeroPadding: false);
+        writer.WriteToken(password.Span);
+      },
+      throwIfErrorStatus: true,
+      cancellationToken: cancellationToken
+    );
   }
+
+  private const int SKSETRBIDLengthOfId = 32;
 
   /// <summary>
   ///   <para>Sends a command <c>SKSETRBID</c>.</para>
@@ -172,35 +148,16 @@ partial class SkStackClient {
     CancellationToken cancellationToken = default
   )
   {
-    var length = SkStack.DefaultEncoding.GetByteCount(id.Span);
-
-    if (length != SKSETRBIDLengthOfId)
+    if (id.Length != SKSETRBIDLengthOfId)
       throw new ArgumentException($"length of `{nameof(id)}` must be exact {SKSETRBIDLengthOfId}", nameof(id));
 
-    return Core();
-
-    async ValueTask<SkStackResponse> Core()
-    {
-      byte[]? _id = null;
-
-      try {
-        _id = ArrayPool<byte>.Shared.Rent(length);
-
-        var lengthOfId = SkStack.DefaultEncoding.GetBytes(id.Span, _id.AsSpan());
-
-        return await SendSKSETRBIDAsync(
-          id: _id.AsMemory(0, lengthOfId),
-          cancellationToken: cancellationToken
-        ).ConfigureAwait(false);
-      }
-      finally {
-        if (_id is not null)
-          ArrayPool<byte>.Shared.Return(_id, clearArray: true);
-      }
-    }
+    return SendCommandAsync(
+      command: SkStackCommandNames.SKSETRBID,
+      writeArguments: writer => writer.WriteToken(id.Span),
+      throwIfErrorStatus: true,
+      cancellationToken: cancellationToken
+    );
   }
-
-  private const int SKSETRBIDLengthOfId = 32;
 
   /// <summary>
   ///   <para>Sends a command <c>SKSETRBID</c>.</para>
@@ -218,7 +175,7 @@ partial class SkStackClient {
 
     return SendCommandAsync(
       command: SkStackCommandNames.SKSETRBID,
-      arguments: SkStackCommandArgs.CreateEnumerable(id),
+      writeArguments: writer => writer.WriteToken(id.Span),
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken
     );
@@ -262,7 +219,6 @@ partial class SkStackClient {
   {
     var resp = await SendCommandAsync(
       command: command,
-      arguments: Array.Empty<ReadOnlyMemory<byte>>(),
       throwIfErrorStatus: false,
       cancellationToken: cancellationToken
     ).ConfigureAwait(false);
@@ -287,7 +243,6 @@ partial class SkStackClient {
   )
     => SendCommandAsync(
       command: SkStackCommandNames.SKERASE,
-      arguments: Array.Empty<ReadOnlyMemory<byte>>(),
       throwIfErrorStatus: false,
       cancellationToken: cancellationToken
     );
@@ -303,7 +258,7 @@ partial class SkStackClient {
   )
     => SendCommandAsync(
       command: SkStackCommandNames.SKVER,
-      arguments: null,
+      writeArguments: null,
       parseResponsePayload: static context => {
         var reader = context.CreateReader();
 
@@ -336,7 +291,7 @@ partial class SkStackClient {
   )
     => SendCommandAsync(
       command: SkStackCommandNames.SKAPPVER,
-      arguments: null,
+      writeArguments: null,
       parseResponsePayload: static context => {
         var reader = context.CreateReader();
 
@@ -369,7 +324,6 @@ partial class SkStackClient {
   )
     => SendCommandAsync(
       command: SkStackCommandNames.SKRESET,
-      arguments: Array.Empty<ReadOnlyMemory<byte>>(),
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken
     );
@@ -388,43 +342,26 @@ partial class SkStackClient {
     if (macAddress is null)
       throw new ArgumentNullException(nameof(macAddress));
 
-    return SKLL64();
+    return SendCommandAsync(
+      command: SkStackCommandNames.SKLL64,
+      writeArguments: writer => writer.WriteTokenADDR64(macAddress),
+      parseResponsePayload: static context => {
+        var reader = context.CreateReader();
 
-    async ValueTask<SkStackResponse<IPAddress>> SKLL64()
-    {
-      byte[]? ADDR64 = null;
+        if (
+          SkStackTokenParser.ExpectIPADDR(ref reader, out var linkLocalAddress) &&
+          SkStackTokenParser.ExpectEndOfLine(ref reader)
+        ) {
+          context.Complete(reader);
+          return linkLocalAddress;
+        }
 
-      try {
-        ADDR64 = ArrayPool<byte>.Shared.Rent(SkStackCommandArgs.LengthOfADDR64);
-
-        SkStackCommandArgs.TryConvertToADDR64(ADDR64, macAddress, out var lengthOfADDR64);
-
-        return await SendCommandAsync(
-          command: SkStackCommandNames.SKLL64,
-          arguments: SkStackCommandArgs.CreateEnumerable(ADDR64.AsMemory(0, lengthOfADDR64)),
-          parseResponsePayload: static context => {
-            var reader = context.CreateReader();
-
-            if (
-              SkStackTokenParser.ExpectIPADDR(ref reader, out var linkLocalAddress) &&
-              SkStackTokenParser.ExpectEndOfLine(ref reader)
-            ) {
-              context.Complete(reader);
-              return linkLocalAddress;
-            }
-
-            context.SetAsIncomplete();
-            return default;
-          },
-          syntax: SkStackProtocolSyntax.SKLL64, // SKLL64 does not define its status
-          throwIfErrorStatus: true,
-          cancellationToken: cancellationToken
-        ).ConfigureAwait(false);
-      }
-      finally {
-        if (ADDR64 is not null)
-          ArrayPool<byte>.Shared.Return(ADDR64);
-      }
-    }
+        context.SetAsIncomplete();
+        return default;
+      },
+      syntax: SkStackProtocolSyntax.SKLL64, // SKLL64 does not define its status
+      throwIfErrorStatus: true,
+      cancellationToken: cancellationToken
+    );
   }
 }

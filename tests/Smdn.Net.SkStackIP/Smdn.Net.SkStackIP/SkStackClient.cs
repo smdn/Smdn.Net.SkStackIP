@@ -40,7 +40,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
     )
       => base.SendCommandAsync(
         command: command.ToByteSequence(),
-        arguments: arguments?.Select(arg => arg.ToByteSequence()),
+        writeArguments: writer => WriteArguments(writer, arguments),
         syntax: syntax,
         throwIfErrorStatus: throwIfErrorStatus,
         cancellationToken: cancellationToken
@@ -56,12 +56,22 @@ public class SkStackClientTests : SkStackClientTestsBase {
     )
       => base.SendCommandAsync(
         command: command.ToByteSequence(),
-        arguments: arguments?.Select(arg => arg.ToByteSequence()),
+        writeArguments: writer => WriteArguments(writer, arguments),
         parseResponsePayload: parseResponsePayload,
         syntax: syntax,
         throwIfErrorStatus: throwIfErrorStatus,
         cancellationToken: cancellationToken
       );
+
+    private static void WriteArguments(ISkStackCommandLineWriter writer, IEnumerable<string>? arguments)
+    {
+      if (arguments is null)
+        return;
+
+      foreach (var arg in arguments) {
+        writer.WriteToken(arg.ToByteSequence().Span);
+      }
+    }
   }
 
   private SkStackClientEx CreateClient(Stream stream)

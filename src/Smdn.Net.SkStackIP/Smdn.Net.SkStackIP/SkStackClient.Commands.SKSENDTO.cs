@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
 using System;
-using System.Buffers;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -129,59 +128,37 @@ partial class SkStackClient {
 
     async ValueTask<(SkStackResponse, bool)> SKSENDTO()
     {
-      byte[]? IPADDR = default;
-      byte[]? PORT = default;
-      byte[]? DATALEN = default;
+      SkStackResponse response;
+      bool hasUdpSendResultStored;
+      bool isCompletedSuccessfully;
 
       try {
-        IPADDR = ArrayPool<byte>.Shared.Rent(SkStackCommandArgs.LengthOfIPADDR);
-        PORT = ArrayPool<byte>.Shared.Rent(4);
-        DATALEN = ArrayPool<byte>.Shared.Rent(4);
-
-        SkStackCommandArgs.TryConvertToIPADDR(IPADDR, destinationAddress, out var lengthOfIPADDR);
-        SkStackCommandArgs.TryConvertToUINT16(PORT, (ushort)destinationPort, out var lengthOfPORT, zeroPadding: true);
-        SkStackCommandArgs.TryConvertToUINT16(DATALEN, (ushort)data.Length, out var lengthOfDATALEN, zeroPadding: true);
-
-        SkStackResponse response;
-        bool hasUdpSendResultStored;
-        bool isCompletedSuccessfully;
-
-        try {
-          response = await SendCommandAsync(
-            command: SkStackCommandNames.SKSENDTO,
-            arguments: SkStackCommandArgs.CreateEnumerable(
-              SkStackCommandArgs.GetHex((byte)handle),
-              IPADDR.AsMemory(0, lengthOfIPADDR),
-              PORT.AsMemory(0, lengthOfPORT),
-              SkStackCommandArgs.GetHex((byte)encryption),
-              DATALEN.AsMemory(0, lengthOfDATALEN),
-              data
-            ),
-            syntax: SkStackProtocolSyntax.SKSENDTO, // SKSENDTO must terminate the command line without CRLF
-            throwIfErrorStatus: true,
-            cancellationToken: cancellationToken
-          ).ConfigureAwait(false);
-        }
-        finally {
-          hasUdpSendResultStored = lastUdpSendResult.Remove(
-            destinationAddress,
-            out isCompletedSuccessfully
-          );
-        }
-
-        if (!hasUdpSendResultStored) // in case when the 'EVENT 21' was not raised after SKSENDTO
-          throw new SkStackUdpSendResultIndeterminateException();
-
-        return (response, isCompletedSuccessfully);
+        response = await SendCommandAsync(
+          command: SkStackCommandNames.SKSENDTO,
+          writeArguments: writer => {
+            writer.WriteTokenHex((byte)handle);
+            writer.WriteTokenIPADDR(destinationAddress);
+            writer.WriteTokenUINT16((ushort)destinationPort, zeroPadding: true);
+            writer.WriteTokenHex((byte)encryption);
+            writer.WriteTokenUINT16((ushort)data.Length, zeroPadding: true);
+            writer.WriteToken(data.Span);
+          },
+          syntax: SkStackProtocolSyntax.SKSENDTO, // SKSENDTO must terminate the command line without CRLF
+          throwIfErrorStatus: true,
+          cancellationToken: cancellationToken
+        ).ConfigureAwait(false);
       }
       finally {
-        if (IPADDR is not null)
-          ArrayPool<byte>.Shared.Return(IPADDR);
-        if (PORT is not null)
-          ArrayPool<byte>.Shared.Return(PORT);
-        if (DATALEN is not null)
-          ArrayPool<byte>.Shared.Return(DATALEN);
+        hasUdpSendResultStored = lastUdpSendResult.Remove(
+          destinationAddress,
+          out isCompletedSuccessfully
+        );
       }
+
+      if (!hasUdpSendResultStored) // in case when the 'EVENT 21' was not raised after SKSENDTO
+        throw new SkStackUdpSendResultIndeterminateException();
+
+      return (response, isCompletedSuccessfully);
     }
   }
 }

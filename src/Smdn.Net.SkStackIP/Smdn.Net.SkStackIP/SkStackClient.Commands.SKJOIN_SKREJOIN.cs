@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
 using System;
-using System.Buffers;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -64,32 +63,17 @@ partial class SkStackClient {
     CancellationToken cancellationToken
   )
   {
-    SkStackResponse resp;
-    byte[]? IPADDR = default;
     var eventHandler = new SKJOINEventHandler();
-
-    try {
-      int lengthOfIPADDR = default;
-
-      if (ipv6address is not null) {
-        IPADDR = ArrayPool<byte>.Shared.Rent(SkStackCommandArgs.LengthOfIPADDR);
-
-        if (!SkStackCommandArgs.TryConvertToIPADDR(IPADDR, ipv6address, out lengthOfIPADDR))
-          throw new InvalidOperationException("unexpected error in conversion");
-      }
-
-      resp = await SendCommandAsync(
-        command: command,
-        arguments: IPADDR is null ? null : SkStackCommandArgs.CreateEnumerable(IPADDR.AsMemory(0, lengthOfIPADDR)),
-        commandEventHandler: eventHandler,
-        throwIfErrorStatus: true,
-        cancellationToken: cancellationToken
-      ).ConfigureAwait(false);
-    }
-    finally {
-      if (IPADDR is not null)
-        ArrayPool<byte>.Shared.Return(IPADDR);
-    }
+    var resp = await SendCommandAsync(
+      command: command,
+      writeArguments: writer => {
+        if (ipv6address is not null)
+          writer.WriteTokenIPADDR(ipv6address);
+      },
+      commandEventHandler: eventHandler,
+      throwIfErrorStatus: true,
+      cancellationToken: cancellationToken
+    ).ConfigureAwait(false);
 
     eventHandler.ThrowIfEstablishmentError();
 

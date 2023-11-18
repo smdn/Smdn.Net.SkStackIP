@@ -25,7 +25,7 @@ partial class SkStackClient {
   )
     => SendCommandAsync(
       command: SkStackCommandNames.SKTABLE,
-      arguments: SkStackCommandArgs.CreateEnumerable(SkStackCommandArgs.GetHex(0x1)),
+      writeArguments: static writer => writer.WriteTokenHex(0x1),
       parseResponsePayload: SkStackEventParser.ExpectEADDR,
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken
@@ -42,7 +42,7 @@ partial class SkStackClient {
   )
     => SendCommandAsync(
       command: SkStackCommandNames.SKTABLE,
-      arguments: SkStackCommandArgs.CreateEnumerable(SkStackCommandArgs.GetHex(0x2)),
+      writeArguments: static writer => writer.WriteTokenHex(0x2),
       parseResponsePayload: SkStackEventParser.ExpectENEIGHBOR,
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken
@@ -64,7 +64,7 @@ partial class SkStackClient {
     {
       var resp = await SendCommandAsync(
         command: SkStackCommandNames.SKTABLE,
-        arguments: SkStackCommandArgs.CreateEnumerable(SkStackCommandArgs.GetHex(0xE)),
+        writeArguments: static writer => writer.WriteTokenHex(0xE),
         parseResponsePayload: SkStackEventParser.ExpectEPORT,
         throwIfErrorStatus: true,
         cancellationToken: cancellationToken
