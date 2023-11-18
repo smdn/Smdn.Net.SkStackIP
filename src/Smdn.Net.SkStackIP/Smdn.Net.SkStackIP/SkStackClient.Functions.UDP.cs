@@ -14,7 +14,6 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Smdn.Buffers;
 using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;

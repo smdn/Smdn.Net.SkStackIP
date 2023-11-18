@@ -10,7 +10,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using System.Net.NetworkInformation;
 
-using Smdn.Buffers;
 using Smdn.Formats;
 using Smdn.Text.Unicode.ControlPictures;
 
