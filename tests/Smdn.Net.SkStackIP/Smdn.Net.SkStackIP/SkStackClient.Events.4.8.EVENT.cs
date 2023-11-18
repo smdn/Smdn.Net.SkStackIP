@@ -42,7 +42,7 @@ public class SkStackClientEventsEVENTTests : SkStackClientTestsBase {
     await JoinAsync(client, stream, addressString);
 
     var raisedEventCount = 0;
-    Exception thrownExceptionInEventHandler = null;
+    Exception? thrownExceptionInEventHandler = null;
 
     client.PanaSessionTerminated += (sender, e) => {
       try {
@@ -87,7 +87,7 @@ public class SkStackClientEventsEVENTTests : SkStackClientTestsBase {
 
     await JoinAsync(client, stream, addressString);
 
-    Exception thrownExceptionInEventHandler = null;
+    Exception? thrownExceptionInEventHandler = null;
     var raisedEventCount = 0;
 
     client.PanaSessionExpired += (sender, e) => {

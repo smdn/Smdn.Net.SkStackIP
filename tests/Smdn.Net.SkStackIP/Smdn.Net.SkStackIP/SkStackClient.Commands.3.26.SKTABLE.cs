@@ -27,7 +27,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    SkStackResponse<IReadOnlyList<IPAddress>> response = null;
+    SkStackResponse<IReadOnlyList<IPAddress>>? response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
 
@@ -119,7 +119,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    SkStackResponse<IReadOnlyList<IPAddress>> response = null;
+    SkStackResponse<IReadOnlyList<IPAddress>>? response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
 
@@ -141,7 +141,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    SkStackResponse<IReadOnlyList<IPAddress>> response = null;
+    SkStackResponse<IReadOnlyList<IPAddress>>? response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
 
@@ -166,7 +166,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>> response = null;
+    SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>>? response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
 
@@ -254,7 +254,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>> response = null;
+    SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>>? response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
 
@@ -277,7 +277,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>> response = null;
+    SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>>? response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
 
@@ -318,7 +318,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    SkStackResponse<IReadOnlyList<SkStackUdpPort>> response = null;
+    SkStackResponse<IReadOnlyList<SkStackUdpPort>>? response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEListeningPortListAsync());
 

@@ -24,7 +24,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
   private static readonly TimeSpan responseDelayInterval = TimeSpan.FromMilliseconds(50);
 
   private class SkStackClientEx : SkStackClient {
-    public new ILogger Logger => base.Logger;
+    public new ILogger? Logger => base.Logger;
 
     public SkStackClientEx(Stream stream, ILogger logger)
       : base(stream, logger: logger)
@@ -33,8 +33,8 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     public ValueTask<SkStackResponse> SendCommandAsync(
       string command,
-      IEnumerable<string> arguments = null,
-      SkStackProtocolSyntax syntax = null,
+      IEnumerable<string>? arguments = null,
+      SkStackProtocolSyntax? syntax = null,
       CancellationToken cancellationToken = default,
       bool throwIfErrorStatus = true
     )
@@ -48,9 +48,9 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     public ValueTask<SkStackResponse<TPayload>> SendCommandAsync<TPayload>(
       string command,
-      IEnumerable<string> arguments = null,
-      SkStackSequenceParser<TPayload> parseResponsePayload = null,
-      SkStackProtocolSyntax syntax = null,
+      SkStackSequenceParser<TPayload?> parseResponsePayload,
+      IEnumerable<string>? arguments = null,
+      SkStackProtocolSyntax? syntax = null,
       CancellationToken cancellationToken = default,
       bool throwIfErrorStatus = true
     )
@@ -137,8 +137,8 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
   private static System.Collections.IEnumerable YieldTestCases_Logger()
   {
-    yield return new object[] { Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance };
-    yield return new object[] { null };
+    yield return new object?[] { Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance };
+    yield return new object?[] { null };
   }
 
   [TestCaseSource(nameof(YieldTestCases_Logger))]
@@ -191,7 +191,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     using var client = CreateClient(stream);
 
-    SkStackResponse resp = default;
+    SkStackResponse? resp = default;
 
     Assert.DoesNotThrowAsync(async () => {
       resp = await client.SendCommandAsync(

@@ -23,25 +23,25 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
       this.expectSynchronousCall = expectSynchronousCall;
     }
 
-    public IAsyncResult BeginInvoke(Delegate method, object[] args)
+    public IAsyncResult BeginInvoke(Delegate method, object?[]? args)
     {
       if (expectSynchronousCall)
         Assert.Fail("synchronous call expected");
 
       Task.Run(() => method.DynamicInvoke(args));
 
-      return null;
+      return null!;
     }
 
     public object EndInvoke(IAsyncResult result)
       => throw new NotImplementedException();
 
-    public object Invoke(Delegate method, object[] args)
+    public object Invoke(Delegate method, object?[]? args)
     {
       if (!expectSynchronousCall)
         Assert.Fail("asynchronous call expected");
 
-      return method.DynamicInvoke(args);
+      return method.DynamicInvoke(args)!;
     }
   }
 
@@ -70,7 +70,7 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
     );
 
   private void EventHandler(
-    ISynchronizeInvoke synchronizingObject
+    ISynchronizeInvoke? synchronizingObject
   )
   {
     using var stream = new PseudoSkStackStream();
@@ -81,7 +81,7 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
     const string senderAddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
 
     using var waitHandle = new ManualResetEvent(false);
-    Exception thrownExceptionInEventHandler = null;
+    Exception? thrownExceptionInEventHandler = null;
     var raisedEventCount = 0;
 
     client.PanaSessionTerminated += (sender, e) => {
@@ -144,7 +144,7 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
     );
 
   private void EventHandler_EventHandlerThrownException(
-    ISynchronizeInvoke synchronizingObject
+    ISynchronizeInvoke? synchronizingObject
   )
   {
     const string senderAddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";

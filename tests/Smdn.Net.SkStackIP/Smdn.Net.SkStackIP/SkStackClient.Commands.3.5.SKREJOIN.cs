@@ -41,7 +41,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     }
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    Exception thrownExceptionInEventHandler = null;
+    Exception? thrownExceptionInEventHandler = null;
     var raisedEventCount = 0;
 
     client.PanaSessionEstablished += (sender, e) => {

@@ -19,7 +19,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    SkStackResponse response = null;
+    SkStackResponse? response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKSETPWDAsync("0123456789AB".AsMemory()));
 

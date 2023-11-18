@@ -19,7 +19,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    SkStackResponse response = null;
+    SkStackResponse? response = null;
     SkStackUdpPort port = default;
 
     Assert.DoesNotThrowAsync(async () => (response, port) = await client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle3, 0x0050));
@@ -46,7 +46,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    SkStackResponse response = null;
+    SkStackResponse? response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKUDPPORTUnsetAsync(SkStackUdpPortHandle.Handle3));
 

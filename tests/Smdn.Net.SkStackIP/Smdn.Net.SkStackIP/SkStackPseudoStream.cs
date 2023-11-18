@@ -70,7 +70,7 @@ internal class PseudoSkStackStream : Stream {
   public override void Close()
   {
     writeStream?.Close();
-    writeStream = null;
+    writeStream = null!;
   }
 
   public override long Seek(long offset, SeekOrigin origin) => throw new NotImplementedException();

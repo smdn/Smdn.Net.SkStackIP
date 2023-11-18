@@ -21,7 +21,7 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    SkStackResponse response = null;
+    SkStackResponse? response = null;
 
     Assert.DoesNotThrowAsync(async () =>
       response = await client.SendSKADDNBRAsync(

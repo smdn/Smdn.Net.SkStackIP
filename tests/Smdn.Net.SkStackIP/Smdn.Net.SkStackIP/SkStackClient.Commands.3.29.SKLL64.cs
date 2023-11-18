@@ -22,7 +22,7 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("FE80:0000:0000:0000:021D:1290:1234:5678");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    SkStackResponse<IPAddress> response = null;
+    SkStackResponse<IPAddress>? response = null;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKLL64Async(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })));
 

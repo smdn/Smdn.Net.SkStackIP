@@ -59,7 +59,7 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine($"7 {addressString}");
     }
 
-    Exception thrownExceptionInEventHandler = null;
+    Exception? thrownExceptionInEventHandler = null;
     var raisedEventCount = 0;
 
     client.PanaSessionTerminated += (sender, e) => {
@@ -128,7 +128,7 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine($" {addressString}");
     }
 
-    Exception thrownExceptionInEventHandler = null;
+    Exception? thrownExceptionInEventHandler = null;
     var raisedEventCount = 0;
 
     client.PanaSessionTerminated += (sender, e) => {

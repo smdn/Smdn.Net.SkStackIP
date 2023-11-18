@@ -48,7 +48,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
     Assert.IsFalse(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
 
-    Exception thrownExceptionInEventHandler = null;
+    Exception? thrownExceptionInEventHandler = null;
     var raisedEventCount = 0;
 
     client.PanaSessionEstablished += (sender, e) => {

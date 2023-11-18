@@ -21,8 +21,8 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("OK");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    Exception thrownExceptionInSleptEventHandler = null;
-    Exception thrownExceptionInWokeUpEventHandler = null;
+    Exception? thrownExceptionInSleptEventHandler = null;
+    Exception? thrownExceptionInWokeUpEventHandler = null;
     var raisedSleptEventCount = 0;
     var raisedWokeUpEventCount = 0;
 
@@ -46,7 +46,7 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
       }
     };
 
-    SkStackResponse response = default;
+    SkStackResponse? response = default;
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKDSLEEPAsync(waitUntilWakeUp: false));
 
@@ -82,8 +82,8 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
     }
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    Exception thrownExceptionInSleptEventHandler = null;
-    Exception thrownExceptionInWokeUpEventHandler = null;
+    Exception? thrownExceptionInSleptEventHandler = null;
+    Exception? thrownExceptionInWokeUpEventHandler = null;
     var raisedSleptEventCount = 0;
     var raisedWokeUpEventCount = 0;
     DateTime sleptEventRaisedAt = default;

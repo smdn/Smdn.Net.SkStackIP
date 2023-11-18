@@ -30,7 +30,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    SkStackResponse response = default;
+    SkStackResponse? response = default;
     bool isCompletedSuccessfully = default;
 
     Assert.DoesNotThrowAsync(
@@ -63,7 +63,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    SkStackResponse response = default;
+    SkStackResponse? response = default;
     bool isCompletedSuccessfully = default;
 
     Assert.DoesNotThrowAsync(
@@ -135,7 +135,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine($"EVENT 21 {TestDestinationIPAddressString} {event21param:X2}"); // Success/Failure
       stream.ResponseWriter.WriteLine("OK");
 
-      SkStackResponse response = default;
+      SkStackResponse? response = default;
       bool isCompletedSuccessfully = default;
 
       Assert.DoesNotThrowAsync(
@@ -180,7 +180,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    SkStackResponse response = default;
+    SkStackResponse? response = default;
     bool isCompletedSuccessfully = default;
 
     Assert.DoesNotThrowAsync(
@@ -211,7 +211,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    SkStackResponse response = default;
+    SkStackResponse? response = default;
     bool isCompletedSuccessfully = default;
 
     Assert.DoesNotThrowAsync(async () => (response, isCompletedSuccessfully) = await testAction(client));

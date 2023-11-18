@@ -173,7 +173,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine();
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    IReadOnlyDictionary<SkStackChannel, decimal> scanResult = default;
+    IReadOnlyDictionary<SkStackChannel, decimal>? scanResult = default;
 
     Assert.DoesNotThrowAsync(async () => {
       (_, scanResult) = await client.SendSKSCANEnergyDetectScanAsync();
