@@ -7,7 +7,7 @@ using System.IO.Pipelines;
 
 using Microsoft.Extensions.Logging;
 
-using Smdn.Buffers;
+using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -26,7 +26,7 @@ public partial class SkStackClient :
    * instance members
    */
   private PipeWriter streamWriter;
-  private readonly IBufferWriter<byte> writer;
+  private readonly SkStackCommandLineWriter commandLineWriter;
   private PipeReader streamReader;
 
   protected ILogger? Logger { get; }
@@ -106,10 +106,11 @@ public partial class SkStackClient :
 
     if (Logger is not null && Logger.IsCommandLoggingEnabled()) {
       logWriter = new ArrayBufferWriter<byte>(initialCapacity: 64);
-      writer = DuplicateBufferWriter.Create(streamWriter, logWriter);
+
+      commandLineWriter = new(streamWriter, logWriter);
     }
     else {
-      writer = streamWriter;
+      commandLineWriter = new(streamWriter, null);
     }
 
     parseSequenceContext = new ParseSequenceContext();

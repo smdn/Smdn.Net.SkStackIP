@@ -151,29 +151,21 @@ partial class SkStackClient {
 #endif
 
     // write command
-    command.CopyTo(writer.GetMemory(command.Length));
-    writer.Advance(command.Length);
+    commandLineWriter.Write(command.Span);
 
     // write arguments
     foreach (var argument in arguments) {
       if (argument.IsEmpty)
         throw new ArgumentException("cannot send command with empty argument", nameof(arguments));
 
-      writer.GetSpan(1)[0] = SkStack.SP;
-      writer.Advance(1);
-
-      argument.Span.CopyTo(writer.GetSpan(argument.Length));
-
-      writer.Advance(argument.Length);
+      commandLineWriter.WriteToken(argument.Span);
     }
 
     // write end of command line
-    if (!syntax.EndOfCommandLine.IsEmpty) {
+    if (!syntax.EndOfCommandLine.IsEmpty)
       // must terminate the SKSENDTO command line without CRLF
       // ROHM product setting commands line must be terminated with CR instead of CRLF
-      syntax.EndOfCommandLine.CopyTo(writer.GetMemory(syntax.EndOfCommandLine.Length).Span);
-      writer.Advance(syntax.EndOfCommandLine.Length);
-    }
+      commandLineWriter.Write(syntax.EndOfCommandLine);
 
     // write command to logger
     if (Logger is not null && logWriter is not null) {
