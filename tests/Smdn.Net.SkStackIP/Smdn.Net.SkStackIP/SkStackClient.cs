@@ -31,6 +31,11 @@ public class SkStackClientTests : SkStackClientTestsBase {
     {
     }
 
+    public SkStackClientEx(PipeWriter sender, PipeReader receiver, ILogger logger)
+      : base(sender: sender, receiver: receiver, logger: logger)
+    {
+    }
+
     public ValueTask<SkStackResponse> SendCommandAsync(
       string command,
       IEnumerable<string>? arguments = null,
@@ -178,6 +183,54 @@ public class SkStackClientTests : SkStackClientTestsBase {
     Assert.ThrowsAsync<ObjectDisposedException>(async () => await client.SendCommandAsync("TEST"), $"{nameof(client.SendCommandAsync)} after {nameof(client.Dispose)}");
 
     Assert.DoesNotThrow(client.Dispose, $"{nameof(client.Dispose)} #2");
+  }
+
+  [Test]
+  public void Command_ClientConstructedFromStream()
+  {
+    var stream = new PseudoSkStackStream();
+
+    stream.ResponseWriter.WriteLine("OK");
+
+    using var client = new SkStackClientEx(stream, CreateLoggerForTestCase());
+
+    Assert.DoesNotThrowAsync(async () => {
+      _ = await client.SendCommandAsync(
+        command: "TEST",
+        arguments: new[] { "arg1", "arg2" }
+      );
+    });
+
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("TEST arg1 arg2\r\n".ToByteSequence())
+    );
+  }
+
+  [Test]
+  public async Task Command_ClientConstructedFromPipeReaderWriter()
+  {
+    var pipe = new SkStackDuplexPipe();
+
+    pipe.Start();
+
+    await pipe.WriteResponseLineAsync("OK").ConfigureAwait(false);
+
+    using var client = new SkStackClientEx(pipe.Output, pipe.Input, CreateLoggerForTestCase());
+
+    Assert.DoesNotThrowAsync(async () => {
+      _ = await client.SendCommandAsync(
+        command: "TEST",
+        arguments: new[] { "arg1", "arg2" }
+      );
+    });
+
+    await pipe.StopAsync().ConfigureAwait(false);
+
+    Assert.That(
+      pipe.ReadSentData(),
+      Is.EqualTo("TEST arg1 arg2\r\n".ToByteSequence())
+    );
   }
 
   [Test]
