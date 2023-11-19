@@ -174,14 +174,14 @@ partial class SkStackClient {
           ParseSequenceStatus.Undetermined or _ => throw new InvalidOperationException("final status is invalid or remains undetermined"),
         };
 
-        if (markAsExamined)
-          // mark entire buffer as examined to receive the subsequent data
-          streamReader.AdvanceTo(consumed: buffer.Start, examined: buffer.End);
-
         if (advanceIfConsumed && parseSequenceContext.IsConsumed(buffer)) {
           // advance the buffer to the position where parsing finished
           Logger?.LogDebugResponse(buffer.Slice(0, parseSequenceContext.UnparsedSequence.Start), result);
           streamReader.AdvanceTo(consumed: parseSequenceContext.UnparsedSequence.Start);
+        }
+        else if (markAsExamined) {
+          // mark entire buffer as examined to receive the subsequent data
+          streamReader.AdvanceTo(consumed: buffer.Start, examined: buffer.End);
         }
 
         if (returnResult)
