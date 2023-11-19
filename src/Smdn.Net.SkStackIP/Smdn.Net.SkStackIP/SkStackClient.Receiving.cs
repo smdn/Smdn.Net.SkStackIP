@@ -293,7 +293,7 @@ partial class SkStackClient {
     var (command, syntax) = args;
 
     // SKSENDTO occasionally echoes back the line with only CRLF even if the register SFE is set to 0 (???)
-    if (syntax == SkStackProtocolSyntax.SKSENDTO /*args.command.Span.SequenceEqual(SkStackCommandNames.SKSENDTO.Span)*/) {
+    if (syntax == SkStackProtocolSyntax.SKSENDTO) {
       var sksendtoEchobackLineReader = context.CreateReader();
 
       if (sksendtoEchobackLineReader.IsNext(syntax.EndOfEchobackLine, advancePast: true)) {
