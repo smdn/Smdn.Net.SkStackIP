@@ -3,6 +3,7 @@
 using System;
 using System.Buffers;
 using System.Net;
+using System.IO;
 using System.Threading;
 
 using NUnit.Framework;
@@ -13,6 +14,44 @@ namespace Smdn.Net.SkStackIP;
 
 [TestFixture]
 public class SkStackClientReceivingTests : SkStackClientTestsBase {
+  private static System.Collections.IEnumerable YieldTestCases_ReceiveResponseDelay_Set()
+  {
+    yield return new object?[] { TimeSpan.FromMilliseconds(1) };
+    yield return new object?[] { TimeSpan.FromSeconds(1) };
+    yield return new object?[] { TimeSpan.MaxValue };
+  }
+
+  [TestCaseSource(nameof(YieldTestCases_ReceiveResponseDelay_Set))]
+  public void ReceiveResponseDelay_Set(TimeSpan newValue)
+  {
+    using var client = new SkStackClient(Stream.Null);
+
+    Assert.DoesNotThrow(() => client.ReceiveResponseDelay = newValue);
+
+    Assert.AreEqual(client.ReceiveResponseDelay, newValue, nameof(client.ReceiveResponseDelay));
+  }
+
+  private static System.Collections.IEnumerable YieldTestCases_ReceiveResponseDelay_Set_InvalidValue()
+  {
+    yield return new object?[] { TimeSpan.Zero };
+    yield return new object?[] { TimeSpan.MinValue };
+    yield return new object?[] { TimeSpan.FromMilliseconds(-1) };
+    yield return new object?[] { TimeSpan.FromSeconds(-1) };
+    yield return new object?[] { Timeout.InfiniteTimeSpan };
+  }
+
+  [TestCaseSource(nameof(YieldTestCases_ReceiveResponseDelay_Set_InvalidValue))]
+  public void ReceiveResponseDelay_Set_InvalidValue(TimeSpan newValue)
+  {
+    using var client = new SkStackClient(Stream.Null);
+
+    var initialValue = client.ReceiveResponseDelay;
+
+    Assert.Throws<ArgumentOutOfRangeException>(() => client.ReceiveResponseDelay = newValue);
+
+    Assert.AreEqual(client.ReceiveResponseDelay, initialValue, nameof(client.ReceiveResponseDelay));
+  }
+
   private static System.Collections.IEnumerable YieldTestCases_ResponseParser_ERXUDP_InvalidTokenFormat()
   {
     // IPADDR

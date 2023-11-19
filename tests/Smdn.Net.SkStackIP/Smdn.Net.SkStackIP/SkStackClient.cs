@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
@@ -1028,5 +1029,49 @@ public class SkStackClientTests : SkStackClientTestsBase {
     );
 
     Assert.IsTrue(resp.Success);
+  }
+
+  [TestCase(1)]
+  [TestCase(2)]
+  public async Task Response_ReceiveResponseDelay(int delayInSeconds)
+  {
+    var stream = new PseudoSkStackStream();
+
+    async Task CompleteResponseAsync()
+    {
+      stream.ResponseWriter.Write("FAIL"); await Task.Delay(100);
+      stream.ResponseWriter.WriteLine();
+    }
+
+    var client = CreateClient(stream);
+    var delay = TimeSpan.FromSeconds(delayInSeconds);
+
+    client.ReceiveResponseDelay = delay;
+
+    var sw = Stopwatch.StartNew();
+#pragma warning disable CA2012
+    var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false).AsTask();
+
+    await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
+#pragma warning restore CA2012
+
+    sw.Stop();
+
+    var resp = taskSendCommand.Result;
+
+    Assert.That(
+      stream.ReadSentData(),
+      Is.EqualTo("TEST\r\n".ToByteSequence())
+    );
+
+    Assert.IsFalse(resp.Success);
+
+    if (sw.Elapsed < delay) {
+      Assert.Warn(
+        "elapsed time does not exceed specified delay time (delay: {0}, elapsed: {1})",
+        delay,
+        sw.Elapsed
+      );
+    }
   }
 }

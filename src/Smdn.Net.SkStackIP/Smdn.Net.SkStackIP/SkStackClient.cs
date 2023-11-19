@@ -17,14 +17,6 @@ namespace Smdn.Net.SkStackIP;
 public partial class SkStackClient :
   IDisposable
 {
-  /*
-   * static members
-   */
-  private static readonly TimeSpan ContinuousReadingInterval = TimeSpan.FromMilliseconds(10); // TODO: make configurable
-
-  /*
-   * instance members
-   */
   private PipeWriter streamWriter;
   private readonly SkStackCommandLineWriter commandLineWriter;
   private PipeReader streamReader;
