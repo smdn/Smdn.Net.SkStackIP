@@ -78,7 +78,7 @@ partial class SkStackRegister {
       return default;
     }
 
-    public void WriteValueTo(ISkStackCommandLineWriter writer, TValue value)
+    internal void WriteValueTo(ISkStackCommandLineWriter writer, TValue value)
       => WriteSKSREGArgument(writer, value);
   }
 
