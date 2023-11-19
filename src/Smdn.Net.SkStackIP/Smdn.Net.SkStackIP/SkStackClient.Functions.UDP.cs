@@ -21,6 +21,20 @@ namespace Smdn.Net.SkStackIP;
 #pragma warning disable IDE0040
 partial class SkStackClient {
 #pragma warning restore IDE0040
+  private static readonly TimeSpan ReceiveUdpPollingIntervalDefault = TimeSpan.FromMilliseconds(10);
+
+  private TimeSpan receiveUdpPollingInterval = ReceiveUdpPollingIntervalDefault;
+
+  public TimeSpan ReceiveUdpPollingInterval {
+    get => receiveUdpPollingInterval;
+    set {
+      if (value <= TimeSpan.Zero)
+        throw new ArgumentOutOfRangeException(message: "must be non-zero positive value", actualValue: value, paramName: nameof(ReceiveUdpPollingInterval));
+
+      receiveUdpPollingInterval = value;
+    }
+  }
+
   private SkStackERXUDPDataFormat erxudpDataFormat;
 
   /// <summary>
@@ -251,12 +265,19 @@ partial class SkStackClient {
     if (!udpReceiveEventPipes.TryGetValue(port, out var pipe))
       throw new InvalidOperationException($"The port number {port} is not configured to capture receiving events. Call the method `{nameof(StartCapturingUdpReceiveEvents)}` first.");
 
-    return ReceiveUdpAsyncCore(this, pipe.Reader, buffer, cancellationToken);
+    return ReceiveUdpAsyncCore(
+      thisClient: this,
+      pipeReader: pipe.Reader,
+      bufferWriter: buffer,
+      eventPollingInterval: receiveUdpPollingInterval,
+      cancellationToken: cancellationToken
+    );
 
     static async ValueTask<IPAddress> ReceiveUdpAsyncCore(
       SkStackClient thisClient,
       PipeReader pipeReader,
       IBufferWriter<byte> bufferWriter,
+      TimeSpan eventPollingInterval,
       CancellationToken cancellationToken
     )
     {
@@ -265,7 +286,7 @@ partial class SkStackClient {
           var receiveNotificationalEventResult = await thisClient.ReceiveNotificationalEventAsync(cancellationToken).ConfigureAwait(false);
 
           if (!receiveNotificationalEventResult.Received)
-            await Task.Delay(ContinuousReadingInterval, cancellationToken).ConfigureAwait(false);
+            await Task.Delay(eventPollingInterval, cancellationToken).ConfigureAwait(false);
 
           continue;
         }

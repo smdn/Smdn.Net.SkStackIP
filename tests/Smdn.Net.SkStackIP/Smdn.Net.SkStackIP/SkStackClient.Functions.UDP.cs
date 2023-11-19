@@ -51,6 +51,44 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     Assert.AreEqual(nameof(client.ERXUDPDataFormat), ex!.ParamName, nameof(ex.ParamName));
   }
 
+  private static System.Collections.IEnumerable YieldTestCases_ReceiveUdpPollingInterval_Set()
+  {
+    yield return new object?[] { TimeSpan.FromMilliseconds(1) };
+    yield return new object?[] { TimeSpan.FromSeconds(1) };
+    yield return new object?[] { TimeSpan.MaxValue };
+  }
+
+  [TestCaseSource(nameof(YieldTestCases_ReceiveUdpPollingInterval_Set))]
+  public void ReceiveUdpPollingInterval_Set(TimeSpan newValue)
+  {
+    using var client = new SkStackClient(Stream.Null);
+
+    Assert.DoesNotThrow(() => client.ReceiveUdpPollingInterval = newValue);
+
+    Assert.AreEqual(client.ReceiveUdpPollingInterval, newValue, nameof(client.ReceiveUdpPollingInterval));
+  }
+
+  private static System.Collections.IEnumerable YieldTestCases_ReceiveUdpPollingInterval_Set_InvalidValue()
+  {
+    yield return new object?[] { TimeSpan.Zero };
+    yield return new object?[] { TimeSpan.MinValue };
+    yield return new object?[] { TimeSpan.FromMilliseconds(-1) };
+    yield return new object?[] { TimeSpan.FromSeconds(-1) };
+    yield return new object?[] { Timeout.InfiniteTimeSpan };
+  }
+
+  [TestCaseSource(nameof(YieldTestCases_ReceiveUdpPollingInterval_Set_InvalidValue))]
+  public void ReceiveUdpPollingInterval_Set_InvalidValue(TimeSpan newValue)
+  {
+    using var client = new SkStackClient(Stream.Null);
+
+    var initialValue = client.ReceiveUdpPollingInterval;
+
+    Assert.Throws<ArgumentOutOfRangeException>(() => client.ReceiveUdpPollingInterval = newValue);
+
+    Assert.AreEqual(client.ReceiveUdpPollingInterval, initialValue, nameof(client.ReceiveUdpPollingInterval));
+  }
+
   [Test]
   public void GetListeningUdpPortListAsync()
   {
