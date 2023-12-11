@@ -14,7 +14,7 @@ using NUnit.Framework;
 using Polly;
 using Polly.Retry;
 
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
+using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -64,7 +64,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     Assert.AreEqual(IPAddress.Parse(remoteAddressString), remoteAddress, nameof(remoteAddress));
     Assert.That(
       buffer.WrittenMemory,
-      Is.EqualTo("01234567".ToByteSequence()),
+      SequenceIs.EqualTo("01234567".ToByteSequence()),
       nameof(buffer.WrittenMemory)
     );
   }
@@ -166,7 +166,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSENDTO {(int)handleForEchonetLite} {expectedDestinationAddress} {SkStackKnownPortNumbers.EchonetLite:X4} {(int)SkStackUdpEncryption.ForceEncrypt} {buffer.Length:X4} {Encoding.ASCII.GetString(buffer)}".ToByteSequence())
+      SequenceIs.EqualTo($"SKSENDTO {(int)handleForEchonetLite} {expectedDestinationAddress} {SkStackKnownPortNumbers.EchonetLite:X4} {(int)SkStackUdpEncryption.ForceEncrypt} {buffer.Length:X4} {Encoding.ASCII.GetString(buffer)}".ToByteSequence())
     );
   }
 
@@ -214,7 +214,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSENDTO {(int)handleForEchonetLite} {expectedDestinationAddress} {SkStackKnownPortNumbers.EchonetLite:X4} {(int)SkStackUdpEncryption.ForceEncrypt} {buffer.Length:X4} {Encoding.ASCII.GetString(buffer)}".ToByteSequence())
+      SequenceIs.EqualTo($"SKSENDTO {(int)handleForEchonetLite} {expectedDestinationAddress} {SkStackKnownPortNumbers.EchonetLite:X4} {(int)SkStackUdpEncryption.ForceEncrypt} {buffer.Length:X4} {Encoding.ASCII.GetString(buffer)}".ToByteSequence())
     );
   }
 
@@ -275,7 +275,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo(
+      SequenceIs.EqualTo(
         string.Concat(
           Enumerable.Repeat(
             $"SKSENDTO {(int)handleForEchonetLite} {expectedDestinationAddress} {SkStackKnownPortNumbers.EchonetLite:X4} {(int)SkStackUdpEncryption.ForceEncrypt} {buffer.Length:X4} {Encoding.ASCII.GetString(buffer)}",

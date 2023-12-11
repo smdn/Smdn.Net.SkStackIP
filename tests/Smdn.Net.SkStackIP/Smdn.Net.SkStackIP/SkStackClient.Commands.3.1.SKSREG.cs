@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
+using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -25,7 +25,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo(expectedSentSequence.ToByteSequence())
+      SequenceIs.EqualTo(expectedSentSequence.ToByteSequence())
     );
   }
   [Test] public Task SKSREG_Set_UINT8_S02() => SKSREG_Set("SKSREG S02 21\r\n", (client) => client.SendSKSREGAsync(SkStackRegister.S02, SkStackChannel.Channel33));
@@ -53,13 +53,13 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
     Assert.IsNotNull(response.Payload);
 
     if (expectedValue is ReadOnlyMemory<byte> expectedByteSequence)
-      Assert.That(response.Payload, Is.EqualTo(expectedByteSequence)); // XXX
+      Assert.That(response.Payload, SequenceIs.EqualTo(expectedByteSequence)); // XXX
     else
-      Assert.That(response.Payload, Is.EqualTo(expectedValue));
+      Assert.That(response.Payload, SequenceIs.EqualTo(expectedValue));
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo(expectedSentSequence.ToByteSequence())
+      SequenceIs.EqualTo(expectedSentSequence.ToByteSequence())
     );
   }
 

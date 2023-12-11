@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
+using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -61,7 +61,7 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKDSLEEP\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKDSLEEP\r\n".ToByteSequence())
     );
   }
 
@@ -137,7 +137,7 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKDSLEEP\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKDSLEEP\r\n".ToByteSequence())
     );
   }
 }

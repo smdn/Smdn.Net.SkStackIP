@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
+using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -38,7 +38,7 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSAVE\r\nSKSAVE\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSAVE\r\nSKSAVE\r\n".ToByteSequence())
     );
   }
 
@@ -57,7 +57,7 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSAVE\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSAVE\r\n".ToByteSequence())
     );
   }
 
@@ -125,7 +125,7 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSAVE\r\nSKSAVE\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSAVE\r\nSKSAVE\r\n".ToByteSequence())
     );
   }
 
@@ -190,7 +190,7 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKLOAD\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKLOAD\r\n".ToByteSequence())
     );
   }
 
@@ -209,7 +209,7 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKLOAD\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKLOAD\r\n".ToByteSequence())
     );
   }
 
@@ -228,7 +228,7 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSREG SFF 1\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSREG SFF 1\r\n".ToByteSequence())
     );
   }
 
@@ -247,7 +247,7 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSREG SFF 0\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSREG SFF 0\r\n".ToByteSequence())
     );
   }
 }

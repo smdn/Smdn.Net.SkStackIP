@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
+using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -24,7 +24,7 @@ public class SkStackClientCommandsSKSAVETests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSAVE\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSAVE\r\n".ToByteSequence())
     );
 
     Assert.IsTrue(response.Success);
@@ -45,7 +45,7 @@ public class SkStackClientCommandsSKSAVETests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSAVE\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSAVE\r\n".ToByteSequence())
     );
   }
 
@@ -64,7 +64,7 @@ public class SkStackClientCommandsSKSAVETests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSAVE\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSAVE\r\n".ToByteSequence())
     );
   }
 }

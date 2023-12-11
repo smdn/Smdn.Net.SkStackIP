@@ -5,7 +5,7 @@ using System;
 
 using NUnit.Framework;
 
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
+using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -34,7 +34,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKUDPPORT 3 0050\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKUDPPORT 3 0050\r\n".ToByteSequence())
     );
   }
 
@@ -55,7 +55,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKUDPPORT 3 0000\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKUDPPORT 3 0000\r\n".ToByteSequence())
     );
   }
 

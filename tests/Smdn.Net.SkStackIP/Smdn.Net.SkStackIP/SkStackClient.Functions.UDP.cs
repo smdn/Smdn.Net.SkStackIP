@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
+using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -236,7 +236,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKTABLE E\r\nSKUDPPORT {(int)expectedHandle} {port:X4}\r\n".ToByteSequence())
+      SequenceIs.EqualTo($"SKTABLE E\r\nSKUDPPORT {(int)expectedHandle} {port:X4}\r\n".ToByteSequence())
     );
   }
 
@@ -524,7 +524,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     Assert.AreEqual(IPAddress.Parse(remoteAddressString1), remoteAddress1, nameof(remoteAddress1));
     Assert.That(
       buffer.WrittenMemory,
-      Is.EqualTo("01234567".ToByteSequence()),
+      SequenceIs.EqualTo("01234567".ToByteSequence()),
       nameof(buffer.WrittenMemory)
     );
 
@@ -544,7 +544,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     Assert.AreEqual(IPAddress.Parse(remoteAddressString2), remoteAddress2, nameof(remoteAddress2));
     Assert.That(
       buffer.WrittenMemory,
-      Is.EqualTo("89ABCDEF".ToByteSequence()),
+      SequenceIs.EqualTo("89ABCDEF".ToByteSequence()),
       nameof(buffer.WrittenMemory)
     );
   }
@@ -585,7 +585,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     Assert.AreEqual(IPAddress.Parse(remoteAddressStringEchonetLite), remoteAddressEchonetLite, nameof(remoteAddressEchonetLite));
     Assert.That(
       buffer.WrittenMemory,
-      Is.EqualTo("ECHONET-LITE".ToByteSequence()),
+      SequenceIs.EqualTo("ECHONET-LITE".ToByteSequence()),
       nameof(buffer.WrittenMemory)
     );
 
@@ -605,7 +605,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     Assert.AreEqual(IPAddress.Parse(remoteAddressStringPana), remoteAddressPana, nameof(remoteAddressPana));
     Assert.That(
       buffer.WrittenMemory,
-      Is.EqualTo("PANA".ToByteSequence()),
+      SequenceIs.EqualTo("PANA".ToByteSequence()),
       nameof(buffer.WrittenMemory)
     );
   }
@@ -655,7 +655,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     Assert.AreEqual(IPAddress.Parse(remoteAddressString), remoteAddress, nameof(remoteAddress));
     Assert.That(
       buffer.WrittenMemory,
-      Is.EqualTo("X".ToByteSequence()),
+      SequenceIs.EqualTo("X".ToByteSequence()),
       nameof(buffer.WrittenMemory)
     );
   }
@@ -700,7 +700,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     Assert.That(
       buffer.WrittenMemory,
-      Is.EqualTo("\r\n".ToByteSequence()),
+      SequenceIs.EqualTo("\r\n".ToByteSequence()),
       nameof(buffer.WrittenMemory)
     );
   }
@@ -757,7 +757,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     Assert.That(
       buffer.WrittenMemory,
-      Is.EqualTo("01234567".ToByteSequence()),
+      SequenceIs.EqualTo("01234567".ToByteSequence()),
       nameof(buffer.WrittenMemory)
     );
   }
@@ -794,7 +794,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     Assert.AreEqual(IPAddress.Parse(remoteAddressString), remoteAddress, nameof(remoteAddress));
     Assert.That(
       buffer.WrittenMemory,
-      Is.EqualTo(new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF }),
+      SequenceIs.EqualTo(new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF }),
       nameof(buffer.WrittenMemory)
     );
   }

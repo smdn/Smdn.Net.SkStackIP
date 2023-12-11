@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
+using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -48,7 +48,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
+      SequenceIs.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
     );
   }
 
@@ -81,7 +81,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
+      SequenceIs.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
     );
   }
 
@@ -111,7 +111,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
+      SequenceIs.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
     );
   }
 
@@ -154,7 +154,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
       Assert.That(
         stream.ReadSentData(),
-        Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence()),
+        SequenceIs.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence()),
         $"case #{testCaseNumber}"
       );
 
@@ -198,7 +198,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
+      SequenceIs.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
     );
   }
 
@@ -222,7 +222,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
+      SequenceIs.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
     );
   }
 
@@ -365,7 +365,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSENDTO {expectedHandle} {TestDestinationIPAddressString} 0E1A 2 0005 01234".ToByteSequence())
+      SequenceIs.EqualTo($"SKSENDTO {expectedHandle} {TestDestinationIPAddressString} 0E1A 2 0005 01234".ToByteSequence())
     );
   }
 
@@ -414,7 +414,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A {expectedSec} 0005 01234".ToByteSequence())
+      SequenceIs.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A {expectedSec} 0005 01234".ToByteSequence())
     );
   }
 
@@ -482,7 +482,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
+      SequenceIs.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0005 01234".ToByteSequence())
     );
   }
 
@@ -519,7 +519,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0002 \r\n".ToByteSequence())
+      SequenceIs.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0002 \r\n".ToByteSequence())
     );
 
     Assert.IsTrue(response.Success, nameof(response.Success));
@@ -546,7 +546,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0002 \r\n".ToByteSequence())
+      SequenceIs.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0002 \r\n".ToByteSequence())
     );
 
     Assert.IsTrue(response.Success, nameof(response.Success));

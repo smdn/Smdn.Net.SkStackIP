@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
+using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -112,7 +112,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo(
+      SequenceIs.EqualTo(
         (
           $"SKSETRBID {rbid}\r\n" +
           $"SKSETPWD {password.Length:X} {password}\r\n" +
@@ -205,7 +205,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo(
+      SequenceIs.EqualTo(
         (
           $"SKSETRBID {rbid}\r\n" +
           $"SKSETPWD {password.Length:X} {password}\r\n" +
@@ -266,8 +266,8 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.That(
       stream.ReadSentData(),
       expectSKSETPWD
-        ? Is.EqualTo($"SKSETRBID {rbid}\r\nSKSETPWD {password.Length:X} {password}\r\n".ToByteSequence())
-        : Is.EqualTo($"SKSETRBID {rbid}\r\n".ToByteSequence())
+        ? SequenceIs.EqualTo($"SKSETRBID {rbid}\r\nSKSETPWD {password.Length:X} {password}\r\n".ToByteSequence())
+        : SequenceIs.EqualTo($"SKSETRBID {rbid}\r\n".ToByteSequence())
     );
   }
 
@@ -308,7 +308,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSETRBID {rbid}\r\nSKSETPWD {password.Length:X} {password}\r\nSKADDNBR {paaAddress} {expectedMacAddress}\r\n".ToByteSequence())
+      SequenceIs.EqualTo($"SKSETRBID {rbid}\r\nSKSETPWD {password.Length:X} {password}\r\nSKADDNBR {paaAddress} {expectedMacAddress}\r\n".ToByteSequence())
     );
   }
 
@@ -351,7 +351,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKLL64 {paaMacAddress}\r\nSKSETRBID {rbid}\r\nSKSETPWD {password.Length:X} {password}\r\nSKADDNBR {paaAddress} {paaMacAddress}\r\n".ToByteSequence())
+      SequenceIs.EqualTo($"SKLL64 {paaMacAddress}\r\nSKSETRBID {rbid}\r\nSKSETPWD {password.Length:X} {password}\r\nSKADDNBR {paaAddress} {paaMacAddress}\r\n".ToByteSequence())
     );
   }
 
@@ -418,7 +418,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo(
+      SequenceIs.EqualTo(
         (
           $"SKSETRBID {rbid}\r\n" +
           $"SKSETPWD {password.Length:X} {password}\r\n" +
@@ -463,7 +463,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo(
+      SequenceIs.EqualTo(
         (
           $"SKSETRBID {rbid}\r\n" +
           $"SKSETPWD {password.Length:X} {password}\r\n" +
@@ -548,7 +548,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo(
+      SequenceIs.EqualTo(
         (
           $"SKSETRBID {rbid}\r\n" +
           $"SKSETPWD {password.Length:X} {password}\r\n" +
@@ -615,7 +615,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo(
+      SequenceIs.EqualTo(
         (
           $"SKSETRBID {rbid}\r\n" +
           $"SKSETPWD {password.Length:X} {password}\r\n" +

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
+using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -49,7 +49,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKTABLE 1\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKTABLE 1\r\n".ToByteSequence())
     );
   }
 
@@ -106,7 +106,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKTABLE 1\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKTABLE 1\r\n".ToByteSequence())
     );
   }
 
@@ -129,7 +129,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKTABLE 1\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKTABLE 1\r\n".ToByteSequence())
     );
   }
 
@@ -151,7 +151,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKTABLE 1\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKTABLE 1\r\n".ToByteSequence())
     );
   }
 
@@ -188,7 +188,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKTABLE 2\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKTABLE 2\r\n".ToByteSequence())
     );
   }
 
@@ -241,7 +241,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKTABLE 2\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKTABLE 2\r\n".ToByteSequence())
     );
   }
 
@@ -264,7 +264,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKTABLE 2\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKTABLE 2\r\n".ToByteSequence())
     );
   }
 
@@ -287,7 +287,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKTABLE 2\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKTABLE 2\r\n".ToByteSequence())
     );
   }
 
@@ -349,7 +349,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKTABLE E\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKTABLE E\r\n".ToByteSequence())
     );
   }
 }

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
+using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -58,7 +58,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSCAN 0 FFFFFFFF {expectedDurationFactor:X1}\r\n".ToByteSequence())
+      SequenceIs.EqualTo($"SKSCAN 0 FFFFFFFF {expectedDurationFactor:X1}\r\n".ToByteSequence())
     );
   }
 
@@ -91,7 +91,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSCAN 0 FFFFFFFF {durationFactor:X1}\r\n".ToByteSequence())
+      SequenceIs.EqualTo($"SKSCAN 0 FFFFFFFF {durationFactor:X1}\r\n".ToByteSequence())
     );
   }
 
@@ -153,7 +153,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSCAN 0 {channelMask:X8} 2\r\n".ToByteSequence())
+      SequenceIs.EqualTo($"SKSCAN 0 {channelMask:X8} 2\r\n".ToByteSequence())
     );
   }
 
@@ -220,7 +220,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSCAN 0 FFFFFFFF 2\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSCAN 0 FFFFFFFF 2\r\n".ToByteSequence())
     );
   }
 
@@ -298,7 +298,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSCAN 2 FFFFFFFF 2\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSCAN 2 FFFFFFFF 2\r\n".ToByteSequence())
     );
   }
 
@@ -333,7 +333,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSCAN 2 FFFFFFFF 2\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSCAN 2 FFFFFFFF 2\r\n".ToByteSequence())
     );
   }
 
@@ -397,7 +397,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSCAN 2 FFFFFFFF 2\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSCAN 2 FFFFFFFF 2\r\n".ToByteSequence())
     );
   }
 
@@ -467,7 +467,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSCAN 3 FFFFFFFF 2\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSCAN 3 FFFFFFFF 2\r\n".ToByteSequence())
     );
   }
 
@@ -502,7 +502,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSCAN 3 FFFFFFFF 2\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSCAN 3 FFFFFFFF 2\r\n".ToByteSequence())
     );
   }
 }

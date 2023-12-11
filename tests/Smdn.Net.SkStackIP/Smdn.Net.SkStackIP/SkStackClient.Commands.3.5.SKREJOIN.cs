@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
+using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -83,7 +83,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKREJOIN\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKREJOIN\r\n".ToByteSequence())
     );
   }
 
@@ -141,7 +141,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKREJOIN\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKREJOIN\r\n".ToByteSequence())
     );
   }
 
@@ -171,7 +171,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKREJOIN\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKREJOIN\r\n".ToByteSequence())
     );
   }
 }

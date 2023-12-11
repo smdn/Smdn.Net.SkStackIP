@@ -5,7 +5,7 @@ using System;
 
 using NUnit.Framework;
 
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
+using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -30,7 +30,7 @@ public class SkStackClientCommandsSKVERTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKVER\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKVER\r\n".ToByteSequence())
     );
   }
 }

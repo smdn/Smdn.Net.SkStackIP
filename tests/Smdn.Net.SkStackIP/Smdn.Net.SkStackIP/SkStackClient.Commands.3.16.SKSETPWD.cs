@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using Is = Smdn.Test.NUnit.Constraints.Buffers.Is;
+using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -29,7 +29,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo("SKSETPWD C 0123456789AB\r\n".ToByteSequence())
+      SequenceIs.EqualTo("SKSETPWD C 0123456789AB\r\n".ToByteSequence())
     );
   }
 
@@ -130,7 +130,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSETPWD {password.Length:X} {password}\r\n".ToByteSequence())
+      SequenceIs.EqualTo($"SKSETPWD {password.Length:X} {password}\r\n".ToByteSequence())
     );
 
     var logSKSETPWDRecorded = false;
@@ -189,7 +189,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      Is.EqualTo($"SKSETPWD {password.Length:X} {password}\r\n".ToByteSequence()),
+      SequenceIs.EqualTo($"SKSETPWD {password.Length:X} {password}\r\n".ToByteSequence()),
       "password must not be masked"
     );
   }
