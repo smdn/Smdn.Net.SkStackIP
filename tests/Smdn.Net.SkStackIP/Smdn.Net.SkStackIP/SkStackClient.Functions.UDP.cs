@@ -38,7 +38,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var client = new ERXUDPDataFormatSkStackClient();
 
     Assert.DoesNotThrow(() => client.SetERXUDPDataFormat(format));
-    Assert.AreEqual(client.ERXUDPDataFormat, format);
+    Assert.That(format, Is.EqualTo(client.ERXUDPDataFormat));
   }
 
   [TestCase(-1)]
@@ -48,7 +48,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     var ex = Assert.Throws<ArgumentException>(() => client.SetERXUDPDataFormat(format));
 
-    Assert.AreEqual(nameof(client.ERXUDPDataFormat), ex!.ParamName, nameof(ex.ParamName));
+    Assert.That(ex!.ParamName, Is.EqualTo(nameof(client.ERXUDPDataFormat)), nameof(ex.ParamName));
   }
 
   private static System.Collections.IEnumerable YieldTestCases_ReceiveUdpPollingInterval_Set()
@@ -65,7 +65,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     Assert.DoesNotThrow(() => client.ReceiveUdpPollingInterval = newValue);
 
-    Assert.AreEqual(client.ReceiveUdpPollingInterval, newValue, nameof(client.ReceiveUdpPollingInterval));
+    Assert.That(newValue, Is.EqualTo(client.ReceiveUdpPollingInterval), nameof(client.ReceiveUdpPollingInterval));
   }
 
   private static System.Collections.IEnumerable YieldTestCases_ReceiveUdpPollingInterval_Set_InvalidValue()
@@ -86,7 +86,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     Assert.Throws<ArgumentOutOfRangeException>(() => client.ReceiveUdpPollingInterval = newValue);
 
-    Assert.AreEqual(client.ReceiveUdpPollingInterval, initialValue, nameof(client.ReceiveUdpPollingInterval));
+    Assert.That(initialValue, Is.EqualTo(client.ReceiveUdpPollingInterval), nameof(client.ReceiveUdpPollingInterval));
   }
 
   [Test]
@@ -110,14 +110,14 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       async () => listeningPortList = await client.GetListeningUdpPortListAsync()
     );
 
-    Assert.IsNotNull(listeningPortList, nameof(listeningPortList));
-    CollectionAssert.AreEqual(
+    Assert.That(listeningPortList, Is.Not.Null, nameof(listeningPortList));
+    Assert.That(
       listeningPortList!.Select(static p => (p.Handle, p.Port)),
-      new[] {
+      Is.EqualTo(new[] {
         (SkStackUdpPortHandle.Handle1, 1),
         (SkStackUdpPortHandle.Handle3, 3),
         (SkStackUdpPortHandle.Handle4, 4),
-      },
+      }).AsCollection,
       nameof(listeningPortList)
     );
   }
@@ -143,8 +143,8 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       async () => listeningPortList = await client.GetListeningUdpPortListAsync()
     );
 
-    Assert.IsNotNull(listeningPortList, nameof(listeningPortList));
-    CollectionAssert.IsEmpty(listeningPortList, nameof(listeningPortList));
+    Assert.That(listeningPortList, Is.Not.Null, nameof(listeningPortList));
+    Assert.That(listeningPortList, Is.Empty, nameof(listeningPortList));
   }
 
   [Test]
@@ -168,14 +168,14 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       async () => unusedHandleList = await client.GetUnusedUdpPortHandleListAsync()
     );
 
-    Assert.IsNotNull(unusedHandleList, nameof(unusedHandleList));
-    CollectionAssert.AreEqual(
+    Assert.That(unusedHandleList, Is.Not.Null, nameof(unusedHandleList));
+    Assert.That(
       unusedHandleList,
-      new[] {
+      Is.EqualTo(new[] {
         SkStackUdpPortHandle.Handle2,
         SkStackUdpPortHandle.Handle5,
         SkStackUdpPortHandle.Handle6,
-      },
+      }),
       nameof(unusedHandleList)
     );
   }
@@ -201,8 +201,8 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       async () => unusedHandleList = await client.GetUnusedUdpPortHandleListAsync()
     );
 
-    Assert.IsNotNull(unusedHandleList, nameof(unusedHandleList));
-    CollectionAssert.IsEmpty(unusedHandleList, nameof(unusedHandleList));
+    Assert.That(unusedHandleList, Is.Not.Null, nameof(unusedHandleList));
+    Assert.That(unusedHandleList, Is.Empty, nameof(unusedHandleList));
   }
 
   [TestCase(SkStackKnownPortNumbers.EchonetLite, SkStackUdpPortHandle.Handle2)]
@@ -230,9 +230,9 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       async () => preparedPort = await client.PrepareUdpPortAsync(port)
     );
 
-    Assert.IsFalse(preparedPort.IsUnused);
-    Assert.AreEqual(expectedHandle, preparedPort.Handle, nameof(preparedPort.Handle));
-    Assert.AreEqual(port, preparedPort.Port, nameof(preparedPort.Port));
+    Assert.That(preparedPort.IsUnused, Is.False);
+    Assert.That(preparedPort.Handle, Is.EqualTo(expectedHandle), nameof(preparedPort.Handle));
+    Assert.That(preparedPort.Port, Is.EqualTo(port), nameof(preparedPort.Port));
 
     Assert.That(
       stream.ReadSentData(),
@@ -263,9 +263,9 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       async () => preparedPort = await client.PrepareUdpPortAsync(port)
     );
 
-    Assert.IsFalse(preparedPort.IsUnused);
-    Assert.AreEqual(expectedHandle, preparedPort.Handle, nameof(preparedPort.Handle));
-    Assert.AreEqual(port, preparedPort.Port, nameof(preparedPort.Port));
+    Assert.That(preparedPort.IsUnused, Is.False);
+    Assert.That(preparedPort.Handle, Is.EqualTo(expectedHandle), nameof(preparedPort.Handle));
+    Assert.That(preparedPort.Port, Is.EqualTo(port), nameof(preparedPort.Port));
   }
 
   [Test]
@@ -497,7 +497,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Binary);
+    Assert.That(client.ERXUDPDataFormat, Is.EqualTo(SkStackERXUDPDataFormat.Binary));
 
     const string remoteAddressString1 = "FE80:0000:0000:0000:021D:1290:1111:2222";
     const string remoteAddressString2 = "FE80:0000:0000:0000:021D:1290:3333:4444";
@@ -520,8 +520,8 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.IsNotNull(remoteAddress1);
-    Assert.AreEqual(IPAddress.Parse(remoteAddressString1), remoteAddress1, nameof(remoteAddress1));
+    Assert.That(remoteAddress1, Is.Not.Null);
+    Assert.That(remoteAddress1, Is.EqualTo(IPAddress.Parse(remoteAddressString1)), nameof(remoteAddress1));
     Assert.That(
       buffer.WrittenMemory,
       SequenceIs.EqualTo("01234567".ToByteSequence()),
@@ -540,8 +540,8 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.IsNotNull(remoteAddress2);
-    Assert.AreEqual(IPAddress.Parse(remoteAddressString2), remoteAddress2, nameof(remoteAddress2));
+    Assert.That(remoteAddress2, Is.Not.Null);
+    Assert.That(remoteAddress2, Is.EqualTo(IPAddress.Parse(remoteAddressString2)), nameof(remoteAddress2));
     Assert.That(
       buffer.WrittenMemory,
       SequenceIs.EqualTo("89ABCDEF".ToByteSequence()),
@@ -555,7 +555,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Binary);
+    Assert.That(client.ERXUDPDataFormat, Is.EqualTo(SkStackERXUDPDataFormat.Binary));
 
     client.StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.Pana);
 
@@ -581,8 +581,8 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.IsNotNull(remoteAddressEchonetLite);
-    Assert.AreEqual(IPAddress.Parse(remoteAddressStringEchonetLite), remoteAddressEchonetLite, nameof(remoteAddressEchonetLite));
+    Assert.That(remoteAddressEchonetLite, Is.Not.Null);
+    Assert.That(remoteAddressEchonetLite, Is.EqualTo(IPAddress.Parse(remoteAddressStringEchonetLite)), nameof(remoteAddressEchonetLite));
     Assert.That(
       buffer.WrittenMemory,
       SequenceIs.EqualTo("ECHONET-LITE".ToByteSequence()),
@@ -601,8 +601,8 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.IsNotNull(remoteAddressPana);
-    Assert.AreEqual(IPAddress.Parse(remoteAddressStringPana), remoteAddressPana, nameof(remoteAddressPana));
+    Assert.That(remoteAddressPana, Is.Not.Null);
+    Assert.That(remoteAddressPana, Is.EqualTo(IPAddress.Parse(remoteAddressStringPana)), nameof(remoteAddressPana));
     Assert.That(
       buffer.WrittenMemory,
       SequenceIs.EqualTo("PANA".ToByteSequence()),
@@ -618,7 +618,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Binary);
+    Assert.That(client.ERXUDPDataFormat, Is.EqualTo(SkStackERXUDPDataFormat.Binary));
 
     async Task RaiseERXUDPAsync()
     {
@@ -651,8 +651,8 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     var remoteAddress = taskUdpReceive.Result;
 
-    Assert.IsNotNull(remoteAddress);
-    Assert.AreEqual(IPAddress.Parse(remoteAddressString), remoteAddress, nameof(remoteAddress));
+    Assert.That(remoteAddress, Is.Not.Null);
+    Assert.That(remoteAddress, Is.EqualTo(IPAddress.Parse(remoteAddressString)), nameof(remoteAddress));
     Assert.That(
       buffer.WrittenMemory,
       SequenceIs.EqualTo("X".ToByteSequence()),
@@ -666,7 +666,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Binary);
+    Assert.That(client.ERXUDPDataFormat, Is.EqualTo(SkStackERXUDPDataFormat.Binary));
 
     async Task RaiseERXUDPAsync()
     {
@@ -711,7 +711,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Binary);
+    Assert.That(client.ERXUDPDataFormat, Is.EqualTo(SkStackERXUDPDataFormat.Binary));
 
     async Task CompleteResponseAndRaiseERXUDPAsync()
     {
@@ -744,7 +744,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       cts.Token
     ).AsTask();
 
-    Assert.IsFalse(taskUdpReceive.Wait(TimeSpan.FromMilliseconds(100)));
+    Assert.That(taskUdpReceive.Wait(TimeSpan.FromMilliseconds(100)), Is.False);
 
     var taskSendCommand = client.SendSKVERAsync().AsTask();
 
@@ -753,7 +753,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     );
 #pragma warning restore CA2012
 
-    Assert.IsTrue(taskSendCommand.Result.Success);
+    Assert.That(taskSendCommand.Result.Success, Is.True);
 
     Assert.That(
       buffer.WrittenMemory,
@@ -770,7 +770,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, erxudpDataFormat: SkStackERXUDPDataFormat.HexAsciiText, logger: CreateLoggerForTestCase());
 
-    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.HexAsciiText);
+    Assert.That(client.ERXUDPDataFormat, Is.EqualTo(SkStackERXUDPDataFormat.HexAsciiText));
 
     stream.ResponseWriter.WriteLine($"ERXUDP {remoteAddressString} FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 0123456789ABCDEF");
 
@@ -790,8 +790,8 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.IsNotNull(remoteAddress);
-    Assert.AreEqual(IPAddress.Parse(remoteAddressString), remoteAddress, nameof(remoteAddress));
+    Assert.That(remoteAddress, Is.Not.Null);
+    Assert.That(remoteAddress, Is.EqualTo(IPAddress.Parse(remoteAddressString)), nameof(remoteAddress));
     Assert.That(
       buffer.WrittenMemory,
       SequenceIs.EqualTo(new byte[] { 0x01, 0x23, 0x45, 0x67, 0x89, 0xAB, 0xCD, 0xEF }),

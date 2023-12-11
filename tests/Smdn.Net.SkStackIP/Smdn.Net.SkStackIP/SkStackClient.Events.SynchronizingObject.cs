@@ -87,12 +87,12 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
     client.PanaSessionTerminated += (sender, e) => {
       try {
         try {
-          Assert.AreSame(client, sender, nameof(sender));
+          Assert.That(sender, Is.SameAs(client), nameof(sender));
 
-          Assert.IsNotNull(e, nameof(e));
-          Assert.IsNotNull(e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
-          Assert.AreEqual(IPAddress.Parse(senderAddressString), e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
-          Assert.AreEqual(SkStackEventNumber.PanaSessionTerminationCompleted, e.EventNumber, nameof(e.EventNumber));
+          Assert.That(e, Is.Not.Null, nameof(e));
+          Assert.That(e.PanaSessionPeerAddress, Is.Not.Null, nameof(e.PanaSessionPeerAddress));
+          Assert.That(e.PanaSessionPeerAddress, Is.EqualTo(IPAddress.Parse(senderAddressString)), nameof(e.PanaSessionPeerAddress));
+          Assert.That(e.EventNumber, Is.EqualTo(SkStackEventNumber.PanaSessionTerminationCompleted), nameof(e.EventNumber));
 
           raisedEventCount++;
         }
@@ -115,8 +115,8 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => await taskSendSKTERM);
 
-    Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
-    Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
+    Assert.That(thrownExceptionInEventHandler, Is.Null, nameof(thrownExceptionInEventHandler));
+    Assert.That(raisedEventCount, Is.EqualTo(1), nameof(raisedEventCount));
   }
 
   [Test]
@@ -176,6 +176,6 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => await taskSendSKTERM);
 
-    Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
+    Assert.That(raisedEventCount, Is.EqualTo(1), nameof(raisedEventCount));
   }
 }

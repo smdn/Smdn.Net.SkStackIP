@@ -19,7 +19,7 @@ public partial class SkStackClientFunctionsPanaTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.IsFalse(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
+    Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
 #pragma warning disable CA2012
     Assert.Throws<InvalidOperationException>(() => client.TerminatePanaSessionAsync());
@@ -36,7 +36,7 @@ public partial class SkStackClientFunctionsPanaTests : SkStackClientTestsBase {
     var stream = new PseudoSkStackStream();
     using var client = CreateClientPanaSessionEstablished(stream, logger: CreateLoggerForTestCase());
 
-    Assert.IsTrue(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
+    Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
     stream.ClearSentData();
 
@@ -59,13 +59,13 @@ public partial class SkStackClientFunctionsPanaTests : SkStackClientTestsBase {
     );
 #pragma warning restore CA2012
 
-    Assert.AreEqual(
-      expected: !timeout,
-      taskSendTerminatePanaSessionAsync.Result
+    Assert.That(
+      taskSendTerminatePanaSessionAsync.Result,
+      Is.EqualTo(expected: !timeout)
     );
 
-    Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-    Assert.IsFalse(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
+    Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
     Assert.That(
       stream.ReadSentData(),

@@ -25,7 +25,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKSETPWDAsync("0123456789AB".AsMemory()));
 
-    Assert.IsNotNull(response);
+    Assert.That(response, Is.Not.Null);
 
     Assert.That(
       stream.ReadSentData(),
@@ -44,7 +44,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: string.Empty.AsMemory()));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [Test]
@@ -58,7 +58,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: ReadOnlyMemory<byte>.Empty));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [Test]
@@ -72,7 +72,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012".AsMemory()));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [Test]
@@ -86,7 +86,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012".ToByteSequence()));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [TestCase("pass")]
@@ -126,7 +126,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await sendSKSETPWDAsync(client, password));
 
-    Assert.IsNotNull(response);
+    Assert.That(response, Is.Not.Null);
 
     Assert.That(
       stream.ReadSentData(),
@@ -141,8 +141,8 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
 
       logSKSETPWDRecorded = true;
 
-      StringAssert.DoesNotContain(password, log);
-      StringAssert.Contains($"SKSETPWD␠{password.Length:X}␠****", log, "password must be masked");
+      Assert.That(log, Does.Not.Contain(password));
+      Assert.That(log, Does.Contain($"SKSETPWD␠{password.Length:X}␠****"), "password must be masked");
     }
 
     if (!logSKSETPWDRecorded)
@@ -185,7 +185,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await sendSKSETPWDAsync(client, password));
 
-    Assert.IsNotNull(response);
+    Assert.That(response, Is.Not.Null);
 
     Assert.That(
       stream.ReadSentData(),

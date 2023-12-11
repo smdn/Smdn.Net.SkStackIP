@@ -12,9 +12,9 @@ public class SkStackUdpPortTests {
   [Test]
   public void Null()
   {
-    Assert.AreEqual(SkStackUdpPortHandle.None, SkStackUdpPort.Null.Handle, nameof(SkStackUdpPort.Null.Handle));
-    Assert.True(SkStackUdpPort.Null.IsNull, nameof(SkStackUdpPort.Null.IsNull));
-    Assert.True(SkStackUdpPort.Null.IsUnused, nameof(SkStackUdpPort.Null.IsUnused));
+    Assert.That(SkStackUdpPort.Null.Handle, Is.EqualTo(SkStackUdpPortHandle.None), nameof(SkStackUdpPort.Null.Handle));
+    Assert.That(SkStackUdpPort.Null.IsNull, Is.True, nameof(SkStackUdpPort.Null.IsNull));
+    Assert.That(SkStackUdpPort.Null.IsUnused, Is.True, nameof(SkStackUdpPort.Null.IsUnused));
   }
 
   [Test]
@@ -22,8 +22,8 @@ public class SkStackUdpPortTests {
   {
     SkStackUdpPort defaultPort = default;
 
-    Assert.AreEqual(SkStackUdpPortHandle.None, defaultPort.Handle, nameof(defaultPort.Handle));
-    Assert.True(defaultPort.IsNull, nameof(defaultPort.IsNull));
-    Assert.True(defaultPort.IsUnused, nameof(defaultPort.IsUnused));
+    Assert.That(defaultPort.Handle, Is.EqualTo(SkStackUdpPortHandle.None), nameof(defaultPort.Handle));
+    Assert.That(defaultPort.IsNull, Is.True, nameof(defaultPort.IsNull));
+    Assert.That(defaultPort.IsUnused, Is.True, nameof(defaultPort.IsUnused));
   }
 }

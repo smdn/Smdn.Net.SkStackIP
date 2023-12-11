@@ -38,8 +38,8 @@ partial class SkStackClientFunctionsPanaTests {
       );
     });
 
-    Assert.IsNotNull(scanResult, nameof(scanResult));
-    Assert.IsEmpty(scanResult!, nameof(scanResult));
+    Assert.That(scanResult, Is.Not.Null, nameof(scanResult));
+    Assert.That(scanResult!, Is.Empty, nameof(scanResult));
   }
 
   [Test]
@@ -76,11 +76,11 @@ partial class SkStackClientFunctionsPanaTests {
       );
     });
 
-    Assert.IsNotNull(scanResult);
-    Assert.AreEqual(1, scanResult!.Count);
-    Assert.AreEqual(
-      new PhysicalAddress(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01 }),
-      scanResult[0].MacAddress
+    Assert.That(scanResult, Is.Not.Null);
+    Assert.That(scanResult!.Count, Is.EqualTo(1));
+    Assert.That(
+      scanResult[0].MacAddress,
+      Is.EqualTo(new PhysicalAddress(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01 }))
     );
   }
 
@@ -126,16 +126,16 @@ partial class SkStackClientFunctionsPanaTests {
       );
     });
 
-    Assert.IsNotNull(scanResult);
-    Assert.AreEqual(2, scanResult!.Count);
+    Assert.That(scanResult, Is.Not.Null);
+    Assert.That(scanResult!.Count, Is.EqualTo(2));
 
-    Assert.AreEqual(
-      new PhysicalAddress(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01 }),
-      scanResult[0].MacAddress
+    Assert.That(
+      scanResult[0].MacAddress,
+      Is.EqualTo(new PhysicalAddress(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01 }))
     );
-    Assert.AreEqual(
-      new PhysicalAddress(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x02 }),
-      scanResult[1].MacAddress
+    Assert.That(
+      scanResult[1].MacAddress,
+      Is.EqualTo(new PhysicalAddress(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x02 }))
     );
   }
 
@@ -172,14 +172,14 @@ partial class SkStackClientFunctionsPanaTests {
       );
     });
 
-    Assert.IsNotNull(scanResult, nameof(scanResult));
-    Assert.IsEmpty(scanResult!, nameof(scanResult));
+    Assert.That(scanResult, Is.Not.Null, nameof(scanResult));
+    Assert.That(scanResult!, Is.Empty, nameof(scanResult));
 
     var commands = Encoding.ASCII.GetString(stream.ReadSentData());
 
-    StringAssert.Contains("SKSCAN 2 FFFFFFFF 2", commands);
-    StringAssert.Contains("SKSCAN 2 FFFFFFFF 4", commands);
-    StringAssert.Contains("SKSCAN 2 FFFFFFFF 6", commands);
+    Assert.That(commands, Does.Contain("SKSCAN 2 FFFFFFFF 2"));
+    Assert.That(commands, Does.Contain("SKSCAN 2 FFFFFFFF 4"));
+    Assert.That(commands, Does.Contain("SKSCAN 2 FFFFFFFF 6"));
   }
 
   [Test]
@@ -219,13 +219,13 @@ partial class SkStackClientFunctionsPanaTests {
       );
     });
 
-    Assert.IsNotNull(scanResult);
-    Assert.AreEqual(1, scanResult!.Count);
+    Assert.That(scanResult, Is.Not.Null);
+    Assert.That(scanResult!.Count, Is.EqualTo(1));
 
     var commands = Encoding.ASCII.GetString(stream.ReadSentData());
 
-    StringAssert.Contains("SKSCAN 2 FFFFFFFF 2", commands);
-    StringAssert.Contains("SKSCAN 2 FFFFFFFF 4", commands);
-    StringAssert.DoesNotContain("SKSCAN 2 FFFFFFFF 6", commands);
+    Assert.That(commands, Does.Contain("SKSCAN 2 FFFFFFFF 2"));
+    Assert.That(commands, Does.Contain("SKSCAN 2 FFFFFFFF 4"));
+    Assert.That(commands, Does.Not.Contain("SKSCAN 2 FFFFFFFF 6"));
   }
 }

@@ -101,13 +101,13 @@ partial class SkStackClientFunctionsPanaTests {
     );
 
     if (!exceptPanaSessionEstablishmentException) {
-      Assert.IsNotNull(panaSession);
-      Assert.AreEqual(IPAddress.Parse(selfIPv6Address), panaSession!.LocalAddress, nameof(panaSession.LocalAddress));
-      Assert.AreEqual(PhysicalAddress.Parse(selfMacAddress), panaSession!.LocalMacAddress, nameof(panaSession.LocalMacAddress));
-      Assert.AreEqual(IPAddress.Parse(paaIPv6Address), panaSession!.PeerAddress, nameof(panaSession.PeerAddress));
-      Assert.AreEqual(PhysicalAddress.Parse(paaMacAddress), panaSession!.PeerMacAddress, nameof(panaSession.PeerMacAddress));
-      Assert.AreEqual(SkStackChannel.Channels[paaChannel], panaSession!.Channel, nameof(panaSession.Channel));
-      Assert.AreEqual(paaPanId, panaSession!.PanId, nameof(panaSession.PanId));
+      Assert.That(panaSession, Is.Not.Null);
+      Assert.That(panaSession!.LocalAddress, Is.EqualTo(IPAddress.Parse(selfIPv6Address)), nameof(panaSession.LocalAddress));
+      Assert.That(panaSession!.LocalMacAddress, Is.EqualTo(PhysicalAddress.Parse(selfMacAddress)), nameof(panaSession.LocalMacAddress));
+      Assert.That(panaSession!.PeerAddress, Is.EqualTo(IPAddress.Parse(paaIPv6Address)), nameof(panaSession.PeerAddress));
+      Assert.That(panaSession!.PeerMacAddress, Is.EqualTo(PhysicalAddress.Parse(paaMacAddress)), nameof(panaSession.PeerMacAddress));
+      Assert.That(panaSession!.Channel, Is.EqualTo(SkStackChannel.Channels[paaChannel]), nameof(panaSession.Channel));
+      Assert.That(panaSession!.PanId, Is.EqualTo(paaPanId), nameof(panaSession.PanId));
     }
 
     Assert.That(
@@ -195,13 +195,13 @@ partial class SkStackClientFunctionsPanaTests {
       )
     );
 
-    Assert.IsNotNull(panaSession);
-    Assert.AreEqual(IPAddress.Parse(selfIPv6Address), panaSession!.LocalAddress, nameof(panaSession.LocalAddress));
-    Assert.AreEqual(PhysicalAddress.Parse(selfMacAddress), panaSession!.LocalMacAddress, nameof(panaSession.LocalMacAddress));
-    Assert.AreEqual(IPAddress.Parse(paaIPv6Address), panaSession!.PeerAddress, nameof(panaSession.PeerAddress));
-    Assert.AreEqual(PhysicalAddress.Parse(paaMacAddress), panaSession!.PeerMacAddress, nameof(panaSession.PeerMacAddress));
-    Assert.AreEqual(SkStackChannel.Channels[paaChannel], panaSession!.Channel, nameof(panaSession.Channel));
-    Assert.AreEqual(paaPanId, panaSession!.PanId, nameof(panaSession.PanId));
+    Assert.That(panaSession, Is.Not.Null);
+    Assert.That(panaSession!.LocalAddress, Is.EqualTo(IPAddress.Parse(selfIPv6Address)), nameof(panaSession.LocalAddress));
+    Assert.That(panaSession!.LocalMacAddress, Is.EqualTo(PhysicalAddress.Parse(selfMacAddress)), nameof(panaSession.LocalMacAddress));
+    Assert.That(panaSession!.PeerAddress, Is.EqualTo(IPAddress.Parse(paaIPv6Address)), nameof(panaSession.PeerAddress));
+    Assert.That(panaSession!.PeerMacAddress, Is.EqualTo(PhysicalAddress.Parse(paaMacAddress)), nameof(panaSession.PeerMacAddress));
+    Assert.That(panaSession!.Channel, Is.EqualTo(SkStackChannel.Channels[paaChannel]), nameof(panaSession.Channel));
+    Assert.That(panaSession!.PanId, Is.EqualTo(paaPanId), nameof(panaSession.PanId));
 
     Assert.That(
       stream.ReadSentData(),

@@ -30,8 +30,8 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.IsNotNull(response);
-    Assert.IsTrue(response!.Success);
+    Assert.That(response, Is.Not.Null);
+    Assert.That(response!.Success, Is.True);
 
     Assert.That(
       stream.ReadSentData(),
@@ -104,7 +104,7 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
       macAddress: macAddress
     ));
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [Test, Ignore("not implemented")]
@@ -128,6 +128,6 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
     ));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 }

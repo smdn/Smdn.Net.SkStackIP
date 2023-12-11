@@ -32,11 +32,11 @@ public class SkStackClientCommandsSKINFOTests : SkStackClientTestsBase {
 
     var payload = response.Payload;
 
-    Assert.AreEqual(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), payload.LinkLocalAddress, nameof(payload.LinkLocalAddress));
-    Assert.AreEqual(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 }), payload.MacAddress, nameof(payload.MacAddress));
-    Assert.AreEqual(SkStackChannel.Channel33, payload.Channel, nameof(payload.Channel));
-    Assert.AreEqual(0x8888, payload.PanId, nameof(payload.PanId));
-    Assert.AreEqual(0xFFFE, payload.Addr16, nameof(payload.Addr16));
+    Assert.That(payload.LinkLocalAddress, Is.EqualTo(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")), nameof(payload.LinkLocalAddress));
+    Assert.That(payload.MacAddress, Is.EqualTo(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })), nameof(payload.MacAddress));
+    Assert.That(payload.Channel, Is.EqualTo(SkStackChannel.Channel33), nameof(payload.Channel));
+    Assert.That(payload.PanId, Is.EqualTo(0x8888), nameof(payload.PanId));
+    Assert.That(payload.Addr16, Is.EqualTo(0xFFFE), nameof(payload.Addr16));
   }
 
   [Test]
@@ -79,10 +79,10 @@ public class SkStackClientCommandsSKINFOTests : SkStackClientTestsBase {
 
     var payload = response.Payload;
 
-    Assert.AreEqual(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), payload.LinkLocalAddress, nameof(payload.LinkLocalAddress));
-    Assert.AreEqual(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 }), payload.MacAddress, nameof(payload.MacAddress));
-    Assert.AreEqual(SkStackChannel.Channel33, payload.Channel, nameof(payload.Channel));
-    Assert.AreEqual(0x8888, payload.PanId, nameof(payload.PanId));
-    Assert.AreEqual(0xFFFE, payload.Addr16, nameof(payload.Addr16));
+    Assert.That(payload.LinkLocalAddress, Is.EqualTo(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")), nameof(payload.LinkLocalAddress));
+    Assert.That(payload.MacAddress, Is.EqualTo(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })), nameof(payload.MacAddress));
+    Assert.That(payload.Channel, Is.EqualTo(SkStackChannel.Channel33), nameof(payload.Channel));
+    Assert.That(payload.PanId, Is.EqualTo(0x8888), nameof(payload.PanId));
+    Assert.That(payload.Addr16, Is.EqualTo(0xFFFE), nameof(payload.Addr16));
   }
 }

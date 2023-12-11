@@ -112,7 +112,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
       );
     });
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [TestCase(-1)]
@@ -131,7 +131,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
       await client.SendSKSCANEnergyDetectScanAsync(durationFactor: durationFactor);
     });
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [TestCase((uint)0x00000000)]
@@ -179,8 +179,8 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
       (_, scanResult) = await client.SendSKSCANEnergyDetectScanAsync();
     });
 
-    Assert.IsNotNull(scanResult);
-    Assert.AreEqual(28, scanResult!.Count);
+    Assert.That(scanResult, Is.Not.Null);
+    Assert.That(scanResult!.Count, Is.EqualTo(28));
 
     var expectedValues = new[] {
       new { Channel = 0x21, LQI = 0x04, RSSI = -103.17m },
@@ -214,8 +214,8 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     };
 
     foreach (var expectedValue in expectedValues) {
-      Assert.IsTrue(scanResult.TryGetValue(SkStackChannel.Channels[expectedValue.Channel], out var rssi), $"channel #{expectedValue.Channel}");
-      Assert.AreEqual(rssi, expectedValue.RSSI, $"channel #{expectedValue.Channel} RSSI");
+      Assert.That(scanResult.TryGetValue(SkStackChannel.Channels[expectedValue.Channel], out var rssi), Is.True, $"channel #{expectedValue.Channel}");
+      Assert.That(expectedValue.RSSI, Is.EqualTo(rssi), $"channel #{expectedValue.Channel} RSSI");
     }
 
     Assert.That(
@@ -287,14 +287,14 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 
-    Assert.IsNotNull(scanResult);
-    Assert.AreEqual(1, scanResult.Count);
-    Assert.AreEqual(SkStackChannel.Channels[0x21], scanResult[0].Channel);
-    Assert.AreEqual(0x09, scanResult[0].ChannelPage);
-    Assert.AreEqual(0x8888, scanResult[0].Id, nameof(SkStackPanDescription.Id));
-    Assert.AreEqual(new PhysicalAddress(new byte[] {0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01}), scanResult[0].MacAddress);
-    Assert.AreEqual(scanResult[0].Rssi, -42.395m);
-    Assert.AreEqual(0xAABBCCDD, scanResult[0].PairingId, nameof(SkStackPanDescription.PairingId));
+    Assert.That(scanResult, Is.Not.Null);
+    Assert.That(scanResult.Count, Is.EqualTo(1));
+    Assert.That(scanResult[0].Channel, Is.EqualTo(SkStackChannel.Channels[0x21]));
+    Assert.That(scanResult[0].ChannelPage, Is.EqualTo(0x09));
+    Assert.That(scanResult[0].Id, Is.EqualTo(0x8888), nameof(SkStackPanDescription.Id));
+    Assert.That(scanResult[0].MacAddress, Is.EqualTo(new PhysicalAddress(new byte[] {0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01})));
+    Assert.That(scanResult[0].Rssi, Is.EqualTo(-42.395m));
+    Assert.That(scanResult[0].PairingId, Is.EqualTo(0xAABBCCDD), nameof(SkStackPanDescription.PairingId));
 
     Assert.That(
       stream.ReadSentData(),
@@ -328,8 +328,8 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 
-    Assert.IsNotNull(scanResult);
-    Assert.AreEqual(0, scanResult.Count);
+    Assert.That(scanResult, Is.Not.Null);
+    Assert.That(scanResult.Count, Is.EqualTo(0));
 
     Assert.That(
       stream.ReadSentData(),
@@ -386,14 +386,14 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 
-    Assert.IsNotNull(scanResult);
-    Assert.AreEqual(2, scanResult.Count);
+    Assert.That(scanResult, Is.Not.Null);
+    Assert.That(scanResult.Count, Is.EqualTo(2));
 
-    Assert.AreEqual(0x8888, scanResult[0].Id, nameof(SkStackPanDescription.Id));
-    Assert.AreEqual(new PhysicalAddress(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01 }), scanResult[0].MacAddress);
+    Assert.That(scanResult[0].Id, Is.EqualTo(0x8888), nameof(SkStackPanDescription.Id));
+    Assert.That(scanResult[0].MacAddress, Is.EqualTo(new PhysicalAddress(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01 })));
 
-    Assert.AreEqual(0x9999, scanResult[1].Id, nameof(SkStackPanDescription.Id));
-    Assert.AreEqual(new PhysicalAddress(new byte[] { 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89 }), scanResult[1].MacAddress);
+    Assert.That(scanResult[1].Id, Is.EqualTo(0x9999), nameof(SkStackPanDescription.Id));
+    Assert.That(scanResult[1].MacAddress, Is.EqualTo(new PhysicalAddress(new byte[] { 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89 })));
 
     Assert.That(
       stream.ReadSentData(),
@@ -456,14 +456,14 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 
-    Assert.IsNotNull(scanResult);
-    Assert.AreEqual(1, scanResult.Count);
-    Assert.AreEqual(SkStackChannel.Channels[0x21], scanResult[0].Channel);
-    Assert.AreEqual(0x09, scanResult[0].ChannelPage);
-    Assert.AreEqual(0x8888, scanResult[0].Id, nameof(SkStackPanDescription.Id));
-    Assert.AreEqual(new PhysicalAddress(new byte[] {0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01}), scanResult[0].MacAddress);
-    Assert.AreEqual(scanResult[0].Rssi, -42.395m);
-    Assert.AreEqual(0, scanResult[0].PairingId, nameof(SkStackPanDescription.PairingId));
+    Assert.That(scanResult, Is.Not.Null);
+    Assert.That(scanResult.Count, Is.EqualTo(1));
+    Assert.That(scanResult[0].Channel, Is.EqualTo(SkStackChannel.Channels[0x21]));
+    Assert.That(scanResult[0].ChannelPage, Is.EqualTo(0x09));
+    Assert.That(scanResult[0].Id, Is.EqualTo(0x8888), nameof(SkStackPanDescription.Id));
+    Assert.That(scanResult[0].MacAddress, Is.EqualTo(new PhysicalAddress(new byte[] {0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01})));
+    Assert.That(scanResult[0].Rssi, Is.EqualTo(-42.395m));
+    Assert.That(scanResult[0].PairingId, Is.EqualTo(0), nameof(SkStackPanDescription.PairingId));
 
     Assert.That(
       stream.ReadSentData(),
@@ -497,8 +497,8 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 
-    Assert.IsNotNull(scanResult);
-    Assert.AreEqual(0, scanResult.Count);
+    Assert.That(scanResult, Is.Not.Null);
+    Assert.That(scanResult.Count, Is.EqualTo(0));
 
     Assert.That(
       stream.ReadSentData(),

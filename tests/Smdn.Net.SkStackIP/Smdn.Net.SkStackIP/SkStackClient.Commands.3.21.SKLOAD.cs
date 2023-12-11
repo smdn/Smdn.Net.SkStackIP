@@ -27,7 +27,7 @@ public class SkStackClientCommandsSKLOADTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("SKLOAD\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(response.Success);
+    Assert.That(response.Success, Is.True);
   }
 
   [Test]
@@ -41,7 +41,7 @@ public class SkStackClientCommandsSKLOADTests : SkStackClientTestsBase {
 
     var ex = Assert.ThrowsAsync<SkStackFlashMemoryIOException>(async () => await client.SendSKLOADAsync());
 
-    Assert.AreEqual(ex!.ErrorCode, SkStackErrorCode.ER10);
+    Assert.That(ex!.ErrorCode, Is.EqualTo(SkStackErrorCode.ER10));
 
     Assert.That(
       stream.ReadSentData(),
@@ -60,7 +60,7 @@ public class SkStackClientCommandsSKLOADTests : SkStackClientTestsBase {
 
     var ex = Assert.ThrowsAsync<SkStackErrorResponseException>(async () => await client.SendSKLOADAsync());
 
-    Assert.AreEqual(ex!.ErrorCode, SkStackErrorCode.ER01);
+    Assert.That(ex!.ErrorCode, Is.EqualTo(SkStackErrorCode.ER01));
 
     Assert.That(
       stream.ReadSentData(),

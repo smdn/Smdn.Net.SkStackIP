@@ -27,6 +27,6 @@ public class SkStackClientCommandsSKERASETests : SkStackClientTestsBase {
       SequenceIs.EqualTo("SKERASE\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(response.Success);
+    Assert.That(response.Success, Is.True);
   }
 }

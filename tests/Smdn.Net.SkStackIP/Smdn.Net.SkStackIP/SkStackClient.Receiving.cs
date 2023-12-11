@@ -28,7 +28,7 @@ public class SkStackClientReceivingTests : SkStackClientTestsBase {
 
     Assert.DoesNotThrow(() => client.ReceiveResponseDelay = newValue);
 
-    Assert.AreEqual(client.ReceiveResponseDelay, newValue, nameof(client.ReceiveResponseDelay));
+    Assert.That(newValue, Is.EqualTo(client.ReceiveResponseDelay), nameof(client.ReceiveResponseDelay));
   }
 
   private static System.Collections.IEnumerable YieldTestCases_ReceiveResponseDelay_Set_InvalidValue()
@@ -49,7 +49,7 @@ public class SkStackClientReceivingTests : SkStackClientTestsBase {
 
     Assert.Throws<ArgumentOutOfRangeException>(() => client.ReceiveResponseDelay = newValue);
 
-    Assert.AreEqual(client.ReceiveResponseDelay, initialValue, nameof(client.ReceiveResponseDelay));
+    Assert.That(initialValue, Is.EqualTo(client.ReceiveResponseDelay), nameof(client.ReceiveResponseDelay));
   }
 
   private static System.Collections.IEnumerable YieldTestCases_ResponseParser_ERXUDP_InvalidTokenFormat()
@@ -128,7 +128,7 @@ public class SkStackClientReceivingTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Binary);
+    Assert.That(client.ERXUDPDataFormat, Is.EqualTo(SkStackERXUDPDataFormat.Binary));
 
     stream.ResponseWriter.WriteLine(erxudp);
 
@@ -147,11 +147,11 @@ public class SkStackClientReceivingTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.IsNotNull(ex);
-    Assert.AreEqual(expectedCausedText, ex!.CausedText, nameof(ex.CausedText));
+    Assert.That(ex, Is.Not.Null);
+    Assert.That(ex!.CausedText, Is.EqualTo(expectedCausedText), nameof(ex.CausedText));
 
     if (expectedTypeOfInnerException is null)
-      Assert.IsNull(ex.InnerException, nameof(ex.InnerException));
+      Assert.That(ex.InnerException, Is.Null, nameof(ex.InnerException));
     else
       Assert.That(ex.InnerException, Is.AssignableTo(expectedTypeOfInnerException), nameof(ex.InnerException));
   }

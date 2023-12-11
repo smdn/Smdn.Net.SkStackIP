@@ -45,21 +45,21 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-    Assert.IsFalse(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
+    Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
     Exception? thrownExceptionInEventHandler = null;
     var raisedEventCount = 0;
 
     client.PanaSessionEstablished += (sender, e) => {
       try {
-        Assert.AreSame(client, sender, nameof(sender));
-        Assert.IsNotNull(e, nameof(e));
-        Assert.AreEqual(address, e.PanaSessionPeerAddress, nameof(e.PanaSessionPeerAddress));
-        Assert.AreEqual(SkStackEventNumber.PanaSessionEstablishmentCompleted, e.EventNumber, nameof(e.EventNumber));
-        Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-        Assert.AreEqual(client.PanaSessionPeerAddress, e.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-        Assert.IsTrue(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
+        Assert.That(sender, Is.SameAs(client), nameof(sender));
+        Assert.That(e, Is.Not.Null, nameof(e));
+        Assert.That(e.PanaSessionPeerAddress, Is.EqualTo(address), nameof(e.PanaSessionPeerAddress));
+        Assert.That(e.EventNumber, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(e.EventNumber));
+        Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
+        Assert.That(e.PanaSessionPeerAddress, Is.EqualTo(client.PanaSessionPeerAddress), nameof(client.PanaSessionPeerAddress));
+        Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
         raisedEventCount++;
       }
       catch (Exception ex) {
@@ -75,15 +75,15 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     );
 #pragma warning restore CA2012
 
-    Assert.IsNull(thrownExceptionInEventHandler, nameof(thrownExceptionInEventHandler));
-    Assert.AreEqual(1, raisedEventCount, nameof(raisedEventCount));
+    Assert.That(thrownExceptionInEventHandler, Is.Null, nameof(thrownExceptionInEventHandler));
+    Assert.That(raisedEventCount, Is.EqualTo(1), nameof(raisedEventCount));
 
-    Assert.AreEqual(client.PanaSessionPeerAddress, address, nameof(client.PanaSessionPeerAddress));
-    Assert.IsTrue(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
+    Assert.That(address, Is.EqualTo(client.PanaSessionPeerAddress), nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
     var response = taskSendCommand.Result;
 
-    Assert.IsTrue(response.Success);
+    Assert.That(response.Success, Is.True);
 
     Assert.That(
       stream.ReadSentData(),
@@ -123,8 +123,8 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-    Assert.IsFalse(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
+    Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
     var raisedEventCount = 0;
 
@@ -136,13 +136,13 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
       async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync())
     );
 
-    Assert.AreEqual(SkStackEventNumber.PanaSessionEstablishmentError, ex!.EventNumber);
-    Assert.AreEqual(address, ex.Address);
+    Assert.That(ex!.EventNumber, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentError));
+    Assert.That(ex.Address, Is.EqualTo(address));
 
-    Assert.AreEqual(0, raisedEventCount, nameof(raisedEventCount));
+    Assert.That(raisedEventCount, Is.EqualTo(0), nameof(raisedEventCount));
 
-    Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-    Assert.IsFalse(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
+    Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
     Assert.That(
       stream.ReadSentData(),
@@ -163,7 +163,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     Assert.Throws<ArgumentNullException>(() => client.SendSKJOINAsync(ipv6address: null!));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [Test]
@@ -179,6 +179,6 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     Assert.Throws<ArgumentException>(() => client.SendSKJOINAsync(ipv6address: IPAddress.Loopback));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 }

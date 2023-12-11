@@ -85,7 +85,7 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
       return;
     }
 
-    Assert.IsNotNull(restriction);
+    Assert.That(restriction, Is.Not.Null);
 
     // SKSAVE
     stream.ResponseWriter.WriteLine("OK");

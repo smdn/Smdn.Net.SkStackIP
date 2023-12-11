@@ -113,7 +113,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     client.Dispose();
 
-    Assert.AreEqual(!leaveStreamOpen, stream.IsClosed, nameof(stream.IsClosed));
+    Assert.That(stream.IsClosed, Is.EqualTo(!leaveStreamOpen), nameof(stream.IsClosed));
   }
 
   [Test]
@@ -139,7 +139,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
     Assert.DoesNotThrow(() => {
       using var client = new SkStackClient(Stream.Null, erxudpDataFormat: format);
 
-      Assert.AreEqual(format, client.ERXUDPDataFormat, nameof(client.ERXUDPDataFormat));
+      Assert.That(client.ERXUDPDataFormat, Is.EqualTo(format), nameof(client.ERXUDPDataFormat));
     });
   }
 
@@ -163,9 +163,9 @@ public class SkStackClientTests : SkStackClientTestsBase {
     using var client = new SkStackClientEx(Stream.Null, logger);
 
     if (logger is null)
-      Assert.IsNull(client.Logger, nameof(client.Logger));
+      Assert.That(client.Logger, Is.Null, nameof(client.Logger));
     else
-      Assert.AreSame(logger, client.Logger, nameof(client.Logger));
+      Assert.That(client.Logger, Is.SameAs(logger), nameof(client.Logger));
   }
 
   [Test]
@@ -243,7 +243,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     Assert.ThrowsAsync<ArgumentException>(async () => await client.SendCommandAsync(string.Empty));
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [Test]
@@ -269,7 +269,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp!.Success);
+    Assert.That(resp!.Success, Is.True);
   }
 
   [Test]
@@ -286,7 +286,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       );
     });
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [Test]
@@ -304,7 +304,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
+    Assert.That(resp.Success, Is.True);
   }
 
   private class EndOfCommandLineSyntax : SkStackProtocolSyntax {
@@ -345,7 +345,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo($"TEST{commandLineTerminator}".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
+    Assert.That(resp.Success, Is.True);
   }
 
   [Test]
@@ -370,7 +370,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST ARG1 ARG2 ARG3\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
+    Assert.That(resp.Success, Is.True);
   }
 
   [Test]
@@ -389,7 +389,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
+    Assert.That(resp.Success, Is.True);
   }
 
   [Test]
@@ -415,7 +415,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST ARG1 ARG2 ARG3\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
+    Assert.That(resp.Success, Is.True);
   }
 
   [Test]
@@ -451,8 +451,8 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
-    Assert.AreEqual("payload", resp.Payload);
+    Assert.That(resp.Success, Is.True);
+    Assert.That(resp.Payload, Is.EqualTo("payload"));
   }
 
   [Test]
@@ -490,9 +490,9 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsFalse(resp.Success);
-    Assert.AreEqual(SkStackResponseStatus.Undetermined, resp.Status);
-    Assert.AreEqual("OK", resp.Payload);
+    Assert.That(resp.Success, Is.False);
+    Assert.That(resp.Status, Is.EqualTo(SkStackResponseStatus.Undetermined));
+    Assert.That(resp.Payload, Is.EqualTo("OK"));
   }
 
   [Test]
@@ -526,7 +526,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       );
     });
 
-    Assert.AreEqual("UNEXPECTEDTOKEN", ex!.CausedText, nameof(ex.CausedText));
+    Assert.That(ex!.CausedText, Is.EqualTo("UNEXPECTEDTOKEN"), nameof(ex.CausedText));
 
     Assert.That(
       stream.ReadSentData(),
@@ -573,8 +573,8 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo(("TEST" + lineTerminator).ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
-    Assert.AreEqual(resp.Status, SkStackResponseStatus.Ok);
+    Assert.That(resp.Success, Is.True);
+    Assert.That(resp.Status, Is.EqualTo(SkStackResponseStatus.Ok));
     Assert.That(resp.StatusText, SequenceIs.EqualTo(ReadOnlyMemory<byte>.Empty));
   }
 
@@ -593,8 +593,8 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
-    Assert.AreEqual(resp.Status, SkStackResponseStatus.Ok);
+    Assert.That(resp.Success, Is.True);
+    Assert.That(resp.Status, Is.EqualTo(SkStackResponseStatus.Ok));
     Assert.That(resp.StatusText, SequenceIs.EqualTo(ReadOnlyMemory<byte>.Empty));
   }
 
@@ -613,8 +613,8 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
-    Assert.AreEqual(resp.Status, SkStackResponseStatus.Ok);
+    Assert.That(resp.Success, Is.True);
+    Assert.That(resp.Status, Is.EqualTo(SkStackResponseStatus.Ok));
     Assert.That(resp.StatusText, SequenceIs.EqualTo("DONE".ToByteSequence()));
   }
 
@@ -633,8 +633,8 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsFalse(resp.Success);
-    Assert.AreEqual(resp.Status, SkStackResponseStatus.Fail);
+    Assert.That(resp.Success, Is.False);
+    Assert.That(resp.Status, Is.EqualTo(SkStackResponseStatus.Fail));
     Assert.That(resp.StatusText, SequenceIs.EqualTo(ReadOnlyMemory<byte>.Empty));
   }
 
@@ -653,8 +653,8 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsFalse(resp.Success);
-    Assert.AreEqual(resp.Status, SkStackResponseStatus.Fail);
+    Assert.That(resp.Success, Is.False);
+    Assert.That(resp.Status, Is.EqualTo(SkStackResponseStatus.Fail));
     Assert.That(resp.StatusText, SequenceIs.EqualTo("REASON".ToByteSequence()));
   }
 
@@ -690,12 +690,12 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.AreEqual(expectedErrorCode, ex!.ErrorCode);
-    Assert.IsEmpty(ex.ErrorText);
+    Assert.That(ex!.ErrorCode, Is.EqualTo(expectedErrorCode));
+    Assert.That(ex.ErrorText, Is.Empty);
 
-    Assert.IsNotNull(ex.Response);
-    Assert.IsFalse(ex.Response.Success);
-    Assert.AreEqual(ex.Response.Status, SkStackResponseStatus.Fail);
+    Assert.That(ex.Response, Is.Not.Null);
+    Assert.That(ex.Response.Success, Is.False);
+    Assert.That(ex.Response.Status, Is.EqualTo(SkStackResponseStatus.Fail));
     Assert.That(ex.Response.StatusText, SequenceIs.EqualTo(errorCodeString.ToByteSequence()));
   }
 
@@ -716,12 +716,12 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.AreEqual(SkStackErrorCode.ER01, ex!.ErrorCode);
-    Assert.AreEqual("error text", ex.ErrorText);
+    Assert.That(ex!.ErrorCode, Is.EqualTo(SkStackErrorCode.ER01));
+    Assert.That(ex.ErrorText, Is.EqualTo("error text"));
 
-    Assert.IsNotNull(ex.Response);
-    Assert.IsFalse(ex.Response.Success);
-    Assert.AreEqual(ex.Response.Status, SkStackResponseStatus.Fail);
+    Assert.That(ex.Response, Is.Not.Null);
+    Assert.That(ex.Response.Success, Is.False);
+    Assert.That(ex.Response.Status, Is.EqualTo(SkStackResponseStatus.Fail));
     Assert.That(ex.Response.StatusText, SequenceIs.EqualTo("ER01 error text".ToByteSequence()));
   }
 
@@ -736,8 +736,8 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     var resp = await client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
-    Assert.IsFalse(resp.Success);
-    Assert.AreEqual(SkStackResponseStatus.Undetermined, resp.Status);
+    Assert.That(resp.Success, Is.False);
+    Assert.That(resp.Status, Is.EqualTo(SkStackResponseStatus.Undetermined));
     Assert.That(resp.StatusText, Is.EqualTo(ReadOnlyMemory<byte>.Empty));
 
     // must be able to continue processing next response
@@ -745,8 +745,8 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     var resp2 = await client.SendCommandAsync("TEST", throwIfErrorStatus: false);
 
-    Assert.IsTrue(resp2.Success);
-    Assert.AreEqual(SkStackResponseStatus.Ok, resp2.Status);
+    Assert.That(resp2.Success, Is.True);
+    Assert.That(resp2.Status, Is.EqualTo(SkStackResponseStatus.Ok));
     Assert.That(resp2.StatusText, SequenceIs.EqualTo("done.".ToByteSequence()));
   }
 
@@ -789,9 +789,9 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
-    Assert.IsNotNull(resp.Payload);
-    Assert.AreEqual("3-line payload", resp.Payload);
+    Assert.That(resp.Success, Is.True);
+    Assert.That(resp.Payload, Is.Not.Null);
+    Assert.That(resp.Payload, Is.EqualTo("3-line payload"));
   }
 
   [Test]
@@ -821,7 +821,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsFalse(resp.Success);
+    Assert.That(resp.Success, Is.False);
   }
 
   [Test]
@@ -850,7 +850,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
+    Assert.That(resp.Success, Is.True);
   }
 
   [Test]
@@ -883,7 +883,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
+    Assert.That(resp.Success, Is.True);
   }
 
   [Test]
@@ -944,9 +944,9 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
-    Assert.IsNotNull(resp.Payload);
-    Assert.AreEqual("3-line payload", resp.Payload);
+    Assert.That(resp.Success, Is.True);
+    Assert.That(resp.Payload, Is.Not.Null);
+    Assert.That(resp.Payload, Is.EqualTo("3-line payload"));
   }
 
   [Test]
@@ -987,7 +987,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
+    Assert.That(resp.Success, Is.True);
   }
 
   [Test]
@@ -1028,7 +1028,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(resp.Success);
+    Assert.That(resp.Success, Is.True);
   }
 
   [TestCase(1)]
@@ -1064,14 +1064,9 @@ public class SkStackClientTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
 
-    Assert.IsFalse(resp.Success);
+    Assert.That(resp.Success, Is.False);
 
-    if (sw.Elapsed < delay) {
-      Assert.Warn(
-        "elapsed time does not exceed specified delay time (delay: {0}, elapsed: {1})",
-        delay,
-        sw.Elapsed
-      );
-    }
+    if (sw.Elapsed < delay)
+      Assert.Warn($"elapsed time does not exceed specified delay time (delay: {delay}, elapsed: {sw.Elapsed})");
   }
 }

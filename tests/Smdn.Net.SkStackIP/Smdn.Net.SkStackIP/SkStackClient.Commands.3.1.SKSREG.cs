@@ -50,7 +50,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     var response = await sendSKSREGGetAsync(client);
 
-    Assert.IsNotNull(response.Payload);
+    Assert.That(response.Payload, Is.Not.Null);
 
     if (expectedValue is ReadOnlyMemory<byte> expectedByteSequence)
       Assert.That(response.Payload, SequenceIs.EqualTo(expectedByteSequence)); // XXX
@@ -117,7 +117,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
     Assert.Throws<ArgumentNullException>(() => client.SendSKSREGAsync(null!, (ushort)0x8888));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
 
@@ -132,7 +132,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
     Assert.Throws<ArgumentNullException>(() => client.SendSKSREGAsync<ushort>(null!));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   private void SKSREG_Set_RegisterReadOnly(Action<SkStackClient> sendSKSREGSetAsync)
@@ -145,7 +145,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
     Assert.Throws<InvalidOperationException>(() => sendSKSREGSetAsync(client));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
 #pragma warning disable CA2012
@@ -165,7 +165,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
     Assert.Throws<TArgumentException>(() => sendSKSREGSetAsync(client));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
 #pragma warning disable CA2012

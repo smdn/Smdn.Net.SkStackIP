@@ -42,9 +42,9 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.IsNotNull(response, nameof(response));
-    Assert.IsTrue(response!.Success, nameof(response.Success));
-    Assert.AreEqual(expectedCompleteResult, isCompletedSuccessfully, nameof(isCompletedSuccessfully));
+    Assert.That(response, Is.Not.Null, nameof(response));
+    Assert.That(response!.Success, Is.True, nameof(response.Success));
+    Assert.That(isCompletedSuccessfully, Is.EqualTo(expectedCompleteResult), nameof(isCompletedSuccessfully));
 
     Assert.That(
       stream.ReadSentData(),
@@ -75,9 +75,9 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.IsNotNull(response, nameof(response));
-    Assert.IsTrue(response!.Success, nameof(response.Success));
-    Assert.IsTrue(isCompletedSuccessfully, nameof(isCompletedSuccessfully));
+    Assert.That(response, Is.Not.Null, nameof(response));
+    Assert.That(response!.Success, Is.True, nameof(response.Success));
+    Assert.That(isCompletedSuccessfully, Is.True, nameof(isCompletedSuccessfully));
 
     Assert.That(
       stream.ReadSentData(),
@@ -148,9 +148,9 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
         $"case #{testCaseNumber}"
       );
 
-      Assert.IsNotNull(response, $"case #{testCaseNumber} " + nameof(response));
-      Assert.IsTrue(response!.Success, $"case #{testCaseNumber} " + nameof(response.Success));
-      Assert.AreEqual(expectedCompleteResult, isCompletedSuccessfully, $"case #{testCaseNumber} " + nameof(isCompletedSuccessfully));
+      Assert.That(response, Is.Not.Null, $"case #{testCaseNumber} " + nameof(response));
+      Assert.That(response!.Success, Is.True, $"case #{testCaseNumber} " + nameof(response.Success));
+      Assert.That(isCompletedSuccessfully, Is.EqualTo(expectedCompleteResult), $"case #{testCaseNumber} " + nameof(isCompletedSuccessfully));
 
       Assert.That(
         stream.ReadSentData(),
@@ -192,9 +192,9 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.IsNotNull(response, nameof(response));
-    Assert.IsTrue(response!.Success, nameof(response.Success));
-    Assert.AreEqual(expectedCompleteResult, isCompletedSuccessfully, nameof(isCompletedSuccessfully));
+    Assert.That(response, Is.Not.Null, nameof(response));
+    Assert.That(response!.Success, Is.True, nameof(response.Success));
+    Assert.That(isCompletedSuccessfully, Is.EqualTo(expectedCompleteResult), nameof(isCompletedSuccessfully));
 
     Assert.That(
       stream.ReadSentData(),
@@ -216,9 +216,9 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => (response, isCompletedSuccessfully) = await testAction(client));
 
-    Assert.IsNotNull(response, nameof(response));
-    Assert.IsTrue(response!.Success);
-    Assert.IsTrue(isCompletedSuccessfully, nameof(isCompletedSuccessfully));
+    Assert.That(response, Is.Not.Null, nameof(response));
+    Assert.That(response!.Success, Is.True);
+    Assert.That(isCompletedSuccessfully, Is.True, nameof(isCompletedSuccessfully));
 
     Assert.That(
       stream.ReadSentData(),
@@ -287,9 +287,9 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.AreEqual("destination", ex!.ParamName);
+    Assert.That(ex!.ParamName, Is.EqualTo("destination"));
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [Test]
@@ -309,9 +309,9 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.AreEqual("destinationAddress", ex!.ParamName);
+    Assert.That(ex!.ParamName, Is.EqualTo("destinationAddress"));
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [TestCase(-1)]
@@ -334,9 +334,9 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.AreEqual("destinationPort", ex!.ParamName);
+    Assert.That(ex!.ParamName, Is.EqualTo("destinationPort"));
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [TestCase(SkStackUdpPortHandle.Handle1, 1)]
@@ -386,9 +386,9 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.AreEqual("handle", ex!.ParamName);
+    Assert.That(ex!.ParamName, Is.EqualTo("handle"));
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [TestCase(SkStackUdpEncryption.ForcePlainText, 0)]
@@ -435,9 +435,9 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.AreEqual("encryption", ex!.ParamName);
+    Assert.That(ex!.ParamName, Is.EqualTo("encryption"));
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [TestCase(0)]
@@ -457,9 +457,9 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.AreEqual("data", ex!.ParamName);
+    Assert.That(ex!.ParamName, Is.EqualTo("data"));
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [Test]
@@ -522,8 +522,8 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       SequenceIs.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0002 \r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(response.Success, nameof(response.Success));
-    Assert.IsTrue(isCompletedSuccessfully, nameof(isCompletedSuccessfully));
+    Assert.That(response.Success, Is.True, nameof(response.Success));
+    Assert.That(isCompletedSuccessfully, Is.True, nameof(isCompletedSuccessfully));
   }
 
   [Test]
@@ -549,7 +549,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       SequenceIs.EqualTo($"SKSENDTO 1 {TestDestinationIPAddressString} 0E1A 0 0002 \r\n".ToByteSequence())
     );
 
-    Assert.IsTrue(response.Success, nameof(response.Success));
-    Assert.IsTrue(isCompletedSuccessfully, nameof(isCompletedSuccessfully));
+    Assert.That(response.Success, Is.True, nameof(response.Success));
+    Assert.That(isCompletedSuccessfully, Is.True, nameof(isCompletedSuccessfully));
   }
 }

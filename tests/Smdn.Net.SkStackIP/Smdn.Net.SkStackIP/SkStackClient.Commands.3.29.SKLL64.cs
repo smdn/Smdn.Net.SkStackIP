@@ -26,11 +26,11 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKLL64Async(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })));
 
-    Assert.IsNotNull(response, nameof(response));
-    Assert.IsNotNull(response!.Payload);
-    Assert.AreEqual(SkStackResponseStatus.Ok, response.Status);
+    Assert.That(response, Is.Not.Null, nameof(response));
+    Assert.That(response!.Payload, Is.Not.Null);
+    Assert.That(response.Status, Is.EqualTo(SkStackResponseStatus.Ok));
     Assert.That(response.StatusText, Is.EqualTo(ReadOnlyMemory<byte>.Empty));
-    Assert.AreEqual(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), response.Payload);
+    Assert.That(response.Payload, Is.EqualTo(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")));
 
     Assert.That(
       stream.ReadSentData(),
@@ -72,10 +72,10 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
 
     var response = taskSendCommand.Result;
 
-    Assert.IsNotNull(response.Payload);
-    Assert.AreEqual(SkStackResponseStatus.Ok, response.Status);
+    Assert.That(response.Payload, Is.Not.Null);
+    Assert.That(response.Status, Is.EqualTo(SkStackResponseStatus.Ok));
     Assert.That(response.StatusText, Is.EqualTo(ReadOnlyMemory<byte>.Empty));
-    Assert.AreEqual(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), response.Payload);
+    Assert.That(response.Payload, Is.EqualTo(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")));
 
     Assert.That(
       stream.ReadSentData(),
@@ -94,7 +94,7 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
     Assert.Throws<ArgumentNullException>(() => client.SendSKLL64Async(macAddress: null!));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [Test] public void SKLL64_ADDR64_InvalidLength_0() => SKLL64_ADDR64_InvalidLength(PhysicalAddress.None);
@@ -108,7 +108,7 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
 
     Assert.ThrowsAsync<ArgumentException>(async () => await client.SendSKLL64Async(macAddress: addr64));
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [Test, Ignore("not implemented")]
@@ -129,6 +129,6 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
     Assert.Throws<ArgumentException>(() => client.SendSKLL64Async(macAddress: addr64));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 }

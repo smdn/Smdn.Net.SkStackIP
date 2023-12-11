@@ -23,7 +23,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKSETRBIDAsync(id: "00112233445566778899AABBCCDDEEFF".AsMemory()));
 
-    Assert.IsNotNull(response);
+    Assert.That(response, Is.Not.Null);
 
     Assert.That(
       stream.ReadSentData(),
@@ -42,7 +42,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
     Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(id: string.Empty.AsMemory()));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
 
@@ -57,7 +57,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
     Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(id: ReadOnlyMemory<byte>.Empty));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [TestCase("0")]
@@ -73,7 +73,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
     Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(id: rbid.AsMemory()));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
 
@@ -90,6 +90,6 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
     Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(id: rbid.ToByteSequence()));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 }

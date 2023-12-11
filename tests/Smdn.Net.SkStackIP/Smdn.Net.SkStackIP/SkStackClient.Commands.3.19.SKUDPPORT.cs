@@ -24,13 +24,13 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => (response, port) = await client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle3, 0x0050));
 
-    Assert.IsNotNull(response);
-    Assert.IsTrue(response!.Success);
+    Assert.That(response, Is.Not.Null);
+    Assert.That(response!.Success, Is.True);
 
-    Assert.IsFalse(port.IsNull, nameof(port.IsNull));
-    Assert.IsFalse(port.IsUnused, nameof(port.IsUnused));
-    Assert.AreEqual(port.Handle, SkStackUdpPortHandle.Handle3, nameof(port.Handle));
-    Assert.AreEqual(port.Port, 0x0050, nameof(port.Port));
+    Assert.That(port.IsNull, Is.False, nameof(port.IsNull));
+    Assert.That(port.IsUnused, Is.False, nameof(port.IsUnused));
+    Assert.That(port.Handle, Is.EqualTo(SkStackUdpPortHandle.Handle3), nameof(port.Handle));
+    Assert.That(port.Port, Is.EqualTo(0x0050), nameof(port.Port));
 
     Assert.That(
       stream.ReadSentData(),
@@ -50,8 +50,8 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKUDPPORTUnsetAsync(SkStackUdpPortHandle.Handle3));
 
-    Assert.IsNotNull(response);
-    Assert.IsTrue(response!.Success);
+    Assert.That(response, Is.Not.Null);
+    Assert.That(response!.Success, Is.True);
 
     Assert.That(
       stream.ReadSentData(),
@@ -74,7 +74,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
     Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle1, port));
 #pragma warning restore CA2012
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [TestCase((SkStackUdpPortHandle)0)]
@@ -90,9 +90,9 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
     var ex = Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTAsync(handle, 0x0001));
 #pragma warning restore CA2012
 
-    Assert.AreEqual(ex!.ParamName, "handle");
+    Assert.That(ex!.ParamName, Is.EqualTo("handle"));
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
   [TestCase((SkStackUdpPortHandle)0)]
@@ -108,8 +108,8 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
     var ex = Assert.Throws<ArgumentOutOfRangeException>(() => client.SendSKUDPPORTUnsetAsync(handle));
 #pragma warning restore CA2012
 
-    Assert.AreEqual(ex!.ParamName, "handle");
+    Assert.That(ex!.ParamName, Is.EqualTo("handle"));
 
-    Assert.IsEmpty(stream.ReadSentData());
+    Assert.That(stream.ReadSentData(), Is.Empty);
   }
 }

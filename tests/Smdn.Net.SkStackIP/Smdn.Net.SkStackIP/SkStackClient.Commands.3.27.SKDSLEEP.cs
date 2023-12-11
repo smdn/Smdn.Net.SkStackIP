@@ -28,9 +28,9 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
 
     client.Slept += (sender, e) => {
       try {
-        Assert.AreSame(client, sender, nameof(sender));
-        Assert.IsNotNull(e, nameof(e));
-        Assert.AreEqual(SkStackEventNumber.Undefined, e.EventNumber, nameof(e.EventNumber));
+        Assert.That(sender, Is.SameAs(client), nameof(sender));
+        Assert.That(e, Is.Not.Null, nameof(e));
+        Assert.That(e.EventNumber, Is.EqualTo(SkStackEventNumber.Undefined), nameof(e.EventNumber));
         raisedSleptEventCount++;
       }
       catch (Exception ex) {
@@ -50,14 +50,14 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
 
     Assert.DoesNotThrowAsync(async () => response = await client.SendSKDSLEEPAsync(waitUntilWakeUp: false));
 
-    Assert.IsNull(thrownExceptionInSleptEventHandler, nameof(thrownExceptionInSleptEventHandler));
-    Assert.AreEqual(1, raisedSleptEventCount, nameof(raisedSleptEventCount));
+    Assert.That(thrownExceptionInSleptEventHandler, Is.Null, nameof(thrownExceptionInSleptEventHandler));
+    Assert.That(raisedSleptEventCount, Is.EqualTo(1), nameof(raisedSleptEventCount));
 
-    Assert.IsNull(thrownExceptionInWokeUpEventHandler, nameof(thrownExceptionInWokeUpEventHandler));
-    Assert.AreEqual(0, raisedWokeUpEventCount, nameof(raisedWokeUpEventCount));
+    Assert.That(thrownExceptionInWokeUpEventHandler, Is.Null, nameof(thrownExceptionInWokeUpEventHandler));
+    Assert.That(raisedWokeUpEventCount, Is.EqualTo(0), nameof(raisedWokeUpEventCount));
 
-    Assert.IsNotNull(response);
-    Assert.IsTrue(response!.Success);
+    Assert.That(response, Is.Not.Null);
+    Assert.That(response!.Success, Is.True);
 
     Assert.That(
       stream.ReadSentData(),
@@ -92,9 +92,9 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
     client.Slept += (sender, e) => {
       sleptEventRaisedAt = DateTime.Now;
       try {
-        Assert.AreSame(client, sender, nameof(sender));
-        Assert.IsNotNull(e, nameof(e));
-        Assert.AreEqual(SkStackEventNumber.Undefined, e.EventNumber, nameof(e.EventNumber));
+        Assert.That(sender, Is.SameAs(client), nameof(sender));
+        Assert.That(e, Is.Not.Null, nameof(e));
+        Assert.That(e.EventNumber, Is.EqualTo(SkStackEventNumber.Undefined), nameof(e.EventNumber));
         raisedSleptEventCount++;
       }
       catch (Exception ex) {
@@ -104,9 +104,9 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
     client.WokeUp += (sender, e) => {
       wokeUpEventRaisedAt = DateTime.Now;
       try {
-        Assert.AreSame(client, sender, nameof(sender));
-        Assert.IsNotNull(e, nameof(e));
-        Assert.AreEqual(SkStackEventNumber.WakeupSignalReceived, e.EventNumber, nameof(e.EventNumber));
+        Assert.That(sender, Is.SameAs(client), nameof(sender));
+        Assert.That(e, Is.Not.Null, nameof(e));
+        Assert.That(e.EventNumber, Is.EqualTo(SkStackEventNumber.WakeupSignalReceived), nameof(e.EventNumber));
         raisedWokeUpEventCount++;
       }
       catch (Exception ex) {
@@ -122,18 +122,18 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
     );
 #pragma warning restore CA2012
 
-    Assert.IsNull(thrownExceptionInSleptEventHandler, nameof(thrownExceptionInSleptEventHandler));
-    Assert.AreEqual(1, raisedSleptEventCount, nameof(raisedSleptEventCount));
+    Assert.That(thrownExceptionInSleptEventHandler, Is.Null, nameof(thrownExceptionInSleptEventHandler));
+    Assert.That(raisedSleptEventCount, Is.EqualTo(1), nameof(raisedSleptEventCount));
 
-    Assert.IsNull(thrownExceptionInWokeUpEventHandler, nameof(thrownExceptionInWokeUpEventHandler));
-    Assert.AreEqual(1, raisedWokeUpEventCount, nameof(raisedWokeUpEventCount));
+    Assert.That(thrownExceptionInWokeUpEventHandler, Is.Null, nameof(thrownExceptionInWokeUpEventHandler));
+    Assert.That(raisedWokeUpEventCount, Is.EqualTo(1), nameof(raisedWokeUpEventCount));
 
     Assert.That(sleptEventRaisedAt, Is.LessThan(wokeUpEventRaisedAt), "event raised time");
 
     var response = taskSendCommand.Result;
 
-    Assert.IsNotNull(response);
-    Assert.IsTrue(response.Success);
+    Assert.That(response, Is.Not.Null);
+    Assert.That(response.Success, Is.True);
 
     Assert.That(
       stream.ReadSentData(),

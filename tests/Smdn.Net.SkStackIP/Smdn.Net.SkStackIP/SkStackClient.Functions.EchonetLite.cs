@@ -42,7 +42,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     if (startCapturingExplicitly)
       client.StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite);
 
-    Assert.AreEqual(client.ERXUDPDataFormat, SkStackERXUDPDataFormat.Binary);
+    Assert.That(client.ERXUDPDataFormat, Is.EqualTo(SkStackERXUDPDataFormat.Binary));
 
     const string remoteAddressString = "FE80:0000:0000:0000:021D:1290:1111:2222";
 
@@ -60,8 +60,8 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
       )
     );
 
-    Assert.IsNotNull(remoteAddress);
-    Assert.AreEqual(IPAddress.Parse(remoteAddressString), remoteAddress, nameof(remoteAddress));
+    Assert.That(remoteAddress, Is.Not.Null);
+    Assert.That(remoteAddress, Is.EqualTo(IPAddress.Parse(remoteAddressString)), nameof(remoteAddress));
     Assert.That(
       buffer.WrittenMemory,
       SequenceIs.EqualTo("01234567".ToByteSequence()),
@@ -87,10 +87,10 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     var response = await client.SendSKTABLEListeningPortListAsync();
 
-    CollectionAssert.IsNotEmpty(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite));
+    Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
 
-    Assert.IsNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-    Assert.IsFalse(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
+    Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
     Assert.ThrowsAsync<InvalidOperationException>(
       async () => await client.SendUdpEchonetLiteAsync(Array.Empty<byte>())
@@ -103,8 +103,8 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = SkStackClientFunctionsPanaTests.CreateClientPanaSessionEstablished(stream, logger: CreateLoggerForTestCase());
 
-    Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-    Assert.IsTrue(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
+    Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
     // SKTABLE E
     stream.ResponseWriter.WriteLine("EPORT");
@@ -118,7 +118,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     var response = await client.SendSKTABLEListeningPortListAsync();
 
-    CollectionAssert.IsEmpty(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite));
+    Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Empty);
 
     Assert.ThrowsAsync<InvalidOperationException>(
       async () => await client.SendUdpEchonetLiteAsync(Array.Empty<byte>())
@@ -133,8 +133,8 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = SkStackClientFunctionsPanaTests.CreateClientPanaSessionEstablished(stream, logger: CreateLoggerForTestCase());
 
-    Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-    Assert.IsTrue(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
+    Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
     // SKTABLE E
     stream.ResponseWriter.WriteLine("EPORT");
@@ -145,7 +145,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     var response = await client.SendSKTABLEListeningPortListAsync();
 
-    CollectionAssert.IsNotEmpty(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite));
+    Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
 
     stream.ClearSentData();
 
@@ -178,8 +178,8 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = SkStackClientFunctionsPanaTests.CreateClientPanaSessionEstablished(stream, logger: CreateLoggerForTestCase());
 
-    Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-    Assert.IsTrue(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
+    Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
     // SKTABLE E
     stream.ResponseWriter.WriteLine("EPORT");
@@ -190,7 +190,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     var response = await client.SendSKTABLEListeningPortListAsync();
 
-    CollectionAssert.IsNotEmpty(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite));
+    Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
 
     stream.ClearSentData();
 
@@ -207,8 +207,8 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
       async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: null, cts.Token)
     )!;
 
-    Assert.AreEqual(client.PanaSessionPeerAddress!, ex.PeerAddress, nameof(ex.PeerAddress));
-    Assert.AreEqual(handleForEchonetLite, ex.PortHandle, nameof(ex.PortHandle));
+    Assert.That(ex.PeerAddress, Is.EqualTo(client.PanaSessionPeerAddress!), nameof(ex.PeerAddress));
+    Assert.That(ex.PortHandle, Is.EqualTo(handleForEchonetLite), nameof(ex.PortHandle));
 
     var expectedDestinationAddress = client.PanaSessionPeerAddress!.ToLongFormatString();
 
@@ -227,8 +227,8 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = SkStackClientFunctionsPanaTests.CreateClientPanaSessionEstablished(stream, logger: CreateLoggerForTestCase());
 
-    Assert.IsNotNull(client.PanaSessionPeerAddress, nameof(client.PanaSessionPeerAddress));
-    Assert.IsTrue(client.IsPanaSessionAlive, nameof(client.IsPanaSessionAlive));
+    Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
     // SKTABLE E
     stream.ResponseWriter.WriteLine("EPORT");
@@ -239,7 +239,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     var response = await client.SendSKTABLEListeningPortListAsync();
 
-    CollectionAssert.IsNotEmpty(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite));
+    Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
 
     stream.ClearSentData();
 
@@ -268,8 +268,8 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
       async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: resiliencePipeline, cts.Token)
     )!;
 
-    Assert.AreEqual(client.PanaSessionPeerAddress!, ex.PeerAddress, nameof(ex.PeerAddress));
-    Assert.AreEqual(handleForEchonetLite, ex.PortHandle, nameof(ex.PortHandle));
+    Assert.That(ex.PeerAddress, Is.EqualTo(client.PanaSessionPeerAddress!), nameof(ex.PeerAddress));
+    Assert.That(ex.PortHandle, Is.EqualTo(handleForEchonetLite), nameof(ex.PortHandle));
 
     var expectedDestinationAddress = client.PanaSessionPeerAddress!.ToLongFormatString();
 
