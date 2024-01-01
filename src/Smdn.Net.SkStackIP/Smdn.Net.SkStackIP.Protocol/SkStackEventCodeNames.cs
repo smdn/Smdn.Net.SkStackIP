@@ -7,7 +7,9 @@ using System.Collections.Generic;
 namespace Smdn.Net.SkStackIP.Protocol;
 
 internal static class SkStackEventCodeNames {
+#pragma warning disable CA1859
   private static readonly IReadOnlyDictionary<SkStackEventCode, ReadOnlyMemory<byte>> EventCodeAndNames =
+#pragma warning restore CA1859
     new Dictionary<SkStackEventCode, ReadOnlyMemory<byte>>() {
       { SkStackEventCode.ERXUDP,      SkStack.ToByteSequence(nameof(SkStackEventCode.ERXUDP)) },
       { SkStackEventCode.EPONG,       SkStack.ToByteSequence(nameof(SkStackEventCode.EPONG)) },
