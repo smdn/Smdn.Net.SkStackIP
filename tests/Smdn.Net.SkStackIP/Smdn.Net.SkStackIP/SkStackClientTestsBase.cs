@@ -49,7 +49,7 @@ public class SkStackClientTestsBase {
     {
     }
 
-    public IDisposable BeginScope<TState>(TState state)
+    public IDisposable? BeginScope<TState>(TState state) where TState : notnull
     {
       var newScope = new Scope(scopes, state?.ToString() ?? "(null)");
 

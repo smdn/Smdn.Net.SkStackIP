@@ -10,8 +10,7 @@ namespace Smdn.Net.SkStackIP;
 internal static class IPAddressExtensions {
   public static string ToLongFormatString(this IPAddress ipv6Address)
   {
-    if (ipv6Address is null)
-      throw new ArgumentNullException(nameof(ipv6Address));
+    ArgumentNullException.ThrowIfNull(ipv6Address);
 
     var addressBytes = ipv6Address.GetAddressBytes();
     var sb = new StringBuilder(capacity: 32 + 7);
