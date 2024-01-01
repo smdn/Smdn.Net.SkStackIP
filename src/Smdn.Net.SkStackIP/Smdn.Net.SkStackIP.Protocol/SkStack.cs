@@ -17,8 +17,10 @@ internal static class SkStack {
   public static byte[] ToByteSequence(string text)
     => DefaultEncoding.GetBytes(text);
 
+#if !SYSTEM_TEXT_ASCII
   public static int ToByteSequence(ReadOnlySpan<char> source, Span<byte> destination)
     => DefaultEncoding.GetBytes(source, destination);
+#endif
 
   public static string GetString(ReadOnlySpan<byte> sequence)
     => DefaultEncoding.GetString(sequence);

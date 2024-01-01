@@ -5,6 +5,9 @@ using System.Buffers;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+#if SYSTEM_TEXT_ASCII
+using System.Text;
+#endif
 
 using Smdn.Formats;
 
@@ -37,13 +40,24 @@ internal static class ISkStackCommandLineWriterExtensions {
     if (16 < length)
       throw new NotSupportedException("length too long");
 
-    Span<char> charsSpan = stackalloc char[
-      length == 0
-        ? 16 // ulong.MaxValue.ToString("X").Length
-        : length
-    ];
+    var formattedNumberBufferLength = length == 0
+      ? 16 // ulong.MaxValue.ToString("X").Length
+      : length;
 
-    // TODO: use IUtf8SpanFormattable on .NET 8
+#if SYSTEM_IUTF8SPANFORMATTABLE
+    Span<byte> bytesSpan = stackalloc byte[formattedNumberBufferLength];
+
+    if (!value.TryFormat(
+      bytesSpan,
+      out var bytesWritten,
+      length == 0 ? "X" : stackalloc char[2] { 'X', (char)('0' + length) },
+      provider: null
+    )) {
+      throw new InvalidOperationException("unexpected error in conversion");
+    }
+#else
+    Span<char> charsSpan = stackalloc char[formattedNumberBufferLength];
+
     if (!value.TryFormat(
       charsSpan,
       out var charsWritten,
@@ -56,6 +70,7 @@ internal static class ISkStackCommandLineWriterExtensions {
     Span<byte> bytesSpan = stackalloc byte[charsWritten];
 
     var bytesWritten = SkStack.ToByteSequence(charsSpan.Slice(0, charsWritten), bytesSpan);
+#endif
 
     writer.WriteToken(bytesSpan.Slice(0, bytesWritten));
   }
@@ -134,7 +149,12 @@ internal static class ISkStackCommandLineWriterExtensions {
     try {
       tokenBytes = ArrayPool<byte>.Shared.Rent(token.Length);
 
+#if SYSTEM_TEXT_ASCII
+      if (Ascii.FromUtf16(token, tokenBytes.AsSpan(), out var lengthOfToken) != OperationStatus.Done)
+        throw new ArgumentException("token contains non ASCII characters", paramName: nameof(token));
+#else
       var lengthOfToken = SkStack.ToByteSequence(token, tokenBytes.AsSpan());
+#endif
 
       write(tokenBytes.AsSpan(0, lengthOfToken), writer);
     }
