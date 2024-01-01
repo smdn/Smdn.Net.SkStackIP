@@ -44,34 +44,23 @@ public class SkStackUnexpectedResponseException : SkStackResponseException {
 
   internal static SkStackUnexpectedResponseException CreateInvalidToken(
     ReadOnlySpan<byte> token,
-    string expectedFormat,
+    string extraMessage,
     Exception? innerException = null
   )
     => new(
       causedText: token.ToControlCharsPicturizedString(),
-      message: $"unexpected response token: '{token.ToControlCharsPicturizedString()}' ({expectedFormat})",
+      message: $"unexpected response token: '{token.ToControlCharsPicturizedString()}' ({extraMessage})",
       innerException: innerException
     );
 
   internal static SkStackUnexpectedResponseException CreateInvalidToken(
     ReadOnlySequence<byte> token,
-    string expectedFormat,
+    string extraMessage,
     Exception? innerException = null
   )
     => new(
       causedText: token.ToControlCharsPicturizedString(),
-      message: $"unexpected response token: '{token.ToControlCharsPicturizedString()}' ({expectedFormat})",
-      innerException: innerException
-    );
-
-  internal static SkStackUnexpectedResponseException CreateInvalidToken(
-    string causedText,
-    string expectedFormat,
-    Exception? innerException = null
-  )
-    => new(
-      causedText: causedText,
-      message: $"unexpected response token: '{causedText}' ({expectedFormat})'",
+      message: $"unexpected response token: '{token.ToControlCharsPicturizedString()}' ({extraMessage})",
       innerException: innerException
     );
 
