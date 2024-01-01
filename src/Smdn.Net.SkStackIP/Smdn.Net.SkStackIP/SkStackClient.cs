@@ -14,9 +14,7 @@ namespace Smdn.Net.SkStackIP;
 /// <summary>
 /// Provides a client implementation that sends SKSTACK-IP commands and receives responses and handles events.
 /// </summary>
-public partial class SkStackClient :
-  IDisposable
-{
+public partial class SkStackClient : IDisposable {
   private PipeWriter streamWriter;
   private readonly SkStackCommandLineWriter commandLineWriter;
   private PipeReader streamReader;

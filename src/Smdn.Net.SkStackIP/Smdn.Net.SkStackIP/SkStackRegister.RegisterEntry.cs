@@ -84,8 +84,7 @@ partial class SkStackRegister {
 
   private abstract class ComparableValueRegisterEntry<TValue> :
     RegisterEntry<TValue>
-    where TValue : IComparable<TValue>
-  {
+    where TValue : IComparable<TValue> {
     private protected ComparableValueRegisterEntry(
       string name,
       (bool isReadable, bool isWritable) readWrite,
