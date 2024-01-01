@@ -37,12 +37,12 @@ public class SkStackErrorResponseException : SkStackResponseException {
     : base(
       message: errorText.IsEmpty
         ? $"{message} [{errorCode}]"
-        : $"{message} [{errorCode}] \"{SkStack.DefaultEncoding.GetString(errorText)}\"",
+        : $"{message} [{errorCode}] \"{SkStack.GetString(errorText)}\"",
       innerException: innerException
     )
   {
     Response = response;
     ErrorCode = errorCode;
-    ErrorText = SkStack.DefaultEncoding.GetString(errorText);
+    ErrorText = SkStack.GetString(errorText);
   }
 }

@@ -55,7 +55,7 @@ internal static class ISkStackCommandLineWriterExtensions {
 
     Span<byte> bytesSpan = stackalloc byte[charsWritten];
 
-    var bytesWritten = SkStack.DefaultEncoding.GetBytes(charsSpan.Slice(0, charsWritten), bytesSpan);
+    var bytesWritten = SkStack.ToByteSequence(charsSpan.Slice(0, charsWritten), bytesSpan);
 
     writer.WriteToken(bytesSpan.Slice(0, bytesWritten));
   }
@@ -134,7 +134,7 @@ internal static class ISkStackCommandLineWriterExtensions {
     try {
       tokenBytes = ArrayPool<byte>.Shared.Rent(token.Length);
 
-      var lengthOfToken = SkStack.DefaultEncoding.GetBytes(token, tokenBytes.AsSpan());
+      var lengthOfToken = SkStack.ToByteSequence(token, tokenBytes.AsSpan());
 
       write(tokenBytes.AsSpan(0, lengthOfToken), writer);
     }

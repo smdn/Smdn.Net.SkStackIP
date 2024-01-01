@@ -12,10 +12,16 @@ using Smdn.Text.Encodings; // EncodingReadOnlySequenceExtensions
 namespace Smdn.Net.SkStackIP.Protocol;
 
 internal static class SkStack {
-  public static readonly Encoding DefaultEncoding = Encoding.ASCII;
+  private static readonly Encoding DefaultEncoding = Encoding.ASCII;
 
   public static byte[] ToByteSequence(string text)
     => DefaultEncoding.GetBytes(text);
+
+  public static int ToByteSequence(ReadOnlySpan<char> source, Span<byte> destination)
+    => DefaultEncoding.GetBytes(source, destination);
+
+  public static string GetString(ReadOnlySpan<byte> sequence)
+    => DefaultEncoding.GetString(sequence);
 
   public static string GetString(ReadOnlySequence<byte> sequence)
     => DefaultEncoding.GetString(sequence);
