@@ -25,8 +25,7 @@ internal sealed class SkStackCommandLineWriter : ISkStackCommandLineWriter {
 
     writer.Write(sequence);
 
-    if (writerForLog is not null)
-      writerForLog.Write(sequence);
+    writerForLog?.Write(sequence);
   }
 
   public void WriteToken(ReadOnlySpan<byte> token)
