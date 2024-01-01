@@ -5,6 +5,9 @@
 using System;
 using System.Net;
 using System.Net.NetworkInformation;
+#if SYSTEM_TEXT_ASCII
+using System.Text;
+#endif
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -98,6 +101,10 @@ partial class SkStackClient {
   {
     if (password.Length is not (>= SKSETPWDMinLength and <= SKSETPWDMaxLength))
       throw new ArgumentException($"length of `{nameof(password)}` must be in range of {SKSETPWDMinLength}~{SKSETPWDMaxLength}", nameof(password));
+#if SYSTEM_TEXT_ASCII
+    if (!Ascii.IsValid(password.Span))
+      throw new ArgumentException($"`{nameof(password)}` contains invalid characters for ASCII sequence", paramName: nameof(password));
+#endif
 
     return SendCommandAsync(
       command: SkStackCommandNames.SKSETPWD,
@@ -150,6 +157,10 @@ partial class SkStackClient {
   {
     if (id.Length != SKSETRBIDLengthOfId)
       throw new ArgumentException($"length of `{nameof(id)}` must be exact {SKSETRBIDLengthOfId}", nameof(id));
+#if SYSTEM_TEXT_ASCII
+    if (!Ascii.IsValid(id.Span))
+      throw new ArgumentException($"`{nameof(id)}` contains invalid characters for ASCII sequence", paramName: nameof(id));
+#endif
 
     return SendCommandAsync(
       command: SkStackCommandNames.SKSETRBID,

@@ -193,4 +193,21 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
       "password must not be masked"
     );
   }
+
+#if SYSTEM_TEXT_ASCII
+  [TestCase("Ｐassword")]
+  [TestCase("passworＤ")]
+  public void SKSETPWD_Password_ReadOnlyMemoryOfChar_NonAscii(string password)
+  {
+    var stream = new PseudoSkStackStream();
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+#pragma warning disable CA2012
+    Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: password.AsMemory()));
+#pragma warning restore CA2012
+
+    Assert.That(stream.ReadSentData(), Is.Empty);
+  }
+#endif
 }

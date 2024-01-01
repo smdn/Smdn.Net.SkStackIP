@@ -76,7 +76,6 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
-
   [TestCase("0")]
   [TestCase("00112233445566778899AABBCCDDEEF")]
   [TestCase("00112233445566778899AABBCCDDEEFFF")]
@@ -92,4 +91,21 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
+
+#if SYSTEM_TEXT_ASCII
+  [TestCase("０0112233445566778899AABBCCDDEEFF")]
+  [TestCase("00112233445566778899AABBCCDDEEFＦ")]
+  public void SKSETRBID_NonAsciiRBID_ReadOnlyMemoryOfChar(string rbid)
+  {
+    var stream = new PseudoSkStackStream();
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+#pragma warning disable CA2012
+    Assert.Throws<ArgumentException>(() => client.SendSKSETRBIDAsync(id: rbid.AsMemory()));
+#pragma warning restore CA2012
+
+    Assert.That(stream.ReadSentData(), Is.Empty);
+  }
+#endif
 }
