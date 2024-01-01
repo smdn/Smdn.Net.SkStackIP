@@ -11,11 +11,11 @@ internal sealed class SkStackCommandLineWriter : ISkStackCommandLineWriter {
 
   public SkStackCommandLineWriter(
     IBufferWriter<byte> writer,
-    IBufferWriter<byte>? writerForWriter
+    IBufferWriter<byte>? writerForLog
   )
   {
     this.writer = writer;
-    this.writerForLog = writerForWriter;
+    this.writerForLog = writerForLog;
   }
 
   public void Write(ReadOnlySpan<byte> sequence)
