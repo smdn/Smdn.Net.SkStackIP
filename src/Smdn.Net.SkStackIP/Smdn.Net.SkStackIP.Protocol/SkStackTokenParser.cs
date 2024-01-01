@@ -511,12 +511,19 @@ public static class SkStackTokenParser {
       throw SkStackUnexpectedResponseException.CreateInvalidToken(token, "decimal number with max 10 digit");
 
     var reader = new SequenceReader<byte>(token);
+
+#if SYSTEM_IUTF8SPANPARSABLE
+    Span<byte> str = stackalloc byte[(int)reader.Length];
+
+    _ = reader.TryCopyTo(str);
+#else
     Span<char> str = stackalloc char[(int)reader.Length];
 
     for (var i = 0; i < token.Length; i++) {
       reader.TryRead(out var d);
       str[i] = (char)d;
     }
+#endif
 
     try {
       return uint.Parse(str, provider: null);
