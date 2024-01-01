@@ -29,21 +29,4 @@ internal static class SkStackEventCodeNames {
   public static ReadOnlySpan<byte> EEDSCAN => EventCodeAndNames[SkStackEventCode.EEDSCAN].Span;
   public static ReadOnlySpan<byte> EPORT => EventCodeAndNames[SkStackEventCode.EPORT].Span;
   public static ReadOnlySpan<byte> EVENT => EventCodeAndNames[SkStackEventCode.EVENT].Span;
-
-  public static bool TryGetEventName(SkStackEventCode eventCode, out ReadOnlyMemory<byte> eventName)
-    => EventCodeAndNames.TryGetValue(eventCode, out eventName);
-
-  public static bool TryGetEventCode(ReadOnlySpan<byte> eventName, out SkStackEventCode eventCode)
-  {
-    eventCode = default;
-
-    foreach (var (code, name) in EventCodeAndNames) {
-      if (name.Span.SequenceEqual(eventName)) {
-        eventCode = code;
-        return true;
-      }
-    }
-
-    return false;
-  }
 }
