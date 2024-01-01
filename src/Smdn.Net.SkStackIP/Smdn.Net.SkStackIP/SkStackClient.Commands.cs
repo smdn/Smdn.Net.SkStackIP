@@ -263,7 +263,7 @@ partial class SkStackClient {
         var reader = context.CreateReader();
 
         if (
-          SkStackTokenParser.ExpectToken(ref reader, EVER.Span) &&
+          SkStackTokenParser.ExpectToken(ref reader, "EVER"u8) &&
           SkStackTokenParser.ExpectCharArray(ref reader, out string? version) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader)
         ) {
@@ -277,8 +277,6 @@ partial class SkStackClient {
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken
     );
-
-  private static readonly ReadOnlyMemory<byte> EVER = SkStack.ToByteSequence(nameof(EVER));
 
   /// <summary>
   ///   <para>Sends a command <c>SKAPPVER</c>.</para>
@@ -296,7 +294,7 @@ partial class SkStackClient {
         var reader = context.CreateReader();
 
         if (
-          SkStackTokenParser.ExpectToken(ref reader, EAPPVER.Span) &&
+          SkStackTokenParser.ExpectToken(ref reader, "EAPPVER"u8) &&
           SkStackTokenParser.ExpectCharArray(ref reader, out string? appver) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader)
         ) {
@@ -310,8 +308,6 @@ partial class SkStackClient {
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken
     );
-
-  private static readonly ReadOnlyMemory<byte> EAPPVER = SkStack.ToByteSequence(nameof(EAPPVER));
 
   /// <summary>
   ///   <para>Sends a command <c>SKRESET</c>.</para>

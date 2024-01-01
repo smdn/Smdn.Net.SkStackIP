@@ -57,8 +57,6 @@ partial class SkStackRegister {
 
     private protected abstract bool IsInRange(TValue value);
 
-    private static readonly ReadOnlyMemory<byte> ESREG = SkStack.ToByteSequence("ESREG");
-
     internal TValue? ParseESREG(
       ISkStackSequenceParserContext context
     )
@@ -66,7 +64,7 @@ partial class SkStackRegister {
       var reader = context.CreateReader();
 
       if (
-        SkStackTokenParser.ExpectToken(ref reader, ESREG.Span) &&
+        SkStackTokenParser.ExpectToken(ref reader, "ESREG"u8) &&
         ExpectValue(ref reader, out var result) &&
         SkStackTokenParser.ExpectEndOfLine(ref reader)
       ) {

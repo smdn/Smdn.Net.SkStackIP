@@ -1,6 +1,5 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
-using System;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading;
@@ -36,7 +35,7 @@ partial class SkStackClient {
         var reader = context.CreateReader();
 
         if (
-          SkStackTokenParser.ExpectToken(ref reader, EINFO.Span) &&
+          SkStackTokenParser.ExpectToken(ref reader, "EINFO"u8) &&
           SkStackTokenParser.ExpectIPADDR(ref reader, out var linkLocalAddress) &&
           SkStackTokenParser.ExpectADDR64(ref reader, out var macAddress) &&
           SkStackTokenParser.ExpectCHANNEL(ref reader, out var channel) &&
@@ -60,6 +59,4 @@ partial class SkStackClient {
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken
     );
-
-  private static readonly ReadOnlyMemory<byte> EINFO = SkStack.ToByteSequence(nameof(EINFO));
 }

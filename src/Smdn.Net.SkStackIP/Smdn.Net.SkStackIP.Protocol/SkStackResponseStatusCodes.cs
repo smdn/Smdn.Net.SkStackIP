@@ -6,9 +6,7 @@ using System;
 namespace Smdn.Net.SkStackIP.Protocol;
 
 internal static class SkStackResponseStatusCodes {
-  private static readonly ReadOnlyMemory<byte> StatusOk = SkStack.ToByteSequence("OK");
-  public static ReadOnlySpan<byte> OK => StatusOk.Span;
+  public static ReadOnlySpan<byte> OK => "OK"u8;
 
-  private static readonly ReadOnlyMemory<byte> StatusFail = SkStack.ToByteSequence("FAIL");
-  public static ReadOnlySpan<byte> FAIL => StatusFail.Span;
+  public static ReadOnlySpan<byte> FAIL => "FAIL"u8;
 }

@@ -14,10 +14,8 @@ internal static class ISkStackCommandLineWriterExtensions {
   private const int LengthOfADDR64 = 16; // "0123456789ABCDEF".Length
   private const int LengthOfIPADDR = 39; // "XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX".Length
 
-  private static readonly ReadOnlyMemory<byte> HexNumbers = SkStack.ToByteSequence("0123456789ABCDEF");
-
   public static void WriteTokenHex(this ISkStackCommandLineWriter writer, byte value)
-    => writer.WriteToken(HexNumbers.Span.Slice(value, 1));
+    => writer.WriteToken("0123456789ABCDEF"u8.Slice(value, 1));
 
   public static void WriteTokenBinary(this ISkStackCommandLineWriter writer, bool value)
     => WriteTokenUINT8(writer, value ? (byte)1 : (byte)0, zeroPadding: false);
