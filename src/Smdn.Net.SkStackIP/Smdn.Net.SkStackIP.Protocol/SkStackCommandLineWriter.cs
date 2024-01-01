@@ -61,11 +61,11 @@ internal sealed class SkStackCommandLineWriter : ISkStackCommandLineWriter {
       writerForLog.GetSpan(1)[0] = SkStack.SP;
       writerForLog.Advance(1);
 
-      const int maskLength = 4;
-      const byte maskByte = (byte)'*';
+      const int MaskLength = 4;
+      const byte MaskByte = (byte)'*';
 
-      writerForLog.GetSpan(maskLength).Slice(0, maskLength).Fill(maskByte);
-      writerForLog.Advance(maskLength);
+      writerForLog.GetSpan(MaskLength).Slice(0, MaskLength).Fill(MaskByte);
+      writerForLog.Advance(MaskLength);
     }
   }
 }

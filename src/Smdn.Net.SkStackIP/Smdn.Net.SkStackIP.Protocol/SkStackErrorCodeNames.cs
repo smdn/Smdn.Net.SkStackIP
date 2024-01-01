@@ -10,7 +10,7 @@ namespace Smdn.Net.SkStackIP.Protocol;
 ///   <para>See 'BP35A1コマンドリファレンス 7. エラーコード' for detailed specifications.</para>
 /// </remarks>
 internal static class SkStackErrorCodeNames {
-  private static readonly IReadOnlyDictionary<SkStackErrorCode, ReadOnlyMemory<byte>> errorCodeAndNames =
+  private static readonly IReadOnlyDictionary<SkStackErrorCode, ReadOnlyMemory<byte>> ErrorCodeAndNames =
     new Dictionary<SkStackErrorCode, ReadOnlyMemory<byte>>() {
       { SkStackErrorCode.ER01, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER01)) },
       { SkStackErrorCode.ER02, SkStack.ToByteSequence(nameof(SkStackErrorCode.ER02)) },
@@ -26,7 +26,7 @@ internal static class SkStackErrorCodeNames {
 
   public static SkStackErrorCode ParseErrorCode(ReadOnlySpan<byte> errorCodeName)
   {
-    foreach (var (code, name) in errorCodeAndNames) {
+    foreach (var (code, name) in ErrorCodeAndNames) {
       if (name.Span.SequenceEqual(errorCodeName))
         return code;
     }

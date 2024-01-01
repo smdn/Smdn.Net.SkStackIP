@@ -263,12 +263,12 @@ partial class SkStackClient {
     }
 
     if (commandEventHandler is not null && commandEventHandler.DoContinueHandlingEvents(response.Status)) {
-      const int parseSequenceEmptyResult = default;
+      const int ParseSequenceEmptyResult = default;
 
       Logger?.LogReceivingStatus($"{nameof(ReceiveResponseAsync)} {commandEventHandler.GetType().Name}");
 
       await ReadAsync(
-        parseSequence: static (context, handler) => { handler.ProcessSubsequentEvent(context); return parseSequenceEmptyResult; },
+        parseSequence: static (context, handler) => { handler.ProcessSubsequentEvent(context); return ParseSequenceEmptyResult; },
         arg: commandEventHandler,
         eventHandler: commandEventHandler,
         cancellationToken: cancellationToken

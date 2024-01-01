@@ -466,9 +466,9 @@ public static class SkStackTokenParser {
 
   private static uint ToDecimalNumber(ReadOnlySequence<byte> token)
   {
-    const int maxLength = 10; // uint.MaxValue.ToString("D").Length
+    const int MaxLength = 10; // uint.MaxValue.ToString("D").Length
 
-    if (maxLength < token.Length)
+    if (MaxLength < token.Length)
       throw SkStackUnexpectedResponseException.CreateInvalidToken(token, "decimal number with max 10 digit");
 
     var reader = new SequenceReader<byte>(token);

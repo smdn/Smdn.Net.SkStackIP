@@ -50,21 +50,21 @@ public abstract class SkStackFlashMemoryWriteRestriction {
 
     protected internal override bool IsRestricted()
     {
-      const bool permit = false;
+      const bool Permit = false;
 
       if (stopwatch is null) {
         stopwatch = Stopwatch.StartNew();
 
-        return permit; // permit the initial write
+        return Permit; // permit the initial write
       }
 
       if (interval <= stopwatch.Elapsed) {
         stopwatch.Restart();
 
-        return permit; // permit if specific interval has elapsed
+        return Permit; // permit if specific interval has elapsed
       }
 
-      return !permit;
+      return !Permit;
     }
   }
 

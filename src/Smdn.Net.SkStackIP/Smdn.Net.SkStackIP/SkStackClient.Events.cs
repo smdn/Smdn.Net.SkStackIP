@@ -46,9 +46,9 @@ partial class SkStackClient {
     var reader = context.CreateReader();
 
     if (reader.TryRead(out var firstByte)) {
-      const byte firstByteOfEVENTOrERXUDP = (byte)'E';
+      const byte FirstByteOfEVENTOrERXUDP = (byte)'E';
 
-      if (firstByte != firstByteOfEVENTOrERXUDP) {
+      if (firstByte != FirstByteOfEVENTOrERXUDP) {
         context.Ignore();
         return FalseResultValueTask;
       }

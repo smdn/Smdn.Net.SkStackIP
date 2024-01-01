@@ -119,14 +119,14 @@ internal static class SkStackClientLoggerExtensions {
 
   public static void LogInfoIPEventReceived(this ILogger logger, SkStackEvent ev)
   {
-    const LogLevel level = LogLevel.Information;
+    const LogLevel Level = LogLevel.Information;
 
-    if (!logger.IsEnabled(level))
+    if (!logger.IsEnabled(Level))
       return;
 
     if (ev.Number == SkStackEventNumber.UdpSendCompleted) {
       logger.Log(
-        level,
+        Level,
         SkStackClient.EventIdIPEventReceived,
         "IPv6: {Number} - {Parameter} (EVENT {NumberInHex:X2}, PARAM {Parameter}, {SenderAddress})",
         ev.Number,
@@ -143,7 +143,7 @@ internal static class SkStackClientLoggerExtensions {
     }
     else {
       logger.Log(
-        level,
+        Level,
         SkStackClient.EventIdIPEventReceived,
         "IPv6: {Number} (EVENT {NumberInHex:X2}, {SenderAddress})",
         ev.Number,
@@ -155,13 +155,13 @@ internal static class SkStackClientLoggerExtensions {
 
   public static void LogInfoIPEventReceived(this ILogger logger, SkStackUdpReceiveEvent erxudp, ReadOnlySequence<byte> erxudpData)
   {
-    const LogLevel level = LogLevel.Information;
+    const LogLevel Level = LogLevel.Information;
 
-    if (!logger.IsEnabled(level))
+    if (!logger.IsEnabled(Level))
       return;
 
     logger.Log(
-      level,
+      Level,
       SkStackClient.EventIdIPEventReceived,
       "{Prefix}: {LocalEndPoint}←{RemoteEndPoint} {RemoteLinkLocalAddress} (secured: {IsSecured}, length: {Length})",
       erxudp.LocalEndPoint.Port switch {
@@ -179,13 +179,13 @@ internal static class SkStackClientLoggerExtensions {
 
   public static void LogInfoPanaEventReceived(this ILogger logger, SkStackEvent ev)
   {
-    const LogLevel level = LogLevel.Information;
+    const LogLevel Level = LogLevel.Information;
 
-    if (!logger.IsEnabled(level))
+    if (!logger.IsEnabled(Level))
       return;
 
     logger.Log(
-      level,
+      Level,
       SkStackClient.EventIdPanaEventReceived,
       "PANA: {Number} (EVENT {NumberInHex:X2}, {SenderAddress})",
       ev.Number,
@@ -196,13 +196,13 @@ internal static class SkStackClientLoggerExtensions {
 
   public static void LogInfoAribStdT108EventReceived(this ILogger logger, SkStackEvent ev)
   {
-    const LogLevel level = LogLevel.Information;
+    const LogLevel Level = LogLevel.Information;
 
-    if (!logger.IsEnabled(level))
+    if (!logger.IsEnabled(Level))
       return;
 
     logger.Log(
-      level,
+      Level,
       SkStackClient.EventIdAribStdT108EventReceived,
       "ARIB STD-T108: {Number} (EVENT {NumberInHex:X2}, {SenderAddress})",
       ev.Number,

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Smdn.Net.SkStackIP.Protocol;
 
 internal static class SkStackEventCodeNames {
-  private static readonly IReadOnlyDictionary<SkStackEventCode, ReadOnlyMemory<byte>> eventCodeAndNames =
+  private static readonly IReadOnlyDictionary<SkStackEventCode, ReadOnlyMemory<byte>> EventCodeAndNames =
     new Dictionary<SkStackEventCode, ReadOnlyMemory<byte>>() {
       { SkStackEventCode.ERXUDP,      SkStack.ToByteSequence(nameof(SkStackEventCode.ERXUDP)) },
       { SkStackEventCode.EPONG,       SkStack.ToByteSequence(nameof(SkStackEventCode.EPONG)) },
@@ -19,23 +19,23 @@ internal static class SkStackEventCodeNames {
       { SkStackEventCode.EVENT,       SkStack.ToByteSequence(nameof(SkStackEventCode.EVENT)) },
     };
 
-  public static ReadOnlyMemory<byte> ERXUDP => eventCodeAndNames[SkStackEventCode.ERXUDP];
-  public static ReadOnlyMemory<byte> EPONG => eventCodeAndNames[SkStackEventCode.EPONG];
-  public static ReadOnlyMemory<byte> EADDR => eventCodeAndNames[SkStackEventCode.EADDR];
-  public static ReadOnlyMemory<byte> ENEIGHBOR => eventCodeAndNames[SkStackEventCode.ENEIGHBOR];
-  public static ReadOnlyMemory<byte> EPANDESC => eventCodeAndNames[SkStackEventCode.EPANDESC];
-  public static ReadOnlyMemory<byte> EEDSCAN => eventCodeAndNames[SkStackEventCode.EEDSCAN];
-  public static ReadOnlyMemory<byte> EPORT => eventCodeAndNames[SkStackEventCode.EPORT];
-  public static ReadOnlyMemory<byte> EVENT => eventCodeAndNames[SkStackEventCode.EVENT];
+  public static ReadOnlyMemory<byte> ERXUDP => EventCodeAndNames[SkStackEventCode.ERXUDP];
+  public static ReadOnlyMemory<byte> EPONG => EventCodeAndNames[SkStackEventCode.EPONG];
+  public static ReadOnlyMemory<byte> EADDR => EventCodeAndNames[SkStackEventCode.EADDR];
+  public static ReadOnlyMemory<byte> ENEIGHBOR => EventCodeAndNames[SkStackEventCode.ENEIGHBOR];
+  public static ReadOnlyMemory<byte> EPANDESC => EventCodeAndNames[SkStackEventCode.EPANDESC];
+  public static ReadOnlyMemory<byte> EEDSCAN => EventCodeAndNames[SkStackEventCode.EEDSCAN];
+  public static ReadOnlyMemory<byte> EPORT => EventCodeAndNames[SkStackEventCode.EPORT];
+  public static ReadOnlyMemory<byte> EVENT => EventCodeAndNames[SkStackEventCode.EVENT];
 
   public static bool TryGetEventName(SkStackEventCode eventCode, out ReadOnlyMemory<byte> eventName)
-    => eventCodeAndNames.TryGetValue(eventCode, out eventName);
+    => EventCodeAndNames.TryGetValue(eventCode, out eventName);
 
   public static bool TryGetEventCode(ReadOnlySpan<byte> eventName, out SkStackEventCode eventCode)
   {
     eventCode = default;
 
-    foreach (var (code, name) in eventCodeAndNames) {
+    foreach (var (code, name) in EventCodeAndNames) {
       if (name.Span.SequenceEqual(eventName)) {
         eventCode = code;
         return true;

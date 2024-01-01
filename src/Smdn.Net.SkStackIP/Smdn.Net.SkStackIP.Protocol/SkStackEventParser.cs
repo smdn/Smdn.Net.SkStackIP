@@ -155,8 +155,8 @@ internal static class SkStackEventParser {
       SkStackTokenParser.ExpectToken(ref reader, SkStackEventCodeNames.ENEIGHBOR) &&
       SkStackTokenParser.ExpectEndOfLine(ref reader)
     ) {
-      const int numberOfNeighborCacheEntry = 8; // 3.18. SKADDNBR
-      var neighborCache = new Dictionary<IPAddress, PhysicalAddress>(capacity: numberOfNeighborCacheEntry);
+      const int NumberOfNeighborCacheEntry = 8; // 3.18. SKADDNBR
+      var neighborCache = new Dictionary<IPAddress, PhysicalAddress>(capacity: NumberOfNeighborCacheEntry);
 
       for (; ; ) {
         statusLineReader = reader;

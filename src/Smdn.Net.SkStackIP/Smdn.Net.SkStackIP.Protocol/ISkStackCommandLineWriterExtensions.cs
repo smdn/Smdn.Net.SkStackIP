@@ -14,10 +14,10 @@ internal static class ISkStackCommandLineWriterExtensions {
   private const int LengthOfADDR64 = 16; // "0123456789ABCDEF".Length
   private const int LengthOfIPADDR = 39; // "XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX".Length
 
-  private static readonly ReadOnlyMemory<byte> hexNumbers = SkStack.ToByteSequence("0123456789ABCDEF");
+  private static readonly ReadOnlyMemory<byte> HexNumbers = SkStack.ToByteSequence("0123456789ABCDEF");
 
   public static void WriteTokenHex(this ISkStackCommandLineWriter writer, byte value)
-    => writer.WriteToken(hexNumbers.Span.Slice(value, 1));
+    => writer.WriteToken(HexNumbers.Span.Slice(value, 1));
 
   public static void WriteTokenBinary(this ISkStackCommandLineWriter writer, bool value)
     => WriteTokenUINT8(writer, value ? (byte)1 : (byte)0, zeroPadding: false);
@@ -86,9 +86,9 @@ internal static class ISkStackCommandLineWriterExtensions {
     if (ipv6address.AddressFamily != AddressFamily.InterNetworkV6)
       throw new ArgumentException($"`{nameof(ipv6address)}.{nameof(IPAddress.AddressFamily)}` must be {nameof(AddressFamily.InterNetworkV6)}");
 
-    const int lengthOfIPv6Address = 16;
+    const int LengthOfIPv6Address = 16;
 
-    Span<byte> addressBytes = stackalloc byte[lengthOfIPv6Address];
+    Span<byte> addressBytes = stackalloc byte[LengthOfIPv6Address];
 
     if (!ipv6address.TryWriteBytes(addressBytes, out _))
       throw new InvalidOperationException($"{nameof(IPAddress)}.{nameof(IPAddress.TryWriteBytes)} failed unexpectedly");
@@ -96,7 +96,7 @@ internal static class ISkStackCommandLineWriterExtensions {
     Span<byte> ipaddr = stackalloc byte[LengthOfIPADDR];
     var bytesWritten = 0;
 
-    for (var i = 0; i < lengthOfIPv6Address; i += 2) {
+    for (var i = 0; i < LengthOfIPv6Address; i += 2) {
       if (0 < i)
         ipaddr[bytesWritten++] = (byte)':';
 

@@ -106,8 +106,8 @@ partial class SkStackClient {
     CancellationToken cancellationToken = default
   )
   {
-    const int minDataLength = 0x0001;
-    const int maxDataLength = 0x04D0;
+    const int MinDataLength = 0x0001;
+    const int MaxDataLength = 0x04D0;
 
     SkStackUdpPort.ThrowIfPortHandleIsOutOfRange(handle, nameof(handle));
 #if SYSTEM_ENUM_ISDEFINED_OF_TENUM
@@ -121,8 +121,8 @@ partial class SkStackClient {
     SkStackUdpPort.ThrowIfPortNumberIsOutOfRange(destinationPort, nameof(destinationPort));
     if (data.IsEmpty)
       throw new ArgumentException("must be non-empty sequence", nameof(data));
-    if (data.Length is not (>= minDataLength and <= maxDataLength))
-      throw new ArgumentException($"length of {nameof(data)} must be in range of {minDataLength}~{maxDataLength}", nameof(data));
+    if (data.Length is not (>= MinDataLength and <= MaxDataLength))
+      throw new ArgumentException($"length of {nameof(data)} must be in range of {MinDataLength}~{MaxDataLength}", nameof(data));
 
     return SKSENDTO();
 
