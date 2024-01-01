@@ -252,12 +252,14 @@ internal static class SkStackEventParser {
     return false;
   }
 
-  private static readonly ReadOnlyMemory<byte> EPANDESCPrefixChannel      = SkStack.ToByteSequence("  Channel:");
-  private static readonly ReadOnlyMemory<byte> EPANDESCPrefixChannelPage  = SkStack.ToByteSequence("  Channel Page:");
-  private static readonly ReadOnlyMemory<byte> EPANDESCPrefixPanId        = SkStack.ToByteSequence("  Pan ID:");
-  private static readonly ReadOnlyMemory<byte> EPANDESCPrefixAddress      = SkStack.ToByteSequence("  Addr:");
-  private static readonly ReadOnlyMemory<byte> EPANDESCPrefixLQI          = SkStack.ToByteSequence("  LQI:");
-  private static readonly ReadOnlyMemory<byte> EPANDESCPrefixPairId       = SkStack.ToByteSequence("  PairID:");
+#pragma warning disable IDE0055
+  private static ReadOnlySpan<byte> EPANDESCPrefixChannel      => "  Channel:"u8;
+  private static ReadOnlySpan<byte> EPANDESCPrefixChannelPage  => "  Channel Page:"u8;
+  private static ReadOnlySpan<byte> EPANDESCPrefixPanId        => "  Pan ID:"u8;
+  private static ReadOnlySpan<byte> EPANDESCPrefixAddress      => "  Addr:"u8;
+  private static ReadOnlySpan<byte> EPANDESCPrefixLQI          => "  LQI:"u8;
+  private static ReadOnlySpan<byte> EPANDESCPrefixPairId       => "  PairID:"u8;
+#pragma warning restore IDE0055
 
   /// <remarks>
   ///   <para>See 'BP35A1コマンドリファレンス 4.6. EEDSCAN' for detailed specifications.</para>
@@ -297,7 +299,7 @@ internal static class SkStackEventParser {
 
       if (SkStackTokenParser.ExpectEndOfLine(ref reader)) {
         // [VER 1.2.10, APPVER rev26e] EEDSCAN responds extra CRLF
-        if (SkStackTokenParser.ExpectSequence(ref reader, SkStack.CRLFMemory))
+        if (SkStackTokenParser.ExpectSequence(ref reader, SkStack.CRLFSpan))
           SkStackTokenParser.ExpectEndOfLine(ref reader);
 
         context.Complete(reader);

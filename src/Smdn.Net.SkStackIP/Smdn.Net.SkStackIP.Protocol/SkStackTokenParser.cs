@@ -216,27 +216,29 @@ public static class SkStackTokenParser {
   )
     => ExpectSequenceCore(
       reader: ref reader,
-      expectedSequence: SkStack.CRLFMemory,
+      expectedSequence: SkStack.CRLFSpan,
       throwIfUnexpected: true,
       createUnexpectedExceptionMessage: static _ => $"expected EOL, but not"
     );
 
   public static bool ExpectSequence(
     ref SequenceReader<byte> reader,
-    ReadOnlyMemory<byte> expectedSequence
+    ReadOnlySpan<byte> expectedSequence
   )
     => ExpectSequenceCore(
       reader: ref reader,
       expectedSequence: expectedSequence,
       throwIfUnexpected: true,
-      createUnexpectedExceptionMessage: static seq => $"expected sequence '{seq.Span.ToControlCharsPicturizedString()}', but not"
+      createUnexpectedExceptionMessage: static seq => $"expected sequence '{seq.ToControlCharsPicturizedString()}', but not"
     );
+
+  private delegate string CreateUnexpectedSequenceExceptionMessageFunc(ReadOnlySpan<byte> expectedSequence);
 
   private static bool ExpectSequenceCore(
     ref SequenceReader<byte> reader,
-    ReadOnlyMemory<byte> expectedSequence,
+    ReadOnlySpan<byte> expectedSequence,
     bool throwIfUnexpected,
-    Func<ReadOnlyMemory<byte>, string> createUnexpectedExceptionMessage
+    CreateUnexpectedSequenceExceptionMessageFunc createUnexpectedExceptionMessage
   )
   {
     if (reader.Remaining < expectedSequence.Length)
@@ -244,7 +246,7 @@ public static class SkStackTokenParser {
 
     var consumedReader = reader;
 
-    if (!consumedReader.IsNext(expectedSequence.Span, advancePast: true)) {
+    if (!consumedReader.IsNext(expectedSequence, advancePast: true)) {
       return throwIfUnexpected
         ? throw SkStackUnexpectedResponseException.CreateInvalidToken(
             consumedReader.GetUnreadSequence().Slice(0, expectedSequence.Length),
