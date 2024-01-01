@@ -10,15 +10,6 @@ using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;
 
-public class SkStackResponse<TPayload> : SkStackResponse {
-  public TPayload? Payload { get; internal set; }
-
-  internal SkStackResponse()
-    : base()
-  {
-  }
-}
-
 public class SkStackResponse {
   internal readonly struct NullPayload { }
 
