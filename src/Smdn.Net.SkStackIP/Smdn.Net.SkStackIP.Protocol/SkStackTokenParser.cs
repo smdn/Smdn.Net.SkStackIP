@@ -162,7 +162,7 @@ public static class SkStackTokenParser {
       var reader = new SequenceReader<byte>(tokenSequence);
 
       for (var i = 0; i < expectedToken.Length; i++) {
-        if (reader.TryRead(out var b) && (char)b != expectedToken[i]) {
+        if (reader.TryRead(out var b) && b != expectedToken[i]) {
           return throwIfUnexpected
             ? throw SkStackUnexpectedResponseException.CreateInvalidToken(tokenSequence, "unexpected token")
             : false;
