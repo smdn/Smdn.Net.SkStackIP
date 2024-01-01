@@ -18,12 +18,53 @@ namespace Smdn.Net.SkStackIP.Protocol;
 public static class SkStackTokenParser {
   private delegate (bool Success, TResult Result) TryConvertTokenFunc<TArg, TResult>(ReadOnlySequence<byte> token, TArg arg);
 
+  private readonly struct None { }
+
+  private static OperationStatus TryExpectToken(
+    ref SequenceReader<byte> reader,
+    ReadOnlySpan<byte> expectedToken,
+    bool throwIfUnexpected
+  )
+    => TryExpectOrConvertToken<None, None>(
+      reader: ref reader,
+      length:
+#if DEBUG
+        expectedToken.Length == 0 ? throw new InvalidOperationException("expected token must be non-empty string") : expectedToken.Length,
+#else
+        expectedToken.Length,
+#endif
+      throwIfUnexpected: throwIfUnexpected,
+      expectedToken: expectedToken,
+      arg: default, // no argument
+      tryConvert: default, // no argument
+      out _ // discard
+    );
+
   private static OperationStatus TryConvertToken<TArg, TResult>(
     ref SequenceReader<byte> reader,
     int length,
     bool throwIfUnexpected,
     TArg arg,
-    TryConvertTokenFunc<TArg, TResult> tryConvert,
+    TryConvertTokenFunc<TArg, TResult>? tryConvert,
+    out TResult? result
+  )
+    => TryExpectOrConvertToken(
+      reader: ref reader,
+      length: length,
+      throwIfUnexpected: throwIfUnexpected,
+      expectedToken: default, // no argument
+      arg: arg,
+      tryConvert: tryConvert,
+      out result
+    );
+
+  private static OperationStatus TryExpectOrConvertToken<TArg, TResult>(
+    ref SequenceReader<byte> reader,
+    int length,
+    bool throwIfUnexpected,
+    ReadOnlySpan<byte> expectedToken,
+    TArg arg,
+    TryConvertTokenFunc<TArg, TResult>? tryConvert,
     out TResult? result
   )
   {
@@ -74,6 +115,24 @@ public static class SkStackTokenParser {
         : OperationStatus.InvalidData;
     }
 
+    if (!expectedToken.IsEmpty) {
+      if (IsExpectedToken(token, expectedToken, throwIfUnexpected)) {
+        reader = consumedReader;
+
+        return OperationStatus.Done;
+      }
+
+      return throwIfUnexpected
+        ? throw SkStackUnexpectedResponseException.CreateInvalidToken(
+          token: token,
+          extraMessage: $"expected: '{expectedToken.ToControlCharsPicturizedString()}'"
+        )
+        : OperationStatus.InvalidData;
+    }
+
+    if (tryConvert is null)
+      throw new InvalidOperationException($"It is necessary to specify a valid value for either the parameter {nameof(expectedToken)} or {nameof(tryConvert)}.");
+
     bool converted;
 
     try {
@@ -97,6 +156,21 @@ public static class SkStackTokenParser {
     reader = consumedReader;
 
     return OperationStatus.Done;
+
+    static bool IsExpectedToken(ReadOnlySequence<byte> tokenSequence, ReadOnlySpan<byte> expectedToken, bool throwIfUnexpected)
+    {
+      var reader = new SequenceReader<byte>(tokenSequence);
+
+      for (var i = 0; i < expectedToken.Length; i++) {
+        if (reader.TryRead(out var b) && (char)b != expectedToken[i]) {
+          return throwIfUnexpected
+            ? throw SkStackUnexpectedResponseException.CreateInvalidToken(tokenSequence, "unexpected token")
+            : false;
+        }
+      }
+
+      return true;
+    }
   }
 
   public static bool Expect<TValue>(
@@ -121,9 +195,9 @@ public static class SkStackTokenParser {
     ref SequenceReader<byte> reader,
     ReadOnlyMemory<byte> expectedToken
   )
-    => ExpectTokenCore(
+    => TryExpectToken(
       reader: ref reader,
-      expectedToken: expectedToken,
+      expectedToken: expectedToken.Span,
       throwIfUnexpected: false
     );
 
@@ -131,48 +205,11 @@ public static class SkStackTokenParser {
     ref SequenceReader<byte> reader,
     ReadOnlyMemory<byte> expectedToken
   )
-    => OperationStatus.Done == ExpectTokenCore(
+    => OperationStatus.Done == TryExpectToken(
       reader: ref reader,
-      expectedToken: expectedToken,
+      expectedToken: expectedToken.Span,
       throwIfUnexpected: true
     );
-
-  private static OperationStatus ExpectTokenCore(
-    ref SequenceReader<byte> reader,
-    ReadOnlyMemory<byte> expectedToken,
-    bool throwIfUnexpected
-  )
-  {
-    try {
-      return TryConvertToken(
-        reader: ref reader,
-        length: expectedToken.Length,
-        throwIfUnexpected: throwIfUnexpected,
-        arg: (expectedToken, throwIfUnexpected),
-        tryConvert: static (seq, arg) => {
-          var r = new SequenceReader<byte>(seq);
-
-          for (var i = 0; i < arg.expectedToken.Length; i++) {
-            if (r.TryRead(out var b) && (char)b != arg.expectedToken.Span[i]) {
-              return arg.throwIfUnexpected
-                ? throw SkStackUnexpectedResponseException.CreateInvalidToken(seq, "unexpected token")
-                : (false, default(int));
-            }
-          }
-
-          return (true, default(int));
-        },
-        result: out var _ // discard
-      );
-    }
-    catch (SkStackUnexpectedResponseException ex) {
-      throw SkStackUnexpectedResponseException.CreateInvalidToken(
-        causedText: ex.CausedText ?? "unexpected token",
-        $"expected: '{expectedToken.Span.ToControlCharsPicturizedString()}'",
-        ex
-      );
-    }
-  }
 
   public static bool ExpectEndOfLine(
     ref SequenceReader<byte> reader
