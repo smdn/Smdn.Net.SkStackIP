@@ -263,7 +263,7 @@ partial class SkStackClient {
         var reader = context.CreateReader();
 
         if (
-          SkStackTokenParser.ExpectToken(ref reader, EVER) &&
+          SkStackTokenParser.ExpectToken(ref reader, EVER.Span) &&
           SkStackTokenParser.ExpectCharArray(ref reader, out string? version) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader)
         ) {
@@ -296,7 +296,7 @@ partial class SkStackClient {
         var reader = context.CreateReader();
 
         if (
-          SkStackTokenParser.ExpectToken(ref reader, EAPPVER) &&
+          SkStackTokenParser.ExpectToken(ref reader, EAPPVER.Span) &&
           SkStackTokenParser.ExpectCharArray(ref reader, out string? appver) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader)
         ) {

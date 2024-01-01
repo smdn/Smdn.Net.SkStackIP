@@ -36,7 +36,7 @@ partial class SkStackClient {
         var reader = context.CreateReader();
 
         if (
-          SkStackTokenParser.ExpectToken(ref reader, EINFO) &&
+          SkStackTokenParser.ExpectToken(ref reader, EINFO.Span) &&
           SkStackTokenParser.ExpectIPADDR(ref reader, out var linkLocalAddress) &&
           SkStackTokenParser.ExpectADDR64(ref reader, out var macAddress) &&
           SkStackTokenParser.ExpectCHANNEL(ref reader, out var channel) &&

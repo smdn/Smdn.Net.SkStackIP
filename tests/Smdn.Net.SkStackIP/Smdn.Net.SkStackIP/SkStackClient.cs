@@ -434,7 +434,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
         var reader = context.CreateReader();
 
         if (
-          SkStackTokenParser.ExpectToken(ref reader, "TEST2".ToByteSequence()) &&
+          SkStackTokenParser.ExpectToken(ref reader, "TEST2".ToByteSequence().Span) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader)
         ) {
           context.Complete(reader);
@@ -473,7 +473,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
         var reader = context.CreateReader();
 
         if (
-          SkStackTokenParser.ExpectToken(ref reader, "OK".ToByteSequence()) &&
+          SkStackTokenParser.ExpectToken(ref reader, "OK".ToByteSequence().Span) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader)
         ) {
           context.Complete(reader);
@@ -513,7 +513,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
           var reader = context.CreateReader();
 
           if (
-            SkStackTokenParser.ExpectToken(ref reader, "EXPECTEDTOKEN".ToByteSequence()) &&
+            SkStackTokenParser.ExpectToken(ref reader, "EXPECTEDTOKEN".ToByteSequence().Span) &&
             SkStackTokenParser.ExpectEndOfLine(ref reader)
           ) {
             context.Complete(reader);
@@ -768,11 +768,11 @@ public class SkStackClientTests : SkStackClientTestsBase {
         var reader = context.CreateReader();
 
         if (
-          SkStackTokenParser.ExpectToken(ref reader, "LINE1".ToByteSequence()) &&
+          SkStackTokenParser.ExpectToken(ref reader, "LINE1".ToByteSequence().Span) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader) &&
-          SkStackTokenParser.ExpectToken(ref reader , "LINE2".ToByteSequence()) &&
+          SkStackTokenParser.ExpectToken(ref reader , "LINE2".ToByteSequence().Span) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader) &&
-          SkStackTokenParser.ExpectToken(ref reader, "LINE3".ToByteSequence()) &&
+          SkStackTokenParser.ExpectToken(ref reader, "LINE3".ToByteSequence().Span) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader)
         ) {
           context.Complete(reader);
@@ -917,11 +917,11 @@ public class SkStackClientTests : SkStackClientTestsBase {
         var reader = context.CreateReader();
 
         if (
-          SkStackTokenParser.ExpectToken(ref reader, "LINE1".ToByteSequence()) &&
+          SkStackTokenParser.ExpectToken(ref reader, "LINE1".ToByteSequence().Span) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader) &&
-          SkStackTokenParser.ExpectToken(ref reader, "LINE2".ToByteSequence()) &&
+          SkStackTokenParser.ExpectToken(ref reader, "LINE2".ToByteSequence().Span) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader) &&
-          SkStackTokenParser.ExpectToken(ref reader, "LINE3".ToByteSequence()) &&
+          SkStackTokenParser.ExpectToken(ref reader, "LINE3".ToByteSequence().Span) &&
           SkStackTokenParser.ExpectEndOfLine(ref reader)
         ) {
           context.Complete(reader);

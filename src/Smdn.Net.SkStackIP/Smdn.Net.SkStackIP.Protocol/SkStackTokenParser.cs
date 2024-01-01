@@ -193,21 +193,21 @@ public static class SkStackTokenParser {
 
   public static OperationStatus TryExpectToken(
     ref SequenceReader<byte> reader,
-    ReadOnlyMemory<byte> expectedToken
+    ReadOnlySpan<byte> expectedToken
   )
     => TryExpectToken(
       reader: ref reader,
-      expectedToken: expectedToken.Span,
+      expectedToken: expectedToken,
       throwIfUnexpected: false
     );
 
   public static bool ExpectToken(
     ref SequenceReader<byte> reader,
-    ReadOnlyMemory<byte> expectedToken
+    ReadOnlySpan<byte> expectedToken
   )
     => OperationStatus.Done == TryExpectToken(
       reader: ref reader,
-      expectedToken: expectedToken.Span,
+      expectedToken: expectedToken,
       throwIfUnexpected: true
     );
 

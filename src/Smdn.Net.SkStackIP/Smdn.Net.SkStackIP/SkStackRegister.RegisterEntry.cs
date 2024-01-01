@@ -66,7 +66,7 @@ partial class SkStackRegister {
       var reader = context.CreateReader();
 
       if (
-        SkStackTokenParser.ExpectToken(ref reader, ESREG) &&
+        SkStackTokenParser.ExpectToken(ref reader, ESREG.Span) &&
         ExpectValue(ref reader, out var result) &&
         SkStackTokenParser.ExpectEndOfLine(ref reader)
       ) {
