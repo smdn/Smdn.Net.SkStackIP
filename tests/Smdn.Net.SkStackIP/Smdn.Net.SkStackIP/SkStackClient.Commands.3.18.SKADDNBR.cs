@@ -107,11 +107,11 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
-  [Test, Ignore("not implemented")]
+  [Test]
   public void SKADDNBR_MACADDR_InvalidLength_NonDeferredThrowing_0()
     => SKADDNBR_MACADDR_InvalidLength_NonDeferredThrowing(PhysicalAddress.None);
 
-  [Test, Ignore("not implemented")]
+  [Test]
   public void SKADDNBR_MACADDR_InvalidLength_NonDeferredThrowing_1()
     => SKADDNBR_MACADDR_InvalidLength_NonDeferredThrowing(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34 }));
 

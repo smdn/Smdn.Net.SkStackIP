@@ -26,12 +26,16 @@ partial class SkStackClient {
     CancellationToken cancellationToken = default
   )
   {
+    const int LengthOfAddr64 = 8;
+
     if (ipv6Address is null)
       throw new ArgumentNullException(nameof(ipv6Address));
     if (ipv6Address.AddressFamily != AddressFamily.InterNetworkV6)
       throw new ArgumentException($"`{nameof(ipv6Address)}.{nameof(IPAddress.AddressFamily)}` must be {nameof(AddressFamily.InterNetworkV6)}");
     if (macAddress is null)
       throw new ArgumentNullException(nameof(macAddress));
+    if (macAddress.GetAddressBytes().Length != LengthOfAddr64)
+      throw new ArgumentException($"`{nameof(macAddress)}` must be address that is {LengthOfAddr64} bytes length");
 
     return SendCommandAsync(
       command: SkStackCommandNames.SKADDNBR,

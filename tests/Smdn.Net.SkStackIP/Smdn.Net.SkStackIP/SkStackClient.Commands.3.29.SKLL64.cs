@@ -111,11 +111,11 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
-  [Test, Ignore("not implemented")]
+  [Test]
   public void SKLL64_ADDR64_InvalidLength_NonDeferredThrowing_0()
     => SKLL64_ADDR64_InvalidLength_NonDeferredThrowing(PhysicalAddress.None);
 
-  [Test, Ignore("not implemented")]
+  [Test]
   public void SKLL64_ADDR64_InvalidLength_NonDeferredThrowing_1()
     => SKLL64_ADDR64_InvalidLength_NonDeferredThrowing(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34 }));
 
