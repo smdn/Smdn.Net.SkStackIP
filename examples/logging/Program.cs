@@ -11,7 +11,6 @@ services.AddLogging(
   builder => builder
     .AddSimpleConsole(static options => options.SingleLine = true)
     .AddFilter(static level => LogLevel.Trace <= level)
-    //.AddFilter(static _ => true)
 );
 
 var logger = services.BuildServiceProvider().GetService<ILoggerFactory>().CreateLogger("SKSTACK-IP");

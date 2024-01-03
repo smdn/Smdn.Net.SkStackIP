@@ -8,10 +8,10 @@ using Smdn.Net.SkStackIP;
 
 using var pseudoDeviceStream = new PseudoSkStackDeviceStream();
 
-var pseudoDeviceResponseWriter = new StreamWriter(pseudoDeviceStream.GetWriterStream(), Encoding.ASCII);
-
-pseudoDeviceResponseWriter.NewLine = "\r\n";
-pseudoDeviceResponseWriter.AutoFlush = true;
+var pseudoDeviceResponseWriter = new StreamWriter(pseudoDeviceStream.GetWriterStream(), Encoding.ASCII) {
+  NewLine = "\r\n",
+  AutoFlush = true,
+};
 
 using var client = new SkStackClient(stream: pseudoDeviceStream);
 

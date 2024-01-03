@@ -9,9 +9,9 @@ using Smdn.Net.SkStackIP;
 
 using GpioController gpio = new();
 
-const int pinWakeUp = 5;
+const int PinWakeUp = 5;
 
-gpio.OpenPin(pinWakeUp, PinMode.Output);
+gpio.OpenPin(PinWakeUp, PinMode.Output);
 
 using var client = new SkStackClient(serialPortName: "/dev/ttyACM0");
 
@@ -22,15 +22,15 @@ await client.SendSKRESETAsync();
 
 Console.WriteLine("start sleeping");
 
-for (;;) {
-  gpio.Write(pinWakeUp, PinValue.High);
+for (; ; ) {
+  gpio.Write(PinWakeUp, PinValue.High);
 
   var taskSleep = client.SendSKDSLEEPAsync(waitUntilWakeUp: true).AsTask();
   var taskWakeUp = Task.Run(() => {
     Console.WriteLine("press ENTER key to activate wake-up signal");
     Console.ReadLine();
 
-    gpio.Write(pinWakeUp, PinValue.Low);
+    gpio.Write(PinWakeUp, PinValue.Low);
   });
 
   await Task.WhenAll(taskSleep, taskWakeUp);

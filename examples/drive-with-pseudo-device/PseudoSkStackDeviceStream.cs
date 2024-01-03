@@ -7,7 +7,7 @@ using System.IO.Pipelines;
 using System.Threading;
 using System.Threading.Tasks;
 
-class PseudoSkStackDeviceStream : Stream {
+public class PseudoSkStackDeviceStream : Stream {
   public override bool CanWrite => true;
   public override bool CanRead => true;
   public override bool CanSeek => false;
