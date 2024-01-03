@@ -2,11 +2,28 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.IO.Ports;
 using System.Text;
 
 using Smdn.Net.SkStackIP;
 
-using var client = new SkStackClient(serialPortName: "/dev/ttyACM0");
+using var port = new SerialPort(
+  portName: "/dev/ttyACM0",
+  baudRate: 115200,
+  parity: Parity.None,
+  dataBits: 8,
+  stopBits: StopBits.One
+) {
+  Handshake = Handshake.None,
+  DtrEnable = false,
+  RtsEnable = false,
+  NewLine = "\r\n", // CRLF
+};
+
+port.Open();
+port.DiscardInBuffer();
+
+using var client = new SkStackClient(stream: port.BaseStream);
 
 var respSKVER = await client.SendSKVERAsync();
 

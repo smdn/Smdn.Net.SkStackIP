@@ -1,5 +1,7 @@
 ﻿// SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
+using System.IO.Ports;
+
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -15,8 +17,24 @@ services.AddLogging(
 
 var logger = services.BuildServiceProvider().GetService<ILoggerFactory>().CreateLogger("SKSTACK-IP");
 
+using var port = new SerialPort(
+  portName: "/dev/ttyACM0",
+  baudRate: 115200,
+  parity: Parity.None,
+  dataBits: 8,
+  stopBits: StopBits.One
+) {
+  Handshake = Handshake.None,
+  DtrEnable = false,
+  RtsEnable = false,
+  NewLine = "\r\n", // CRLF
+};
+
+port.Open();
+port.DiscardInBuffer();
+
 using var client = new SkStackClient(
-  serialPortName: "/dev/ttyACM0",
+  stream: port.BaseStream,
   logger: logger
 );
 

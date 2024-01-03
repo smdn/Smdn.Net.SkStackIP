@@ -3,6 +3,7 @@
 
 using System;
 using System.Device.Gpio;
+using System.IO.Ports;
 using System.Threading.Tasks;
 
 using Smdn.Net.SkStackIP;
@@ -13,7 +14,23 @@ const int PinWakeUp = 5;
 
 gpio.OpenPin(PinWakeUp, PinMode.Output);
 
-using var client = new SkStackClient(serialPortName: "/dev/ttyACM0");
+using var port = new SerialPort(
+  portName: "/dev/ttyACM0",
+  baudRate: 115200,
+  parity: Parity.None,
+  dataBits: 8,
+  stopBits: StopBits.One
+) {
+  Handshake = Handshake.None,
+  DtrEnable = false,
+  RtsEnable = false,
+  NewLine = "\r\n", // CRLF
+};
+
+port.Open();
+port.DiscardInBuffer();
+
+using var client = new SkStackClient(stream: port.BaseStream);
 
 client.Slept += static (sender, e) => Console.WriteLine(">> now in sleeping state");
 client.WokeUp += static (sender, e) => Console.WriteLine(">> now in wake-up state");
