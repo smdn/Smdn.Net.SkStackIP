@@ -1,0 +1,27 @@
+<!--
+SPDX-FileCopyrightText: 2024 smdn <smdn@smdn.jp>
+SPDX-License-Identifier: MIT
+-->
+<Project InitialTargets="ReplaceSmdnNetSkStackIPPackageReferencesToProjectReferences">
+  <!-- Replace PackageReference to ProjectReference of the local project -->
+  <Target
+    Name="ReplaceSmdnNetSkStackIPPackageReferencesToProjectReferences"
+    Condition=" '$(UseLocalProjectInsteadOfPublishedPackage)' == 'true' "
+  >
+    <ItemGroup>
+      <_SmdnNetSkStackIPReference
+        Include="@(PackageReference)"
+        Condition="$([System.String]::new('%(Identity)').StartsWith('Smdn.Net.SkStackIP'))"
+        ProjectPath="$(MSBuildThisFileDirectory)..\src\%(Identity)\%(Identity).csproj"
+      />
+    </ItemGroup>
+
+    <ItemGroup>
+      <!-- Remove package references to Smdn.Net.SkStackIP.* -->
+      <PackageReference Remove="@(_SmdnNetSkStackIPReference)" />
+
+      <!-- Include project reference to Smdn.Net.SkStackIP.* -->
+      <ProjectReference Include="%(_SmdnNetSkStackIPReference.ProjectPath)" />
+    </ItemGroup>
+  </Target>
+</Project>
