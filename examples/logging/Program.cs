@@ -15,7 +15,7 @@ services.AddLogging(
     .AddFilter(static level => LogLevel.Trace <= level)
 );
 
-var logger = services.BuildServiceProvider().GetService<ILoggerFactory>().CreateLogger("SKSTACK-IP");
+using var serviceProvider = services.BuildServiceProvider();
 
 using var port = new SerialPort(
   portName: "/dev/ttyACM0",
@@ -35,7 +35,7 @@ port.DiscardInBuffer();
 
 using var client = new SkStackClient(
   stream: port.BaseStream,
-  logger: logger
+  logger: serviceProvider.GetService<ILoggerFactory>().CreateLogger("SKSTACK-IP")
 );
 
 await client.SendSKVERAsync();
