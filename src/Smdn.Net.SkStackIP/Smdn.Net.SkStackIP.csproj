@@ -16,10 +16,7 @@ SPDX-License-Identifier: MIT
   </PropertyGroup>
 
   <PropertyGroup Label="metadata">
-    <Description>
-<![CDATA[Smdn.Net.SkStackIP is a .NET client library for Skyley Networks' SKSTACK IP.
-]]>
-    </Description>
+    <Description>Provides APIs for operating devices that implement Skyley Networks' SKSTACK IP.</Description>
     <CopyrightYear>2021</CopyrightYear>
   </PropertyGroup>
 
@@ -50,6 +47,28 @@ SPDX-License-Identifier: MIT
   <Target Name="GenerateReadmeFileContent" DependsOnTargets="ReadReadmeFileNoticeSectionContent">
     <PropertyGroup>
       <PackageReadmeFileContent><![CDATA[# $(PackageId) $(PackageVersion)
+`$(PackageId)` is a library that provides APIs for operating devices that implement Skyley Networks' SKSTACK IP.
+
+This library supports to use any `Stream` or `PipeReader`/`PipeWriter` as the communication channel for the SKSTACK IP protocol, so it has the ability to communicate with devices that use other than serial ports, e.g., pseudo devices.
+
+## Getting started
+First, add package [$(PackageId)](https://www.nuget.org/packages/$(PackageId)) and [System.IO.Ports](https://www.nuget.org/packages/System.IO.Ports) to the project file.
+
+```
+dotnet add package $(PackageId)
+dotnet add package System.IO.Ports
+```
+
+Next, open the serial port to which the SKSTACK-IP device is connected using with the `SerialPort` class.
+
+Then, create a `SkStackClient` instance from the `SerialPort.BaseStream` and call the `SkStackClient`'s method to send the command.
+
+```cs
+$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)..\..\examples\getting-started\Program.cs').TrimEnd())
+```
+
+More examples can be found on the [GitHub repository]($(RepositoryUrl)/tree/main/examples/), including examples of using library features.
+
 ## Contributing
 This project welcomes contributions, feedbacks and suggestions. You can contribute to this project by submitting [Issues]($(RepositoryUrl)/issues/new/choose) or [Pull Requests]($(RepositoryUrl)/pulls/) on the [GitHub repository]($(RepositoryUrl)).
 
