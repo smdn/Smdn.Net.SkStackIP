@@ -47,7 +47,7 @@ SPDX-License-Identifier: MIT
   <Target Name="GenerateReadmeFileContent" DependsOnTargets="ReadReadmeFileNoticeSectionContent">
     <PropertyGroup>
       <PackageReadmeFileContent><![CDATA[# $(PackageId) $(PackageVersion)
-`$(PackageId)` is a library that provides APIs for operating devices that implement Skyley Networks' SKSTACK IP.
+`$(PackageId)` is a library that provides APIs for operating devices that implement [Skyley Networks](https://www.skyley.com/)' [SKSTACK IP](https://www.skyley.com/wiki/?SKSTACK+IP+for+HAN).
 
 This library supports to use any `Stream` or `PipeReader`/`PipeWriter` as the communication channel for the SKSTACK IP protocol, so it has the ability to communicate with devices that use other than serial ports, e.g., pseudo devices.
 

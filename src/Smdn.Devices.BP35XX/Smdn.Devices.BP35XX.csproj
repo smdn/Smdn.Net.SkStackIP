@@ -20,10 +20,25 @@ SPDX-License-Identifier: MIT
 
   <PropertyGroup Label="package properties">
     <PackageTags>SKSTACK,SKSTACK-IP,BP35A1,ROHM-BP35A1,Wi-SUN</PackageTags>
+    <GenerateNupkgReadmeFileDependsOnTargets>$(GenerateNupkgReadmeFileDependsOnTargets);GenerateReadmeFileContent</GenerateNupkgReadmeFileDependsOnTargets>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.IO.Ports" Version="8.0.0" />
     <ProjectOrPackageReference ReferencePackageVersion="[1.0.0,2.0.0)" Include="..\Smdn.Net.SkStackIP\Smdn.Net.SkStackIP.csproj" />
   </ItemGroup>
+
+  <Target Name="GenerateReadmeFileContent" DependsOnTargets="ReadReadmeFileNoticeSectionContent">
+    <PropertyGroup>
+      <PackageReadmeFileContent><![CDATA[# $(PackageId) $(PackageVersion)
+`$(PackageId)` is a library that provides APIs to operate [ROHM BP35A1](https://www.rohm.co.jp/products/wireless-communication/specified-low-power-radio-modules/bp35a1-product) and other [ROHM Wi-SUN modules](https://www.rohm.co.jp/products/wireless-communication/specified-low-power-radio-modules) using the [Skyley Networks](https://www.skyley.com/)' [SKSTACK IP](https://www.skyley.com/wiki/?SKSTACK+IP+for+HAN) command.
+
+## Contributing
+This project welcomes contributions, feedbacks and suggestions. You can contribute to this project by submitting [Issues]($(RepositoryUrl)/issues/new/choose) or [Pull Requests]($(RepositoryUrl)/pulls/) on the [GitHub repository]($(RepositoryUrl)).
+
+## Notice
+$(ReadmeFileNoticeSectionContent)
+]]></PackageReadmeFileContent>
+    </PropertyGroup>
+  </Target>
 </Project>

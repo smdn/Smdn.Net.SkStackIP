@@ -7,12 +7,26 @@ This repository provides a .NET client library for [Skyley Networks](https://www
 > [!IMPORTANT]
 > This project and .NET implementation published in this project are not affiliated with Skyley Networks. [An official Java implementation](https://github.com/SkyleyNetworks/SKSTACK_API) is available from Skyley Networks' repository.
 
+
+
 # Smdn.Net.SkStackIP
 [![NuGet](https://img.shields.io/nuget/v/Smdn.Net.SkStackIP.svg)](https://www.nuget.org/packages/Smdn.Net.SkStackIP/)
 
-`Smdn.Net.SkStackIP` is a .NET library that provides APIs for operating devices that implement Skyley Networks' SKSTACK IP.
+[Smdn.Net.SkStackIP](./src/Smdn.Net.SkStackIP) is a .NET library that provides APIs for operating devices that implement Skyley Networks' SKSTACK IP.
 
 This library supports to use any `Stream` or `PipeReader`/`PipeWriter` as the communication channel for the SKSTACK IP protocol, so it has the ability to communicate with devices that use other than serial ports, e.g., pseudo devices.
+
+
+
+# Smdn.Devices.BP35XX
+[![NuGet](https://img.shields.io/nuget/v/Smdn.Devices.BP35XX.svg)](https://www.nuget.org/packages/Smdn.Devices.BP35XX/)
+
+[Smdn.Devices.BP35XX](./src/Smdn.Devices.BP35XX) is a .NET library for operating [ROHM BP35A1](https://www.rohm.co.jp/products/wireless-communication/specified-low-power-radio-modules/bp35a1-product) and other [ROHM Wi-SUN modules](https://www.rohm.co.jp/products/wireless-communication/specified-low-power-radio-modules) using the SKSTACK IP.
+
+> [!NOTE]
+> Currently this library only support the BP35A1, but I would like to add support for other devices. If you would like to add other devices, please contact me.
+
+
 
 # Project status
 The library implementation and API is almost stable.
