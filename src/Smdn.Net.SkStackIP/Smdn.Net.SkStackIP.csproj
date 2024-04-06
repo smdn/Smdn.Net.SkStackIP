@@ -64,10 +64,10 @@ Next, open the serial port to which the SKSTACK-IP device is connected using wit
 Then, create a `SkStackClient` instance from the `SerialPort.BaseStream` and call the `SkStackClient`'s method to send the command.
 
 ```cs
-$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)..\..\examples\getting-started\Program.cs').TrimEnd())
+$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)..\..\examples\$(PackageId)\getting-started\Program.cs').TrimEnd())
 ```
 
-More examples can be found on the [GitHub repository]($(RepositoryUrl)/tree/main/examples/), including examples of using library features.
+More examples can be found on the [GitHub repository]($(RepositoryUrl)/tree/main/examples/$(PackageId)/), including examples of using library features.
 
 ## Contributing
 This project welcomes contributions, feedbacks and suggestions. You can contribute to this project by submitting [Issues]($(RepositoryUrl)/issues/new/choose) or [Pull Requests]($(RepositoryUrl)/pulls/) on the [GitHub repository]($(RepositoryUrl)).
