@@ -40,6 +40,10 @@ If there's a feature you would like to add or a bug you would like to fix, pleas
 
 IssueやPull Requestを送る際は、[Contribution guidelines](./CONTRIBUTING.md)をご覧頂ください。　可能なら英語が望ましいですが、日本語で構いません。
 
+# Related project
+[smdn/Smdn.Net.EchonetLite](https://github.com/smdn/Smdn.Net.EchonetLite): This project is to implement [ECHONET Lite](https://echonet.jp/english/) and its related standards/specifications with .NET, also providing an implementation for **Route B** using SKSTACK IP. The major goal is to implement the functionalities to access smart energy meters via the Route B.
+
+
 # Notice
 <!-- #pragma section-start NupkgReadmeFile_Notice -->
 ## License
