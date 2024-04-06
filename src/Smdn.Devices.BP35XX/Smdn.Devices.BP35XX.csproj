@@ -33,6 +33,21 @@ SPDX-License-Identifier: MIT
       <PackageReadmeFileContent><![CDATA[# $(PackageId) $(PackageVersion)
 `$(PackageId)` is a library that provides APIs to operate [ROHM BP35A1](https://www.rohm.co.jp/products/wireless-communication/specified-low-power-radio-modules/bp35a1-product) and other [ROHM Wi-SUN modules](https://www.rohm.co.jp/products/wireless-communication/specified-low-power-radio-modules) using the [Skyley Networks](https://www.skyley.com/)' [SKSTACK IP](https://www.skyley.com/wiki/?SKSTACK+IP+for+HAN) command.
 
+## Getting started
+First, add package [$(PackageId)](https://www.nuget.org/packages/$(PackageId)) to the project file.
+
+```
+dotnet add package $(PackageId)
+```
+
+For using BP35A1, use the `BP35A1.CreateAsync` method to create an instance of the device.
+
+```cs
+$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)..\..\examples\$(PackageId)\getting-started\Program.cs').TrimEnd())
+```
+
+More examples can be found on the [GitHub repository]($(RepositoryUrl)/tree/main/examples/$(PackageId)/), including examples of using library features.
+
 ## Contributing
 This project welcomes contributions, feedbacks and suggestions. You can contribute to this project by submitting [Issues]($(RepositoryUrl)/issues/new/choose) or [Pull Requests]($(RepositoryUrl)/pulls/) on the [GitHub repository]($(RepositoryUrl)).
 
