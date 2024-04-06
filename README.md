@@ -4,7 +4,8 @@
 
 This repository provides a .NET client library for [Skyley Networks](https://www.skyley.com/)' [SKSTACK IP](https://www.skyley.com/wiki/?SKSTACK+IP+for+HAN).
 
-This project and .NET implementation published in this project are not affiliated with Skyley Networks. [An official Java implementation](https://github.com/SkyleyNetworks/SKSTACK_API) is available from Skyley Networks' repository.
+> [!IMPORTANT]
+> This project and .NET implementation published in this project are not affiliated with Skyley Networks. [An official Java implementation](https://github.com/SkyleyNetworks/SKSTACK_API) is available from Skyley Networks' repository.
 
 # Smdn.Net.SkStackIP
 [![NuGet](https://img.shields.io/nuget/v/Smdn.Net.SkStackIP.svg)](https://www.nuget.org/packages/Smdn.Net.SkStackIP/)
@@ -29,6 +30,13 @@ IssueやPull Requestを送る際は、[Contribution guidelines](./CONTRIBUTING.m
 <!-- #pragma section-start NupkgReadmeFile_Notice -->
 ## License
 This project is licensed under the terms of the [MIT License](./LICENSE.txt).
+
+## Disclaimer
+(An English translation for the reference follows the text written in Japanese.)
+
+本プロジェクトは、Skyley Networks、およびSKSTACK IPを搭載する製品の製造元・供給元・販売元とは無関係の、非公式なものです。
+
+This is an unofficial project that has no affiliation with Skyley Networks and the manufacturers/vendors/suppliers of the products that equipped with SKSTACK IP.
 
 ## Third-Party Notices
 See [ThirdPartyNotices.md](./ThirdPartyNotices.md) for detail.
