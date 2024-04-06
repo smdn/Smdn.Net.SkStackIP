@@ -31,7 +31,7 @@ This library supports to use any `Stream` or `PipeReader`/`PipeWriter` as the co
 # Project status
 The library implementation and API is almost stable.
 
-Documentation and examples of use are incomplete. If you have any questions, please ask through issue.
+Documentation and examples of use are incomplete. If you have any questions, please ask through [Discussions](https://github.com/smdn/Smdn.Net.SkStackIP/discussions) or [Issues](https://github.com/smdn/Smdn.Net.SkStackIP/issues/).
 
 # For contributers
 Contributions are appreciated!
