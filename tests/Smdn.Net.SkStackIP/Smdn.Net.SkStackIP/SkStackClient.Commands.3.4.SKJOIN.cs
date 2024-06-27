@@ -16,8 +16,8 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
   [Test]
   public void SKJOIN()
   {
-    const string addressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
-    var address = IPAddress.Parse(addressString);
+    const string SelfIPv6Address = "FE80:0000:0000:0000:021D:1290:0003:C890";
+    const string PaaIPv6Address = "FE80:0000:0000:0000:1034:5678:ABCD:EF01";
 
     var stream = new PseudoSkStackStream();
 
@@ -25,22 +25,22 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     async Task RaisePanaSessionEstablishmentEventsAsync()
     {
-      stream.ResponseWriter.WriteLine($"EVENT 21 {addressString} 02");
-      stream.ResponseWriter.WriteLine($"EVENT 02 {addressString}");
-      stream.ResponseWriter.WriteLine($"ERXUDP {addressString} FE80:0000:0000:0000:021D:1290:1234:5678 02CC 02CC 001D129012345678 0 0001 0");
+      stream.ResponseWriter.WriteLine($"EVENT 21 {SelfIPv6Address} 02");
+      stream.ResponseWriter.WriteLine($"EVENT 02 {SelfIPv6Address}");
+      stream.ResponseWriter.WriteLine($"ERXUDP {SelfIPv6Address} {PaaIPv6Address} 02CC 02CC 001D129012345678 0 0001 0");
 
       await Task.Delay(ResponseDelayInterval);
 
       stream.ResponseWriter.Write($"EVENT 21 "); await Task.Delay(ResponseDelayInterval);
-      stream.ResponseWriter.Write($"{addressString} 00"); await Task.Delay(ResponseDelayInterval);
+      stream.ResponseWriter.Write($"{SelfIPv6Address} 00"); await Task.Delay(ResponseDelayInterval);
       stream.ResponseWriter.WriteLine();
       await Task.Delay(ResponseDelayInterval);
 
-      stream.ResponseWriter.WriteLine($"ERXUDP {addressString} FE80:0000:0000:0000:021D:1290:1234:5678 02CC 02CC 001D129012345678 0 0001 0");
+      stream.ResponseWriter.WriteLine($"ERXUDP {SelfIPv6Address} {PaaIPv6Address} 02CC 02CC 001D129012345678 0 0001 0");
       await Task.Delay(ResponseDelayInterval);
 
       stream.ResponseWriter.Write($"EVENT "); await Task.Delay(ResponseDelayInterval);
-      stream.ResponseWriter.WriteLine($"25 {addressString}");
+      stream.ResponseWriter.WriteLine($"25 {PaaIPv6Address}");
     }
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
@@ -55,7 +55,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
       try {
         Assert.That(sender, Is.SameAs(client), nameof(sender));
         Assert.That(e, Is.Not.Null, nameof(e));
-        Assert.That(e.PanaSessionPeerAddress, Is.EqualTo(address), nameof(e.PanaSessionPeerAddress));
+        Assert.That(e.PanaSessionPeerAddress, Is.EqualTo(IPAddress.Parse(PaaIPv6Address)), nameof(e.PanaSessionPeerAddress));
         Assert.That(e.EventNumber, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(e.EventNumber));
         Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
         Assert.That(e.PanaSessionPeerAddress, Is.EqualTo(client.PanaSessionPeerAddress), nameof(client.PanaSessionPeerAddress));
@@ -68,7 +68,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     };
 
 #pragma warning disable CA2012
-    var taskSendCommand = client.SendSKJOINAsync(address).AsTask();
+    var taskSendCommand = client.SendSKJOINAsync(IPAddress.Parse(PaaIPv6Address)).AsTask();
 
     Assert.DoesNotThrowAsync(
       async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync())
@@ -78,7 +78,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     Assert.That(thrownExceptionInEventHandler, Is.Null, nameof(thrownExceptionInEventHandler));
     Assert.That(raisedEventCount, Is.EqualTo(1), nameof(raisedEventCount));
 
-    Assert.That(address, Is.EqualTo(client.PanaSessionPeerAddress), nameof(client.PanaSessionPeerAddress));
+    Assert.That(IPAddress.Parse(PaaIPv6Address), Is.EqualTo(client.PanaSessionPeerAddress), nameof(client.PanaSessionPeerAddress));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
     var response = taskSendCommand.Result;
@@ -87,15 +87,15 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      SequenceIs.EqualTo("SKJOIN FE80:0000:0000:0000:021D:1290:1234:5678\r\n".ToByteSequence())
+      SequenceIs.EqualTo($"SKJOIN {PaaIPv6Address}\r\n".ToByteSequence())
     );
   }
 
   [Test]
   public void SKJOIN_FailedByEVENT24()
   {
-    const string addressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
-    var address = IPAddress.Parse(addressString);
+    const string SelfIPv6Address = "FE80:0000:0000:0000:021D:1290:0003:C890";
+    const string PaaIPv6Address = "FE80:0000:0000:0000:1034:5678:ABCD:EF01";
 
     var stream = new PseudoSkStackStream();
 
@@ -103,14 +103,14 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     async Task RaisePanaSessionEstablishmentEventsAsync()
     {
-      stream.ResponseWriter.WriteLine($"EVENT 21 {addressString} 02");
-      stream.ResponseWriter.WriteLine($"EVENT 02 {addressString}");
-      stream.ResponseWriter.WriteLine($"ERXUDP {addressString} FE80:0000:0000:0000:021D:1290:1234:5678 02CC 02CC 001D129012345678 0 0001 0");
+      stream.ResponseWriter.WriteLine($"EVENT 21 {SelfIPv6Address} 02");
+      stream.ResponseWriter.WriteLine($"EVENT 02 {SelfIPv6Address}");
+      stream.ResponseWriter.WriteLine($"ERXUDP {SelfIPv6Address} {PaaIPv6Address} 02CC 02CC 001D129012345678 0 0001 0");
 
       await Task.Delay(ResponseDelayInterval);
 
-      stream.ResponseWriter.WriteLine($"EVENT 21 {addressString} 00");
-      stream.ResponseWriter.WriteLine($"ERXUDP {addressString} FE80:0000:0000:0000:021D:1290:1234:5678 02CC 02CC 001D129012345678 0 0001 0");
+      stream.ResponseWriter.WriteLine($"EVENT 21 {SelfIPv6Address} 00");
+      stream.ResponseWriter.WriteLine($"ERXUDP {SelfIPv6Address} {PaaIPv6Address} 02CC 02CC 001D129012345678 0 0001 0");
 
       await Task.Delay(ResponseDelayInterval);
 
@@ -118,7 +118,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
       await Task.Delay(ResponseDelayInterval);
 
-      stream.ResponseWriter.WriteLine($"{addressString}");
+      stream.ResponseWriter.WriteLine($"{SelfIPv6Address}");
     }
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
@@ -130,14 +130,14 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     client.PanaSessionEstablished += (sender, e) => raisedEventCount++;
 
-    var taskSendCommand = client.SendSKJOINAsync(address).AsTask();
+    var taskSendCommand = client.SendSKJOINAsync(IPAddress.Parse(PaaIPv6Address)).AsTask();
 
     var ex = Assert.ThrowsAsync<SkStackPanaSessionEstablishmentException>(
       async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync())
     );
 
     Assert.That(ex!.EventNumber, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentError));
-    Assert.That(ex.Address, Is.EqualTo(address));
+    Assert.That(ex.Address, Is.EqualTo(IPAddress.Parse(SelfIPv6Address)));
 
     Assert.That(raisedEventCount, Is.EqualTo(0), nameof(raisedEventCount));
 
@@ -146,7 +146,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     Assert.That(
       stream.ReadSentData(),
-      SequenceIs.EqualTo("SKJOIN FE80:0000:0000:0000:021D:1290:1234:5678\r\n".ToByteSequence())
+      SequenceIs.EqualTo($"SKJOIN {PaaIPv6Address}\r\n".ToByteSequence())
     );
   }
 
