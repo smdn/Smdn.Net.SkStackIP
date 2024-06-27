@@ -1,7 +1,7 @@
-// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.0.1)
+// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.1.0)
 //   Name: Smdn.Net.SkStackIP
-//   AssemblyVersion: 1.0.1.0
-//   InformationalVersion: 1.0.1+9921b5b514d8c63424e1f61532f990c217aa53e9
+//   AssemblyVersion: 1.1.0.0
+//   InformationalVersion: 1.1.0+b1231cf0cca65506f3356620e16e3ecd4cb811c1
 //   TargetFramework: .NETStandard,Version=v2.1
 //   Configuration: Release
 //   Referenced assemblies:
@@ -226,6 +226,9 @@ namespace Smdn.Net.SkStackIP {
   }
 
   public class SkStackPanaSessionEstablishmentException : SkStackPanaSessionException {
+    public SkStackChannel? Channel { get; }
+    public IPAddress? PaaAddress { get; }
+    public int? PanId { get; }
   }
 
   public sealed class SkStackPanaSessionEventArgs : SkStackEventArgs {
