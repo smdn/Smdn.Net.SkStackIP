@@ -138,6 +138,9 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     Assert.That(ex!.EventNumber, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentError));
     Assert.That(ex.Address, Is.EqualTo(IPAddress.Parse(SelfIPv6Address)));
+    Assert.That(ex.PaaAddress, Is.EqualTo(IPAddress.Parse(PaaIPv6Address)));
+    Assert.That(ex.Channel, Is.Null);
+    Assert.That(ex.PanId, Is.Null);
 
     Assert.That(raisedEventCount, Is.EqualTo(0), nameof(raisedEventCount));
 

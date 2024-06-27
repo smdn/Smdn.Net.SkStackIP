@@ -201,7 +201,7 @@ partial class SkStackClient {
   /// <seealso cref="SkStackRegister.PanId"/>
   /// <seealso cref="PanaSessionPeerAddress"/>
   /// <seealso cref="IsPanaSessionAlive"/>
-  /// <seealso cref="SendSKJOINAsync"/>
+  /// <seealso cref="SendSKJOINAsync(IPAddress, Func{SkStackEventNumber, IPAddress, Exception}?, CancellationToken)"/>
   /// <seealso cref="SendSKSETRBIDAsync(ReadOnlyMemory{byte}, CancellationToken)"/>
   /// <seealso cref="SendSKSETPWDAsync(ReadOnlyMemory{byte}, CancellationToken)"/>
   private async ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsyncCore(
@@ -344,6 +344,15 @@ partial class SkStackClient {
     // Then attempt to establish the PANA session.
     await SendSKJOINAsync(
       ipv6address: paaAddressNotNull,
+      createPanaSessionEstablishmentException: (eventNumber, address) =>
+        new SkStackPanaSessionEstablishmentException(
+          message: null,
+          paaAddress: paaAddressNotNull,
+          channel: channelNotNull,
+          panId: panIdNotNull,
+          address: address,
+          eventNumber: eventNumber
+        ),
       cancellationToken: cancellationToken
     ).ConfigureAwait(false);
 

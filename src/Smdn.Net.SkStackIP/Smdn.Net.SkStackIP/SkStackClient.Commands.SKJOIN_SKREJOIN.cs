@@ -13,6 +13,18 @@ namespace Smdn.Net.SkStackIP;
 #pragma warning disable IDE0040
 partial class SkStackClient {
 #pragma warning restore IDE0040
+  private static SkStackPanaSessionEstablishmentException CreatePanaSessionEstablishmentException(
+    IPAddress paaAddress,
+    SkStackEventNumber eventNumber,
+    IPAddress address
+  )
+    => new(
+      message: null,
+      paaAddress: paaAddress,
+      address: address,
+      eventNumber: eventNumber
+    );
+
   /// <summary>
   ///   <para>Sends a command <c>SKJOIN</c>.</para>
   /// </summary>
@@ -23,17 +35,32 @@ partial class SkStackClient {
     IPAddress ipv6address,
     CancellationToken cancellationToken = default
   )
+    => SendSKJOINAsync(
+      ipv6address: ipv6address,
+      createPanaSessionEstablishmentException: (eventNumber, address) => CreatePanaSessionEstablishmentException(ipv6address, eventNumber, address),
+      cancellationToken: cancellationToken
+    );
+
+  internal ValueTask<SkStackResponse> SendSKJOINAsync(
+    IPAddress ipv6address,
+    Func<SkStackEventNumber, IPAddress, Exception>? createPanaSessionEstablishmentException,
+    CancellationToken cancellationToken
+  )
   {
     if (ipv6address is null)
       throw new ArgumentNullException(nameof(ipv6address));
     if (ipv6address.AddressFamily != AddressFamily.InterNetworkV6)
       throw new ArgumentException($"`{nameof(ipv6address)}.{nameof(IPAddress.AddressFamily)}` must be {nameof(AddressFamily.InterNetworkV6)}");
 
-    return SKJOIN(ipv6address, cancellationToken);
+    return SKJOIN(ipv6address, createPanaSessionEstablishmentException, cancellationToken);
 
-    async ValueTask<SkStackResponse> SKJOIN(IPAddress addr, CancellationToken ct)
+    async ValueTask<SkStackResponse> SKJOIN(
+      IPAddress addr,
+      Func<SkStackEventNumber, IPAddress, Exception>? createException,
+      CancellationToken ct
+    )
     {
-      var (response, _) = await SKJOIN_SKREJOIN(SkStackCommandNames.SKJOIN, addr, ct).ConfigureAwait(false);
+      var (response, _) = await SKJOIN_SKREJOIN(SkStackCommandNames.SKJOIN, addr, createException, ct).ConfigureAwait(false);
 
       return response;
     }
@@ -51,7 +78,12 @@ partial class SkStackClient {
   )> SendSKREJOINAsync(
     CancellationToken cancellationToken = default
   )
-    => SKJOIN_SKREJOIN(SkStackCommandNames.SKREJOIN, ipv6address: null, cancellationToken);
+    => SKJOIN_SKREJOIN(
+      SkStackCommandNames.SKREJOIN,
+      ipv6address: null,
+      createPanaSessionEstablishmentException: null,
+      cancellationToken
+    );
 
   private async ValueTask<(
     SkStackResponse Response,
@@ -60,10 +92,11 @@ partial class SkStackClient {
   SKJOIN_SKREJOIN(
     ReadOnlyMemory<byte> command,
     IPAddress? ipv6address,
+    Func<SkStackEventNumber, IPAddress, Exception>? createPanaSessionEstablishmentException,
     CancellationToken cancellationToken
   )
   {
-    var eventHandler = new SKJOINEventHandler();
+    var eventHandler = new SKJOINEventHandler(createPanaSessionEstablishmentException);
     var resp = await SendCommandAsync(
       command: command,
       writeArguments: writer => {
@@ -85,16 +118,20 @@ partial class SkStackClient {
     return (resp, eventHandler.Address!);
   }
 
-  private class SKJOINEventHandler : SkStackEventHandlerBase {
+  private sealed class SKJOINEventHandler(Func<SkStackEventNumber, IPAddress, Exception>? createPanaSessionEstablishmentException) : SkStackEventHandlerBase {
     public bool HasAddressSet { get; private set; }
     public IPAddress? Address { get; private set; }
 
+    private readonly Func<SkStackEventNumber, IPAddress, Exception>? createPanaSessionEstablishmentException = createPanaSessionEstablishmentException;
     private SkStackEventNumber eventNumber;
+
+    private static SkStackPanaSessionEstablishmentException CreatePanaSessionEstablishmentException(SkStackEventNumber eventNumber, IPAddress address)
+      => new(null, address, eventNumber);
 
     public void ThrowIfEstablishmentError()
     {
       if (eventNumber != SkStackEventNumber.PanaSessionEstablishmentCompleted)
-        throw new SkStackPanaSessionEstablishmentException($"PANA session establishment failed. (0x{eventNumber:X})", Address!, eventNumber);
+        throw createPanaSessionEstablishmentException?.Invoke(eventNumber, Address!) ?? CreatePanaSessionEstablishmentException(eventNumber, Address!);
     }
 
     public override bool TryProcessEvent(SkStackEvent ev)

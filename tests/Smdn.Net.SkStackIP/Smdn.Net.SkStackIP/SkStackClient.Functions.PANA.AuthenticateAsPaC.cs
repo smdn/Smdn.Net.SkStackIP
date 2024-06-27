@@ -96,7 +96,13 @@ partial class SkStackClientFunctionsPanaTests {
         cancellationToken: cts.Token
       ),
       exceptPanaSessionEstablishmentException
-        ? Throws.TypeOf<SkStackPanaSessionEstablishmentException>()
+        ? Throws
+            .TypeOf<SkStackPanaSessionEstablishmentException>()
+            .And.Property(nameof(SkStackPanaSessionEstablishmentException.PaaAddress)).EqualTo(IPAddress.Parse(paaIPv6Address))
+            .And.Property(nameof(SkStackPanaSessionEstablishmentException.Channel)).EqualTo(SkStackChannel.Channels[paaChannel])
+            .And.Property(nameof(SkStackPanaSessionEstablishmentException.PanId)).EqualTo(paaPanId)
+            .And.Property(nameof(SkStackPanaSessionEstablishmentException.EventNumber)).EqualTo(eventNumberOfPanaSessionEstablishment)
+            .And.Property(nameof(SkStackPanaSessionEstablishmentException.Address)).EqualTo(IPAddress.Parse(selfIPv6Address))
         : Throws.Nothing
     );
 
