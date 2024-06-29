@@ -318,7 +318,9 @@ partial class SkStackClient {
 #endif
       channelNotNull = channel.Value!;
       panIdNotNull = panId.Value!;
+#if !DEBUG
 #pragma warning restore CS8629
+#endif
     }
 
     // Set channel and PAN ID if needed.
