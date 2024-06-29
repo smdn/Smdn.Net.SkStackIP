@@ -28,8 +28,8 @@ partial class SkStackClient {
     ThrowIfPanaSessionAlreadyEstablished();
 
     return AuthenticateAsPanaClientAsyncCore(
-      rbid: rbid,
-      password: password,
+      writeRBID: CreateActionForWritingRBID(rbid, nameof(rbid)),
+      writePassword: CreateActionForWritingPassword(password, nameof(password)),
       getPaaAddressTask: default,
       channel: null,
       panId: null,
@@ -84,8 +84,8 @@ partial class SkStackClient {
       throw new ArgumentException(message: "invalid channel (empty channel)", paramName: nameof(channel));
 
     return AuthenticateAsPanaClientAsyncCore(
-      rbid: rbid,
-      password: password,
+      writeRBID: CreateActionForWritingRBID(rbid, nameof(rbid)),
+      writePassword: CreateActionForWritingPassword(password, nameof(password)),
       getPaaAddressTask: new(paaAddress ?? throw new ArgumentNullException(nameof(paaAddress))),
       channel: channel,
       panId: ValidatePanIdAndThrowIfInvalid(panId, nameof(panId)),
@@ -157,8 +157,8 @@ partial class SkStackClient {
     ThrowIfPanaSessionAlreadyEstablished();
 
     return AuthenticateAsPanaClientAsyncCore(
-      rbid: rbid,
-      password: password,
+      writeRBID: CreateActionForWritingRBID(rbid, nameof(rbid)),
+      writePassword: CreateActionForWritingPassword(password, nameof(password)),
 #pragma warning disable CA2012, CS8620
       getPaaAddressTask: ConvertToIPv6LinkLocalAddressAsync(
         paaMacAddress ?? throw new ArgumentNullException(nameof(paaMacAddress)),
@@ -183,8 +183,8 @@ partial class SkStackClient {
   /// <summary>
   /// Starts the PANA authentication sequence with the current instance as the PaC.
   /// </summary>
-  /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
-  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="writeRBID">A delegate to write Route-B ID used for PANA authentication to the buffer.</param>
+  /// <param name="writePassword">Adelegate to write password ID used for PANA authentication to the buffer.</param>
   /// <param name="getPaaAddressTask">
   /// An <see cref="ValueTask{IPAddress}"/> that returns IP address of the PANA Authentication Agent (PAA).
   /// If returns <see langword="null"/>, an active scan will be performed to discover the PAAs.
@@ -205,8 +205,8 @@ partial class SkStackClient {
   /// <seealso cref="SendSKSETRBIDAsync(ReadOnlyMemory{byte}, CancellationToken)"/>
   /// <seealso cref="SendSKSETPWDAsync(ReadOnlyMemory{byte}, CancellationToken)"/>
   private async ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsyncCore(
-    ReadOnlyMemory<byte> rbid,
-    ReadOnlyMemory<byte> password,
+    Action<IBufferWriter<byte>> writeRBID,
+    Action<IBufferWriter<byte>> writePassword,
     ValueTask<IPAddress?> getPaaAddressTask,
     SkStackChannel? channel,
     int? panId,
@@ -220,10 +220,8 @@ partial class SkStackClient {
       throw new NotSupportedException($"Supplied IP address is not an IPv6 link local address. PAA Address: {paaAddress}");
 
     await SetRouteBCredentialAsync(
-      rbid: rbid,
-      rbidParamName: nameof(rbid),
-      password: password,
-      passwordParamName: nameof(password),
+      writeRBID: writeRBID,
+      writePassword: writePassword,
       cancellationToken: cancellationToken
     ).ConfigureAwait(false);
 

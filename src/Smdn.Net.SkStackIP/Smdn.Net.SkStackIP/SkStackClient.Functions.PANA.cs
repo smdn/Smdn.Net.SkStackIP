@@ -1,7 +1,8 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
 using System;
-#if SYSTEM_DIAGNOSTICS_CODEANALYSIS_MEMBERNOTNULLATTRIBUTE || SYSTEM_DIAGNOSTICS_CODEANALYSIS_MEMBERNOTNULLWHENATTRIBUTE
+using System.Buffers;
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES || SYSTEM_DIAGNOSTICS_CODEANALYSIS_MEMBERNOTNULLATTRIBUTE || SYSTEM_DIAGNOSTICS_CODEANALYSIS_MEMBERNOTNULLWHENATTRIBUTE
 using System.Diagnostics.CodeAnalysis;
 #endif
 using System.Net;
@@ -39,30 +40,56 @@ partial class SkStackClient {
       throw new InvalidOperationException("PANA session has been already established.");
   }
 
-  private async ValueTask SetRouteBCredentialAsync(
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
+  [return: NotNullIfNotNull(nameof(rbid))]
+#endif
+  private static Action<IBufferWriter<byte>>? CreateActionForWritingRBID(
     ReadOnlyMemory<byte>? rbid,
-    string rbidParamName,
+    string rbidParamName
+  )
+  {
+    if (rbid is null)
+      return null;
+
+    if (rbid.Value.IsEmpty)
+      throw new ArgumentException("must be non-empty string", rbidParamName ?? nameof(rbid));
+
+    return new(writer => writer.Write(rbid.Value.Span));
+  }
+
+#if NULL_STATE_STATIC_ANALYSIS_ATTRIBUTES
+  [return: NotNullIfNotNull(nameof(password))]
+#endif
+  private static Action<IBufferWriter<byte>>? CreateActionForWritingPassword(
     ReadOnlyMemory<byte>? password,
-    string passwordParamName,
+    string passwordParamName
+  )
+  {
+    if (password is null)
+      return null;
+
+    if (password.Value.IsEmpty)
+      throw new ArgumentException("must be non-empty string", passwordParamName ?? nameof(password));
+
+    return new(writer => writer.Write(password.Value.Span));
+  }
+
+  private async ValueTask SetRouteBCredentialAsync(
+    Action<IBufferWriter<byte>>? writeRBID,
+    Action<IBufferWriter<byte>>? writePassword,
     CancellationToken cancellationToken
   )
   {
-    if (rbid is not null) {
-      if (rbid.Value.IsEmpty)
-        throw new ArgumentException("must be non-empty string", rbidParamName ?? nameof(rbid));
-
+    if (writeRBID is not null) {
       _ = await SendSKSETRBIDAsync(
-        id: rbid.Value,
+        writeRBID: writeRBID,
         cancellationToken: cancellationToken
       ).ConfigureAwait(false);
     }
 
-    if (password is not null) {
-      if (password.Value.IsEmpty)
-        throw new ArgumentException("must be non-empty string", passwordParamName ?? nameof(password));
-
+    if (writePassword is not null) {
       _ = await SendSKSETPWDAsync(
-        password: password.Value,
+        writePassword: writePassword,
         cancellationToken: cancellationToken
       ).ConfigureAwait(false);
     }

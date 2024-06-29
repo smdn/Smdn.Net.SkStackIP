@@ -141,6 +141,42 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
+  public void AuthenticateAsPanaClientAsync_WithoutPAA_ArgumentException_RBIDEmpty()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.That(
+      () => client.AuthenticateAsPanaClientAsync(
+        rbid: default,
+        password: "0123456789AB".ToByteSequence(),
+        scanOptions: SkStackActiveScanOptions.Default,
+        cancellationToken: cts.Token
+      ),
+      Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("rbid")
+    );
+  }
+
+  [Test]
+  public void AuthenticateAsPanaClientAsync_WithoutPAA_ArgumentException_PasswordEmpty()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.That(
+      () => client.AuthenticateAsPanaClientAsync(
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: default,
+        scanOptions: SkStackActiveScanOptions.Default,
+        cancellationToken: cts.Token
+      ),
+      Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("password")
+    );
+  }
+
+  [Test]
   public void AuthenticateAsPanaClientAsync_WithPAAAddress()
   {
     const string SelfIPv6Address = "FE80:0000:0000:0000:021D:1290:0003:C890";
@@ -661,6 +697,46 @@ partial class SkStackClientFunctionsPanaTests {
     );
   }
 
+  [Test]
+  public void AuthenticateAsPanaClientAsync_WithPAAAddress_ArgumentException_RBIDEmpty()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.That(
+      () => client.AuthenticateAsPanaClientAsync(
+        rbid: default,
+        password: "0123456789AB".ToByteSequence(),
+        paaAddress: IPAddress.IPv6Any,
+        channelNumber: SkStackChannel.Channel33.ChannelNumber,
+        panId: SkStackRegister.PanId.MinValue,
+        cancellationToken: cts.Token
+      ),
+      Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("rbid")
+    );
+  }
+
+  [Test]
+  public void AuthenticateAsPanaClientAsync_WithPAAAddress_ArgumentException_PasswordEmpty()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.That(
+      () => client.AuthenticateAsPanaClientAsync(
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: default,
+        paaAddress: IPAddress.IPv6Any,
+        channelNumber: SkStackChannel.Channel33.ChannelNumber,
+        panId: SkStackRegister.PanId.MinValue,
+        cancellationToken: cts.Token
+      ),
+      Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("password")
+    );
+  }
+
   [TestCase(32)]
   [TestCase(61)]
   public void AuthenticateAsPanaClientAsync_WithPAAAddress_ArgumentException_ChannelOutOfRange(int channelNumber)
@@ -746,7 +822,7 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPanDescription_ArgumentException()
+  public void AuthenticateAsPanaClientAsync_WithPanDescription_ArgumentException_InvalidPanDescription()
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
@@ -760,6 +836,42 @@ partial class SkStackClientFunctionsPanaTests {
         pan: pan
       ),
       Throws.InstanceOf<ArgumentException>()
+    );
+  }
+
+  [Test]
+  public void AuthenticateAsPanaClientAsync_WithPanDescription_ArgumentException_RBIDEmpty()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.That(
+      () => client.AuthenticateAsPanaClientAsync(
+        rbid: default,
+        password: "0123456789AB".ToByteSequence(),
+        pan: default,
+        cancellationToken: cts.Token
+      ),
+      Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("rbid")
+    );
+  }
+
+  [Test]
+  public void AuthenticateAsPanaClientAsync_WithPanDescription_ArgumentException_PasswordEmpty()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.That(
+      () => client.AuthenticateAsPanaClientAsync(
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: default,
+        pan: default,
+        cancellationToken: cts.Token
+      ),
+      Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("password")
     );
   }
 
@@ -779,6 +891,46 @@ partial class SkStackClientFunctionsPanaTests {
         panId: SkStackRegister.PanId.MinValue
       )
 #pragma warning restore CA2012
+    );
+  }
+
+  [Test]
+  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ArgumentException_RBIDEmpty()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.That(
+      () => client.AuthenticateAsPanaClientAsync(
+        rbid: default,
+        password: "0123456789AB".ToByteSequence(),
+        paaMacAddress: PhysicalAddress.None,
+        channelNumber: SkStackChannel.Channel33.ChannelNumber,
+        panId: SkStackRegister.PanId.MinValue,
+        cancellationToken: cts.Token
+      ),
+      Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("rbid")
+    );
+  }
+
+  [Test]
+  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ArgumentException_PasswordEmpty()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.That(
+      () => client.AuthenticateAsPanaClientAsync(
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: default,
+        paaMacAddress: PhysicalAddress.None,
+        channelNumber: SkStackChannel.Channel33.ChannelNumber,
+        panId: SkStackRegister.PanId.MinValue,
+        cancellationToken: cts.Token
+      ),
+      Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("password")
     );
   }
 

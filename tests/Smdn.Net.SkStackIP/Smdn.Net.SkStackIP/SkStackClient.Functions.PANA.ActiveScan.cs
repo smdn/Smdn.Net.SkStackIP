@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: 2023 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
+using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -12,6 +13,41 @@ namespace Smdn.Net.SkStackIP;
 #pragma warning disable IDE0040
 partial class SkStackClientFunctionsPanaTests {
 #pragma warning restore IDE0040
+  [Test]
+  public void ActiveScanAsync_ArgumentException_RBIDEmpty()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.That(
+      () => client.ActiveScanAsync(
+        rbid: default,
+        password: "0123456789AB".ToByteSequence(),
+        scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
+        cancellationToken: cts.Token
+      ),
+      Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("rbid")
+    );
+  }
+
+  [Test]
+  public void ActiveScanAsync_ArgumentException_PasswordEmpty()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.That(
+      () => client.ActiveScanAsync(
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: default,
+        cancellationToken: cts.Token
+      ),
+      Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("password")
+    );
+  }
+
   [Test]
   public void ActiveScanAsync_NotFound()
   {

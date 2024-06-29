@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,15 +18,15 @@ partial class SkStackClient {
     CancellationToken cancellationToken = default
   )
     => ActiveScanAsyncCore(
-      rbid: rbid,
-      password: password,
+      writeRBID: CreateActionForWritingRBID(rbid, nameof(rbid)),
+      writePassword: CreateActionForWritingPassword(password, nameof(password)),
       scanDurationFactorGenerator: (scanOptions ?? SkStackActiveScanOptions.Default).YieldScanDurationFactors(),
       cancellationToken: cancellationToken
     );
 
   private async ValueTask<IReadOnlyList<SkStackPanDescription>> ActiveScanAsyncCore(
-    ReadOnlyMemory<byte>? rbid,
-    ReadOnlyMemory<byte>? password,
+    Action<IBufferWriter<byte>>? writeRBID,
+    Action<IBufferWriter<byte>>? writePassword,
     IEnumerable<int> scanDurationFactorGenerator,
     CancellationToken cancellationToken = default
   )
@@ -33,13 +34,11 @@ partial class SkStackClient {
     if (scanDurationFactorGenerator is null)
       throw new ArgumentNullException(nameof(scanDurationFactorGenerator));
 
-    if (rbid is not null || password is not null) {
+    if (writeRBID is not null || writePassword is not null) {
       // If RBID or password is supplied, set them before scanning.
       await SetRouteBCredentialAsync(
-        rbid: rbid,
-        rbidParamName: nameof(rbid),
-        password: password,
-        passwordParamName: nameof(password),
+        writeRBID: writeRBID,
+        writePassword: writePassword,
         cancellationToken: cancellationToken
       ).ConfigureAwait(false);
     }
@@ -67,8 +66,8 @@ partial class SkStackClient {
   )
   {
     var activeScanResult = await ActiveScanAsyncCore(
-      rbid: null,
-      password: null,
+      writeRBID: null,
+      writePassword: null,
       scanDurationFactorGenerator: baseScanOptions.YieldScanDurationFactors(),
       cancellationToken: cancellationToken
     ).ConfigureAwait(false);
