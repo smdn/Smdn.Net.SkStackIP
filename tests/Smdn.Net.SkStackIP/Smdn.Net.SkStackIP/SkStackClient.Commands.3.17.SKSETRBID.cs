@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Buffers;
 
 using NUnit.Framework;
 
@@ -108,4 +109,70 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
 #endif
+
+  [Test]
+  public void SKSETRBID_ActionOfIBufferWriterOfByte()
+  {
+    const string RBID = "0123456789ABCDEF0123456789ABCDEF";
+
+    var stream = new PseudoSkStackStream();
+
+    stream.ResponseWriter.WriteLine("OK");
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    SkStackResponse? response = null;
+
+    Assert.That(
+      async () => response = await client.SendSKSETRBIDAsync(
+        writer => writer.Write(RBID.ToByteSequence().Span)
+      ),
+      Throws.Nothing
+    );
+
+    Assert.That(response, Is.Not.Null);
+
+    Assert.That(
+      stream.ReadSentData(),
+      SequenceIs.EqualTo($"SKSETRBID {RBID}\r\n".ToByteSequence())
+    );
+  }
+
+  [Test]
+  public void SKSETRBID_ActionOfIBufferWriterOfByte_ArgumentNull()
+  {
+    var stream = new PseudoSkStackStream();
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    Assert.That(
+      () => client.SendSKSETRBIDAsync(writeRBID: null!),
+      Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writeRBID")
+    );
+    Assert.That(
+      async () => await client.SendSKSETRBIDAsync(writeRBID: null!),
+      Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writeRBID")
+    );
+
+    Assert.That(stream.ReadSentData(), Is.Empty);
+  }
+
+  [TestCase("")]
+  [TestCase("0123456789ABCDEF0123456789ABCDE")]
+  [TestCase("0123456789ABCDEF0123456789ABCDEF0")]
+  public void SKSETRBID_ActionOfIBufferWriterOfByte_WrittenBufferLengthInvalid(string rbid)
+  {
+    var stream = new PseudoSkStackStream();
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    Assert.That(
+      async () => await client.SendSKSETRBIDAsync(
+        writer => writer.Write(rbid.ToByteSequence().Span)
+      ),
+      Throws.InvalidOperationException
+    );
+
+    Assert.That(stream.ReadSentData(), Is.Empty);
+  }
 }

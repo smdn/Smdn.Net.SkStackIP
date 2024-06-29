@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
 using System;
+using System.Buffers;
 #if SYSTEM_TEXT_ASCII
 using System.Text;
 #endif
@@ -59,6 +60,43 @@ partial class SkStackClient {
     return SendCommandAsync(
       command: SkStackCommandNames.SKSETRBID,
       writeArguments: writer => writer.WriteToken(id.Span),
+      throwIfErrorStatus: true,
+      cancellationToken: cancellationToken
+    );
+  }
+
+  /// <summary>
+  ///   <para>Sends a command <c>SKSETRBID</c>.</para>
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.17. SKSETRBID' for detailed specifications.</para>
+  /// </remarks>
+  public ValueTask<SkStackResponse> SendSKSETRBIDAsync(
+    Action<IBufferWriter<byte>> writeRBID,
+    CancellationToken cancellationToken = default
+  )
+  {
+    if (writeRBID is null)
+      throw new ArgumentNullException(nameof(writeRBID));
+
+    return SendCommandAsync(
+      command: SkStackCommandNames.SKSETRBID,
+      writeArguments: writer => {
+        var buffer = new ArrayBufferWriter<byte>(initialCapacity: SKSETPWDMaxLength);
+
+        try {
+          writeRBID(buffer);
+
+          if (buffer.WrittenCount != SKSETRBIDLengthOfId)
+            throw new InvalidOperationException($"length of argument for {nameof(SkStackCommandNames.SKSETRBID)} must be exact {SKSETRBIDLengthOfId}");
+
+          writer.WriteToken(buffer.WrittenSpan);
+        }
+        finally {
+          // ensure that the content written to the buffer is cleared
+          buffer.Clear();
+        }
+      },
       throwIfErrorStatus: true,
       cancellationToken: cancellationToken
     );

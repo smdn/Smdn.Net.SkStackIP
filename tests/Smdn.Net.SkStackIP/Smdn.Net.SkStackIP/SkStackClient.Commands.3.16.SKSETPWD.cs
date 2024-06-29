@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 using System;
+using System.Buffers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -210,4 +211,109 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
 #endif
+
+  [Test]
+  public void SKSETPWD_ActionOfIBufferWriterOfByte_ArgumentNull()
+  {
+    var stream = new PseudoSkStackStream();
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    Assert.That(
+      () => client.SendSKSETPWDAsync(writePassword: null!),
+      Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writePassword")
+    );
+    Assert.That(
+      async () => await client.SendSKSETPWDAsync(writePassword: null!),
+      Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writePassword")
+    );
+
+    Assert.That(stream.ReadSentData(), Is.Empty);
+  }
+
+  [TestCase("")]
+  [TestCase("0123456789ABCDEF0123456789ABCDEF0")]
+  public void SKSETPWD_ActionOfIBufferWriterOfByte_WrittenBufferLengthInvalid(string password)
+  {
+    var stream = new PseudoSkStackStream();
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    Assert.That(
+      async () => await client.SendSKSETPWDAsync(
+        writer => writer.Write(password.ToByteSequence().Span)
+      ),
+      Throws.InvalidOperationException
+    );
+
+    Assert.That(stream.ReadSentData(), Is.Empty);
+  }
+
+  [TestCase("0")]
+  [TestCase("0123456789ABCDEF0123456789ABCDEF")]
+  public void SKSETPWD_ActionOfIBufferWriterOfByte_MustMaskedForLogger(string password)
+  {
+    var stream = new PseudoSkStackStream();
+
+    stream.ResponseWriter.WriteLine("OK");
+
+    var logger = CreateLoggerForTestCase();
+    using var client = new SkStackClient(stream, logger: logger);
+    SkStackResponse? response = null;
+
+    Assert.That(
+      async () => response = await client.SendSKSETPWDAsync(
+        writer => writer.Write(password.ToByteSequence().Span)
+      ),
+      Throws.Nothing
+    );
+
+    Assert.That(response, Is.Not.Null);
+
+    Assert.That(
+      stream.ReadSentData(),
+      SequenceIs.EqualTo($"SKSETPWD {password.Length:X} {password}\r\n".ToByteSequence())
+    );
+
+    var logSKSETPWDRecorded = false;
+
+    foreach (var log in GetLogsForTestCase() ?? Array.Empty<string>()) {
+      if (!log.Contains($"SKSETPWD␠{password.Length:X}␠", StringComparison.Ordinal))
+        continue;
+
+      logSKSETPWDRecorded = true;
+
+      Assert.That(log, Does.Contain($"SKSETPWD␠{password.Length:X}␠****"), "password must be masked");
+    }
+
+    if (!logSKSETPWDRecorded)
+      Assert.Fail("log for SKSETPWD not recorded");
+  }
+
+  [TestCase("0")]
+  [TestCase("0123456789ABCDEF0123456789ABCDEF")]
+  public void SKSETPWD_ActionOfIBufferWriterOfByte_NoLogger(string password)
+  {
+    var stream = new PseudoSkStackStream();
+
+    stream.ResponseWriter.WriteLine("OK");
+
+    using var client = new SkStackClient(stream, logger: null);
+    SkStackResponse? response = null;
+
+    Assert.That(
+      async () => response = await client.SendSKSETPWDAsync(
+        writer => writer.Write(password.ToByteSequence().Span)
+      ),
+      Throws.Nothing
+    );
+
+    Assert.That(response, Is.Not.Null);
+
+    Assert.That(
+      stream.ReadSentData(),
+      SequenceIs.EqualTo($"SKSETPWD {password.Length:X} {password}\r\n".ToByteSequence()),
+      "password must not be masked"
+    );
+  }
 }
