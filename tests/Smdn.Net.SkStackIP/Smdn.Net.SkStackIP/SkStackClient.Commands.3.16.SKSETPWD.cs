@@ -3,7 +3,6 @@
 
 using System;
 using System.Buffers;
-using System.Text;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -106,9 +105,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     => SKSETPWD_Password_MustMaskedForLogger(
       password,
       sendSKSETPWDAsync: async (client, passwd) => {
-        var passwdBytes = Encoding.ASCII.GetBytes(passwd);
-
-        return await client.SendSKSETPWDAsync(passwdBytes.AsMemory()).ConfigureAwait(false);
+        return await client.SendSKSETPWDAsync(passwd.ToByteSequence()).ConfigureAwait(false);
       }
     );
 
@@ -166,9 +163,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     => SKSETPWD_Password_NoLogger(
       password,
       sendSKSETPWDAsync: async (client, passwd) => {
-        var passwdBytes = Encoding.ASCII.GetBytes(passwd);
-
-        return await client.SendSKSETPWDAsync(passwdBytes.AsMemory()).ConfigureAwait(false);
+        return await client.SendSKSETPWDAsync(passwd.ToByteSequence()).ConfigureAwait(false);
       }
     );
 
