@@ -1,6 +1,5 @@
 // SPDX-FileCopyrightText: 2023 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
-using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -10,7 +9,9 @@ using NUnit.Framework;
 
 namespace Smdn.Net.SkStackIP;
 
+#pragma warning disable IDE0040
 partial class SkStackClientFunctionsPanaTests {
+#pragma warning restore IDE0040
   [Test]
   public void ActiveScanAsync_NotFound()
   {
@@ -212,7 +213,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.DoesNotThrowAsync(async () => {
       scanResult = await client.ActiveScanAsync(
-        rbid  : "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 2, 4, 6 }),
         cancellationToken: cts.Token

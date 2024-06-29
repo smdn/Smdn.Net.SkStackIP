@@ -31,7 +31,7 @@ public partial class SkStackClientFunctionsPanaTests : SkStackClientTestsBase {
   [TestCase(false)]
   public void TerminatePanaSessionAsync(bool timeout)
   {
-    const string addressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
+    const string AddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
 
     var stream = new PseudoSkStackStream();
     using var client = CreateClientPanaSessionEstablished(stream, logger: CreateLoggerForTestCase());
@@ -41,23 +41,21 @@ public partial class SkStackClientFunctionsPanaTests : SkStackClientTestsBase {
     stream.ClearSentData();
 
     // SKTERM
-    stream.ResponseWriter.WriteLine($"EVENT 21 {addressString} 02");
+    stream.ResponseWriter.WriteLine($"EVENT 21 {AddressString} 02");
     stream.ResponseWriter.WriteLine("OK");
 
     async Task RaisePanaSessionTerminationEventsAsync()
     {
       await Task.Delay(ResponseDelayInterval);
 
-      stream.ResponseWriter.WriteLine($"EVENT {(timeout ? 28 : 27)} {addressString}");
+      stream.ResponseWriter.WriteLine($"EVENT {(timeout ? 28 : 27)} {AddressString}");
     }
 
-#pragma warning disable CA2012
     var taskSendTerminatePanaSessionAsync = client.TerminatePanaSessionAsync().AsTask();
 
     Assert.DoesNotThrowAsync(
       async () => await Task.WhenAll(taskSendTerminatePanaSessionAsync, RaisePanaSessionTerminationEventsAsync())
     );
-#pragma warning restore CA2012
 
     Assert.That(
       taskSendTerminatePanaSessionAsync.Result,

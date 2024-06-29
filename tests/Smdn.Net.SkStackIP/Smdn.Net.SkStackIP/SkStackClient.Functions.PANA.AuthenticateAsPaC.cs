@@ -9,13 +9,14 @@ using System.Threading;
 using Microsoft.Extensions.Logging;
 
 using NUnit.Framework;
-using NUnit.Framework.Constraints;
 
 using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
+#pragma warning disable IDE0040
 partial class SkStackClientFunctionsPanaTests {
+#pragma warning restore IDE0040
   internal static SkStackClient CreateClientPanaSessionEstablished(PseudoSkStackStream stream, ILogger logger)
     => CreateClientAndAuthenticateAsPanaClient(
       stream,
@@ -29,30 +30,21 @@ partial class SkStackClientFunctionsPanaTests {
     ILogger logger
   )
   {
-    const string selfIPv6Address = "FE80:0000:0000:0000:021D:1290:0003:C890";
-    const string selfMacAddress = "001D129012345678";
-    const string rbid = "00112233445566778899AABBCCDDEEFF";
-    const string password = "0123456789AB";
-    const int paaChannel = 0x21;
-    const int paaPanId = 0x8888;
-    const string paaIPv6Address = "FE80:0000:0000:0000:1034:5678:ABCD:EF01";
-    const string paaMacAddress = "10345678ABCDEF01";
-    const string paaPairId = "12345678";
+    const string SelfIPv6Address = "FE80:0000:0000:0000:021D:1290:0003:C890";
+    const string SelfMacAddress = "001D129012345678";
+    const string RBID = "00112233445566778899AABBCCDDEEFF";
+    const string Password = "0123456789AB";
+    const int PaaChannel = 0x21;
+    const int PaaPanId = 0x8888;
+    const string PaaIPv6Address = "FE80:0000:0000:0000:1034:5678:ABCD:EF01";
+    const string PaaMacAddress = "10345678ABCDEF01";
+    const string PaaPairId = "12345678";
 
-    bool exceptPanaSessionEstablishmentException;
-
-    switch (eventNumberOfPanaSessionEstablishment) {
-      case SkStackEventNumber.PanaSessionEstablishmentError:
-        exceptPanaSessionEstablishmentException = true;
-        break;
-
-      case SkStackEventNumber.PanaSessionEstablishmentCompleted:
-        exceptPanaSessionEstablishmentException = false;
-        break;
-
-      default:
-        throw new InvalidOperationException("invalid event number");
-    }
+    var exceptPanaSessionEstablishmentException = eventNumberOfPanaSessionEstablishment switch {
+      SkStackEventNumber.PanaSessionEstablishmentError => true,
+      SkStackEventNumber.PanaSessionEstablishmentCompleted => false,
+      _ => throw new InvalidOperationException("invalid event number"),
+    };
 
     // SKSETRBID
     stream.ResponseWriter.WriteLine("OK");
@@ -60,15 +52,15 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("OK");
     // SKSCAN 2 FFFFFFFF 3
     stream.ResponseWriter.WriteLine("OK");
-    stream.ResponseWriter.WriteLine($"EVENT 20 {selfIPv6Address}");
-    stream.ResponseWriter.Write($"EPANDESC\r\n  Channel:{paaChannel:X2}\r\n  Channel Page:09\r\n  Pan ID:{paaPanId:X4}\r\n  Addr:{paaMacAddress}\r\n  LQI:E1\r\n  PairID:{paaPairId}\r\n");
-    stream.ResponseWriter.WriteLine($"EVENT 22 {selfIPv6Address}");
+    stream.ResponseWriter.WriteLine($"EVENT 20 {SelfIPv6Address}");
+    stream.ResponseWriter.Write($"EPANDESC\r\n  Channel:{PaaChannel:X2}\r\n  Channel Page:09\r\n  Pan ID:{PaaPanId:X4}\r\n  Addr:{PaaMacAddress}\r\n  LQI:E1\r\n  PairID:{PaaPairId}\r\n");
+    stream.ResponseWriter.WriteLine($"EVENT 22 {SelfIPv6Address}");
     // SKLL64
-    stream.ResponseWriter.WriteLine(paaIPv6Address);
+    stream.ResponseWriter.WriteLine(PaaIPv6Address);
     // SKADDNBR
     stream.ResponseWriter.WriteLine("OK");
     // SKINFO
-    stream.ResponseWriter.WriteLine($"EINFO {selfIPv6Address} {selfMacAddress} {0x22:X2} {0x9999:X4} FFFE");
+    stream.ResponseWriter.WriteLine($"EINFO {SelfIPv6Address} {SelfMacAddress} {0x22:X2} {0x9999:X4} FFFE");
     stream.ResponseWriter.WriteLine("OK");
     // SKSREG S02 <paa-channel>
     stream.ResponseWriter.WriteLine("OK");
@@ -76,12 +68,12 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("OK");
     // SKJOIN
     stream.ResponseWriter.WriteLine("OK");
-    stream.ResponseWriter.WriteLine($"EVENT 21 {selfIPv6Address} 02"); // UDP: Neighbor Solcitation
-    stream.ResponseWriter.WriteLine($"EVENT 02 {selfIPv6Address}"); // Neighbor Advertisement received
-    stream.ResponseWriter.WriteLine($"ERXUDP {selfIPv6Address} {paaIPv6Address} 02CC 02CC {paaMacAddress} 0 0001 0");
-    stream.ResponseWriter.WriteLine($"EVENT 21 {selfIPv6Address} 00"); // UDP: ACK
-    stream.ResponseWriter.WriteLine($"ERXUDP {selfIPv6Address} {paaIPv6Address} 02CC 02CC {paaMacAddress} 0 0001 0");
-    stream.ResponseWriter.WriteLine($"EVENT {(int)eventNumberOfPanaSessionEstablishment:X2} {selfIPv6Address}"); // PANA Session establishment completed/failed
+    stream.ResponseWriter.WriteLine($"EVENT 21 {SelfIPv6Address} 02"); // UDP: Neighbor Solcitation
+    stream.ResponseWriter.WriteLine($"EVENT 02 {SelfIPv6Address}"); // Neighbor Advertisement received
+    stream.ResponseWriter.WriteLine($"ERXUDP {SelfIPv6Address} {PaaIPv6Address} 02CC 02CC {PaaMacAddress} 0 0001 0");
+    stream.ResponseWriter.WriteLine($"EVENT 21 {SelfIPv6Address} 00"); // UDP: ACK
+    stream.ResponseWriter.WriteLine($"ERXUDP {SelfIPv6Address} {PaaIPv6Address} 02CC 02CC {PaaMacAddress} 0 0001 0");
+    stream.ResponseWriter.WriteLine($"EVENT {(int)eventNumberOfPanaSessionEstablishment:X2} {SelfIPv6Address}"); // PANA Session establishment completed/failed
 
     var client = new SkStackClient(stream, logger: logger);
     using var cts = new CancellationTokenSource(DefaultTimeOut);
@@ -90,45 +82,45 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.That(
       async () => panaSession = await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.ToByteSequence(),
-        password: password.ToByteSequence(),
+        rbid: RBID.ToByteSequence(),
+        password: Password.ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Default,
         cancellationToken: cts.Token
       ),
       exceptPanaSessionEstablishmentException
         ? Throws
             .TypeOf<SkStackPanaSessionEstablishmentException>()
-            .And.Property(nameof(SkStackPanaSessionEstablishmentException.PaaAddress)).EqualTo(IPAddress.Parse(paaIPv6Address))
-            .And.Property(nameof(SkStackPanaSessionEstablishmentException.Channel)).EqualTo(SkStackChannel.Channels[paaChannel])
-            .And.Property(nameof(SkStackPanaSessionEstablishmentException.PanId)).EqualTo(paaPanId)
+            .And.Property(nameof(SkStackPanaSessionEstablishmentException.PaaAddress)).EqualTo(IPAddress.Parse(PaaIPv6Address))
+            .And.Property(nameof(SkStackPanaSessionEstablishmentException.Channel)).EqualTo(SkStackChannel.Channels[PaaChannel])
+            .And.Property(nameof(SkStackPanaSessionEstablishmentException.PanId)).EqualTo(PaaPanId)
             .And.Property(nameof(SkStackPanaSessionEstablishmentException.EventNumber)).EqualTo(eventNumberOfPanaSessionEstablishment)
-            .And.Property(nameof(SkStackPanaSessionEstablishmentException.Address)).EqualTo(IPAddress.Parse(selfIPv6Address))
+            .And.Property(nameof(SkStackPanaSessionEstablishmentException.Address)).EqualTo(IPAddress.Parse(SelfIPv6Address))
         : Throws.Nothing
     );
 
     if (!exceptPanaSessionEstablishmentException) {
       Assert.That(panaSession, Is.Not.Null);
-      Assert.That(panaSession!.LocalAddress, Is.EqualTo(IPAddress.Parse(selfIPv6Address)), nameof(panaSession.LocalAddress));
-      Assert.That(panaSession!.LocalMacAddress, Is.EqualTo(PhysicalAddress.Parse(selfMacAddress)), nameof(panaSession.LocalMacAddress));
-      Assert.That(panaSession!.PeerAddress, Is.EqualTo(IPAddress.Parse(paaIPv6Address)), nameof(panaSession.PeerAddress));
-      Assert.That(panaSession!.PeerMacAddress, Is.EqualTo(PhysicalAddress.Parse(paaMacAddress)), nameof(panaSession.PeerMacAddress));
-      Assert.That(panaSession!.Channel, Is.EqualTo(SkStackChannel.Channels[paaChannel]), nameof(panaSession.Channel));
-      Assert.That(panaSession!.PanId, Is.EqualTo(paaPanId), nameof(panaSession.PanId));
+      Assert.That(panaSession!.LocalAddress, Is.EqualTo(IPAddress.Parse(SelfIPv6Address)), nameof(panaSession.LocalAddress));
+      Assert.That(panaSession!.LocalMacAddress, Is.EqualTo(PhysicalAddress.Parse(SelfMacAddress)), nameof(panaSession.LocalMacAddress));
+      Assert.That(panaSession!.PeerAddress, Is.EqualTo(IPAddress.Parse(PaaIPv6Address)), nameof(panaSession.PeerAddress));
+      Assert.That(panaSession!.PeerMacAddress, Is.EqualTo(PhysicalAddress.Parse(PaaMacAddress)), nameof(panaSession.PeerMacAddress));
+      Assert.That(panaSession!.Channel, Is.EqualTo(SkStackChannel.Channels[PaaChannel]), nameof(panaSession.Channel));
+      Assert.That(panaSession!.PanId, Is.EqualTo(PaaPanId), nameof(panaSession.PanId));
     }
 
     Assert.That(
       stream.ReadSentData(),
       SequenceIs.EqualTo(
         (
-          $"SKSETRBID {rbid}\r\n" +
-          $"SKSETPWD {password.Length:X} {password}\r\n" +
+          $"SKSETRBID {RBID}\r\n" +
+          $"SKSETPWD {Password.Length:X} {Password}\r\n" +
           "SKSCAN 2 FFFFFFFF 3\r\n" +
-          $"SKLL64 {paaMacAddress}\r\n" +
-          $"SKADDNBR {paaIPv6Address} {paaMacAddress}\r\n" +
+          $"SKLL64 {PaaMacAddress}\r\n" +
+          $"SKADDNBR {PaaIPv6Address} {PaaMacAddress}\r\n" +
           "SKINFO\r\n" +
-          $"SKSREG S02 {paaChannel:X2}\r\n" +
-          $"SKSREG S03 {paaPanId:X4}\r\n" +
-          $"SKJOIN {paaIPv6Address}\r\n"
+          $"SKSREG S02 {PaaChannel:X2}\r\n" +
+          $"SKSREG S03 {PaaPanId:X4}\r\n" +
+          $"SKJOIN {PaaIPv6Address}\r\n"
 
         ).ToByteSequence()
       )
@@ -151,14 +143,14 @@ partial class SkStackClientFunctionsPanaTests {
   [Test]
   public void AuthenticateAsPanaClientAsync_WithPAAAddress()
   {
-    const string selfIPv6Address = "FE80:0000:0000:0000:021D:1290:0003:C890";
-    const string selfMacAddress = "001D129012345678";
-    const string rbid = "00112233445566778899AABBCCDDEEFF";
-    const string password = "0123456789AB";
-    const int paaChannel = 0x21;
-    const int paaPanId = 0x8888;
-    const string paaIPv6Address = "FE80:0000:0000:0000:1034:5678:ABCD:EF01";
-    const string paaMacAddress = "10345678ABCDEF01";
+    const string SelfIPv6Address = "FE80:0000:0000:0000:021D:1290:0003:C890";
+    const string SelfMacAddress = "001D129012345678";
+    const string RBID = "00112233445566778899AABBCCDDEEFF";
+    const string Password = "0123456789AB";
+    const int PaaChannel = 0x21;
+    const int PaaPanId = 0x8888;
+    const string PaaIPv6Address = "FE80:0000:0000:0000:1034:5678:ABCD:EF01";
+    const string PaaMacAddress = "10345678ABCDEF01";
 
     using var stream = new PseudoSkStackStream();
 
@@ -169,7 +161,7 @@ partial class SkStackClientFunctionsPanaTests {
     // SKADDNBR
     stream.ResponseWriter.WriteLine("OK");
     // SKINFO
-    stream.ResponseWriter.WriteLine($"EINFO {selfIPv6Address} {selfMacAddress} {0x22:X2} {0x9999:X4} FFFE");
+    stream.ResponseWriter.WriteLine($"EINFO {SelfIPv6Address} {SelfMacAddress} {0x22:X2} {0x9999:X4} FFFE");
     stream.ResponseWriter.WriteLine("OK");
     // SKSREG S02 <paa-channel>
     stream.ResponseWriter.WriteLine("OK");
@@ -177,12 +169,12 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("OK");
     // SKJOIN
     stream.ResponseWriter.WriteLine("OK");
-    stream.ResponseWriter.WriteLine($"EVENT 21 {selfIPv6Address} 02"); // UDP: Neighbor Solcitation
-    stream.ResponseWriter.WriteLine($"EVENT 02 {selfIPv6Address}"); // Neighbor Advertisement received
-    stream.ResponseWriter.WriteLine($"ERXUDP {selfIPv6Address} {paaIPv6Address} 02CC 02CC {paaMacAddress} 0 0001 0");
-    stream.ResponseWriter.WriteLine($"EVENT 21 {selfIPv6Address} 00"); // UDP: ACK
-    stream.ResponseWriter.WriteLine($"ERXUDP {selfIPv6Address} {paaIPv6Address} 02CC 02CC {paaMacAddress} 0 0001 0");
-    stream.ResponseWriter.WriteLine($"EVENT 25 {selfIPv6Address}"); // PANA Session establishment completed/failed
+    stream.ResponseWriter.WriteLine($"EVENT 21 {SelfIPv6Address} 02"); // UDP: Neighbor Solcitation
+    stream.ResponseWriter.WriteLine($"EVENT 02 {SelfIPv6Address}"); // Neighbor Advertisement received
+    stream.ResponseWriter.WriteLine($"ERXUDP {SelfIPv6Address} {PaaIPv6Address} 02CC 02CC {PaaMacAddress} 0 0001 0");
+    stream.ResponseWriter.WriteLine($"EVENT 21 {SelfIPv6Address} 00"); // UDP: ACK
+    stream.ResponseWriter.WriteLine($"ERXUDP {SelfIPv6Address} {PaaIPv6Address} 02CC 02CC {PaaMacAddress} 0 0001 0");
+    stream.ResponseWriter.WriteLine($"EVENT 25 {SelfIPv6Address}"); // PANA Session establishment completed/failed
 
     var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
@@ -192,34 +184,34 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.DoesNotThrowAsync(
       async () => panaSession = await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.ToByteSequence(),
-        password: password.ToByteSequence(),
-        paaAddress: IPAddress.Parse(paaIPv6Address),
-        channelNumber: paaChannel,
-        panId: paaPanId,
+        rbid: RBID.ToByteSequence(),
+        password: Password.ToByteSequence(),
+        paaAddress: IPAddress.Parse(PaaIPv6Address),
+        channelNumber: PaaChannel,
+        panId: PaaPanId,
         cancellationToken: cts.Token
       )
     );
 
     Assert.That(panaSession, Is.Not.Null);
-    Assert.That(panaSession!.LocalAddress, Is.EqualTo(IPAddress.Parse(selfIPv6Address)), nameof(panaSession.LocalAddress));
-    Assert.That(panaSession!.LocalMacAddress, Is.EqualTo(PhysicalAddress.Parse(selfMacAddress)), nameof(panaSession.LocalMacAddress));
-    Assert.That(panaSession!.PeerAddress, Is.EqualTo(IPAddress.Parse(paaIPv6Address)), nameof(panaSession.PeerAddress));
-    Assert.That(panaSession!.PeerMacAddress, Is.EqualTo(PhysicalAddress.Parse(paaMacAddress)), nameof(panaSession.PeerMacAddress));
-    Assert.That(panaSession!.Channel, Is.EqualTo(SkStackChannel.Channels[paaChannel]), nameof(panaSession.Channel));
-    Assert.That(panaSession!.PanId, Is.EqualTo(paaPanId), nameof(panaSession.PanId));
+    Assert.That(panaSession!.LocalAddress, Is.EqualTo(IPAddress.Parse(SelfIPv6Address)), nameof(panaSession.LocalAddress));
+    Assert.That(panaSession!.LocalMacAddress, Is.EqualTo(PhysicalAddress.Parse(SelfMacAddress)), nameof(panaSession.LocalMacAddress));
+    Assert.That(panaSession!.PeerAddress, Is.EqualTo(IPAddress.Parse(PaaIPv6Address)), nameof(panaSession.PeerAddress));
+    Assert.That(panaSession!.PeerMacAddress, Is.EqualTo(PhysicalAddress.Parse(PaaMacAddress)), nameof(panaSession.PeerMacAddress));
+    Assert.That(panaSession!.Channel, Is.EqualTo(SkStackChannel.Channels[PaaChannel]), nameof(panaSession.Channel));
+    Assert.That(panaSession!.PanId, Is.EqualTo(PaaPanId), nameof(panaSession.PanId));
 
     Assert.That(
       stream.ReadSentData(),
       SequenceIs.EqualTo(
         (
-          $"SKSETRBID {rbid}\r\n" +
-          $"SKSETPWD {password.Length:X} {password}\r\n" +
-          $"SKADDNBR {paaIPv6Address} {paaMacAddress}\r\n" +
+          $"SKSETRBID {RBID}\r\n" +
+          $"SKSETPWD {Password.Length:X} {Password}\r\n" +
+          $"SKADDNBR {PaaIPv6Address} {PaaMacAddress}\r\n" +
           "SKINFO\r\n" +
-          $"SKSREG S02 {paaChannel:X2}\r\n" +
-          $"SKSREG S03 {paaPanId:X4}\r\n" +
-          $"SKJOIN {paaIPv6Address}\r\n"
+          $"SKSREG S02 {PaaChannel:X2}\r\n" +
+          $"SKSREG S03 {PaaPanId:X4}\r\n" +
+          $"SKJOIN {PaaIPv6Address}\r\n"
 
         ).ToByteSequence()
       )
@@ -245,8 +237,8 @@ partial class SkStackClientFunctionsPanaTests {
     bool expectSKSETPWD
   )
   {
-    const string rbid = "00112233445566778899AABBCCDDEEFF";
-    const string password = "0123456789AB";
+    const string RBID = "00112233445566778899AABBCCDDEEFF";
+    const string Password = "0123456789AB";
 
     using var stream = new PseudoSkStackStream();
 
@@ -259,21 +251,19 @@ partial class SkStackClientFunctionsPanaTests {
     using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(
-#pragma warning disable CA2012
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.ToByteSequence(),
-        password: password.ToByteSequence(),
+        rbid: RBID.ToByteSequence(),
+        password: Password.ToByteSequence(),
         scanOptions: null,
         cancellationToken: cts.Token
       )
-#pragma warning restore CA2012
     );
 
     Assert.That(
       stream.ReadSentData(),
       expectSKSETPWD
-        ? SequenceIs.EqualTo($"SKSETRBID {rbid}\r\nSKSETPWD {password.Length:X} {password}\r\n".ToByteSequence())
-        : SequenceIs.EqualTo($"SKSETRBID {rbid}\r\n".ToByteSequence())
+        ? SequenceIs.EqualTo($"SKSETRBID {RBID}\r\nSKSETPWD {Password.Length:X} {Password}\r\n".ToByteSequence())
+        : SequenceIs.EqualTo($"SKSETRBID {RBID}\r\n".ToByteSequence())
     );
   }
 
@@ -284,8 +274,8 @@ partial class SkStackClientFunctionsPanaTests {
     string expectedMacAddress
   )
   {
-    const string rbid = "00112233445566778899AABBCCDDEEFF";
-    const string password = "0123456789AB";
+    const string RBID = "00112233445566778899AABBCCDDEEFF";
+    const string Password = "0123456789AB";
 
     using var stream = new PseudoSkStackStream();
 
@@ -300,21 +290,19 @@ partial class SkStackClientFunctionsPanaTests {
     using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(
-#pragma warning disable CA2012
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.ToByteSequence(),
-        password: password.ToByteSequence(),
+        rbid: RBID.ToByteSequence(),
+        password: Password.ToByteSequence(),
         paaAddress: IPAddress.Parse(paaAddress),
         channel: SkStackChannel.Channel33,
         panId: 0,
         cancellationToken: cts.Token
       )
-#pragma warning restore CA2012
     );
 
     Assert.That(
       stream.ReadSentData(),
-      SequenceIs.EqualTo($"SKSETRBID {rbid}\r\nSKSETPWD {password.Length:X} {password}\r\nSKADDNBR {paaAddress} {expectedMacAddress}\r\n".ToByteSequence())
+      SequenceIs.EqualTo($"SKSETRBID {RBID}\r\nSKSETPWD {Password.Length:X} {Password}\r\nSKADDNBR {paaAddress} {expectedMacAddress}\r\n".ToByteSequence())
     );
   }
 
@@ -325,8 +313,8 @@ partial class SkStackClientFunctionsPanaTests {
     string paaAddress
   )
   {
-    const string rbid = "00112233445566778899AABBCCDDEEFF";
-    const string password = "0123456789AB";
+    const string RBID = "00112233445566778899AABBCCDDEEFF";
+    const string Password = "0123456789AB";
 
     using var stream = new PseudoSkStackStream();
 
@@ -343,21 +331,19 @@ partial class SkStackClientFunctionsPanaTests {
     using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(
-#pragma warning disable CA2012
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.ToByteSequence(),
-        password: password.ToByteSequence(),
+        rbid: RBID.ToByteSequence(),
+        password: Password.ToByteSequence(),
         paaMacAddress: PhysicalAddress.Parse(paaMacAddress),
         channel: SkStackChannel.Channel33,
         panId: 0,
         cancellationToken: cts.Token
       )
-#pragma warning restore CA2012
     );
 
     Assert.That(
       stream.ReadSentData(),
-      SequenceIs.EqualTo($"SKLL64 {paaMacAddress}\r\nSKSETRBID {rbid}\r\nSKSETPWD {password.Length:X} {password}\r\nSKADDNBR {paaAddress} {paaMacAddress}\r\n".ToByteSequence())
+      SequenceIs.EqualTo($"SKLL64 {paaMacAddress}\r\nSKSETRBID {RBID}\r\nSKSETPWD {Password.Length:X} {Password}\r\nSKADDNBR {paaAddress} {paaMacAddress}\r\n".ToByteSequence())
     );
   }
 
@@ -381,8 +367,8 @@ partial class SkStackClientFunctionsPanaTests {
   [Test]
   public void AuthenticateAsPanaClientAsync_WithoutPAA_ScanOptionDefault()
   {
-    const string rbid = "00112233445566778899AABBCCDDEEFF";
-    const string password = "0123456789AB";
+    const string RBID = "00112233445566778899AABBCCDDEEFF";
+    const string Password = "0123456789AB";
 
     using var stream = new PseudoSkStackStream();
 
@@ -415,8 +401,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.ThrowsAsync<InvalidOperationException>(
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.ToByteSequence(),
-        password: password.ToByteSequence(),
+        rbid: RBID.ToByteSequence(),
+        password: Password.ToByteSequence(),
         scanOptions: null,
         cancellationToken: cts.Token
       )
@@ -426,8 +412,8 @@ partial class SkStackClientFunctionsPanaTests {
       stream.ReadSentData(),
       SequenceIs.EqualTo(
         (
-          $"SKSETRBID {rbid}\r\n" +
-          $"SKSETPWD {password.Length:X} {password}\r\n" +
+          $"SKSETRBID {RBID}\r\n" +
+          $"SKSETPWD {Password.Length:X} {Password}\r\n" +
           "SKSCAN 2 FFFFFFFF 3\r\n" +
           "SKSCAN 2 FFFFFFFF 4\r\n" +
           "SKSCAN 2 FFFFFFFF 5\r\n" +
@@ -442,8 +428,8 @@ partial class SkStackClientFunctionsPanaTests {
   [Test]
   public void AuthenticateAsPanaClientAsync_WithoutPAA_ScanOptionSupplied()
   {
-    const string rbid = "00112233445566778899AABBCCDDEEFF";
-    const string password = "0123456789AB";
+    const string RBID = "00112233445566778899AABBCCDDEEFF";
+    const string Password = "0123456789AB";
 
     using var stream = new PseudoSkStackStream();
 
@@ -460,8 +446,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.ThrowsAsync<InvalidOperationException>(
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.ToByteSequence(),
-        password: password.ToByteSequence(),
+        rbid: RBID.ToByteSequence(),
+        password: Password.ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cts.Token
       )
@@ -471,8 +457,8 @@ partial class SkStackClientFunctionsPanaTests {
       stream.ReadSentData(),
       SequenceIs.EqualTo(
         (
-          $"SKSETRBID {rbid}\r\n" +
-          $"SKSETPWD {password.Length:X} {password}\r\n" +
+          $"SKSETRBID {RBID}\r\n" +
+          $"SKSETPWD {Password.Length:X} {Password}\r\n" +
           "SKSCAN 2 FFFFFFFF 1\r\n"
         ).ToByteSequence()
       )
@@ -481,46 +467,48 @@ partial class SkStackClientFunctionsPanaTests {
 
   private static IEnumerable YieldTestCases_AuthenticateAsPanaClientAsync_WithoutPAA_AddPAAFoundInScanToNeighborAddressTable()
   {
-    const string epandesc0Channel = "21";
-    const string epandesc0PanID = "8888";
-    const string epandesc0Addr = "12345678ABCDEF01";
-    const string epandesc0IPv6Addr = "FE80:0000:0000:0000:021D:1290:1234:5678";
+    const string EPANDESC0Channel = "21";
+    const string EPANDESC0PanID = "8888";
+    const string EPANDESC0Addr = "12345678ABCDEF01";
+    const string EPANDESC0IPv6Addr = "FE80:0000:0000:0000:021D:1290:1234:5678";
 
-    const string epandesc1Channel = "22";
-    const string epandesc1PanID = "9999";
-    const string epandesc1Addr = "FDFFFFFFFFFFFFFF";
-    const string epandesc1IPv6Addr = "FE80:0000:0000:0000:FFFF:FFFF:FFFF:FFFF";
+    const string EPANDESC1Channel = "22";
+    const string EPANDESC1PanID = "9999";
+    const string EPANDESC1Addr = "FDFFFFFFFFFFFFFF";
+    const string EPANDESC1IPv6Addr = "FE80:0000:0000:0000:FFFF:FFFF:FFFF:FFFF";
 
-    const string epandesc0 = $"EPANDESC\r\n  Channel:{epandesc0Channel}\r\n  Channel Page:09\r\n  Pan ID:{epandesc0PanID}\r\n  Addr:{epandesc0Addr}\r\n  LQI:E1\r\n  PairID:12345678\r\n";
-    const string epandesc1 = $"EPANDESC\r\n  Channel:{epandesc1Channel}\r\n  Channel Page:09\r\n  Pan ID:{epandesc1PanID}\r\n  Addr:{epandesc1Addr}\r\n  LQI:E1\r\n  PairID:12345678\r\n";
+    const string EPANDESC0 = $"EPANDESC\r\n  Channel:{EPANDESC0Channel}\r\n  Channel Page:09\r\n  Pan ID:{EPANDESC0PanID}\r\n  Addr:{EPANDESC0Addr}\r\n  LQI:E1\r\n  PairID:12345678\r\n";
+    const string EPANDESC1 = $"EPANDESC\r\n  Channel:{EPANDESC1Channel}\r\n  Channel Page:09\r\n  Pan ID:{EPANDESC1PanID}\r\n  Addr:{EPANDESC1Addr}\r\n  LQI:E1\r\n  PairID:12345678\r\n";
 
     yield return new object[] {
-      new[] { epandesc0, epandesc1 },
-      epandesc0Channel,
-      epandesc0PanID,
-      epandesc0Addr,
-      epandesc0IPv6Addr
+      new[] { EPANDESC0, EPANDESC1 },
+      EPANDESC0Channel,
+      EPANDESC0PanID,
+      EPANDESC0Addr,
+      EPANDESC0IPv6Addr
     };
     yield return new object[] {
-      new[] { epandesc1, epandesc0 },
-      epandesc1Channel,
-      epandesc1PanID,
-      epandesc1Addr,
-      epandesc1IPv6Addr
+      new[] { EPANDESC1, EPANDESC0 },
+      EPANDESC1Channel,
+      EPANDESC1PanID,
+      EPANDESC1Addr,
+      EPANDESC1IPv6Addr
     };
   }
 
   [TestCaseSource(nameof(YieldTestCases_AuthenticateAsPanaClientAsync_WithoutPAA_AddPAAFoundInScanToNeighborAddressTable))]
   public void AuthenticateAsPanaClientAsync_WithoutPAA_AddPAAFoundInScanToNeighborAddressTable(
     string[] epandescs,
-    string _discard0,
-    string _discard1,
+#pragma warning disable IDE0060
+    string discard0,
+    string discard1,
+#pragma warning restore IDE0060
     string selectedPAAMacAddress,
     string selectedPAAIPAddress
   )
   {
-    const string rbid = "00112233445566778899AABBCCDDEEFF";
-    const string password = "0123456789AB";
+    const string RBID = "00112233445566778899AABBCCDDEEFF";
+    const string Password = "0123456789AB";
 
     using var stream = new PseudoSkStackStream();
 
@@ -545,8 +533,8 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.ToByteSequence(),
-        password: password.ToByteSequence(),
+        rbid: RBID.ToByteSequence(),
+        password: Password.ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cts.Token
       )
@@ -556,8 +544,8 @@ partial class SkStackClientFunctionsPanaTests {
       stream.ReadSentData(),
       SequenceIs.EqualTo(
         (
-          $"SKSETRBID {rbid}\r\n" +
-          $"SKSETPWD {password.Length:X} {password}\r\n" +
+          $"SKSETRBID {RBID}\r\n" +
+          $"SKSETPWD {Password.Length:X} {Password}\r\n" +
           "SKSCAN 2 FFFFFFFF 1\r\n" +
           $"SKLL64 {selectedPAAMacAddress}\r\n" +
           $"SKADDNBR {selectedPAAIPAddress} {selectedPAAMacAddress}\r\n"
@@ -577,10 +565,10 @@ partial class SkStackClientFunctionsPanaTests {
     int currentPanId
   )
   {
-    const string rbid = "00112233445566778899AABBCCDDEEFF";
-    const string password = "0123456789AB";
-    const string paaAddress = "FE80:0000:0000:0000:021D:1290:1234:ABCD";
-    const string paaMacAddress = "001D12901234ABCD";
+    const string RBID = "00112233445566778899AABBCCDDEEFF";
+    const string Password = "0123456789AB";
+    const string PaaAddress = "FE80:0000:0000:0000:021D:1290:1234:ABCD";
+    const string PaaMacAddress = "001D12901234ABCD";
 
     using var stream = new PseudoSkStackStream();
 
@@ -610,9 +598,9 @@ partial class SkStackClientFunctionsPanaTests {
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(
       async () => await client.AuthenticateAsPanaClientAsync(
-        rbid: rbid.ToByteSequence(),
-        password: password.ToByteSequence(),
-        paaAddress: IPAddress.Parse(paaAddress),
+        rbid: RBID.ToByteSequence(),
+        password: Password.ToByteSequence(),
+        paaAddress: IPAddress.Parse(PaaAddress),
         channel: SkStackChannel.Channels[channel],
         panId: panId,
         cancellationToken: cts.Token
@@ -623,13 +611,13 @@ partial class SkStackClientFunctionsPanaTests {
       stream.ReadSentData(),
       SequenceIs.EqualTo(
         (
-          $"SKSETRBID {rbid}\r\n" +
-          $"SKSETPWD {password.Length:X} {password}\r\n" +
-          $"SKADDNBR {paaAddress} {paaMacAddress}\r\n" +
+          $"SKSETRBID {RBID}\r\n" +
+          $"SKSETPWD {Password.Length:X} {Password}\r\n" +
+          $"SKADDNBR {PaaAddress} {PaaMacAddress}\r\n" +
           "SKINFO\r\n" +
           (channelMustBeSet ? $"SKSREG S02 {channel:X}\r\n" : string.Empty) +
           (panIdMustBeSet ? $"SKSREG S03 {panId:X4}\r\n" : string.Empty) +
-          $"SKJOIN {paaAddress}\r\n"
+          $"SKJOIN {PaaAddress}\r\n"
         ).ToByteSequence()
       )
     );
@@ -766,13 +754,11 @@ partial class SkStackClientFunctionsPanaTests {
     var pan = default(SkStackPanDescription);
 
     Assert.That(
-#pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         pan: pan
       ),
-#pragma warning restore CA2012
       Throws.InstanceOf<ArgumentException>()
     );
   }
