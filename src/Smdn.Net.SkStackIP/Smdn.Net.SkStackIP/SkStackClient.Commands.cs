@@ -5,9 +5,6 @@
 using System;
 using System.Net;
 using System.Net.NetworkInformation;
-#if SYSTEM_TEXT_ASCII
-using System.Text;
-#endif
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -84,113 +81,6 @@ partial class SkStackClient {
   ///   <para>See 'BP35A1コマンドリファレンス 3.8. SKPING' for detailed specifications.</para>
   /// </remarks>
 #endif
-
-  private const int SKSETPWDMinLength = 1;
-  private const int SKSETPWDMaxLength = 32;
-
-  /// <summary>
-  ///   <para>Sends a command <c>SKSETPWD</c>.</para>
-  /// </summary>
-  /// <remarks>
-  ///   <para>See 'BP35A1コマンドリファレンス 3.16. SKSETPWD' for detailed specifications.</para>
-  /// </remarks>
-  public ValueTask<SkStackResponse> SendSKSETPWDAsync(
-    ReadOnlyMemory<char> password,
-    CancellationToken cancellationToken = default
-  )
-  {
-    if (password.Length is not (>= SKSETPWDMinLength and <= SKSETPWDMaxLength))
-      throw new ArgumentException($"length of `{nameof(password)}` must be in range of {SKSETPWDMinLength}~{SKSETPWDMaxLength}", nameof(password));
-#if SYSTEM_TEXT_ASCII
-    if (!Ascii.IsValid(password.Span))
-      throw new ArgumentException($"`{nameof(password)}` contains invalid characters for ASCII sequence", paramName: nameof(password));
-#endif
-
-    return SendCommandAsync(
-      command: SkStackCommandNames.SKSETPWD,
-      writeArguments: writer => {
-        writer.WriteTokenUINT8((byte)password.Length, zeroPadding: false);
-        writer.WriteMaskedToken(password.Span);
-      },
-      throwIfErrorStatus: true,
-      cancellationToken: cancellationToken
-    );
-  }
-
-  /// <summary>
-  ///   <para>Sends a command <c>SKSETPWD</c>.</para>
-  /// </summary>
-  /// <remarks>
-  ///   <para>See 'BP35A1コマンドリファレンス 3.16. SKSETPWD' for detailed specifications.</para>
-  /// </remarks>
-  public ValueTask<SkStackResponse> SendSKSETPWDAsync(
-    ReadOnlyMemory<byte> password,
-    CancellationToken cancellationToken = default
-  )
-  {
-    if (password.Length is not (>= SKSETPWDMinLength and <= SKSETPWDMaxLength))
-      throw new ArgumentException($"length of `{nameof(password)}` must be in range of {SKSETPWDMinLength}~{SKSETPWDMaxLength}", nameof(password));
-
-    return SendCommandAsync(
-      command: SkStackCommandNames.SKSETPWD,
-      writeArguments: writer => {
-        writer.WriteTokenUINT8((byte)password.Length, zeroPadding: false);
-        writer.WriteMaskedToken(password.Span);
-      },
-      throwIfErrorStatus: true,
-      cancellationToken: cancellationToken
-    );
-  }
-
-  private const int SKSETRBIDLengthOfId = 32;
-
-  /// <summary>
-  ///   <para>Sends a command <c>SKSETRBID</c>.</para>
-  /// </summary>
-  /// <remarks>
-  ///   <para>See 'BP35A1コマンドリファレンス 3.17. SKSETRBID' for detailed specifications.</para>
-  /// </remarks>
-  public ValueTask<SkStackResponse> SendSKSETRBIDAsync(
-    ReadOnlyMemory<char> id,
-    CancellationToken cancellationToken = default
-  )
-  {
-    if (id.Length != SKSETRBIDLengthOfId)
-      throw new ArgumentException($"length of `{nameof(id)}` must be exact {SKSETRBIDLengthOfId}", nameof(id));
-#if SYSTEM_TEXT_ASCII
-    if (!Ascii.IsValid(id.Span))
-      throw new ArgumentException($"`{nameof(id)}` contains invalid characters for ASCII sequence", paramName: nameof(id));
-#endif
-
-    return SendCommandAsync(
-      command: SkStackCommandNames.SKSETRBID,
-      writeArguments: writer => writer.WriteToken(id.Span),
-      throwIfErrorStatus: true,
-      cancellationToken: cancellationToken
-    );
-  }
-
-  /// <summary>
-  ///   <para>Sends a command <c>SKSETRBID</c>.</para>
-  /// </summary>
-  /// <remarks>
-  ///   <para>See 'BP35A1コマンドリファレンス 3.17. SKSETRBID' for detailed specifications.</para>
-  /// </remarks>
-  public ValueTask<SkStackResponse> SendSKSETRBIDAsync(
-    ReadOnlyMemory<byte> id,
-    CancellationToken cancellationToken = default
-  )
-  {
-    if (id.Length != SKSETRBIDLengthOfId)
-      throw new ArgumentException($"length of `{nameof(id)}` must be exact {SKSETRBIDLengthOfId}", nameof(id));
-
-    return SendCommandAsync(
-      command: SkStackCommandNames.SKSETRBID,
-      writeArguments: writer => writer.WriteToken(id.Span),
-      throwIfErrorStatus: true,
-      cancellationToken: cancellationToken
-    );
-  }
 
   /// <summary>
   ///   <para>Sends a command <c>SKSAVE</c>.</para>
