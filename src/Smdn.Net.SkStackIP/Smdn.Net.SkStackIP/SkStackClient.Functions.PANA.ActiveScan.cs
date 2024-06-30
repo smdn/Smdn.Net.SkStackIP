@@ -24,6 +24,19 @@ partial class SkStackClient {
       cancellationToken: cancellationToken
     );
 
+  public ValueTask<IReadOnlyList<SkStackPanDescription>> ActiveScanAsync(
+    Action<IBufferWriter<byte>> writeRBID,
+    Action<IBufferWriter<byte>> writePassword,
+    SkStackActiveScanOptions? scanOptions = null,
+    CancellationToken cancellationToken = default
+  )
+    => ActiveScanAsyncCore(
+      writeRBID: writeRBID ?? throw new ArgumentNullException(nameof(writeRBID)),
+      writePassword: writePassword ?? throw new ArgumentNullException(nameof(writePassword)),
+      scanDurationFactorGenerator: (scanOptions ?? SkStackActiveScanOptions.Default).YieldScanDurationFactors(),
+      cancellationToken: cancellationToken
+    );
+
   private async ValueTask<IReadOnlyList<SkStackPanDescription>> ActiveScanAsyncCore(
     Action<IBufferWriter<byte>>? writeRBID,
     Action<IBufferWriter<byte>>? writePassword,

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -46,6 +47,106 @@ partial class SkStackClientFunctionsPanaTests {
       ),
       Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("password")
     );
+  }
+
+  [Test]
+  public void ActiveScanAsync_ArgumentNullException_WriteRBID()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.That(
+      () => client.ActiveScanAsync(
+        writeRBID: null!,
+        writePassword: static writer => throw new NotImplementedException(),
+        scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
+        cancellationToken: cts.Token
+      ),
+      Throws.ArgumentNullException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("writeRBID")
+    );
+  }
+
+  [Test]
+  public void ActiveScanAsync_ArgumentNullException_WritePassword()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.That(
+      () => client.ActiveScanAsync(
+        writeRBID: static writer => throw new NotImplementedException(),
+        writePassword: null!,
+        scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
+        cancellationToken: cts.Token
+      ),
+      Throws.ArgumentNullException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("writePassword")
+    );
+  }
+
+  [Test]
+  public void ActiveScanAsync_RouteBCredentail_ReadOnlyMemory()
+  {
+    using var stream = new PseudoSkStackStream();
+
+    // SKSETRBID
+    stream.ResponseWriter.WriteLine("OK");
+    // SKSETPWD
+    stream.ResponseWriter.WriteLine("OK");
+    // SKSCAN
+    stream.ResponseWriter.WriteLine("OK");
+    stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.DoesNotThrowAsync(async () => {
+      await client.ActiveScanAsync(
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
+        scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
+        cancellationToken: cts.Token
+      );
+    });
+
+    var commands = Encoding.ASCII.GetString(stream.ReadSentData());
+
+    Assert.That(commands, Does.Contain("SKSETRBID 00112233445566778899AABBCCDDEEFF"));
+    Assert.That(commands, Does.Contain("SKSETPWD C 0123456789AB"));
+    Assert.That(commands, Does.Contain("SKSCAN 2 FFFFFFFF 1"));
+  }
+
+  [Test]
+  public void ActiveScanAsync_RouteBCredentail_Writer()
+  {
+    using var stream = new PseudoSkStackStream();
+
+    // SKSETRBID
+    stream.ResponseWriter.WriteLine("OK");
+    // SKSETPWD
+    stream.ResponseWriter.WriteLine("OK");
+    // SKSCAN
+    stream.ResponseWriter.WriteLine("OK");
+    stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+
+    Assert.DoesNotThrowAsync(async () => {
+      await client.ActiveScanAsync(
+        writeRBID: static writer => writer.Write("00112233445566778899AABBCCDDEEFF".ToByteSequence().Span),
+        writePassword: static writer => writer.Write("0123456789AB".ToByteSequence().Span),
+        scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
+        cancellationToken: cts.Token
+      );
+    });
+
+    var commands = Encoding.ASCII.GetString(stream.ReadSentData());
+
+    Assert.That(commands, Does.Contain("SKSETRBID 00112233445566778899AABBCCDDEEFF"));
+    Assert.That(commands, Does.Contain("SKSETPWD C 0123456789AB"));
+    Assert.That(commands, Does.Contain("SKSCAN 2 FFFFFFFF 1"));
   }
 
   [Test]
