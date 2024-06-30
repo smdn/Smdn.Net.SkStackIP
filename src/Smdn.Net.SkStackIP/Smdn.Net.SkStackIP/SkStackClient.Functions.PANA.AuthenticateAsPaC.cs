@@ -15,7 +15,7 @@ partial class SkStackClient {
 #pragma warning restore IDE0040
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
-  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="password">A Route-B password used for PANA authentication.</param>
   /// <param name="scanOptions">Options such as scanning behavior when performing active scanning.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
@@ -33,7 +33,7 @@ partial class SkStackClient {
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   /// <param name="writeRBID">A delegate to write Route-B ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
-  /// <param name="writePassword">A delegate to write password ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
+  /// <param name="writePassword">A delegate to write Route-B password used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
   /// <param name="scanOptions">Options such as scanning behavior when performing active scanning.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
@@ -58,7 +58,7 @@ partial class SkStackClient {
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
-  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="password">A Route-B password used for PANA authentication.</param>
   /// <param name="paaAddress">An <see cref="IPAddress"/> representing the IP address of the PANA Authentication Agent (PAA).</param>
   /// <param name="channelNumber">A channel number to be used for PANA session.</param>
   /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
@@ -82,7 +82,7 @@ partial class SkStackClient {
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
-  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="password">A Route-B password used for PANA authentication.</param>
   /// <param name="paaAddress">An <see cref="IPAddress"/> representing the IP address of the PANA Authentication Agent (PAA).</param>
   /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
   /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
@@ -106,7 +106,7 @@ partial class SkStackClient {
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   /// <param name="writeRBID">A delegate to write Route-B ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
-  /// <param name="writePassword">A delegate to write password ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
+  /// <param name="writePassword">A delegate to write Route-B password used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
   /// <param name="paaAddress">An <see cref="IPAddress"/> representing the IP address of the PANA Authentication Agent (PAA).</param>
   /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
   /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
@@ -138,7 +138,7 @@ partial class SkStackClient {
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
-  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="password">A Route-B password used for PANA authentication.</param>
   /// <param name="pan">A <see cref="SkStackPanDescription"/> representing the address of the PANA Authentication Agent (PAA), PAN ID, and channel used for PANA session.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
@@ -158,7 +158,7 @@ partial class SkStackClient {
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   /// <param name="writeRBID">A delegate to write Route-B ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
-  /// <param name="writePassword">A delegate to write password ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
+  /// <param name="writePassword">A delegate to write Route-B password used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
   /// <param name="pan">A <see cref="SkStackPanDescription"/> representing the address of the PANA Authentication Agent (PAA), PAN ID, and channel used for PANA session.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
@@ -178,7 +178,7 @@ partial class SkStackClient {
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
-  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="password">A Route-B password used for PANA authentication.</param>
   /// <param name="paaMacAddress">A <see cref="PhysicalAddress"/> representing the MAC address of the PANA Authentication Agent (PAA).</param>
   /// <param name="channelNumber">A channel number to be used for PANA session.</param>
   /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
@@ -202,7 +202,7 @@ partial class SkStackClient {
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
-  /// <param name="password">A password ID used for PANA authentication.</param>
+  /// <param name="password">A Route-B password used for PANA authentication.</param>
   /// <param name="paaMacAddress">A <see cref="PhysicalAddress"/> representing the MAC address of the PANA Authentication Agent (PAA).</param>
   /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
   /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
@@ -226,7 +226,7 @@ partial class SkStackClient {
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   /// <param name="writeRBID">A delegate to write Route-B ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
-  /// <param name="writePassword">A delegate to write password ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
+  /// <param name="writePassword">A delegate to write Route-B password used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
   /// <param name="paaMacAddress">A <see cref="PhysicalAddress"/> representing the MAC address of the PANA Authentication Agent (PAA).</param>
   /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
   /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
@@ -269,8 +269,8 @@ partial class SkStackClient {
   /// <summary>
   /// Starts the PANA authentication sequence with the current instance as the PaC.
   /// </summary>
-  /// <param name="writeRBID">A delegate to write Route-B ID used for PANA authentication to the buffer.</param>
-  /// <param name="writePassword">Adelegate to write password ID used for PANA authentication to the buffer.</param>
+  /// <param name="writeRBID">A delegate to write Route-B ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
+  /// <param name="writePassword">A delegate to write Route-B password used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
   /// <param name="getPaaAddressTask">
   /// An <see cref="ValueTask{IPAddress}"/> that returns IP address of the PANA Authentication Agent (PAA).
   /// If returns <see langword="null"/>, an active scan will be performed to discover the PAAs.

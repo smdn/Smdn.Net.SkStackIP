@@ -11,7 +11,8 @@ namespace Smdn.Net.SkStackIP;
 /// <summary>
 /// The type for defining the scan intervals (scan duration factors) and the method that selects discovered PANA Authentication Agents (PAA) in the scan for PAA, by the <c>SKSCAN</c> command.
 /// </summary>
-/// <seealso cref="SkStackClient.ActiveScanAsync" />
+/// <seealso cref="SkStackClient.ActiveScanAsync(Action{System.Buffers.IBufferWriter{byte}}, Action{System.Buffers.IBufferWriter{byte}}, Smdn.Net.SkStackIP.SkStackActiveScanOptions?, System.Threading.CancellationToken)" />
+/// <seealso cref="SkStackClient.ActiveScanAsync(ReadOnlyMemory{byte}, ReadOnlyMemory{byte}, Smdn.Net.SkStackIP.SkStackActiveScanOptions?, System.Threading.CancellationToken)" />
 public abstract class SkStackActiveScanOptions : ICloneable {
   /// <summary>
   /// Gets the <see cref="SkStackActiveScanOptions"/> which selects the PAA which found at first during the scan.
