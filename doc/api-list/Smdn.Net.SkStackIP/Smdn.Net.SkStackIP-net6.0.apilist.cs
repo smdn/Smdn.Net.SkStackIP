@@ -1,7 +1,7 @@
-// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.1.0)
+// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.2.0)
 //   Name: Smdn.Net.SkStackIP
-//   AssemblyVersion: 1.1.0.0
-//   InformationalVersion: 1.1.0+b1231cf0cca65506f3356620e16e3ecd4cb811c1
+//   AssemblyVersion: 1.2.0.0
+//   InformationalVersion: 1.2.0+0e506f4265dfd6eb80e5f98b4486e10a5cda9d99
 //   TargetFramework: .NETCoreApp,Version=v6.0
 //   Configuration: Release
 //   Referenced assemblies:
@@ -137,7 +137,12 @@ namespace Smdn.Net.SkStackIP {
     public TimeSpan ReceiveUdpPollingInterval { get; set; }
     public ISynchronizeInvoke? SynchronizingObject { get; set; }
 
+    public ValueTask<IReadOnlyList<SkStackPanDescription>> ActiveScanAsync(Action<IBufferWriter<byte>> writeRBID, Action<IBufferWriter<byte>> writePassword, SkStackActiveScanOptions? scanOptions = null, CancellationToken cancellationToken = default) {}
     public ValueTask<IReadOnlyList<SkStackPanDescription>> ActiveScanAsync(ReadOnlyMemory<byte> rbid, ReadOnlyMemory<byte> password, SkStackActiveScanOptions? scanOptions = null, CancellationToken cancellationToken = default) {}
+    public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(Action<IBufferWriter<byte>> writeRBID, Action<IBufferWriter<byte>> writePassword, IPAddress paaAddress, SkStackChannel channel, int panId, CancellationToken cancellationToken = default) {}
+    public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(Action<IBufferWriter<byte>> writeRBID, Action<IBufferWriter<byte>> writePassword, PhysicalAddress paaMacAddress, SkStackChannel channel, int panId, CancellationToken cancellationToken = default) {}
+    public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(Action<IBufferWriter<byte>> writeRBID, Action<IBufferWriter<byte>> writePassword, SkStackActiveScanOptions? scanOptions = null, CancellationToken cancellationToken = default) {}
+    public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(Action<IBufferWriter<byte>> writeRBID, Action<IBufferWriter<byte>> writePassword, SkStackPanDescription pan, CancellationToken cancellationToken = default) {}
     public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(ReadOnlyMemory<byte> rbid, ReadOnlyMemory<byte> password, IPAddress paaAddress, SkStackChannel channel, int panId, CancellationToken cancellationToken = default) {}
     public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(ReadOnlyMemory<byte> rbid, ReadOnlyMemory<byte> password, IPAddress paaAddress, int channelNumber, int panId, CancellationToken cancellationToken = default) {}
     public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(ReadOnlyMemory<byte> rbid, ReadOnlyMemory<byte> password, PhysicalAddress paaMacAddress, SkStackChannel channel, int panId, CancellationToken cancellationToken = default) {}
@@ -181,8 +186,10 @@ namespace Smdn.Net.SkStackIP {
     public ValueTask<(SkStackResponse Response, bool IsCompletedSuccessfully)> SendSKSENDTOAsync(SkStackUdpPort port, IPEndPoint destination, ReadOnlyMemory<byte> data, SkStackUdpEncryption encryption = SkStackUdpEncryption.EncryptIfAble, CancellationToken cancellationToken = default) {}
     public ValueTask<(SkStackResponse Response, bool IsCompletedSuccessfully)> SendSKSENDTOAsync(SkStackUdpPortHandle handle, IPAddress destinationAddress, int destinationPort, ReadOnlyMemory<byte> data, SkStackUdpEncryption encryption = SkStackUdpEncryption.EncryptIfAble, CancellationToken cancellationToken = default) {}
     public ValueTask<(SkStackResponse Response, bool IsCompletedSuccessfully)> SendSKSENDTOAsync(SkStackUdpPortHandle handle, IPEndPoint destination, ReadOnlyMemory<byte> data, SkStackUdpEncryption encryption = SkStackUdpEncryption.EncryptIfAble, CancellationToken cancellationToken = default) {}
+    public ValueTask<SkStackResponse> SendSKSETPWDAsync(Action<IBufferWriter<byte>> writePassword, CancellationToken cancellationToken = default) {}
     public ValueTask<SkStackResponse> SendSKSETPWDAsync(ReadOnlyMemory<byte> password, CancellationToken cancellationToken = default) {}
     public ValueTask<SkStackResponse> SendSKSETPWDAsync(ReadOnlyMemory<char> password, CancellationToken cancellationToken = default) {}
+    public ValueTask<SkStackResponse> SendSKSETRBIDAsync(Action<IBufferWriter<byte>> writeRBID, CancellationToken cancellationToken = default) {}
     public ValueTask<SkStackResponse> SendSKSETRBIDAsync(ReadOnlyMemory<byte> id, CancellationToken cancellationToken = default) {}
     public ValueTask<SkStackResponse> SendSKSETRBIDAsync(ReadOnlyMemory<char> id, CancellationToken cancellationToken = default) {}
     public ValueTask<SkStackResponse<TValue>> SendSKSREGAsync<TValue>(SkStackRegister.RegisterEntry<TValue> register, CancellationToken cancellationToken = default) {}
