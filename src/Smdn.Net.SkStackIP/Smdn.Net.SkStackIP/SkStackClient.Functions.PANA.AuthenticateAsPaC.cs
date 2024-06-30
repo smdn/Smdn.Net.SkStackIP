@@ -24,12 +24,30 @@ partial class SkStackClient {
     SkStackActiveScanOptions? scanOptions = null,
     CancellationToken cancellationToken = default
   )
+    => AuthenticateAsPanaClientAsync(
+      writeRBID: CreateActionForWritingRBID(rbid, nameof(rbid)),
+      writePassword: CreateActionForWritingPassword(password, nameof(password)),
+      scanOptions: scanOptions,
+      cancellationToken: cancellationToken
+    );
+
+  /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
+  /// <param name="writeRBID">A delegate to write Route-B ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
+  /// <param name="writePassword">A delegate to write password ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
+  /// <param name="scanOptions">Options such as scanning behavior when performing active scanning.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
+    Action<IBufferWriter<byte>> writeRBID,
+    Action<IBufferWriter<byte>> writePassword,
+    SkStackActiveScanOptions? scanOptions = null,
+    CancellationToken cancellationToken = default
+  )
   {
     ThrowIfPanaSessionAlreadyEstablished();
 
     return AuthenticateAsPanaClientAsyncCore(
-      writeRBID: CreateActionForWritingRBID(rbid, nameof(rbid)),
-      writePassword: CreateActionForWritingPassword(password, nameof(password)),
+      writeRBID: writeRBID ?? throw new ArgumentNullException(nameof(writeRBID)),
+      writePassword: writePassword ?? throw new ArgumentNullException(nameof(writePassword)),
       getPaaAddressTask: default,
       channel: null,
       panId: null,
@@ -54,8 +72,8 @@ partial class SkStackClient {
     CancellationToken cancellationToken = default
   )
     => AuthenticateAsPanaClientAsync(
-      rbid: rbid,
-      password: password,
+      writeRBID: CreateActionForWritingRBID(rbid, nameof(rbid)),
+      writePassword: CreateActionForWritingPassword(password, nameof(password)),
       paaAddress: paaAddress,
       channel: SkStackChannel.FindByChannelNumber(channelNumber, nameof(channelNumber)),
       panId: panId,
@@ -77,6 +95,30 @@ partial class SkStackClient {
     int panId,
     CancellationToken cancellationToken = default
   )
+    => AuthenticateAsPanaClientAsync(
+      writeRBID: CreateActionForWritingRBID(rbid, nameof(rbid)),
+      writePassword: CreateActionForWritingPassword(password, nameof(password)),
+      paaAddress: paaAddress,
+      channel: channel,
+      panId: panId,
+      cancellationToken: cancellationToken
+    );
+
+  /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
+  /// <param name="writeRBID">A delegate to write Route-B ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
+  /// <param name="writePassword">A delegate to write password ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
+  /// <param name="paaAddress">An <see cref="IPAddress"/> representing the IP address of the PANA Authentication Agent (PAA).</param>
+  /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
+  /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
+    Action<IBufferWriter<byte>> writeRBID,
+    Action<IBufferWriter<byte>> writePassword,
+    IPAddress paaAddress,
+    SkStackChannel channel,
+    int panId,
+    CancellationToken cancellationToken = default
+  )
   {
     ThrowIfPanaSessionAlreadyEstablished();
 
@@ -84,8 +126,8 @@ partial class SkStackClient {
       throw new ArgumentException(message: "invalid channel (empty channel)", paramName: nameof(channel));
 
     return AuthenticateAsPanaClientAsyncCore(
-      writeRBID: CreateActionForWritingRBID(rbid, nameof(rbid)),
-      writePassword: CreateActionForWritingPassword(password, nameof(password)),
+      writeRBID: writeRBID ?? throw new ArgumentNullException(nameof(writeRBID)),
+      writePassword: writePassword ?? throw new ArgumentNullException(nameof(writePassword)),
       getPaaAddressTask: new(paaAddress ?? throw new ArgumentNullException(nameof(paaAddress))),
       channel: channel,
       panId: ValidatePanIdAndThrowIfInvalid(panId, nameof(panId)),
@@ -115,6 +157,26 @@ partial class SkStackClient {
     );
 
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
+  /// <param name="writeRBID">A delegate to write Route-B ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
+  /// <param name="writePassword">A delegate to write password ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
+  /// <param name="pan">A <see cref="SkStackPanDescription"/> representing the address of the PANA Authentication Agent (PAA), PAN ID, and channel used for PANA session.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
+    Action<IBufferWriter<byte>> writeRBID,
+    Action<IBufferWriter<byte>> writePassword,
+    SkStackPanDescription pan,
+    CancellationToken cancellationToken = default
+  )
+    => AuthenticateAsPanaClientAsync(
+      writeRBID: writeRBID,
+      writePassword: writePassword,
+      paaMacAddress: pan.MacAddress,
+      channel: pan.Channel,
+      panId: pan.Id,
+      cancellationToken: cancellationToken
+    );
+
+  /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
   /// <param name="password">A password ID used for PANA authentication.</param>
   /// <param name="paaMacAddress">A <see cref="PhysicalAddress"/> representing the MAC address of the PANA Authentication Agent (PAA).</param>
@@ -130,8 +192,8 @@ partial class SkStackClient {
     CancellationToken cancellationToken = default
   )
     => AuthenticateAsPanaClientAsync(
-      rbid: rbid,
-      password: password,
+      writeRBID: CreateActionForWritingRBID(rbid, nameof(rbid)),
+      writePassword: CreateActionForWritingPassword(password, nameof(password)),
       paaMacAddress: paaMacAddress,
       channel: SkStackChannel.FindByChannelNumber(channelNumber, nameof(channelNumber)),
       panId: panId,
@@ -153,12 +215,36 @@ partial class SkStackClient {
     int panId,
     CancellationToken cancellationToken = default
   )
+    => AuthenticateAsPanaClientAsync(
+      writeRBID: CreateActionForWritingRBID(rbid, nameof(rbid)),
+      writePassword: CreateActionForWritingPassword(password, nameof(password)),
+      paaMacAddress: paaMacAddress,
+      channel: channel,
+      panId: panId,
+      cancellationToken: cancellationToken
+    );
+
+  /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
+  /// <param name="writeRBID">A delegate to write Route-B ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
+  /// <param name="writePassword">A delegate to write password ID used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
+  /// <param name="paaMacAddress">A <see cref="PhysicalAddress"/> representing the MAC address of the PANA Authentication Agent (PAA).</param>
+  /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
+  /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
+  /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
+    Action<IBufferWriter<byte>> writeRBID,
+    Action<IBufferWriter<byte>> writePassword,
+    PhysicalAddress paaMacAddress,
+    SkStackChannel channel,
+    int panId,
+    CancellationToken cancellationToken = default
+  )
   {
     ThrowIfPanaSessionAlreadyEstablished();
 
     return AuthenticateAsPanaClientAsyncCore(
-      writeRBID: CreateActionForWritingRBID(rbid, nameof(rbid)),
-      writePassword: CreateActionForWritingPassword(password, nameof(password)),
+      writeRBID: writeRBID ?? throw new ArgumentNullException(nameof(writeRBID)),
+      writePassword: writePassword ?? throw new ArgumentNullException(nameof(writePassword)),
 #pragma warning disable CA2012, CS8620
       getPaaAddressTask: ConvertToIPv6LinkLocalAddressAsync(
         paaMacAddress ?? throw new ArgumentNullException(nameof(paaMacAddress)),
