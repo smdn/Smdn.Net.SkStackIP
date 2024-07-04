@@ -124,6 +124,9 @@ public abstract partial class BP35Base : SkStackClient {
     CancellationToken cancellationToken
   )
   {
+    // reset first before configuring
+    await SendSKRESETAsync(cancellationToken).ConfigureAwait(false);
+
     // retrieve firmware version
     skstackVersion = (await SendSKVERAsync(cancellationToken).ConfigureAwait(false)).Payload;
 

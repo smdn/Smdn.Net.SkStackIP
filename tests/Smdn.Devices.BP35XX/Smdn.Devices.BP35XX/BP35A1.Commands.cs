@@ -26,6 +26,9 @@ public class BP35A1CommandsTests {
       )
     );
 
+    // SKRESET
+    factory.Stream.ResponseWriter.WriteLine("OK");
+
     // SKVER
     factory.Stream.ResponseWriter.WriteLine("EVER 1.2.10");
     factory.Stream.ResponseWriter.WriteLine("OK");

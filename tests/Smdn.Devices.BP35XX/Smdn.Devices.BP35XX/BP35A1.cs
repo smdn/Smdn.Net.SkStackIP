@@ -33,6 +33,9 @@ public class BP35A1Tests {
       )
     );
 
+    // SKRESET
+    factory.Stream.ResponseWriter.WriteLine("OK");
+
     // SKVER
     factory.Stream.ResponseWriter.WriteLine("EVER 1.2.10");
     factory.Stream.ResponseWriter.WriteLine("OK");
@@ -87,6 +90,9 @@ public class BP35A1Tests {
       )
     );
 
+    // SKRESET
+    factory.Stream.ResponseWriter.WriteLine("OK");
+
     // SKVER
     factory.Stream.ResponseWriter.WriteLine($"EVER {version}");
     factory.Stream.ResponseWriter.WriteLine("OK");
@@ -135,6 +141,9 @@ public class BP35A1Tests {
         factory
       )
     );
+
+    // SKRESET
+    factory.Stream.ResponseWriter.WriteLine("OK");
 
     // SKVER
     factory.Stream.ResponseWriter.WriteLine("EVER 1.2.10");
