@@ -51,4 +51,29 @@ public class SkStackActiveScanOptionsTests : SkStackClientTestsBase {
       () => TestYieldScanDurationFactors(SkStackActiveScanOptions.Create(scanDurationFactors!, paaMacAddress: PhysicalAddress.None), scanDurationFactors!),
       typeOfExpectedException is null ? Throws.Nothing : Throws.TypeOf(typeOfExpectedException)
     );
+
+  [Test]
+  public void YieldScanDurationFactors_Create_ScanDurationGeneratorFunc_ArgumentNull()
+  {
+    Assert.That(() => SkStackActiveScanOptions.Create(scanDurationGeneratorFunc: null!, paaSelector: null), Throws.ArgumentNullException);
+    Assert.That(() => SkStackActiveScanOptions.Create(scanDurationGeneratorFunc: null!, paaMacAddress: PhysicalAddress.None), Throws.ArgumentNullException);
+  }
+
+  [TestCase(new int[0])]
+  [TestCase(new int[] { 1 })]
+  [TestCase(new int[] { 1, 2, 3, 4, 5 })]
+  public void YieldScanDurationFactors_Create_ScanDurationGeneratorFunc_WithPaaSelector(int[] scanDurationFactors)
+    => Assert.That(
+      () => TestYieldScanDurationFactors(SkStackActiveScanOptions.Create(scanDurationGeneratorFunc: () => scanDurationFactors, paaSelector: null), scanDurationFactors!),
+      Throws.Nothing
+    );
+
+  [TestCase(new int[0])]
+  [TestCase(new int[] { 1 })]
+  [TestCase(new int[] { 1, 2, 3, 4, 5 })]
+  public void YieldScanDurationFactors_Create_ScanDurationGeneratorFunc_WithPaaMacAddress(int[] scanDurationFactors)
+    => Assert.That(
+      () => TestYieldScanDurationFactors(SkStackActiveScanOptions.Create(scanDurationGeneratorFunc: () => scanDurationFactors, paaMacAddress: PhysicalAddress.None), scanDurationFactors!),
+      Throws.Nothing
+    );
 }

@@ -86,22 +86,51 @@ public abstract class SkStackActiveScanOptions : ICloneable {
       scanDurationGenerator: scanDurationGenerator
     );
 
+  /// <summary>
+  /// Creates the <see cref="SkStackActiveScanOptions"/> with the custom selection method and the delegate for generating duration factor.
+  /// </summary>
+  /// <param name="scanDurationGeneratorFunc">A delegate to method that iterates the scan durations.</param>
+  /// <param name="paaSelector">
+  /// A callback to select the target PAA from the PAAs found during the scan.
+  /// If <see langword="null"/>, selects the PAA which found at first during the scan.
+  /// </param>
+  public static SkStackActiveScanOptions Create(
+    Func<IEnumerable<int>> scanDurationGeneratorFunc,
+    Predicate<SkStackPanDescription>? paaSelector = null
+  )
+    => new UserDefinedActiveScanOptions(
+      paaSelector: paaSelector,
+      scanDurationGeneratorFunc: scanDurationGeneratorFunc
+    );
+
   private sealed class UserDefinedActiveScanOptions : SkStackActiveScanOptions {
     private readonly Predicate<SkStackPanDescription>? paaSelector;
-    private readonly IEnumerable<int> scanDurationGenerator;
+    private readonly Func<IEnumerable<int>> scanDurationGeneratorFunc;
 
     public UserDefinedActiveScanOptions(
       Predicate<SkStackPanDescription>? paaSelector,
       IEnumerable<int> scanDurationGenerator
     )
     {
+      if (scanDurationGenerator is null)
+        throw new ArgumentNullException(nameof(scanDurationGenerator));
+
       this.paaSelector = paaSelector;
-      this.scanDurationGenerator = scanDurationGenerator ?? throw new ArgumentNullException(nameof(scanDurationGenerator));
+      this.scanDurationGeneratorFunc = new(() => scanDurationGenerator);
     }
 
-    public override SkStackActiveScanOptions Clone() => new UserDefinedActiveScanOptions(paaSelector, scanDurationGenerator.ToArray());
+    public UserDefinedActiveScanOptions(
+      Predicate<SkStackPanDescription>? paaSelector,
+      Func<IEnumerable<int>> scanDurationGeneratorFunc
+    )
+    {
+      this.paaSelector = paaSelector;
+      this.scanDurationGeneratorFunc = scanDurationGeneratorFunc ?? throw new ArgumentNullException(nameof(scanDurationGeneratorFunc));
+    }
+
+    public override SkStackActiveScanOptions Clone() => new UserDefinedActiveScanOptions(paaSelector, scanDurationGeneratorFunc);
     internal override bool SelectPanaAuthenticationAgent(SkStackPanDescription desc) => paaSelector?.Invoke(desc) ?? true;
-    internal override IEnumerable<int> YieldScanDurationFactors() => scanDurationGenerator;
+    internal override IEnumerable<int> YieldScanDurationFactors() => scanDurationGeneratorFunc();
   }
 
   /// <summary>
@@ -120,22 +149,50 @@ public abstract class SkStackActiveScanOptions : ICloneable {
       scanDurationGenerator: scanDurationGenerator
     );
 
+  /// <summary>
+  /// Creates the <see cref="SkStackActiveScanOptions"/> with the custom selection method and the delegate for generating duration factor.
+  /// </summary>
+  /// <param name="scanDurationGeneratorFunc">A delegate to method that iterates the scan durations.</param>
+  /// <param name="paaMacAddress">
+  /// A <see cref="PhysicalAddress"/> of the target PAA. This method selects the first PAA found during the scan that matches this <see cref="PhysicalAddress"/>.
+  /// </param>
+  public static SkStackActiveScanOptions Create(
+    Func<IEnumerable<int>> scanDurationGeneratorFunc,
+    PhysicalAddress paaMacAddress
+  )
+    => new FindByMacAddressActiveScanOptions(
+      paaMacAddress: paaMacAddress,
+      scanDurationGeneratorFunc: scanDurationGeneratorFunc
+    );
+
   private sealed class FindByMacAddressActiveScanOptions : SkStackActiveScanOptions {
     private readonly PhysicalAddress paaMacAddress;
-    private readonly IEnumerable<int> scanDurationGenerator;
+    private readonly Func<IEnumerable<int>> scanDurationGeneratorFunc;
 
     public FindByMacAddressActiveScanOptions(
       PhysicalAddress paaMacAddress,
       IEnumerable<int> scanDurationGenerator
     )
     {
+      if (scanDurationGenerator is null)
+        throw new ArgumentNullException(nameof(scanDurationGenerator));
+
       this.paaMacAddress = paaMacAddress;
-      this.scanDurationGenerator = scanDurationGenerator ?? throw new ArgumentNullException(nameof(scanDurationGenerator));
+      scanDurationGeneratorFunc = new(() => scanDurationGenerator);
     }
 
-    public override SkStackActiveScanOptions Clone() => new FindByMacAddressActiveScanOptions(paaMacAddress, scanDurationGenerator.ToArray());
+    public FindByMacAddressActiveScanOptions(
+      PhysicalAddress paaMacAddress,
+      Func<IEnumerable<int>> scanDurationGeneratorFunc
+    )
+    {
+      this.paaMacAddress = paaMacAddress;
+      this.scanDurationGeneratorFunc = scanDurationGeneratorFunc ?? throw new ArgumentNullException(nameof(scanDurationGeneratorFunc));
+    }
+
+    public override SkStackActiveScanOptions Clone() => new FindByMacAddressActiveScanOptions(paaMacAddress, scanDurationGeneratorFunc);
     internal override bool SelectPanaAuthenticationAgent(SkStackPanDescription desc) => desc.MacAddress.Equals(paaMacAddress);
-    internal override IEnumerable<int> YieldScanDurationFactors() => scanDurationGenerator;
+    internal override IEnumerable<int> YieldScanDurationFactors() => scanDurationGeneratorFunc();
   }
 
   /*
