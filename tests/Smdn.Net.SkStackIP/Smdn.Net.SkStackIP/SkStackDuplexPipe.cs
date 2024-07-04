@@ -102,11 +102,14 @@ internal sealed class SkStackDuplexPipe : IDuplexPipe {
         if (buffer.IsEmpty && read.IsCompleted)
           break;
 
+        // ignore cancellation request until the read content is written to the sentDataBuffer
+        var cancellationTokenForWritingSentData = CancellationToken.None;
+
         foreach (var segment in buffer) {
-          await sentDataBuffer.WriteAsync(segment, stopToken).ConfigureAwait(false);
+          await sentDataBuffer.WriteAsync(segment, cancellationTokenForWritingSentData).ConfigureAwait(false);
         }
 
-        await sentDataBuffer.FlushAsync(stopToken).ConfigureAwait(false);
+        await sentDataBuffer.FlushAsync(cancellationTokenForWritingSentData).ConfigureAwait(false);
 
         sendPipe.Reader.AdvanceTo(buffer.End);
       }
