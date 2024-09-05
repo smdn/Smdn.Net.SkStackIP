@@ -21,6 +21,14 @@ public class BP35A1 : BP35Base {
   /// </remarks>
   internal const BP35UartBaudRate DefaultValueForBP35UartBaudRate = BP35UartBaudRate.Baud115200;
 
+  /// <summary>
+  /// Refer to the initial value of the flow control for UART setting in the BP35A1.
+  /// </summary>
+  /// <remarks>
+  /// See 'BP35A1コマンドリファレンス 3.32. WUART (プロダクト設定コマンド)' for detailed specifications.
+  /// </remarks>
+  internal const bool DefaultValueForUseFlowControl = false;
+
   public static ValueTask<BP35A1> CreateAsync(
     string? serialPortName,
     IServiceProvider? serviceProvider = null,
@@ -78,5 +86,6 @@ public class BP35A1 : BP35Base {
 
   private protected class BP35A1SerialPortStreamFactory(BP35A1Configurations configurations) : SerialPortStreamFactory {
     public override BP35UartBaudRate BaudRate { get; } = configurations.BaudRate;
+    public override bool UseFlowControl { get; } = configurations.UseFlowControl;
   }
 }

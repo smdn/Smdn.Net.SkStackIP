@@ -14,6 +14,11 @@ public sealed class BP35A1Configurations {
   public BP35UartBaudRate BaudRate { get; set; } = BP35A1.DefaultValueForBP35UartBaudRate;
 
   /// <summary>
+  /// Gets or sets a value indicating whether or not to use the Request-to-Send (RTS) hardware flow control for communicating with the device.
+  /// </summary>
+  public bool UseFlowControl { get; set; } = BP35A1.DefaultValueForUseFlowControl;
+
+  /// <summary>
   /// Gets or sets a value indicating whether or not to attempt to load the configuration from flash memory during initialization.
   /// </summary>
   public bool TryLoadFlashMemory { get; set; } = BP35Base.DefaultValueForTryLoadFlashMemory;
