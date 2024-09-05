@@ -5,5 +5,5 @@ using System.IO;
 namespace Smdn.Devices.BP35XX;
 
 public interface IBP35SerialPortStreamFactory {
-  Stream CreateSerialPortStream(IBP35Configurations configurations);
+  Stream CreateSerialPortStream(string? serialPortName);
 }

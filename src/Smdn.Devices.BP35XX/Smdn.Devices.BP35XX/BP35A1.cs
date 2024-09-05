@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+using Smdn.Net.SkStackIP;
+
 namespace Smdn.Devices.BP35XX;
 
 public class BP35A1 : BP35Base {
@@ -49,15 +51,30 @@ public class BP35A1 : BP35Base {
       cancellationToken: cancellationToken
     );
 
+  /// <summary>
+  /// Initializes a new instance of the <see cref="BP35A1"/> class with specifying configurations.
+  /// </summary>
+  /// <param name="configurations">
+  /// A <see cref="BP35A1Configurations"/> that holds the configurations to the <see cref="BP35A1"/> instance.
+  /// </param>
+  /// <param name="serviceProvider">
+  /// The <see cref="IServiceProvider"/>.
+  /// This constructor overload attempts to get a service of <see cref="IBP35SerialPortStreamFactory"/>, to create an <see cref="System.IO.Ports.SerialPort"/>.
+  /// </param>
   private BP35A1(
-    IBP35Configurations configurations,
+    BP35A1Configurations configurations,
     IServiceProvider? serviceProvider = null
   )
     : base(
-      configurations: configurations,
-      serialPortStreamFactory: serviceProvider?.GetService<IBP35SerialPortStreamFactory>(),
+      serialPortName: configurations.SerialPortName,
+      serialPortStreamFactory: serviceProvider?.GetService<IBP35SerialPortStreamFactory>() ?? new BP35A1SerialPortStreamFactory(configurations),
+      erxudpDataFormat: SkStackERXUDPDataFormat.Binary,
       logger: serviceProvider?.GetService<ILoggerFactory>()?.CreateLogger<BP35A1>()
     )
   {
+  }
+
+  private protected class BP35A1SerialPortStreamFactory(BP35A1Configurations configurations) : SerialPortStreamFactory {
+    public override BP35UartBaudRate BaudRate { get; } = configurations.BaudRate;
   }
 }

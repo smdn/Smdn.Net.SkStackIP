@@ -10,15 +10,15 @@ namespace Smdn.Devices.BP35XX;
 #pragma warning disable IDE0040
 partial class BP35Base {
 #pragma warning restore IDE0040
-  private class DefaultSerialPortStreamFactory : IBP35SerialPortStreamFactory {
-    public static DefaultSerialPortStreamFactory Instance { get; } = new();
+  private protected abstract class SerialPortStreamFactory : IBP35SerialPortStreamFactory {
+    public abstract BP35UartBaudRate BaudRate { get; }
 
-    public Stream CreateSerialPortStream(IBP35Configurations configurations)
+    public Stream CreateSerialPortStream(string? serialPortName)
     {
-      if (string.IsNullOrEmpty(configurations.SerialPortName)) {
+      if (string.IsNullOrEmpty(serialPortName)) {
         throw new ArgumentException(
-          message: $"The {nameof(configurations.SerialPortName)} is not set for the {configurations.GetType().Name}",
-          paramName: nameof(configurations)
+          message: $"The {nameof(serialPortName)} must be a non-empty string.",
+          paramName: nameof(serialPortName)
         );
       }
 
@@ -26,8 +26,8 @@ partial class BP35Base {
 
 #pragma warning disable CA2000
       var port = new SerialPort(
-        portName: configurations.SerialPortName,
-        baudRate: configurations.BaudRate switch {
+        portName: serialPortName,
+        baudRate: BaudRate switch {
           BP35UartBaudRate.Baud2400 => 2_400,
           BP35UartBaudRate.Baud4800 => 4_800,
           BP35UartBaudRate.Baud9600 => 9_600,
@@ -35,10 +35,7 @@ partial class BP35Base {
           BP35UartBaudRate.Baud38400 => 38_400,
           BP35UartBaudRate.Baud57600 => 57_600,
           BP35UartBaudRate.Baud115200 => 115_200,
-          _ => throw new ArgumentException(
-            message: $"A valid {nameof(BP35UartBaudRate)} value is not set for the {configurations.GetType().Name}",
-            paramName: nameof(configurations)
-          ),
+          _ => throw new InvalidOperationException($"A valid {nameof(BP35UartBaudRate)} value is not set for the {nameof(BaudRate)}"),
         },
         parity: Parity.None,
         dataBits: 8,
