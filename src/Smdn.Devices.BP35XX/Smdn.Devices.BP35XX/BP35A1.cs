@@ -67,7 +67,9 @@ public class BP35A1 : BP35Base {
   )
     : base(
       serialPortName: configurations.SerialPortName,
+#pragma warning disable CA2000
       serialPortStreamFactory: serviceProvider?.GetService<IBP35SerialPortStreamFactory>() ?? new BP35A1SerialPortStreamFactory(configurations),
+#pragma warning restore CA2000
       erxudpDataFormat: SkStackERXUDPDataFormat.Binary,
       logger: serviceProvider?.GetService<ILoggerFactory>()?.CreateLogger<BP35A1>()
     )

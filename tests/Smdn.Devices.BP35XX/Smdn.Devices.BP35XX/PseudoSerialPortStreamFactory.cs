@@ -11,6 +11,11 @@ internal class PseudoSerialPortStreamFactory : IBP35SerialPortStreamFactory {
   {
   }
 
+  public void Dispose()
+  {
+    // nothing to do in this class
+  }
+
   public Stream CreateSerialPortStream(string? serialPortName)
     => Stream;
 }

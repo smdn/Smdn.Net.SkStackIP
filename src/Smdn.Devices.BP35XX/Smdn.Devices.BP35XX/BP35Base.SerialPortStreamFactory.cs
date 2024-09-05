@@ -13,6 +13,11 @@ partial class BP35Base {
   private protected abstract class SerialPortStreamFactory : IBP35SerialPortStreamFactory {
     public abstract BP35UartBaudRate BaudRate { get; }
 
+    public void Dispose()
+    {
+      // nothing to do in this class
+    }
+
     public Stream CreateSerialPortStream(string? serialPortName)
     {
       if (string.IsNullOrEmpty(serialPortName)) {
