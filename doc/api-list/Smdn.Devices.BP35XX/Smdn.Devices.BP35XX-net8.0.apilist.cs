@@ -1,7 +1,7 @@
-// Smdn.Devices.BP35XX.dll (Smdn.Devices.BP35XX-1.0.0)
+// Smdn.Devices.BP35XX.dll (Smdn.Devices.BP35XX-2.0.0)
 //   Name: Smdn.Devices.BP35XX
-//   AssemblyVersion: 1.0.0.0
-//   InformationalVersion: 1.0.0+e4163ada5b034b45c5cc0dac179b412cf54198cd
+//   AssemblyVersion: 2.0.0.0
+//   InformationalVersion: 2.0.0+ef185af5c73268aab02d6909202fffce4560122b
 //   TargetFramework: .NETCoreApp,Version=v8.0
 //   Configuration: Release
 //   Referenced assemblies:
@@ -27,15 +27,8 @@ using Smdn.Devices.BP35XX;
 using Smdn.Net.SkStackIP;
 
 namespace Smdn.Devices.BP35XX {
-  public interface IBP35Configurations {
-    BP35UartBaudRate BaudRate { get; }
-    SkStackERXUDPDataFormat ERXUDPDataFormat { get; }
-    string? SerialPortName { get; }
-    bool TryLoadFlashMemory { get; }
-  }
-
-  public interface IBP35SerialPortStreamFactory {
-    Stream CreateSerialPortStream(IBP35Configurations configurations);
+  public interface IBP35SerialPortStreamFactory : IDisposable {
+    Stream CreateSerialPortStream(string? serialPortName);
   }
 
   public enum BP35UartBaudRate : byte {
@@ -72,13 +65,13 @@ namespace Smdn.Devices.BP35XX {
     public static ValueTask<BP35A1> CreateAsync(string? serialPortName, IServiceProvider? serviceProvider = null, CancellationToken cancellationToken = default) {}
   }
 
-  public sealed class BP35A1Configurations : IBP35Configurations {
+  public sealed class BP35A1Configurations {
     public BP35A1Configurations() {}
 
     public BP35UartBaudRate BaudRate { get; set; }
     public string? SerialPortName { get; set; }
-    SkStackERXUDPDataFormat IBP35Configurations.ERXUDPDataFormat { get; }
     public bool TryLoadFlashMemory { get; set; }
+    public bool UseFlowControl { get; set; }
   }
 
   public abstract class BP35Base : SkStackClient {
