@@ -84,7 +84,7 @@ public class BP35A1 : BP35Base {
   {
   }
 
-  private protected class BP35A1SerialPortStreamFactory(BP35A1Configurations configurations) : SerialPortStreamFactory {
+  private class BP35A1SerialPortStreamFactory(BP35A1Configurations configurations) : SerialPortStreamFactory {
     public override BP35UartBaudRate BaudRate { get; } = configurations.BaudRate;
     public override bool UseFlowControl { get; } = configurations.UseFlowControl;
   }
