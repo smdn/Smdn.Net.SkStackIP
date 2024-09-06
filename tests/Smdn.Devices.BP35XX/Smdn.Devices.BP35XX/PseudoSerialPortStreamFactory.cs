@@ -11,6 +11,6 @@ internal class PseudoSerialPortStreamFactory : IBP35SerialPortStreamFactory {
   {
   }
 
-  public Stream CreateSerialPortStream(IBP35Configurations configurations)
+  public Stream CreateSerialPortStream(string? serialPortName)
     => Stream;
 }

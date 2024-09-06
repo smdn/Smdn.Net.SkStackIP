@@ -93,26 +93,28 @@ public abstract partial class BP35Base : SkStackClient {
   /// <summary>
   /// Initializes a new instance of the <see cref="BP35Base"/> class with specifying the serial port name.
   /// </summary>
-  /// <param name="configurations">
-  /// A <see cref="IBP35Configurations"/> that holds the configurations to the <see cref="BP35Base"/> instance.
+  /// <param name="serialPortName">
+  /// A <see cref="string"/> that holds the serial port name to which <see cref="BP35Base"/> device is connected.
   /// </param>
   /// <param name="serialPortStreamFactory">
-  /// A <see cref="IBP35SerialPortStreamFactory"/> that provides the function to create the serial port stream according to the <paramref name="configurations"/>.
+  /// A <see cref="IBP35SerialPortStreamFactory"/> that provides the function to create the serial port stream.
+  /// </param>
+  /// <param name="erxudpDataFormat">
+  /// A <see cref="SkStackERXUDPDataFormat"/> that specifies the format of the data part received in the event <c>ERXUDP</c>. See <see cref="SkStackClient.ERXUDPDataFormat"/>.
   /// </param>
   /// <param name="logger">The <see cref="ILogger"/> to report the situation.</param>
 #pragma warning disable IDE0290
   private protected BP35Base(
-    IBP35Configurations configurations,
-    IBP35SerialPortStreamFactory? serialPortStreamFactory,
+    string? serialPortName,
+    IBP35SerialPortStreamFactory serialPortStreamFactory,
+    SkStackERXUDPDataFormat erxudpDataFormat,
     ILogger? logger
   )
 #pragma warning restore IDE0290
     : base(
-      stream: (serialPortStreamFactory ?? DefaultSerialPortStreamFactory.Instance).CreateSerialPortStream(
-        configurations ?? throw new ArgumentNullException(nameof(configurations))
-      ),
+      stream: (serialPortStreamFactory ?? throw new ArgumentNullException(nameof(serialPortStreamFactory))).CreateSerialPortStream(serialPortName),
       leaveStreamOpen: false, // should close the opened stream
-      erxudpDataFormat: configurations.ERXUDPDataFormat,
+      erxudpDataFormat: erxudpDataFormat,
       logger: logger
     )
   {
