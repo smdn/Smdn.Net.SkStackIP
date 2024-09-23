@@ -7,6 +7,60 @@ namespace Smdn.Net.SkStackIP;
 [TestFixture]
 public class SkStackChannelTests {
   [Test]
+  public void CreateMask()
+  {
+    Assert.That(
+      SkStackChannel.CreateMask(SkStackChannel.Channel33),
+      Is.EqualTo(0b_0000_0000_0000_0000_0000_0000_0000_0001u)
+    );
+    Assert.That(
+      SkStackChannel.CreateMask(SkStackChannel.Channel60),
+      Is.EqualTo(0b_0000_1000_0000_0000_0000_0000_0000_0000u)
+    );
+
+    Assert.That(
+      SkStackChannel.CreateMask(),
+      Is.EqualTo(0b_0000_0000_0000_0000_0000_0000_0000_0000u)
+    );
+
+    Assert.That(
+      SkStackChannel.CreateMask(SkStackChannel.Channel33, SkStackChannel.Channel33),
+      Is.EqualTo(0b_0000_0000_0000_0000_0000_0000_0000_0001u)
+    );
+    Assert.That(
+      SkStackChannel.CreateMask(SkStackChannel.Channel33, SkStackChannel.Channel34),
+      Is.EqualTo(0b_0000_0000_0000_0000_0000_0000_0000_0011u)
+    );
+    Assert.That(
+      SkStackChannel.CreateMask(SkStackChannel.Channel33, SkStackChannel.Channel34, SkStackChannel.Channel35),
+      Is.EqualTo(0b_0000_0000_0000_0000_0000_0000_0000_0111u)
+    );
+    Assert.That(
+      SkStackChannel.CreateMask(SkStackChannel.Channel33, SkStackChannel.Channel60),
+      Is.EqualTo(0b_0000_1000_0000_0000_0000_0000_0000_0001u)
+    );
+  }
+
+  [Test]
+  public void CreateMask_ArgumentNull()
+    => Assert.That(() => SkStackChannel.CreateMask(channels: null!), Throws.ArgumentNullException);
+
+  private static System.Collections.IEnumerable YieldTestCases_CreateMask_InvalidChannel()
+  {
+    yield return SkStackChannel.Empty;
+    // yield return SkStackChannel.Channels[32]; // cannot test
+    // yield return SkStackChannel.Channels[61]; // cannot test
+  }
+
+  [TestCaseSource(nameof(YieldTestCases_CreateMask_InvalidChannel))]
+  public void CreateMask_InvalidChannel(SkStackChannel invalidChannel)
+  {
+    Assert.That(() => SkStackChannel.CreateMask(invalidChannel), Throws.InvalidOperationException);
+    Assert.That(() => SkStackChannel.CreateMask(SkStackChannel.Channel33, invalidChannel), Throws.InvalidOperationException);
+    Assert.That(() => SkStackChannel.CreateMask(SkStackChannel.Channel60, invalidChannel), Throws.InvalidOperationException);
+  }
+
+  [Test]
   public void IsEmpty()
   {
     Assert.That(SkStackChannel.Empty.IsEmpty, Is.True, nameof(SkStackChannel.Empty));

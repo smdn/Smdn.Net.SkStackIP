@@ -11,6 +11,9 @@ namespace Smdn.Net.SkStackIP;
 ///   <para>See 'BP35A1コマンドリファレンス 6. 周波数とチャネル番号' for detailed specifications.</para>
 /// </remarks>
 public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<SkStackChannel> {
+  private const int ChannelNumberMin = 33;
+  private const int ChannelNumberMax = 60;
+
   public static readonly IReadOnlyDictionary<int, SkStackChannel> Channels = new Dictionary<int, SkStackChannel> {
     { 33, new(channelNumber: 33, frequencyMHz: 922.5m) },
     { 34, new(channelNumber: 34, frequencyMHz: 922.7m) },
@@ -81,6 +84,27 @@ public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<
           actualValue: channelNumber,
           message: "undefined channel"
         );
+
+  /// <summary>
+  /// Creates the value passed to the parameter <c>CHANNEL_MASK</c> in the <c>SKSCAN</c> command.
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.9. SKSCAN' for detailed specifications.</para>
+  /// </remarks>
+  [CLSCompliant(false)]
+  public static uint CreateMask(params SkStackChannel[] channels)
+  {
+    uint mask = 0u;
+
+    foreach (var ch in channels ?? throw new ArgumentNullException(nameof(channels))) {
+      if (ch.ChannelNumber is >= ChannelNumberMin and <= ChannelNumberMax)
+        mask |= 1u << (ch.ChannelNumber - ChannelNumberMin);
+      else
+        throw new InvalidOperationException($"Cannot create mask bits from an invalid channel number {ch.ChannelNumber}.");
+    }
+
+    return mask;
+  }
 
   /*
    * instance members
