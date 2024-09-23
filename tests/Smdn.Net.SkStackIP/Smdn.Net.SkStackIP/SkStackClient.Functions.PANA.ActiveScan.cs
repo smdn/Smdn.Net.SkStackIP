@@ -366,4 +366,48 @@ partial class SkStackClientFunctionsPanaTests {
     Assert.That(commands, Does.Contain("SKSCAN 2 FFFFFFFF 4"));
     Assert.That(commands, Does.Not.Contain("SKSCAN 2 FFFFFFFF 6"));
   }
+
+  [TestCase(0x_FFFF_FFFFu)]
+  [TestCase(0x_0000_0001u)]
+  [TestCase(0x_0800_0000u)]
+  public void ActiveScanAsync_ChannelMask(uint channelMask)
+  {
+    using var stream = new PseudoSkStackStream();
+
+    // SKSETRBID
+    stream.ResponseWriter.WriteLine("OK");
+    // SKSETPWD
+    stream.ResponseWriter.WriteLine("OK");
+    // SKSCAN 2
+    stream.ResponseWriter.WriteLine("OK");
+    stream.ResponseWriter.WriteLine("EVENT 20 FE80:0000:0000:0000:021D:1290:0003:C890");
+    stream.ResponseWriter.WriteLine("EPANDESC");
+    stream.ResponseWriter.WriteLine("  Channel:21");
+    stream.ResponseWriter.WriteLine("  Channel Page:09");
+    stream.ResponseWriter.WriteLine("  Pan ID:8888");
+    stream.ResponseWriter.WriteLine("  Addr:12345678ABCDEF01");
+    stream.ResponseWriter.WriteLine("  LQI:E1");
+    stream.ResponseWriter.WriteLine("  PairID:AABBCCDD");
+    stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
+
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(DefaultTimeOut);
+    IReadOnlyList<SkStackPanDescription>? scanResult = null;
+
+    Assert.DoesNotThrowAsync(async () => {
+      scanResult = await client.ActiveScanAsync(
+        rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
+        password: "0123456789AB".ToByteSequence(),
+        scanOptions: SkStackActiveScanOptions.Create(new[] { 2 }, channelMask: channelMask),
+        cancellationToken: cts.Token
+      );
+    });
+
+    Assert.That(scanResult, Is.Not.Null);
+    Assert.That(scanResult!.Count, Is.EqualTo(1));
+
+    var commands = Encoding.ASCII.GetString(stream.ReadSentData());
+
+    Assert.That(commands, Does.Contain($"SKSCAN 2 {channelMask:X8} 2"));
+  }
 }

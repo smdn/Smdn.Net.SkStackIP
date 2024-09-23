@@ -83,6 +83,33 @@ public abstract class SkStackActiveScanOptions : ICloneable {
   )
     => new UserDefinedActiveScanOptions(
       paaSelector: paaSelector,
+      channelMask: null,
+      scanDurationGenerator: scanDurationGenerator
+    );
+
+  /// <summary>
+  /// Creates the <see cref="SkStackActiveScanOptions"/> with the custom selection method and duration factors.
+  /// </summary>
+  /// <param name="scanDurationGenerator">A collection or iterator that defines the scan durations.</param>
+  /// <param name="channelMask">
+  /// An unsigned 32-bit value that specifies the channels to scan, by bit flags.
+  /// The least significant bit of this value indicates <see cref="SkStackChannel.Channel33">channel 33</see>.
+  /// This value will be passed to the parameter <c>CHANNEL_MASK</c> in the <c>SKSCAN</c> command.
+  /// </param>
+  /// <param name="paaSelector">
+  /// A callback to select the target PAA from the PAAs found during the scan.
+  /// If <see langword="null"/>, selects the PAA which found at first during the scan.
+  /// </param>
+  /// <seealso cref="SkStackChannel.CreateMask"/>
+  [CLSCompliant(false)]
+  public static SkStackActiveScanOptions Create(
+    IEnumerable<int> scanDurationGenerator,
+    uint channelMask,
+    Predicate<SkStackPanDescription>? paaSelector = null
+  )
+    => new UserDefinedActiveScanOptions(
+      paaSelector: paaSelector,
+      channelMask: channelMask,
       scanDurationGenerator: scanDurationGenerator
     );
 
@@ -100,6 +127,33 @@ public abstract class SkStackActiveScanOptions : ICloneable {
   )
     => new UserDefinedActiveScanOptions(
       paaSelector: paaSelector,
+      channelMask: null,
+      scanDurationGeneratorFunc: scanDurationGeneratorFunc
+    );
+
+  /// <summary>
+  /// Creates the <see cref="SkStackActiveScanOptions"/> with the custom selection method and the delegate for generating duration factor.
+  /// </summary>
+  /// <param name="scanDurationGeneratorFunc">A delegate to method that iterates the scan durations.</param>
+  /// <param name="channelMask">
+  /// An unsigned 32-bit value that specifies the channels to scan, by bit flags.
+  /// The least significant bit of this value indicates <see cref="SkStackChannel.Channel33">channel 33</see>.
+  /// This value will be passed to the parameter <c>CHANNEL_MASK</c> in the <c>SKSCAN</c> command.
+  /// </param>
+  /// <param name="paaSelector">
+  /// A callback to select the target PAA from the PAAs found during the scan.
+  /// If <see langword="null"/>, selects the PAA which found at first during the scan.
+  /// </param>
+  /// <seealso cref="SkStackChannel.CreateMask"/>
+  [CLSCompliant(false)]
+  public static SkStackActiveScanOptions Create(
+    Func<IEnumerable<int>> scanDurationGeneratorFunc,
+    uint channelMask,
+    Predicate<SkStackPanDescription>? paaSelector = null
+  )
+    => new UserDefinedActiveScanOptions(
+      paaSelector: paaSelector,
+      channelMask: channelMask,
       scanDurationGeneratorFunc: scanDurationGeneratorFunc
     );
 
@@ -128,26 +182,33 @@ public abstract class SkStackActiveScanOptions : ICloneable {
 
   private sealed class UserDefinedActiveScanOptions : ScanDurationGeneratorFuncActiveScanOptions {
     private readonly Predicate<SkStackPanDescription>? paaSelector;
+    private readonly uint? channelMask;
+
+    internal override uint? ChannelMask => channelMask;
 
     public UserDefinedActiveScanOptions(
       Predicate<SkStackPanDescription>? paaSelector,
+      uint? channelMask,
       IEnumerable<int> scanDurationGenerator
     )
       : base(scanDurationGenerator ?? throw new ArgumentNullException(nameof(scanDurationGenerator)))
     {
       this.paaSelector = paaSelector;
+      this.channelMask = channelMask;
     }
 
     public UserDefinedActiveScanOptions(
       Predicate<SkStackPanDescription>? paaSelector,
+      uint? channelMask,
       Func<IEnumerable<int>> scanDurationGeneratorFunc
     )
       : base(scanDurationGeneratorFunc ?? throw new ArgumentNullException(nameof(scanDurationGeneratorFunc)))
     {
       this.paaSelector = paaSelector;
+      this.channelMask = channelMask;
     }
 
-    public override SkStackActiveScanOptions Clone() => new UserDefinedActiveScanOptions(paaSelector, ScanDurationGeneratorFunc);
+    public override SkStackActiveScanOptions Clone() => new UserDefinedActiveScanOptions(paaSelector, channelMask, ScanDurationGeneratorFunc);
     internal override bool SelectPanaAuthenticationAgent(SkStackPanDescription desc) => paaSelector?.Invoke(desc) ?? true;
   }
 
@@ -214,6 +275,7 @@ public abstract class SkStackActiveScanOptions : ICloneable {
   // TODO: public IProgress<int> Progress { get; set; }
   public abstract SkStackActiveScanOptions Clone();
   object ICloneable.Clone() => Clone();
+  internal virtual uint? ChannelMask => null;
   internal abstract bool SelectPanaAuthenticationAgent(SkStackPanDescription desc);
   internal abstract IEnumerable<int> YieldScanDurationFactors();
 }

@@ -21,6 +21,7 @@ partial class SkStackClient {
       writeRBID: CreateActionForWritingRBID(rbid, nameof(rbid)),
       writePassword: CreateActionForWritingPassword(password, nameof(password)),
       scanDurationFactorGenerator: (scanOptions ?? SkStackActiveScanOptions.Default).YieldScanDurationFactors(),
+      channelMask: scanOptions?.ChannelMask,
       cancellationToken: cancellationToken
     );
 
@@ -34,6 +35,7 @@ partial class SkStackClient {
       writeRBID: writeRBID ?? throw new ArgumentNullException(nameof(writeRBID)),
       writePassword: writePassword ?? throw new ArgumentNullException(nameof(writePassword)),
       scanDurationFactorGenerator: (scanOptions ?? SkStackActiveScanOptions.Default).YieldScanDurationFactors(),
+      channelMask: scanOptions?.ChannelMask,
       cancellationToken: cancellationToken
     );
 
@@ -41,6 +43,7 @@ partial class SkStackClient {
     Action<IBufferWriter<byte>>? writeRBID,
     Action<IBufferWriter<byte>>? writePassword,
     IEnumerable<int> scanDurationFactorGenerator,
+    uint? channelMask,
     CancellationToken cancellationToken = default
   )
   {
@@ -59,6 +62,7 @@ partial class SkStackClient {
     foreach (var durationFactor in scanDurationFactorGenerator) {
       var (_, result) = await SendSKSCANActiveScanPairAsync(
         durationFactor: durationFactor,
+        channelMask: channelMask ?? SKSCANDefaultChannelMask,
         cancellationToken: cancellationToken
       ).ConfigureAwait(false);
 
@@ -82,6 +86,7 @@ partial class SkStackClient {
       writeRBID: null,
       writePassword: null,
       scanDurationFactorGenerator: baseScanOptions.YieldScanDurationFactors(),
+      channelMask: baseScanOptions.ChannelMask,
       cancellationToken: cancellationToken
     ).ConfigureAwait(false);
 
