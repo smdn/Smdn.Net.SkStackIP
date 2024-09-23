@@ -1,7 +1,7 @@
-// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.2.0)
+// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.3.0)
 //   Name: Smdn.Net.SkStackIP
-//   AssemblyVersion: 1.2.0.0
-//   InformationalVersion: 1.2.0+0e506f4265dfd6eb80e5f98b4486e10a5cda9d99
+//   AssemblyVersion: 1.3.0.0
+//   InformationalVersion: 1.3.0+7931ab6db93341f49b92e060d48f76286ce36ded
 //   TargetFramework: .NETCoreApp,Version=v6.0
 //   Configuration: Release
 //   Referenced assemblies:
@@ -105,8 +105,12 @@ namespace Smdn.Net.SkStackIP {
     public static SkStackActiveScanOptions Null { get; }
     public static SkStackActiveScanOptions ScanUntilFind { get; }
 
+    public static SkStackActiveScanOptions Create(Func<IEnumerable<int>> scanDurationGeneratorFunc, PhysicalAddress paaMacAddress) {}
+    public static SkStackActiveScanOptions Create(Func<IEnumerable<int>> scanDurationGeneratorFunc, Predicate<SkStackPanDescription>? paaSelector = null) {}
+    public static SkStackActiveScanOptions Create(Func<IEnumerable<int>> scanDurationGeneratorFunc, uint channelMask, Predicate<SkStackPanDescription>? paaSelector = null) {}
     public static SkStackActiveScanOptions Create(IEnumerable<int> scanDurationGenerator, PhysicalAddress paaMacAddress) {}
     public static SkStackActiveScanOptions Create(IEnumerable<int> scanDurationGenerator, Predicate<SkStackPanDescription>? paaSelector = null) {}
+    public static SkStackActiveScanOptions Create(IEnumerable<int> scanDurationGenerator, uint channelMask, Predicate<SkStackPanDescription>? paaSelector = null) {}
 
     protected SkStackActiveScanOptions() {}
 
@@ -376,6 +380,7 @@ namespace Smdn.Net.SkStackIP {
     public static SkStackChannel Channel59 { get; }
     public static SkStackChannel Channel60 { get; }
 
+    public static uint CreateMask(params SkStackChannel[] channels) {}
     public static bool operator == (SkStackChannel x, SkStackChannel y) {}
     public static bool operator != (SkStackChannel x, SkStackChannel y) {}
 
