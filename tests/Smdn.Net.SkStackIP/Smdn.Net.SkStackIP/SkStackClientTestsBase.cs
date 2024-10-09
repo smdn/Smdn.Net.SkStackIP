@@ -118,10 +118,10 @@ public class SkStackClientTestsBase {
       return;
 
 
-    TestContext.WriteLine("{0}: {1}", status, TestContext.CurrentContext.Test.FullName);
+    TestContext.Out.WriteLine("{0}: {1}", status, TestContext.CurrentContext.Test.FullName);
 
     foreach (var log in loggerForTestCase.Logs) {
-      TestContext.WriteLine(log);
+      TestContext.Out.WriteLine(log);
     }
   }
 
