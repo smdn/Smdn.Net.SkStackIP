@@ -1,7 +1,7 @@
-// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.3.0)
+// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.4.0)
 //   Name: Smdn.Net.SkStackIP
-//   AssemblyVersion: 1.3.0.0
-//   InformationalVersion: 1.3.0+7931ab6db93341f49b92e060d48f76286ce36ded
+//   AssemblyVersion: 1.4.0.0
+//   InformationalVersion: 1.4.0+0042217f1f00329fae1eb89b19f6739d41ff5b21
 //   TargetFramework: .NETCoreApp,Version=v8.0
 //   Configuration: Release
 //   Referenced assemblies:
@@ -113,6 +113,7 @@ namespace Smdn.Net.SkStackIP {
     protected SkStackActiveScanOptions() {}
 
     public abstract SkStackActiveScanOptions Clone();
+    public IEnumerable<int> EnumerateScanDurationFactors() {}
     object ICloneable.Clone() {}
   }
 
