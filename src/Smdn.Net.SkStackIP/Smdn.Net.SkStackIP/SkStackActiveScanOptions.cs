@@ -278,4 +278,11 @@ public abstract class SkStackActiveScanOptions : ICloneable {
   internal virtual uint? ChannelMask => null;
   internal abstract bool SelectPanaAuthenticationAgent(SkStackPanDescription desc);
   internal abstract IEnumerable<int> YieldScanDurationFactors();
+
+  public IEnumerable<int> EnumerateScanDurationFactors()
+  {
+    foreach (var factor in YieldScanDurationFactors()) {
+      yield return factor;
+    }
+  }
 }

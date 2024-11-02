@@ -12,6 +12,14 @@ namespace Smdn.Net.SkStackIP;
 
 [TestFixture]
 public class SkStackActiveScanOptionsTests : SkStackClientTestsBase {
+  [Test]
+  public void EnumerateScanDurationFactors_Null()
+    => Assert.That(SkStackActiveScanOptions.Null.EnumerateScanDurationFactors(), Is.EqualTo(Array.Empty<int>()).AsCollection);
+
+  [Test]
+  public void EnumerateScanDurationFactors_Default()
+    => Assert.That(SkStackActiveScanOptions.Default.EnumerateScanDurationFactors(), Is.EqualTo(new int[] { 3, 4, 5, 6, 6, 6 }).AsCollection);
+
   private void TestYieldScanDurationFactors(SkStackActiveScanOptions options, int[] expectedScanDurationFactors)
   {
     var methodYieldScanDurationFactors = options.GetType().GetMethod(
