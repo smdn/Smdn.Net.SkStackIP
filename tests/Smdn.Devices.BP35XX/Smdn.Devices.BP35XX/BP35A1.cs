@@ -71,6 +71,51 @@ public class BP35A1Tests {
     );
   }
 
+internal class ThrowExceptionSerialPortStreamFactory(Func<Exception> createException) : IBP35SerialPortStreamFactory {
+  private readonly Func<Exception> createException = createException ?? throw new ArgumentNullException(nameof(createException));
+
+  public void Dispose()
+  {
+    // nothing to do in this class
+  }
+
+  public Stream CreateSerialPortStream(string? serialPortName)
+    => throw createException();
+}
+
+  [TestCase("/dev/pseudo-serial-port", "'/dev/pseudo-serial-port'")]
+  [TestCase("", "''")]
+  [TestCase(null, "'(null)'")]
+  public void CreateAsync_ExceptionThrownBySerialPortStreamFactory(string? serialPortName, string expectedSerialPortNameInExceptionMessage)
+  {
+    var factory = new ThrowExceptionSerialPortStreamFactory(
+      () => new NotSupportedException()
+    );
+    var services = new ServiceCollection();
+
+    services.Add(
+      ServiceDescriptor.Singleton(
+        typeof(IBP35SerialPortStreamFactory),
+        factory
+      )
+    );
+
+    Assert.That(
+      async () => {
+        using var bp35a1 = await BP35A1.CreateAsync(
+          new BP35A1Configurations() {
+            SerialPortName = serialPortName,
+          },
+          services.BuildServiceProvider()
+        );
+      },
+      Throws
+        .Exception.TypeOf<BP35SerialPortException>()
+        .With.Property(nameof(Exception.Message)).Contains(expectedSerialPortNameInExceptionMessage)
+        .With.InnerException.TypeOf<NotSupportedException>()
+    );
+  }
+
   [Test]
   public async Task Properties()
   {

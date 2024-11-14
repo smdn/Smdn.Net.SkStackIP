@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 #if !SYSTEM_CONVERT_TOHEXSTRING
 using System.Buffers; // ArrayPool
 #endif
+using System.IO;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading;
@@ -54,6 +55,22 @@ public abstract partial class BP35Base : SkStackClient {
 
   private protected static InvalidOperationException CreateNotInitializedException()
     => new(message: "not initialized");
+
+  private static Stream CreateSerialPortStream(
+    IBP35SerialPortStreamFactory factory,
+    string? serialPortName
+  )
+  {
+    try {
+      return factory.CreateSerialPortStream(serialPortName);
+    }
+    catch (Exception ex) {
+      throw new BP35SerialPortException(
+        message: $"could not create serial port stream with the specified name '{serialPortName ?? "(null)"}'.",
+        innerException: ex
+      );
+    }
+  }
 
   /*
    * instance members
@@ -111,12 +128,17 @@ public abstract partial class BP35Base : SkStackClient {
     ILogger? logger
   )
 #pragma warning restore IDE0290
+#pragma warning disable CA2000
     : base(
-      stream: (serialPortStreamFactory ?? throw new ArgumentNullException(nameof(serialPortStreamFactory))).CreateSerialPortStream(serialPortName),
+      stream: CreateSerialPortStream(
+        serialPortStreamFactory ?? throw new ArgumentNullException(nameof(serialPortStreamFactory)),
+        serialPortName
+      ),
       leaveStreamOpen: false, // should close the opened stream
       erxudpDataFormat: erxudpDataFormat,
       logger: logger
     )
+#pragma warning restore CA2000
   {
   }
 
