@@ -71,6 +71,7 @@ public class BP35A1Tests {
     );
   }
 
+  [Test]
   public async Task Properties()
   {
     const string version = "1.2.10";
