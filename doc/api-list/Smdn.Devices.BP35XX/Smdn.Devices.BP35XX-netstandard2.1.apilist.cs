@@ -1,7 +1,7 @@
-// Smdn.Devices.BP35XX.dll (Smdn.Devices.BP35XX-2.0.0)
+// Smdn.Devices.BP35XX.dll (Smdn.Devices.BP35XX-2.1.0)
 //   Name: Smdn.Devices.BP35XX
-//   AssemblyVersion: 2.0.0.0
-//   InformationalVersion: 2.0.0+ef185af5c73268aab02d6909202fffce4560122b
+//   AssemblyVersion: 2.1.0.0
+//   InformationalVersion: 2.1.0+fc01bab8c6330c41db1ce6309f8f5f79b42b2785
 //   TargetFramework: .NETStandard,Version=v2.1
 //   Configuration: Release
 //   Referenced assemblies:
@@ -83,6 +83,12 @@ namespace Smdn.Devices.BP35XX {
     public ValueTask SetUartOptionsAsync(BP35UartBaudRate baudRate, BP35UartCharacterInterval characterInterval = BP35UartCharacterInterval.None, BP35UartFlowControl flowControl = BP35UartFlowControl.Disabled, CancellationToken cancellationToken = default) {}
     public ValueTask SetUartOptionsAsync(BP35UartConfigurations uartConfigurations, CancellationToken cancellationToken = default) {}
     public ValueTask SetUdpDataFormatAsync(BP35UdpReceiveDataFormat format, CancellationToken cancellationToken = default) {}
+  }
+
+  public class BP35SerialPortException : IOException {
+    public BP35SerialPortException() {}
+    public BP35SerialPortException(string message) {}
+    public BP35SerialPortException(string message, Exception? innerException = null) {}
   }
 
   public readonly struct BP35UartConfigurations {
