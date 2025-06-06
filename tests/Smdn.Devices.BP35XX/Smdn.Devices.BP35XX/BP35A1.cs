@@ -61,7 +61,7 @@ public class BP35A1Tests {
     Assert.DoesNotThrowAsync(
       async () => {
         using var bp35a1 = await BP35A1.CreateAsync(
-          new BP35A1Configurations() {
+          options: new BP35A1Options() {
             SerialPortName = "/dev/pseudo-serial-port",
             TryLoadFlashMemory = tryLoadFlashMemory,
           },
@@ -103,7 +103,7 @@ internal class ThrowExceptionSerialPortStreamFactory(Func<Exception> createExcep
     Assert.That(
       async () => {
         using var bp35a1 = await BP35A1.CreateAsync(
-          new BP35A1Configurations() {
+          options: new BP35A1Options() {
             SerialPortName = serialPortName,
           },
           services.BuildServiceProvider()
@@ -161,7 +161,7 @@ internal class ThrowExceptionSerialPortStreamFactory(Func<Exception> createExcep
     factory.Stream.ResponseWriter.Write("OK 00\r");
 
     using var bp35a1 = await BP35A1.CreateAsync(
-      new BP35A1Configurations() {
+      options: new BP35A1Options() {
         SerialPortName = "/dev/pseudo-serial-port",
       },
       services.BuildServiceProvider()
@@ -213,7 +213,7 @@ internal class ThrowExceptionSerialPortStreamFactory(Func<Exception> createExcep
     factory.Stream.ResponseWriter.Write("OK 00\r");
 
     using var bp35a1 = await BP35A1.CreateAsync(
-      new BP35A1Configurations() {
+      options: new BP35A1Options() {
         SerialPortName = "/dev/pseudo-serial-port",
         TryLoadFlashMemory = true,
       },

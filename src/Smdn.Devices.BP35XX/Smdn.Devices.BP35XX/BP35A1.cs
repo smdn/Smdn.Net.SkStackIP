@@ -35,48 +35,60 @@ public class BP35A1 : BP35Base {
     CancellationToken cancellationToken = default
   )
     => CreateAsync(
-      configurations: new BP35A1Configurations() {
+      options: new BP35A1Options() {
         SerialPortName = serialPortName,
       },
       serviceProvider: serviceProvider,
       cancellationToken: cancellationToken
     );
 
+  [Obsolete($"Use {nameof(BP35A1Options)} instead.")]
   public static ValueTask<BP35A1> CreateAsync(
     BP35A1Configurations configurations,
+    IServiceProvider? serviceProvider = null,
+    CancellationToken cancellationToken = default
+  )
+    => CreateAsync(
+      options: configurations ?? throw new ArgumentNullException(nameof(configurations)),
+      serviceProvider: serviceProvider,
+      cancellationToken: cancellationToken
+    );
+
+  public static ValueTask<BP35A1> CreateAsync(
+    BP35A1Options options,
     IServiceProvider? serviceProvider = null,
     CancellationToken cancellationToken = default
   )
     => InitializeAsync(
 #pragma warning disable CA2000
       device: new BP35A1(
-        configurations: configurations ?? throw new ArgumentNullException(nameof(configurations)),
+        options: options ?? throw new ArgumentNullException(nameof(options)),
         serviceProvider: serviceProvider
       ),
 #pragma warning restore CA2000
-      tryLoadFlashMemory: configurations.TryLoadFlashMemory,
+      tryLoadFlashMemory: options.TryLoadFlashMemory,
       serviceProvider: serviceProvider,
       cancellationToken: cancellationToken
     );
 
   /// <summary>
-  /// Initializes a new instance of the <see cref="BP35A1"/> class with specifying configurations.
+  /// Initializes a new instance of the <see cref="BP35A1"/> class with specifying options.
   /// </summary>
-  /// <param name="configurations">
-  /// A <see cref="BP35A1Configurations"/> that holds the configurations to the <see cref="BP35A1"/> instance.
+  /// <param name="options">
+  /// A <see cref="BP35A1Options"/> that holds the options to configure the new instance.
   /// </param>
   /// <param name="serviceProvider">
   /// The <see cref="IServiceProvider"/>.
   /// This constructor overload attempts to get a service of <see cref="IBP35SerialPortStreamFactory"/>, to create an <see cref="System.IO.Ports.SerialPort"/>.
   /// </param>
   private BP35A1(
-    BP35A1Configurations configurations,
+    BP35A1Options options,
     IServiceProvider? serviceProvider = null
   )
     : base(
-      serialPortName: configurations.SerialPortName,
+      serialPortName: options.SerialPortName,
 #pragma warning disable CA2000
-      serialPortStreamFactory: serviceProvider?.GetService<IBP35SerialPortStreamFactory>() ?? new BP35A1SerialPortStreamFactory(configurations),
+      serialPortStreamFactory: serviceProvider?.GetService<IBP35SerialPortStreamFactory>() ?? new BP35A1SerialPortStreamFactory(options),
 #pragma warning restore CA2000
       erxudpDataFormat: SkStackERXUDPDataFormat.Binary,
       logger: serviceProvider?.GetService<ILoggerFactory>()?.CreateLogger<BP35A1>()
@@ -84,8 +96,8 @@ public class BP35A1 : BP35Base {
   {
   }
 
-  private sealed class BP35A1SerialPortStreamFactory(BP35A1Configurations configurations) : SerialPortStreamFactory {
-    public override BP35UartBaudRate BaudRate { get; } = configurations.BaudRate;
-    public override bool UseFlowControl { get; } = configurations.UseFlowControl;
+  private sealed class BP35A1SerialPortStreamFactory(BP35A1Options options) : SerialPortStreamFactory {
+    public override BP35UartBaudRate BaudRate { get; } = options.BaudRate;
+    public override bool UseFlowControl { get; } = options.UseFlowControl;
   }
 }
