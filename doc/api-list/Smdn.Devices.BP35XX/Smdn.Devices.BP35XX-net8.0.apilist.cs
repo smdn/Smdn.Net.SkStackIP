@@ -1,7 +1,7 @@
-// Smdn.Devices.BP35XX.dll (Smdn.Devices.BP35XX-2.1.0)
+// Smdn.Devices.BP35XX.dll (Smdn.Devices.BP35XX-2.2.0)
 //   Name: Smdn.Devices.BP35XX
-//   AssemblyVersion: 2.1.0.0
-//   InformationalVersion: 2.1.0+fc01bab8c6330c41db1ce6309f8f5f79b42b2785
+//   AssemblyVersion: 2.2.0.0
+//   InformationalVersion: 2.2.0+be87e7d6640b81d5e5e0c22af1c2491d40cd8c28
 //   TargetFramework: .NETCoreApp,Version=v8.0
 //   Configuration: Release
 //   Referenced assemblies:
@@ -61,17 +61,26 @@ namespace Smdn.Devices.BP35XX {
   }
 
   public class BP35A1 : BP35Base {
+    [Obsolete("Use BP35A1Options instead.")]
     public static ValueTask<BP35A1> CreateAsync(BP35A1Configurations configurations, IServiceProvider? serviceProvider = null, CancellationToken cancellationToken = default) {}
+    public static ValueTask<BP35A1> CreateAsync(BP35A1Options options, IServiceProvider? serviceProvider = null, CancellationToken cancellationToken = default) {}
     public static ValueTask<BP35A1> CreateAsync(string? serialPortName, IServiceProvider? serviceProvider = null, CancellationToken cancellationToken = default) {}
   }
 
-  public sealed class BP35A1Configurations {
+  [Obsolete("Use BP35A1Options instead.")]
+  public sealed class BP35A1Configurations : BP35A1Options {
     public BP35A1Configurations() {}
+  }
+
+  public class BP35A1Options {
+    public BP35A1Options() {}
 
     public BP35UartBaudRate BaudRate { get; set; }
     public string? SerialPortName { get; set; }
     public bool TryLoadFlashMemory { get; set; }
     public bool UseFlowControl { get; set; }
+
+    public BP35A1Options Configure(BP35A1Options baseOptions) {}
   }
 
   public abstract class BP35Base : SkStackClient {
