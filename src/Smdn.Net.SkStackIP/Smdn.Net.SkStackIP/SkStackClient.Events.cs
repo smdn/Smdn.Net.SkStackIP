@@ -233,7 +233,7 @@ partial class SkStackClient {
   private void RaiseEventPanaSession(EventHandler<SkStackPanaSessionEventArgs>? ev, SkStackEvent baseEvent)
   {
     if (ev is null)
-      return; // return without creating event args if event hanlder is null
+      return; // return without creating event args if event handler is null
 
     InvokeEvent(SynchronizingObject, ev, this, new SkStackPanaSessionEventArgs(baseEvent));
   }
@@ -256,7 +256,7 @@ partial class SkStackClient {
   private void RaiseEvent(EventHandler<SkStackEventArgs>? ev, SkStackEvent baseEvent)
   {
     if (ev is null)
-      return; // return without creating event args if event hanlder is null
+      return; // return without creating event args if event handler is null
 
     InvokeEvent(SynchronizingObject, ev, this, new SkStackEventArgs(baseEvent));
   }

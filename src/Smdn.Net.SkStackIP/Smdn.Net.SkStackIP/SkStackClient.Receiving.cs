@@ -19,7 +19,7 @@ partial class SkStackClient {
     Undetermined,   // the parsing finished without declaring its state (invalid state)
     Ignored,        // the content of current buffer is a sequence which is not a target for this parser (ex. echoback line)
     Incomplete,     // the content of current buffer is a incomplete sequence to complete parsing
-    Continueing,    // the content of current buffer is a complete sequence but needs more data sequence to return final result
+    Continuing,     // the content of current buffer is a complete sequence but needs more data sequence to return final result
     Completed,      // the parsing completed to return final result
   }
 
@@ -47,7 +47,7 @@ partial class SkStackClient {
       => (ISkStackSequenceParserContext)MemberwiseClone();
 
     void ISkStackSequenceParserContext.Continue()
-      => Status = ParseSequenceStatus.Continueing;
+      => Status = ParseSequenceStatus.Continuing;
 
     void ISkStackSequenceParserContext.Complete()
       => Status = ParseSequenceStatus.Completed;
@@ -118,7 +118,7 @@ partial class SkStackClient {
 
       for (; ; ) {
         var reparse = parseSequenceContext.Status switch {
-          ParseSequenceStatus.Ignored or ParseSequenceStatus.Continueing => !parseSequenceContext.UnparsedSequence.IsEmpty,
+          ParseSequenceStatus.Ignored or ParseSequenceStatus.Continuing => !parseSequenceContext.UnparsedSequence.IsEmpty,
           _ => false,
         };
 
@@ -162,7 +162,7 @@ partial class SkStackClient {
             Logger?.LogReceivingStatus($"status: {parseSequenceContext.Status}");
 
             if (eventProcessed) {
-              if (processOnlyERXUDP && parseSequenceContext.Status == ParseSequenceStatus.Continueing)
+              if (processOnlyERXUDP && parseSequenceContext.Status == ParseSequenceStatus.Continuing)
                 (parseSequenceContext as ISkStackSequenceParserContext).Complete(); // reset status as Completed to stop reading
             }
             else if (parseSequenceContext.Status != ParseSequenceStatus.Incomplete) {
@@ -188,7 +188,7 @@ partial class SkStackClient {
           ParseSequenceStatus.Completed => (markAsExamined: true, advanceIfConsumed: true, returnResult: true, delay: default),
           ParseSequenceStatus.Ignored => (markAsExamined: false, advanceIfConsumed: false, returnResult: true, delay: default),
           ParseSequenceStatus.Incomplete => (markAsExamined: true, advanceIfConsumed: false, returnResult: false, delay: true),
-          ParseSequenceStatus.Continueing => (markAsExamined: true, advanceIfConsumed: true, returnResult: false, delay: false),
+          ParseSequenceStatus.Continuing => (markAsExamined: true, advanceIfConsumed: true, returnResult: false, delay: false),
           ParseSequenceStatus.Undetermined or _ => throw new InvalidOperationException("final status is invalid or remains undetermined"),
         };
 
@@ -278,25 +278,25 @@ partial class SkStackClient {
     return response;
   }
 
-  internal readonly struct ReceiveNotificationalEventResult {
-    public static readonly ReceiveNotificationalEventResult NotReceivedResult = new(~default(int));
-    public static readonly ReceiveNotificationalEventResult ReceivedResult = default;
+  internal readonly struct ReceiveNotifyingEventResult {
+    public static readonly ReceiveNotifyingEventResult NotReceivedResult = new(~default(int));
+    public static readonly ReceiveNotifyingEventResult ReceivedResult = default;
 
     public bool Received => value == ReceivedResult.value;
 
     private readonly int value;
 
-    private ReceiveNotificationalEventResult(int value)
+    private ReceiveNotifyingEventResult(int value)
     {
       this.value = value;
     }
   }
 
-  internal ValueTask<ReceiveNotificationalEventResult> ReceiveNotificationalEventAsync(
+  internal ValueTask<ReceiveNotifyingEventResult> ReceiveNotifyingEventAsync(
     CancellationToken cancellationToken
   )
     => ReadAsync(
-      parseSequence: static (context, _) => ReceiveNotificationalEventResult.NotReceivedResult,
+      parseSequence: static (context, _) => ReceiveNotifyingEventResult.NotReceivedResult,
       arg: default(int),
       eventHandler: null,
       processOnlyERXUDP: true,

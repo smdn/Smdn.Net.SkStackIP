@@ -229,9 +229,9 @@ partial class SkStackClient {
     {
       var reader = context.CreateReader(); // retain current buffer
 
-      if (SkStackEventParser.ExpectEPANDESC(context, expectPairingId, out var pandesc)) {
+      if (SkStackEventParser.ExpectEPANDESC(context, expectPairingId, out var panDesc)) {
         scanResult ??= new(capacity: ExpectedMaxPanDescriptionCount);
-        scanResult.Add(pandesc);
+        scanResult.Add(panDesc);
         context.Continue();
       }
       else {

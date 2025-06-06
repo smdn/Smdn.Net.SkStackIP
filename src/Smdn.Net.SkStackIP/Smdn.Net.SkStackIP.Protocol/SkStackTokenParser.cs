@@ -187,7 +187,7 @@ public static class SkStackTokenParser {
       length: length,
       throwIfUnexpected: true,
       arg: converter,
-      tryConvert: static (token, conv) => (true, conv(token)),
+      tryConvert: static (token, convert) => (true, convert(token)),
       result: out value
     );
 
@@ -438,10 +438,10 @@ public static class SkStackTokenParser {
     for (var index = 0; index < byteSequenceLength; index++) {
       reader.TryCopyTo(hexTextOneByte);
 
-      if (!Hexadecimal.TryDecode(hexTextOneByte, out var decodedbyte))
+      if (!Hexadecimal.TryDecode(hexTextOneByte, out var decodedByte))
         throw SkStackUnexpectedResponseException.CreateInvalidToken(hexTextOneByte.Slice(0, 1), "HEX ASCII");
 
-      destination[index] = decodedbyte;
+      destination[index] = decodedByte;
 
       reader.Advance(2);
     }

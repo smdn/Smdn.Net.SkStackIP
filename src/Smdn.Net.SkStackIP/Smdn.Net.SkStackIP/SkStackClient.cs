@@ -30,7 +30,7 @@ public partial class SkStackClient : IDisposable {
   /// The data stream for transmitting SKSTACK-IP protocol.
   /// </param>
   /// <param name="leaveStreamOpen">
-  /// A <see langworkd="bool"/> value specifying whether the <paramref name="stream"/> should be left open or not when disposing instance.
+  /// A <see langword="bool"/> value specifying whether the <paramref name="stream"/> should be left open or not when disposing instance.
   /// </param>
   /// <param name="erxudpDataFormat">
   /// A value that specifies the format of the data part received in the event <c>ERXUDP</c>. See <see cref="SkStackERXUDPDataFormat"/>.

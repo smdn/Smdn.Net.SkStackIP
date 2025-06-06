@@ -958,7 +958,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
   }
 
   [Test]
-  public async Task Response_IncompleteLine_NotificationalEvents_EVENT()
+  public async Task Response_IncompleteLine_NNotifyingEvents_EVENT()
   {
     var stream = new PseudoSkStackStream();
 
@@ -999,7 +999,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
   }
 
   [Test]
-  public async Task Response_IncompleteLine_NotificationalEvents_ERXUDP()
+  public async Task Response_IncompleteLine_NotifyingEvents_ERXUDP()
   {
     var stream = new PseudoSkStackStream();
 

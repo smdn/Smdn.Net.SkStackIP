@@ -86,7 +86,7 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void ActiveScanAsync_RouteBCredentail_ReadOnlyMemory()
+  public void ActiveScanAsync_RouteBCredential_ReadOnlyMemory()
   {
     using var stream = new PseudoSkStackStream();
 
@@ -118,7 +118,7 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void ActiveScanAsync_RouteBCredentail_Writer()
+  public void ActiveScanAsync_RouteBCredential_Writer()
   {
     using var stream = new PseudoSkStackStream();
 

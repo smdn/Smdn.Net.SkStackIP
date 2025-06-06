@@ -21,5 +21,5 @@ public enum BP35UartCharacterInterval : byte {
   Microseconds200 = 0b_0_010_0_000,
   Microseconds300 = 0b_0_011_0_000,
   Microseconds400 = 0b_0_100_0_000,
-  Microseconds50  = 0b_0_101_0_000, // or may be 500μsecs?
+  Microseconds50  = 0b_0_101_0_000, // or may be 500 microseconds?
 }

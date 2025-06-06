@@ -8,7 +8,7 @@ using System.Net;
 namespace Smdn.Net.SkStackIP;
 
 /// <summary>
-/// The exception that represents an error whitin a PANA session.
+/// The exception that represents an error within a PANA session.
 /// </summary>
 public abstract class SkStackPanaSessionException : InvalidOperationException {
   public IPAddress Address { get; }

@@ -283,9 +283,9 @@ partial class SkStackClient {
     {
       for (; ; ) {
         if (!pipeReader.TryRead(out var readResult)) {
-          var receiveNotificationalEventResult = await thisClient.ReceiveNotificationalEventAsync(cancellationToken).ConfigureAwait(false);
+          var receiveNotifyingEventResult = await thisClient.ReceiveNotifyingEventAsync(cancellationToken).ConfigureAwait(false);
 
-          if (!receiveNotificationalEventResult.Received)
+          if (!receiveNotifyingEventResult.Received)
             await Task.Delay(eventPollingInterval, cancellationToken).ConfigureAwait(false);
 
           continue;

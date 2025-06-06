@@ -37,13 +37,13 @@ internal static class SkStackEventParser {
     if (
       SkStackTokenParser.ExpectIPADDR(ref reader, out var sender) &&
       SkStackTokenParser.ExpectIPADDR(ref reader, out var dest) &&
-      SkStackTokenParser.ExpectUINT16(ref reader, out var rport) &&
-      SkStackTokenParser.ExpectUINT16(ref reader, out var lport) &&
-      SkStackTokenParser.ExpectADDR64(ref reader, out var senderlla) &&
+      SkStackTokenParser.ExpectUINT16(ref reader, out var remotePort) &&
+      SkStackTokenParser.ExpectUINT16(ref reader, out var localPort) &&
+      SkStackTokenParser.ExpectADDR64(ref reader, out var senderLinkLocalAddress) &&
       SkStackTokenParser.ExpectBinary(ref reader, out var secured) &&
-      SkStackTokenParser.ExpectUINT16(ref reader, out var datalen)
+      SkStackTokenParser.ExpectUINT16(ref reader, out var dataLength)
     ) {
-      erxudpDataLength = datalen;
+      erxudpDataLength = dataLength;
 
       var lengthOfDataSequence = erxudpDataFormat switch {
         SkStackERXUDPDataFormat.HexAsciiText => erxudpDataLength * 2,
@@ -65,9 +65,9 @@ internal static class SkStackEventParser {
       erxudp = new(
         sender: sender,
         dest: dest,
-        rport: rport,
-        lport: lport,
-        senderlla: senderlla,
+        remotePort: remotePort,
+        localPort: localPort,
+        senderLinkLocalAddress: senderLinkLocalAddress,
         secured: secured
       );
 

@@ -338,7 +338,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
   }
 
   [Test]
-  [Category("not-confirmed-with-actual-behaviour")]
+  [Category("not-confirmed-with-actual-behavior")]
   public void SKSCAN_ActiveScanPair_MultiplePANFound()
   {
     var stream = new PseudoSkStackStream();

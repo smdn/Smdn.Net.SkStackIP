@@ -18,15 +18,15 @@ internal readonly struct SkStackUdpReceiveEvent {
   internal SkStackUdpReceiveEvent(
     IPAddress sender,
     IPAddress dest,
-    uint rport,
-    uint lport,
-    PhysicalAddress senderlla,
+    uint remotePort,
+    uint localPort,
+    PhysicalAddress senderLinkLocalAddress,
     bool secured
   )
   {
-    RemoteEndPoint = new(sender, (int)rport);
-    LocalEndPoint = new(dest, (int)lport);
-    RemoteLinkLocalAddress = senderlla;
+    RemoteEndPoint = new(sender, (int)remotePort);
+    LocalEndPoint = new(dest, (int)localPort);
+    RemoteLinkLocalAddress = senderLinkLocalAddress;
     IsSecured = secured;
   }
 }

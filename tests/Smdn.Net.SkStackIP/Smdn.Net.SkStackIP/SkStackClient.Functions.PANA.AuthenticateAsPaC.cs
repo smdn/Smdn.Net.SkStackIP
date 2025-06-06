@@ -69,7 +69,7 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("OK");
     // SKJOIN
     stream.ResponseWriter.WriteLine("OK");
-    stream.ResponseWriter.WriteLine($"EVENT 21 {SelfIPv6Address} 02"); // UDP: Neighbor Solcitation
+    stream.ResponseWriter.WriteLine($"EVENT 21 {SelfIPv6Address} 02"); // UDP: Neighbor Solicitation
     stream.ResponseWriter.WriteLine($"EVENT 02 {SelfIPv6Address}"); // Neighbor Advertisement received
     stream.ResponseWriter.WriteLine($"ERXUDP {SelfIPv6Address} {PaaIPv6Address} 02CC 02CC {PaaMacAddress} 0 0001 0");
     stream.ResponseWriter.WriteLine($"EVENT 21 {SelfIPv6Address} 00"); // UDP: ACK
@@ -242,7 +242,7 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("OK");
     // SKJOIN
     stream.ResponseWriter.WriteLine("OK");
-    stream.ResponseWriter.WriteLine($"EVENT 21 {SelfIPv6Address} 02"); // UDP: Neighbor Solcitation
+    stream.ResponseWriter.WriteLine($"EVENT 21 {SelfIPv6Address} 02"); // UDP: Neighbor Solicitation
     stream.ResponseWriter.WriteLine($"EVENT 02 {SelfIPv6Address}"); // Neighbor Advertisement received
     stream.ResponseWriter.WriteLine($"ERXUDP {SelfIPv6Address} {PaaIPv6Address} 02CC 02CC {PaaMacAddress} 0 0001 0");
     stream.ResponseWriter.WriteLine($"EVENT 21 {SelfIPv6Address} 00"); // UDP: ACK

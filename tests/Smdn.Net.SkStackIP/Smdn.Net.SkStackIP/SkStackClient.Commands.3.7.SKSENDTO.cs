@@ -442,7 +442,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
   [TestCase(0)]
   [TestCase(0x04D0 + 1)]
-  public void SKSENDTO_DATALEN_OutOfRange(int datalen)
+  public void SKSENDTO_DATALEN_OutOfRange(int dataLength)
   {
     var stream = new PseudoSkStackStream();
 
@@ -452,7 +452,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
         destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
-        data: new byte[datalen],
+        data: new byte[dataLength],
         encryption: SkStackUdpEncryption.ForcePlainText
       )
     );
