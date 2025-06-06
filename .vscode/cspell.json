@@ -1,0 +1,73 @@
+// SPDX-FileCopyrightText: 2025 smdn <smdn@smdn.jp>
+// SPDX-License-Identifier: MIT
+//
+// cSpell Settings
+// https://marketplace.visualstudio.com/items?itemName=streetsidesoftware.code-spell-checker
+//
+{
+  // Version of the setting file.  Always 0.2
+  "version": "0.2",
+  // language - current active spelling language
+  "language": "en",
+  // words - list of words to be always considered correct
+  "words": [
+    "ARIB",
+    "cloneable",
+    "echoback",
+    "ECHONET",
+    "ECHONETLite",
+    "LINQ",
+    "memberwise",
+    "PANA",
+    "picturized",
+    "RBID",
+    "reauthentication",
+    "ROHM",
+    "RSSI",
+    "smdn",
+    "SYSLIB",
+    "UART",
+  ],
+  "ignoreWords": [
+    "APPVER",
+    "EADDR",
+    "EAPPVER",
+    "EEDSCAN",
+    "EINFO",
+    "ENEIGHBOR",
+    "EPANDESC",
+    "EPONG",
+    "EPORT",
+    "ERXUDP",
+    "ESREG",
+    "netstandard",
+    "SREG",
+    "ROPT",
+    "RUART",
+    "WOPT",
+    "WUART",
+  ],
+  "ignoreRegExpList": [
+    "SYSTEM_[A-Z][A-Z0-9_]+",
+    "SK[A-Z]+",
+  ],
+  // flagWords - list of words to be always considered incorrect
+  // This is useful for offensive words and common spelling errors.
+  // For example "hte" should be "the"
+  "flagWords": [],
+  "suggestWords": [
+    "clonable->cloneable",
+  ],
+  "ignorePaths": [
+    "**/bin",
+    "**/obj",
+    ".git",
+  ],
+  "enabledLanguageIds": [
+    "csharp",
+    "markdown",
+    "plaintext",
+    "xml",
+    "yaml"
+  ],
+}
