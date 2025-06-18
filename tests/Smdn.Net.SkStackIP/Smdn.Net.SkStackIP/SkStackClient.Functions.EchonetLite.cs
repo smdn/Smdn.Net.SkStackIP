@@ -203,12 +203,13 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     using var cts = new CancellationTokenSource(DefaultTimeOut);
     var buffer = Encoding.ASCII.GetBytes("012345");
 
-    var ex = Assert.ThrowsAsync<SkStackUdpSendFailedException>(
-      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: null, cts.Token)
-    )!;
-
-    Assert.That(ex.PeerAddress, Is.EqualTo(client.PanaSessionPeerAddress!), nameof(ex.PeerAddress));
-    Assert.That(ex.PortHandle, Is.EqualTo(handleForEchonetLite), nameof(ex.PortHandle));
+    Assert.That(
+      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: null, cts.Token),
+      Throws
+        .TypeOf<SkStackUdpSendFailedException>()
+        .And.Property(nameof(SkStackUdpSendFailedException.PeerAddress)).EqualTo(client.PanaSessionPeerAddress)
+        .And.Property(nameof(SkStackUdpSendFailedException.PortHandle)).EqualTo(handleForEchonetLite)
+    );
 
     var expectedDestinationAddress = client.PanaSessionPeerAddress!.ToLongFormatString();
 
@@ -264,12 +265,13 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     using var cts = new CancellationTokenSource(DefaultTimeOut);
     var buffer = Encoding.ASCII.GetBytes("012345");
 
-    var ex = Assert.ThrowsAsync<SkStackUdpSendFailedException>(
-      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: resiliencePipeline, cts.Token)
-    )!;
-
-    Assert.That(ex.PeerAddress, Is.EqualTo(client.PanaSessionPeerAddress!), nameof(ex.PeerAddress));
-    Assert.That(ex.PortHandle, Is.EqualTo(handleForEchonetLite), nameof(ex.PortHandle));
+    Assert.That(
+      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: resiliencePipeline, cts.Token),
+      Throws
+        .TypeOf<SkStackUdpSendFailedException>()
+        .And.Property(nameof(SkStackUdpSendFailedException.PeerAddress)).EqualTo(client.PanaSessionPeerAddress)
+        .And.Property(nameof(SkStackUdpSendFailedException.PortHandle)).EqualTo(handleForEchonetLite)
+    );
 
     var expectedDestinationAddress = client.PanaSessionPeerAddress!.ToLongFormatString();
 

@@ -125,16 +125,17 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
 #pragma warning disable CA2012
     var taskSendCommand = client.SendSKREJOINAsync().AsTask();
 
-    var ex = Assert.ThrowsAsync<SkStackPanaSessionEstablishmentException>(
-      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync()),
+      Throws
+        .TypeOf<SkStackPanaSessionEstablishmentException>()
+        .And.Property(nameof(SkStackPanaSessionEstablishmentException.EventNumber)).EqualTo(SkStackEventNumber.PanaSessionEstablishmentError)
+        .And.Property(nameof(SkStackPanaSessionEstablishmentException.Address)).EqualTo(IPAddress.Parse(SelfIPv6Address))
+        .And.Property(nameof(SkStackPanaSessionEstablishmentException.PaaAddress)).Null
+        .And.Property(nameof(SkStackPanaSessionEstablishmentException.Channel)).Null
+        .And.Property(nameof(SkStackPanaSessionEstablishmentException.PanId)).Null
     );
 #pragma warning restore CA2012
-
-    Assert.That(ex!.EventNumber, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentError));
-    Assert.That(ex.Address, Is.EqualTo(IPAddress.Parse(SelfIPv6Address)));
-    Assert.That(ex.PaaAddress, Is.Null);
-    Assert.That(ex.Channel, Is.Null);
-    Assert.That(ex.PanId, Is.Null);
 
     Assert.That(raisedEventCount, Is.Zero, nameof(raisedEventCount));
 
@@ -162,9 +163,14 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
-    var ex = Assert.ThrowsAsync<SkStackErrorResponseException>(async () => await client.SendSKREJOINAsync());
-
-    Assert.That(ex!.ErrorCode, Is.EqualTo(SkStackErrorCode.ER10));
+    Assert.That(
+      async () => await client.SendSKREJOINAsync(),
+      Throws
+        .TypeOf<SkStackErrorResponseException>()
+        .And
+        .Property(nameof(SkStackErrorResponseException.ErrorCode))
+        .EqualTo(SkStackErrorCode.ER10)
+    );
 
     Assert.That(raisedEventCount, Is.Zero, nameof(raisedEventCount));
 

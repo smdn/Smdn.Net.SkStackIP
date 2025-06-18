@@ -132,15 +132,16 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     var taskSendCommand = client.SendSKJOINAsync(IPAddress.Parse(PaaIPv6Address)).AsTask();
 
-    var ex = Assert.ThrowsAsync<SkStackPanaSessionEstablishmentException>(
-      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync()),
+      Throws
+        .TypeOf<SkStackPanaSessionEstablishmentException>()
+        .And.Property(nameof(SkStackPanaSessionEstablishmentException.EventNumber)).EqualTo(SkStackEventNumber.PanaSessionEstablishmentError)
+        .And.Property(nameof(SkStackPanaSessionEstablishmentException.Address)).EqualTo(IPAddress.Parse(SelfIPv6Address))
+        .And.Property(nameof(SkStackPanaSessionEstablishmentException.PaaAddress)).EqualTo(IPAddress.Parse(PaaIPv6Address))
+        .And.Property(nameof(SkStackPanaSessionEstablishmentException.Channel)).Null
+        .And.Property(nameof(SkStackPanaSessionEstablishmentException.PanId)).Null
     );
-
-    Assert.That(ex!.EventNumber, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentError));
-    Assert.That(ex.Address, Is.EqualTo(IPAddress.Parse(SelfIPv6Address)));
-    Assert.That(ex.PaaAddress, Is.EqualTo(IPAddress.Parse(PaaIPv6Address)));
-    Assert.That(ex.Channel, Is.Null);
-    Assert.That(ex.PanId, Is.Null);
 
     Assert.That(raisedEventCount, Is.Zero, nameof(raisedEventCount));
 
@@ -163,7 +164,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(() => client.SendSKJOINAsync(ipv6address: null!));
+    Assert.That(() => client.SendSKJOINAsync(ipv6address: null!), Throws.ArgumentNullException);
 #pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
@@ -179,7 +180,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentException>(() => client.SendSKJOINAsync(ipv6address: IPAddress.Loopback));
+    Assert.That(() => client.SendSKJOINAsync(ipv6address: IPAddress.Loopback), Throws.ArgumentException);
 #pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);

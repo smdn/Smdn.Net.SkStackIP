@@ -450,13 +450,14 @@ partial class SkStackClientFunctionsPanaTests {
     using var stream = new PseudoSkStackStream();
     using var client = CreateClientPanaSessionEstablished(stream, CreateLoggerForTestCase());
 
-    Assert.Throws<InvalidOperationException>(
+    Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: null
-      )
+      ),
+      Throws.InvalidOperationException
 #pragma warning restore CA2012
     );
   }
@@ -726,7 +727,7 @@ partial class SkStackClientFunctionsPanaTests {
     using var stream = new PseudoSkStackStream();
     using var client = CreateClientPanaSessionEstablished(stream, CreateLoggerForTestCase());
 
-    Assert.Throws<InvalidOperationException>(
+    Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
@@ -734,7 +735,8 @@ partial class SkStackClientFunctionsPanaTests {
         paaAddress: IPAddress.IPv6Any,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: SkStackRegister.PanId.MinValue
-      )
+      ),
+      Throws.InvalidOperationException
 #pragma warning restore CA2012
     );
   }
@@ -745,7 +747,7 @@ partial class SkStackClientFunctionsPanaTests {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.Throws<ArgumentNullException>(
+    Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
@@ -753,7 +755,8 @@ partial class SkStackClientFunctionsPanaTests {
         paaAddress: null!,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: SkStackRegister.PanId.MinValue
-      )
+      ),
+      Throws.ArgumentNullException
 #pragma warning restore CA2012
     );
   }
@@ -845,7 +848,7 @@ partial class SkStackClientFunctionsPanaTests {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.Throws<ArgumentOutOfRangeException>(
+    Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
@@ -853,7 +856,8 @@ partial class SkStackClientFunctionsPanaTests {
         paaAddress: IPAddress.IPv6Any,
         channelNumber: channelNumber,
         panId: SkStackRegister.PanId.MinValue
-      )
+      ),
+      Throws.TypeOf<ArgumentOutOfRangeException>()
 #pragma warning restore CA2012
     );
   }
@@ -892,7 +896,7 @@ partial class SkStackClientFunctionsPanaTests {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.Throws<ArgumentOutOfRangeException>(
+    Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
@@ -900,7 +904,8 @@ partial class SkStackClientFunctionsPanaTests {
         paaAddress: IPAddress.IPv6Any,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: panId
-      )
+      ),
+      Throws.TypeOf<ArgumentOutOfRangeException>()
 #pragma warning restore CA2012
     );
   }
@@ -911,13 +916,14 @@ partial class SkStackClientFunctionsPanaTests {
     using var stream = new PseudoSkStackStream();
     using var client = CreateClientPanaSessionEstablished(stream, CreateLoggerForTestCase());
 
-    Assert.Throws<InvalidOperationException>(
+    Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         pan: default
-      )
+      ),
+      Throws.InvalidOperationException
 #pragma warning restore CA2012
     );
   }
@@ -1018,7 +1024,7 @@ partial class SkStackClientFunctionsPanaTests {
     using var stream = new PseudoSkStackStream();
     using var client = CreateClientPanaSessionEstablished(stream, CreateLoggerForTestCase());
 
-    Assert.Throws<InvalidOperationException>(
+    Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
@@ -1026,7 +1032,8 @@ partial class SkStackClientFunctionsPanaTests {
         paaMacAddress: PhysicalAddress.None,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: SkStackRegister.PanId.MinValue
-      )
+      ),
+      Throws.InvalidOperationException
 #pragma warning restore CA2012
     );
   }
@@ -1117,7 +1124,7 @@ partial class SkStackClientFunctionsPanaTests {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.Throws<ArgumentNullException>(
+    Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
@@ -1125,7 +1132,8 @@ partial class SkStackClientFunctionsPanaTests {
         paaMacAddress: null!,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: SkStackRegister.PanId.MinValue
-      )
+      ),
+      Throws.ArgumentNullException
 #pragma warning restore CA2012
     );
   }
@@ -1137,7 +1145,7 @@ partial class SkStackClientFunctionsPanaTests {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.Throws<ArgumentOutOfRangeException>(
+    Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
@@ -1145,7 +1153,8 @@ partial class SkStackClientFunctionsPanaTests {
         paaMacAddress: PhysicalAddress.None,
         channelNumber: channelNumber,
         panId: SkStackRegister.PanId.MinValue
-      )
+      ),
+      Throws.TypeOf<ArgumentOutOfRangeException>()
 #pragma warning restore CA2012
     );
   }
@@ -1157,7 +1166,7 @@ partial class SkStackClientFunctionsPanaTests {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.Throws<ArgumentOutOfRangeException>(
+    Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
@@ -1165,7 +1174,8 @@ partial class SkStackClientFunctionsPanaTests {
         paaMacAddress: PhysicalAddress.None,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: panId
-      )
+      ),
+      Throws.TypeOf<ArgumentOutOfRangeException>()
 #pragma warning restore CA2012
     );
   }

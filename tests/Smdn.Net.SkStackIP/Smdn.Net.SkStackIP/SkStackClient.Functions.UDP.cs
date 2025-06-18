@@ -46,9 +46,14 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
   {
     using var client = new ERXUDPDataFormatSkStackClient();
 
-    var ex = Assert.Throws<ArgumentException>(() => client.SetERXUDPDataFormat(format));
-
-    Assert.That(ex!.ParamName, Is.EqualTo(nameof(client.ERXUDPDataFormat)), nameof(ex.ParamName));
+    Assert.That(
+      () => client.SetERXUDPDataFormat(format),
+      Throws
+        .ArgumentException
+        .With
+        .Property(nameof(ArgumentException.ParamName))
+        .EqualTo(nameof(client.ERXUDPDataFormat))
+    );
   }
 
   private static System.Collections.IEnumerable YieldTestCases_ReceiveUdpPollingInterval_Set()
@@ -84,7 +89,10 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     var initialValue = client.ReceiveUdpPollingInterval;
 
-    Assert.Throws<ArgumentOutOfRangeException>(() => client.ReceiveUdpPollingInterval = newValue);
+    Assert.That(
+      () => client.ReceiveUdpPollingInterval = newValue,
+      Throws.TypeOf<ArgumentOutOfRangeException>()
+    );
 
     Assert.That(initialValue, Is.EqualTo(client.ReceiveUdpPollingInterval), nameof(client.ReceiveUdpPollingInterval));
   }
@@ -308,7 +316,10 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.Throws<ArgumentOutOfRangeException>(() => client.StartCapturingUdpReceiveEvents(port));
+    Assert.That(
+      () => client.StartCapturingUdpReceiveEvents(port),
+      Throws.TypeOf<ArgumentOutOfRangeException>()
+    );
   }
 
   [Test]
@@ -319,7 +330,10 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     client.Dispose();
 
-    Assert.Throws<ObjectDisposedException>(() => client.StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite));
+    Assert.That(
+      () => client.StartCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite),
+      Throws.TypeOf<ObjectDisposedException>()
+    );
   }
 
   [TestCase(SkStackKnownPortNumbers.EchonetLite)]
@@ -341,7 +355,10 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.Throws<ArgumentOutOfRangeException>(() => client.StopCapturingUdpReceiveEvents(port));
+    Assert.That(
+      () => client.StopCapturingUdpReceiveEvents(port),
+      Throws.TypeOf<ArgumentOutOfRangeException>()
+    );
   }
 
   [Test]
@@ -352,7 +369,10 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     client.Dispose();
 
-    Assert.Throws<ObjectDisposedException>(() => client.StopCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite));
+    Assert.That(
+      () => client.StopCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite),
+      Throws.TypeOf<ObjectDisposedException>()
+    );
   }
 
   private class NullBufferWriter : IBufferWriter<byte> {
@@ -373,7 +393,10 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentOutOfRangeException>(() => client.ReceiveUdpAsync(port: port, buffer: CreateNullBufferWriter()));
+    Assert.That(
+      () => client.ReceiveUdpAsync(port: port, buffer: CreateNullBufferWriter()),
+      Throws.TypeOf<ArgumentOutOfRangeException>()
+    );
 #pragma warning restore CA2012
   }
 
@@ -384,7 +407,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(() => client.ReceiveUdpAsync(port: 1, buffer: null!));
+    Assert.That(() => client.ReceiveUdpAsync(port: 1, buffer: null!), Throws.ArgumentNullException);
 #pragma warning restore CA2012
   }
 
@@ -397,8 +420,9 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     client.Dispose();
 
 #pragma warning disable CA2012
-    Assert.Throws<ObjectDisposedException>(
-      () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.EchonetLite, buffer: CreateNullBufferWriter())
+    Assert.That(
+      () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.EchonetLite, buffer: CreateNullBufferWriter()),
+      Throws.InstanceOf<ObjectDisposedException>()
     );
 #pragma warning restore CA2012
   }
@@ -410,8 +434,9 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<InvalidOperationException>(
-      () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.Pana, buffer: CreateNullBufferWriter())
+    Assert.That(
+      () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.Pana, buffer: CreateNullBufferWriter()),
+      Throws.InvalidOperationException
     );
 #pragma warning restore CA2012
   }
@@ -444,8 +469,9 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     client.StopCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite);
 
 #pragma warning disable CA2012
-    Assert.Throws<InvalidOperationException>(
-      () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.EchonetLite, buffer: CreateNullBufferWriter())
+    Assert.That(
+      () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.EchonetLite, buffer: CreateNullBufferWriter()),
+      Throws.InvalidOperationException
     );
 #pragma warning restore CA2012
   }

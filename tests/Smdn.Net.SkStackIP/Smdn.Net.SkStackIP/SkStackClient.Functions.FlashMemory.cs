@@ -73,14 +73,15 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
     var interval = TimeSpan.FromMilliseconds(intervalMilliseconds);
 
     if (typeOfExpectedException is null) {
-      Assert.DoesNotThrow(
-        () => restriction = SkStackFlashMemoryWriteRestriction.CreateGrantIfElapsed(interval: interval)
+      Assert.That(
+        () => restriction = SkStackFlashMemoryWriteRestriction.CreateGrantIfElapsed(interval: interval),
+        Throws.Nothing
       );
     }
     else {
-      Assert.Throws(
-        typeOfExpectedException,
-        () => restriction = SkStackFlashMemoryWriteRestriction.CreateGrantIfElapsed(interval: interval)
+      Assert.That(
+        () => restriction = SkStackFlashMemoryWriteRestriction.CreateGrantIfElapsed(interval: interval),
+        Throws.TypeOf(typeOfExpectedException)
       );
       return;
     }
@@ -135,8 +136,9 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
     using var client = new SkStackClient(Stream.Null, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(
-      () => client.SaveFlashMemoryAsync(restriction: null!)
+    Assert.That(
+      () => client.SaveFlashMemoryAsync(restriction: null!),
+      Throws.ArgumentNullException
     );
 #pragma warning restore CA2012
   }
@@ -151,8 +153,9 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
     using var client = new SkStackClient(Stream.Null, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<InvalidOperationException>(
-      () => client.SaveFlashMemoryAsync(restriction: new AlwaysDenySkStackFlashMemoryWriteRestriction())
+    Assert.That(
+      () => client.SaveFlashMemoryAsync(restriction: new AlwaysDenySkStackFlashMemoryWriteRestriction()),
+      Throws.InvalidOperationException
     );
 #pragma warning restore CA2012
   }
@@ -166,11 +169,12 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
     cts.Cancel();
 
 #pragma warning disable CA2012
-    Assert.Throws<OperationCanceledException>(
+    Assert.That(
       () => client.SaveFlashMemoryAsync(
         restriction: SkStackFlashMemoryWriteRestriction.DangerousCreateAlwaysGrant(),
         cancellationToken: cts.Token
-      )
+      ),
+      Throws.InstanceOf<OperationCanceledException>()
     );
 #pragma warning restore CA2012
   }

@@ -38,9 +38,14 @@ public class SkStackClientCommandsSKSAVETests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    var ex = Assert.ThrowsAsync<SkStackFlashMemoryIOException>(async () => await client.SendSKSAVEAsync());
-
-    Assert.That(ex!.ErrorCode, Is.EqualTo(SkStackErrorCode.ER10));
+    Assert.That(
+      async () => await client.SendSKSAVEAsync(),
+      Throws
+        .TypeOf<SkStackFlashMemoryIOException>()
+        .With
+        .Property(nameof(SkStackFlashMemoryIOException.ErrorCode))
+        .EqualTo(SkStackErrorCode.ER10)
+    );
 
     Assert.That(
       stream.ReadSentData(),
@@ -57,9 +62,14 @@ public class SkStackClientCommandsSKSAVETests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    var ex = Assert.ThrowsAsync<SkStackErrorResponseException>(async () => await client.SendSKSAVEAsync());
-
-    Assert.That(ex!.ErrorCode, Is.EqualTo(SkStackErrorCode.ER01));
+    Assert.That(
+      async () => await client.SendSKSAVEAsync(),
+      Throws
+        .TypeOf<SkStackErrorResponseException>()
+        .With
+        .Property(nameof(SkStackErrorResponseException.ErrorCode))
+        .EqualTo(SkStackErrorCode.ER01)
+    );
 
     Assert.That(
       stream.ReadSentData(),

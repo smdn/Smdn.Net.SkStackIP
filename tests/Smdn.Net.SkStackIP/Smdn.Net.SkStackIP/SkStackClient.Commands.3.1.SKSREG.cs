@@ -121,7 +121,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(() => client.SendSKSREGAsync(null!, (ushort)0x8888));
+    Assert.That(() => client.SendSKSREGAsync(null!, (ushort)0x8888), Throws.ArgumentNullException);
 #pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
@@ -136,7 +136,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(() => client.SendSKSREGAsync<ushort>(null!));
+    Assert.That(() => client.SendSKSREGAsync<ushort>(null!), Throws.ArgumentNullException);
 #pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
@@ -149,7 +149,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<InvalidOperationException>(() => sendSKSREGSetAsync(client));
+    Assert.That(() => sendSKSREGSetAsync(client), Throws.InvalidOperationException);
 #pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
@@ -169,7 +169,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<TArgumentException>(() => sendSKSREGSetAsync(client));
+    Assert.That(() => sendSKSREGSetAsync(client), Throws.TypeOf<TArgumentException>());
 #pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);

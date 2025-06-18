@@ -85,11 +85,11 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
   [Test]
   public void Ctor_WithStream_StreamNull()
-    => Assert.Throws<ArgumentNullException>(() => new SkStackClient(stream: null!));
+    => Assert.That(() => new SkStackClient(stream: null!), Throws.ArgumentNullException);
 
   [Test]
   public void Ctor_WithStream_StreamNotWritable()
-    => Assert.Throws<ArgumentException>(() => new SkStackClient(stream: new MemoryStream(Array.Empty<byte>(), writable: false)));
+    => Assert.That(() => new SkStackClient(stream: new MemoryStream(Array.Empty<byte>(), writable: false)), Throws.ArgumentException);
 
   private class UnreadableMemoryStream : MemoryStream {
     public override bool CanRead => false;
@@ -102,7 +102,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
   [Test]
   public void Ctor_WithStream_StreamNotReadable()
-    => Assert.Throws<ArgumentException>(() => new SkStackClient(stream: new UnreadableMemoryStream()));
+    => Assert.That(() => new SkStackClient(stream: new UnreadableMemoryStream()), Throws.ArgumentException);
 
   [TestCase(true)]
   [TestCase(false)]
@@ -121,7 +121,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
   {
     var pipe = new Pipe();
 
-    Assert.Throws<ArgumentNullException>(() => new SkStackClient(sender: null!, receiver: pipe.Reader));
+    Assert.That(() => new SkStackClient(sender: null!, receiver: pipe.Reader), Throws.ArgumentNullException);
   }
 
   [Test]
@@ -129,7 +129,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
   {
     var pipe = new Pipe();
 
-    Assert.Throws<ArgumentNullException>(() => new SkStackClient(sender: pipe.Writer, receiver: null!));
+    Assert.That(() => new SkStackClient(sender: pipe.Writer, receiver: null!), Throws.ArgumentNullException);
   }
 
   [TestCase(SkStackERXUDPDataFormat.Binary)]
@@ -146,9 +146,12 @@ public class SkStackClientTests : SkStackClientTestsBase {
   [TestCase(-1)]
   public void Ctor_ERXUDPDataFormat_InvalidValue(SkStackERXUDPDataFormat format)
   {
-    Assert.Throws<ArgumentException>(() => {
-      using var client = new SkStackClient(Stream.Null, erxudpDataFormat: format);
-    });
+    Assert.That(
+      () => {
+        using var client = new SkStackClient(Stream.Null, erxudpDataFormat: format);
+      },
+      Throws.ArgumentException
+    );
   }
 
   private static System.Collections.IEnumerable YieldTestCases_Logger()
@@ -177,11 +180,19 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     var client = CreateClient(stream);
 
-    Assert.DoesNotThrowAsync(async () => await client.SendCommandAsync("TEST"), $"{nameof(client.SendCommandAsync)} before {nameof(client.Dispose)}");
+    Assert.That(
+      async () => await client.SendCommandAsync("TEST"),
+      Throws.Nothing,
+      $"{nameof(client.SendCommandAsync)} before {nameof(client.Dispose)}"
+    );
 
     Assert.DoesNotThrow(client.Dispose, $"{nameof(client.Dispose)} #1");
 
-    Assert.ThrowsAsync<ObjectDisposedException>(async () => await client.SendCommandAsync("TEST"), $"{nameof(client.SendCommandAsync)} after {nameof(client.Dispose)}");
+    Assert.That(
+      async () => await client.SendCommandAsync("TEST"),
+      Throws.TypeOf<ObjectDisposedException>(),
+      $"{nameof(client.SendCommandAsync)} after {nameof(client.Dispose)}"
+    );
 
     Assert.DoesNotThrow(client.Dispose, $"{nameof(client.Dispose)} #2");
   }
@@ -249,7 +260,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     using var client = CreateClient(stream);
 
-    Assert.ThrowsAsync<ArgumentException>(async () => await client.SendCommandAsync(string.Empty));
+    Assert.That(async () => await client.SendCommandAsync(string.Empty), Throws.ArgumentException);
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -513,28 +524,33 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     using var client = CreateClient(stream);
 
-    var ex = Assert.ThrowsAsync<SkStackUnexpectedResponseException>(async () => {
-      await client.SendCommandAsync(
-        command: "TEST",
-        arguments: null,
-        parseResponsePayload: static context => {
-          var reader = context.CreateReader();
+    Assert.That(
+      async () => {
+        await client.SendCommandAsync(
+          command: "TEST",
+          arguments: null,
+          parseResponsePayload: static context => {
+            var reader = context.CreateReader();
 
-          if (
-            SkStackTokenParser.ExpectToken(ref reader, "EXPECTEDTOKEN".ToByteSequence().Span) &&
-            SkStackTokenParser.ExpectEndOfLine(ref reader)
-          ) {
-            context.Complete(reader);
-            return "payload";
+            if (
+              SkStackTokenParser.ExpectToken(ref reader, "EXPECTEDTOKEN".ToByteSequence().Span) &&
+              SkStackTokenParser.ExpectEndOfLine(ref reader)
+            ) {
+              context.Complete(reader);
+              return "payload";
+            }
+
+            context.SetAsIncomplete();
+            return default;
           }
-
-          context.SetAsIncomplete();
-          return default;
-        }
-      );
-    });
-
-    Assert.That(ex!.CausedText, Is.EqualTo("UNEXPECTEDTOKEN"), nameof(ex.CausedText));
+        );
+      },
+      Throws
+        .TypeOf<SkStackUnexpectedResponseException>()
+        .With
+        .Property(nameof(SkStackUnexpectedResponseException.CausedText))
+        .EqualTo("UNEXPECTEDTOKEN")
+    );
 
     Assert.That(
       stream.ReadSentData(),
@@ -693,22 +709,30 @@ public class SkStackClientTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine($"FAIL {errorCodeString}");
 
     using var client = CreateClient(stream);
-    var ex = Assert.ThrowsAsync<TExpectedException>(
-      async () => await client.SendCommandAsync("TEST", throwIfErrorStatus: true)
+
+    Assert.That(
+      async () => await client.SendCommandAsync("TEST", throwIfErrorStatus: true),
+      Throws
+        .TypeOf<TExpectedException>()
+        .And.Property(nameof(SkStackErrorResponseException.ErrorCode)).EqualTo(expectedErrorCode)
+        .And.Property(nameof(SkStackErrorResponseException.ErrorText)).Empty
+        .And.Property(nameof(SkStackErrorResponseException.Response)).Not.Null
+        .And
+          .Property(nameof(SkStackErrorResponseException.Response))
+            .Property(nameof(SkStackResponse.Success)).False
+        .And
+          .Property(nameof(SkStackErrorResponseException.Response))
+            .Property(nameof(SkStackResponse.Status)).EqualTo(SkStackResponseStatus.Fail)
+        .And
+          .Property(nameof(SkStackErrorResponseException.Response))
+            .Property(nameof(SkStackResponse.StatusText))
+              .Append(new Smdn.Test.NUnit.Constraints.Buffers.ReadOnlyByteMemoryEqualConstraint(errorCodeString.ToByteSequence()))
     );
 
     Assert.That(
       stream.ReadSentData(),
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
-
-    Assert.That(ex!.ErrorCode, Is.EqualTo(expectedErrorCode));
-    Assert.That(ex.ErrorText, Is.Empty);
-
-    Assert.That(ex.Response, Is.Not.Null);
-    Assert.That(ex.Response.Success, Is.False);
-    Assert.That(ex.Response.Status, Is.EqualTo(SkStackResponseStatus.Fail));
-    Assert.That(ex.Response.StatusText, SequenceIs.EqualTo(errorCodeString.ToByteSequence()));
   }
 
   [Test]
@@ -719,22 +743,30 @@ public class SkStackClientTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("FAIL ER01 error text");
 
     using var client = CreateClient(stream);
-    var ex = Assert.ThrowsAsync<SkStackErrorResponseException>(
-      async () => await client.SendCommandAsync("TEST", throwIfErrorStatus: true)
+
+    Assert.That(
+      async () => await client.SendCommandAsync("TEST", throwIfErrorStatus: true),
+      Throws
+        .TypeOf<SkStackErrorResponseException>()
+        .And.Property(nameof(SkStackErrorResponseException.ErrorCode)).EqualTo(SkStackErrorCode.ER01)
+        .And.Property(nameof(SkStackErrorResponseException.ErrorText)).EqualTo("error text")
+        .And.Property(nameof(SkStackErrorResponseException.Response)).Not.Null
+        .And
+          .Property(nameof(SkStackErrorResponseException.Response))
+            .Property(nameof(SkStackResponse.Success)).False
+        .And
+          .Property(nameof(SkStackErrorResponseException.Response))
+            .Property(nameof(SkStackResponse.Status)).EqualTo(SkStackResponseStatus.Fail)
+        .And
+          .Property(nameof(SkStackErrorResponseException.Response))
+            .Property(nameof(SkStackResponse.StatusText))
+              .Append(new Smdn.Test.NUnit.Constraints.Buffers.ReadOnlyByteMemoryEqualConstraint("ER01 error text".ToByteSequence()))
     );
 
     Assert.That(
       stream.ReadSentData(),
       SequenceIs.EqualTo("TEST\r\n".ToByteSequence())
     );
-
-    Assert.That(ex!.ErrorCode, Is.EqualTo(SkStackErrorCode.ER01));
-    Assert.That(ex.ErrorText, Is.EqualTo("error text"));
-
-    Assert.That(ex.Response, Is.Not.Null);
-    Assert.That(ex.Response.Success, Is.False);
-    Assert.That(ex.Response.Status, Is.EqualTo(SkStackResponseStatus.Fail));
-    Assert.That(ex.Response.StatusText, SequenceIs.EqualTo("ER01 error text".ToByteSequence()));
   }
 
   [Test]

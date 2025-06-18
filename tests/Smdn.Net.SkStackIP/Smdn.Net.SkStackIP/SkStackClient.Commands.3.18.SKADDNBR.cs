@@ -47,11 +47,12 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(() =>
-      client.SendSKADDNBRAsync(
+    Assert.That(
+      () => client.SendSKADDNBRAsync(
         ipv6Address: null!,
         macAddress: new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })
-      )
+      ),
+      Throws.ArgumentNullException
     );
 #pragma warning restore CA2012
   }
@@ -64,11 +65,12 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentException>(() =>
-      client.SendSKADDNBRAsync(
+    Assert.That(
+      () => client.SendSKADDNBRAsync(
         ipv6Address: IPAddress.Loopback,
         macAddress: new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })
-      )
+      ),
+      Throws.ArgumentException
     );
 #pragma warning restore CA2012
   }
@@ -81,11 +83,12 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentNullException>(() =>
-      client.SendSKADDNBRAsync(
+    Assert.That(
+      () => client.SendSKADDNBRAsync(
         ipv6Address: new IPAddress(new byte[] { 0xFE, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 }),
         macAddress: null!
-      )
+      ),
+      Throws.ArgumentNullException
     );
 #pragma warning restore CA2012
   }
@@ -122,10 +125,13 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentException>(() => client.SendSKADDNBRAsync(
-      ipv6Address: new IPAddress(new byte[] { 0xFE, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 }),
-      macAddress: macAddress
-    ));
+    Assert.That(
+      () => client.SendSKADDNBRAsync(
+        ipv6Address: new IPAddress(new byte[] { 0xFE, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 }),
+        macAddress: macAddress
+      ),
+      Throws.ArgumentException
+    );
 #pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);

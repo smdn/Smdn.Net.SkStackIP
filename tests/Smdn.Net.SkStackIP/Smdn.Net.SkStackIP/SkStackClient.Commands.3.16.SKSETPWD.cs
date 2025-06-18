@@ -41,7 +41,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: string.Empty.AsMemory()));
+    Assert.That(() => client.SendSKSETPWDAsync(password: string.Empty.AsMemory()), Throws.ArgumentException);
 #pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
@@ -55,7 +55,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: ReadOnlyMemory<byte>.Empty));
+    Assert.That(() => client.SendSKSETPWDAsync(password: ReadOnlyMemory<byte>.Empty), Throws.ArgumentException);
 #pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
@@ -69,7 +69,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012".AsMemory()));
+    Assert.That(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012".AsMemory()), Throws.ArgumentException);
 #pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
@@ -83,7 +83,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012".ToByteSequence()));
+    Assert.That(() => client.SendSKSETPWDAsync(password: "012345678901234567890123456789012".ToByteSequence()), Throws.ArgumentException);
 #pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
@@ -200,7 +200,7 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
 #pragma warning disable CA2012
-    Assert.Throws<ArgumentException>(() => client.SendSKSETPWDAsync(password: password.AsMemory()));
+    Assert.That(() => client.SendSKSETPWDAsync(password: password.AsMemory()), Throws.ArgumentException);
 #pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);

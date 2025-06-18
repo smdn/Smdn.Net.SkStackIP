@@ -280,16 +280,19 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    var ex = Assert.ThrowsAsync<ArgumentNullException>(
+    Assert.That(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
         destination: null!,
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText
-      )
+      ),
+      Throws
+        .ArgumentNullException
+        .With
+        .Property(nameof(ArgumentNullException.ParamName))
+        .EqualTo("destination")
     );
-
-    Assert.That(ex!.ParamName, Is.EqualTo("destination"));
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -301,17 +304,20 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    var ex = Assert.ThrowsAsync<ArgumentNullException>(
+    Assert.That(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
         destinationAddress: null!,
         destinationPort: 0x0E1A,
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText
-      )
+      ),
+      Throws
+        .ArgumentNullException
+        .With
+        .Property(nameof(ArgumentNullException.ParamName))
+        .EqualTo("destinationAddress")
     );
-
-    Assert.That(ex!.ParamName, Is.EqualTo("destinationAddress"));
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -326,17 +332,20 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    var ex = Assert.ThrowsAsync<ArgumentOutOfRangeException>(
+    Assert.That(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
         destinationAddress: IPAddress.Parse(TestDestinationIPAddressString),
         destinationPort: destinationPort,
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText
-      )
+      ),
+      Throws
+        .TypeOf<ArgumentOutOfRangeException>()
+        .With
+        .Property(nameof(ArgumentOutOfRangeException.ParamName))
+        .EqualTo("destinationPort")
     );
-
-    Assert.That(ex!.ParamName, Is.EqualTo("destinationPort"));
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -379,16 +388,19 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    var ex = Assert.ThrowsAsync<ArgumentOutOfRangeException>(
+    Assert.That(
       async () => await client.SendSKSENDTOAsync(
         handle: handle,
         destination: new IPEndPoint(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678"), 0x0E1A),
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText
-      )
+      ),
+      Throws
+        .TypeOf<ArgumentOutOfRangeException>()
+        .With
+        .Property(nameof(ArgumentOutOfRangeException.ParamName))
+        .EqualTo("handle")
     );
-
-    Assert.That(ex!.ParamName, Is.EqualTo("handle"));
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -428,16 +440,19 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    var ex = Assert.ThrowsAsync<ArgumentException>(
+    Assert.That(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
         destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: sec
-      )
+      ),
+      Throws
+        .ArgumentException
+        .With
+        .Property(nameof(ArgumentException.ParamName))
+        .EqualTo("encryption")
     );
-
-    Assert.That(ex!.ParamName, Is.EqualTo("encryption"));
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -450,16 +465,19 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    var ex = Assert.ThrowsAsync<ArgumentException>(
+    Assert.That(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
         destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
         data: new byte[dataLength],
         encryption: SkStackUdpEncryption.ForcePlainText
-      )
+      ),
+      Throws
+        .ArgumentException
+        .With
+        .Property(nameof(ArgumentException.ParamName))
+        .EqualTo("data")
     );
-
-    Assert.That(ex!.ParamName, Is.EqualTo("data"));
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
