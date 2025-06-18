@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Smdn.Net.SkStackIP;
 
-internal sealed class SkStackDuplexPipe : IDuplexPipe {
+internal sealed class SkStackDuplexPipe : IDuplexPipe, IDisposable {
   public PipeReader Input => receivePipe.Reader;
   public PipeWriter Output => sendPipe.Writer;
 
@@ -19,6 +19,7 @@ internal sealed class SkStackDuplexPipe : IDuplexPipe {
 
   private CancellationTokenSource? stopTokenSource;
   private Task? sendTask;
+  private ManualResetEvent sendTaskStoppedEvent = new(initialState: true);
 
   private readonly MemoryStream sentDataBuffer = new();
 
@@ -36,6 +37,12 @@ internal sealed class SkStackDuplexPipe : IDuplexPipe {
     );
   }
 
+  public void Dispose()
+  {
+    sendTaskStoppedEvent?.Dispose();
+    sendTaskStoppedEvent = null!;
+  }
+
   public void Start()
   {
     if (stopTokenSource is not null)
@@ -45,7 +52,7 @@ internal sealed class SkStackDuplexPipe : IDuplexPipe {
 
     sentDataBuffer.SetLength(0L);
 
-    sendTask = SendAsync(stopTokenSource.Token);
+    sendTask = Task.Run(() => SendAsync(stopTokenSource.Token));
   }
 
   public async ValueTask StopAsync()
@@ -64,7 +71,11 @@ internal sealed class SkStackDuplexPipe : IDuplexPipe {
   }
 
   public byte[] ReadSentData()
-    => sentDataBuffer.ToArray();
+  {
+    sendTaskStoppedEvent.WaitOne();
+
+    return sentDataBuffer.ToArray();
+  }
 
   public async ValueTask WriteResponseLineAsync(string line)
   {
@@ -82,7 +93,7 @@ internal sealed class SkStackDuplexPipe : IDuplexPipe {
 
       receivePipe.Writer.Advance(2);
 
-      var flushResult = await receivePipe.Writer.FlushAsync(stopTokenSource.Token).ConfigureAwait(false);
+      var flushResult = await receivePipe.Writer.FlushAsync(default).ConfigureAwait(false);
 
       if (flushResult.IsCompleted || flushResult.IsCanceled)
         throw new InvalidOperationException("flush failed");
@@ -95,30 +106,37 @@ internal sealed class SkStackDuplexPipe : IDuplexPipe {
   private async Task SendAsync(CancellationToken stopToken)
   {
     try {
-      while (!stopToken.IsCancellationRequested) {
-        var read = await sendPipe.Reader.ReadAsync(stopToken).ConfigureAwait(false);
-        var buffer = read.Buffer;
+      sendTaskStoppedEvent.Reset();
 
-        if (buffer.IsEmpty && read.IsCompleted)
-          break;
+      try {
+        while (!stopToken.IsCancellationRequested) {
+          var read = await sendPipe.Reader.ReadAsync(stopToken).ConfigureAwait(false);
+          var buffer = read.Buffer;
 
-        // ignore cancellation request until the read content is written to the sentDataBuffer
-        var cancellationTokenForWritingSentData = CancellationToken.None;
+          if (read.IsCompleted)
+            break;
 
-        foreach (var segment in buffer) {
-          await sentDataBuffer.WriteAsync(segment, cancellationTokenForWritingSentData).ConfigureAwait(false);
+          // ignore cancellation request until the read content is written to the sentDataBuffer
+          var cancellationTokenForWritingSentData = CancellationToken.None;
+
+          foreach (var segment in buffer) {
+            await sentDataBuffer.WriteAsync(segment, cancellationTokenForWritingSentData).ConfigureAwait(false);
+          }
+
+          await sentDataBuffer.FlushAsync(cancellationTokenForWritingSentData).ConfigureAwait(false);
+
+          sendPipe.Reader.AdvanceTo(buffer.End);
         }
-
-        await sentDataBuffer.FlushAsync(cancellationTokenForWritingSentData).ConfigureAwait(false);
-
-        sendPipe.Reader.AdvanceTo(buffer.End);
       }
-    }
-    catch (Exception ex) {
-      await sendPipe.Reader.CompleteAsync(ex);
-      throw;
-    }
+      catch (Exception ex) {
+        await sendPipe.Reader.CompleteAsync(ex);
+        throw;
+      }
 
-    await sendPipe.Reader.CompleteAsync(null);
+      await sendPipe.Reader.CompleteAsync(null);
+    }
+    finally {
+      sendTaskStoppedEvent.Set();
+    }
   }
 }

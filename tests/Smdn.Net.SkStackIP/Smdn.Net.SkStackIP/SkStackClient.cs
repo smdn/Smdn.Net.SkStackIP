@@ -222,7 +222,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
   [Test]
   public async Task Command_ClientConstructedFromPipeReaderWriter()
   {
-    var pipe = new SkStackDuplexPipe();
+    using var pipe = new SkStackDuplexPipe();
 
     pipe.Start();
 
@@ -237,20 +237,14 @@ public class SkStackClientTests : SkStackClientTestsBase {
       );
     });
 
+    await Task.Delay(100);
+
     await pipe.StopAsync().ConfigureAwait(false);
 
-    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) { // disable the unstable test case
-      Assert.That(
-        pipe.ReadSentData,
-        Throws.Nothing
-      );
-    }
-    else {
-      Assert.That(
-        pipe.ReadSentData(),
-        SequenceIs.EqualTo("TEST arg1 arg2\r\n".ToByteSequence())
-      );
-    }
+    Assert.That(
+      pipe.ReadSentData(),
+      SequenceIs.EqualTo("TEST arg1 arg2\r\n".ToByteSequence())
+    );
   }
 
   [Test]
