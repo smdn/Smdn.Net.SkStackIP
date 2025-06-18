@@ -9,6 +9,8 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using NUnit.Framework;
 
+using Smdn.Net.SkStackIP;
+
 namespace Smdn.Devices.BP35XX;
 
 [TestFixture]

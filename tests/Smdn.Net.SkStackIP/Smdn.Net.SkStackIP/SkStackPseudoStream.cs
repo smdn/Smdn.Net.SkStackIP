@@ -61,7 +61,7 @@ internal class PseudoSkStackStream : Stream {
       return stream.ToArray();
     }
     finally {
-      writeStream.Position = 0L;
+      writeStream.SetLength(0L);
     }
   }
 

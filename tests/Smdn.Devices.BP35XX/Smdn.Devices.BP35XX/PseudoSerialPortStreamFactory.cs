@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 using System.IO;
 
+using Smdn.Net.SkStackIP;
+
 namespace Smdn.Devices.BP35XX;
 
 internal class PseudoSerialPortStreamFactory : IBP35SerialPortStreamFactory {
