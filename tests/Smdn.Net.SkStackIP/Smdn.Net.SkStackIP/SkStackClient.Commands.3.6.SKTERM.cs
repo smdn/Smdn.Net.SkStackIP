@@ -197,7 +197,7 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
       async () => await client.SendSKTERMAsync()
     );
 
-    Assert.That(raisedEventCount, Is.EqualTo(0), nameof(raisedEventCount));
+    Assert.That(raisedEventCount, Is.Zero, nameof(raisedEventCount));
 
     Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));

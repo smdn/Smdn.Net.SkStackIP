@@ -54,7 +54,7 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
     Assert.That(raisedSleptEventCount, Is.EqualTo(1), nameof(raisedSleptEventCount));
 
     Assert.That(thrownExceptionInWokeUpEventHandler, Is.Null, nameof(thrownExceptionInWokeUpEventHandler));
-    Assert.That(raisedWokeUpEventCount, Is.EqualTo(0), nameof(raisedWokeUpEventCount));
+    Assert.That(raisedWokeUpEventCount, Is.Zero, nameof(raisedWokeUpEventCount));
 
     Assert.That(response, Is.Not.Null);
     Assert.That(response!.Success, Is.True);

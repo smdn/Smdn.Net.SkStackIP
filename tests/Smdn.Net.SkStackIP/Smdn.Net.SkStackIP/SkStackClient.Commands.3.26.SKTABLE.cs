@@ -125,7 +125,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(response, Is.Not.Null, nameof(response));
     Assert.That(response!.Payload, Is.Not.Null);
-    Assert.That(response.Payload!.Count, Is.EqualTo(0));
+    Assert.That(response.Payload!.Count, Is.Zero);
 
     Assert.That(
       stream.ReadSentData(),
@@ -147,7 +147,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(response, Is.Not.Null, nameof(response));
     Assert.That(response!.Payload, Is.Not.Null);
-    Assert.That(response.Payload!.Count, Is.EqualTo(0));
+    Assert.That(response.Payload!.Count, Is.Zero);
 
     Assert.That(
       stream.ReadSentData(),
@@ -260,7 +260,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(response, Is.Not.Null, nameof(response));
     Assert.That(response!.Payload, Is.Not.Null);
-    Assert.That(response.Payload!.Count, Is.EqualTo(0));
+    Assert.That(response.Payload!.Count, Is.Zero);
 
     Assert.That(
       stream.ReadSentData(),
@@ -283,7 +283,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(response, Is.Not.Null, nameof(response));
     Assert.That(response!.Payload, Is.Not.Null);
-    Assert.That(response.Payload!.Count, Is.EqualTo(0));
+    Assert.That(response.Payload!.Count, Is.Zero);
 
     Assert.That(
       stream.ReadSentData(),

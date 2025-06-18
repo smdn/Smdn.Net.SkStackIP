@@ -136,7 +136,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     Assert.That(ex.Channel, Is.Null);
     Assert.That(ex.PanId, Is.Null);
 
-    Assert.That(raisedEventCount, Is.EqualTo(0), nameof(raisedEventCount));
+    Assert.That(raisedEventCount, Is.Zero, nameof(raisedEventCount));
 
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
@@ -166,7 +166,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
 
     Assert.That(ex!.ErrorCode, Is.EqualTo(SkStackErrorCode.ER10));
 
-    Assert.That(raisedEventCount, Is.EqualTo(0), nameof(raisedEventCount));
+    Assert.That(raisedEventCount, Is.Zero, nameof(raisedEventCount));
 
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));

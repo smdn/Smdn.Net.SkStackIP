@@ -142,7 +142,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     Assert.That(ex.Channel, Is.Null);
     Assert.That(ex.PanId, Is.Null);
 
-    Assert.That(raisedEventCount, Is.EqualTo(0), nameof(raisedEventCount));
+    Assert.That(raisedEventCount, Is.Zero, nameof(raisedEventCount));
 
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));

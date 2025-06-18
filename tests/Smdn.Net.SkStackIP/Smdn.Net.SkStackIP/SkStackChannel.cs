@@ -20,7 +20,7 @@ public class SkStackChannelTests {
 
     Assert.That(
       SkStackChannel.CreateMask(),
-      Is.EqualTo(0b_0000_0000_0000_0000_0000_0000_0000_0000u)
+      Is.Zero
     );
 
     Assert.That(
