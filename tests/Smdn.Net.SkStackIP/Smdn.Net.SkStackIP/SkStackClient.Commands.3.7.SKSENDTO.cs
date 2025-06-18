@@ -3,7 +3,6 @@
 
 using System;
 using System.Net;
-using System.Threading;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -226,7 +225,8 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     );
   }
 
-  [Test] public void SKSENDTO_IPADDR_PORT_IPEndPoint()
+  [Test]
+  public void SKSENDTO_IPADDR_PORT_IPEndPoint()
     => SKSENDTO_IPADDR_PORT(client => client.SendSKSENDTOAsync(
       handle: SkStackUdpPortHandle.Handle1,
       destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
@@ -234,7 +234,8 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       encryption: SkStackUdpEncryption.ForcePlainText
     ));
 
-  [Test] public void SKSENDTO_IPADDR_PORT_IPAddressAndPort()
+  [Test]
+  public void SKSENDTO_IPADDR_PORT_IPAddressAndPort()
     => SKSENDTO_IPADDR_PORT(client => client.SendSKSENDTOAsync(
       handle: SkStackUdpPortHandle.Handle1,
       destinationAddress: IPAddress.Parse(TestDestinationIPAddressString),
@@ -243,7 +244,8 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       encryption: SkStackUdpEncryption.ForcePlainText
     ));
 
-  [Test] public void SKSENDTO_IPADDR_PORT_UdpPort()
+  [Test]
+  public void SKSENDTO_IPADDR_PORT_UdpPort()
     => SKSENDTO_IPADDR_PORT(async client => await client.SendSKSENDTOAsync(
       port: await GetUdpPortAsync(),
       destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
@@ -281,7 +283,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     var ex = Assert.ThrowsAsync<ArgumentNullException>(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
-        destination: (IPEndPoint)null!,
+        destination: null!,
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText
       )
@@ -302,7 +304,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     var ex = Assert.ThrowsAsync<ArgumentNullException>(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
-        destinationAddress: (IPAddress)null!,
+        destinationAddress: null!,
         destinationPort: 0x0E1A,
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText
@@ -315,7 +317,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
   }
 
   [TestCase(-1)]
-  [TestCase((int)ushort.MaxValue + 1)]
+  [TestCase(ushort.MaxValue + 1)]
   [TestCase(int.MinValue)]
   [TestCase(int.MaxValue)]
   public void SKSENDTO_PORT_ArgumentOutOfRange(int destinationPort)

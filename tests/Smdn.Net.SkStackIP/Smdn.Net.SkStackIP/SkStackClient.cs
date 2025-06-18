@@ -666,16 +666,20 @@ public class SkStackClientTests : SkStackClientTestsBase {
     Assert.That(resp.StatusText, SequenceIs.EqualTo("REASON".ToByteSequence()));
   }
 
-  [Test] public void Response_StatusFailWithStatusText_AsException_ErrorCode_ER01()
+  [Test]
+  public void Response_StatusFailWithStatusText_AsException_ErrorCode_ER01()
     => Response_StatusFailWithStatusText_AsException_ErrorCode<SkStackErrorResponseException>(nameof(SkStackErrorCode.ER01), SkStackErrorCode.ER01);
 
-  [Test] public void Response_StatusFailWithStatusText_AsException_ErrorCode_ER04()
+  [Test]
+  public void Response_StatusFailWithStatusText_AsException_ErrorCode_ER04()
     => Response_StatusFailWithStatusText_AsException_ErrorCode<SkStackCommandNotSupportedException>(nameof(SkStackErrorCode.ER04), SkStackErrorCode.ER04);
 
-  [Test] public void Response_StatusFailWithStatusText_AsException_ErrorCode_ER09()
+  [Test]
+  public void Response_StatusFailWithStatusText_AsException_ErrorCode_ER09()
     => Response_StatusFailWithStatusText_AsException_ErrorCode<SkStackUartIOException>(nameof(SkStackErrorCode.ER09), SkStackErrorCode.ER09);
 
-  [Test] public void Response_StatusFailWithStatusText_AsException_ErrorCode_Undefined()
+  [Test]
+  public void Response_StatusFailWithStatusText_AsException_ErrorCode_Undefined()
     => Response_StatusFailWithStatusText_AsException_ErrorCode<SkStackErrorResponseException>("ERXX", SkStackErrorCode.Undefined);
 
   private void Response_StatusFailWithStatusText_AsException_ErrorCode<TExpectedException>(

@@ -23,8 +23,6 @@ internal class PseudoSkStackStream : Stream {
 
   private readonly Pipe readStreamPipe;
   private readonly Stream readStreamReaderStream;
-  private readonly Stream readStreamWriterStream;
-  private readonly TextWriter readStreamWriter;
   private Stream writeStream;
 
   public PseudoSkStackStream()
@@ -36,15 +34,15 @@ internal class PseudoSkStackStream : Stream {
     );
     writeStream = new MemoryStream();
     readStreamReaderStream = readStreamPipe.Reader.AsStream();
-    readStreamWriterStream = readStreamPipe.Writer.AsStream();
-    readStreamWriter = new StreamWriter(readStreamWriterStream, Encoding.ASCII) {
+    ResponseStream = readStreamPipe.Writer.AsStream();
+    ResponseWriter = new StreamWriter(ResponseStream, Encoding.ASCII) {
       NewLine = "\r\n",
       AutoFlush = true,
     };
   }
 
-  public Stream ResponseStream => readStreamWriterStream;
-  public TextWriter ResponseWriter => readStreamWriter;
+  public Stream ResponseStream { get; }
+  public TextWriter ResponseWriter { get; }
 
   public void ClearSentData()
   {

@@ -71,11 +71,11 @@ public class SkStackChannelTests {
   [Test]
   public void Equals_OfObject()
   {
-    Assert.That(SkStackChannel.Channel33.Equals((object)null!), Is.False, "case #1");
+    Assert.That(SkStackChannel.Channel33.Equals(null!), Is.False, "case #1");
     Assert.That(SkStackChannel.Channel33.Equals(33), Is.False, "case #2");
     Assert.That(SkStackChannel.Channel33.Equals((object)SkStackChannel.Channel33), Is.True, "case #3");
     Assert.That(SkStackChannel.Channel33.Equals((object)SkStackChannel.Channel34), Is.False, "case #4");
-    Assert.That(SkStackChannel.Empty.Equals((object)null!), Is.False, "case #5");
+    Assert.That(SkStackChannel.Empty.Equals(null!), Is.False, "case #5");
   }
 
   [Test]

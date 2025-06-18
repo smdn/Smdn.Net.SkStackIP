@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 using System;
 using System.Buffers;
-using System.Net;
 using System.IO;
+using System.Net;
 using System.Threading;
 
 using NUnit.Framework;

@@ -1,7 +1,6 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
 
-using System;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
@@ -30,13 +29,13 @@ public class SkStackClientCommandsSKINFOTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("SKINFO\r\n".ToByteSequence())
     );
 
-    var payload = response.Payload;
+    var (linkLocalAddress, macAddress, channel, panId, addr16) = response.Payload;
 
-    Assert.That(payload.LinkLocalAddress, Is.EqualTo(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")), nameof(payload.LinkLocalAddress));
-    Assert.That(payload.MacAddress, Is.EqualTo(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })), nameof(payload.MacAddress));
-    Assert.That(payload.Channel, Is.EqualTo(SkStackChannel.Channel33), nameof(payload.Channel));
-    Assert.That(payload.PanId, Is.EqualTo(0x8888), nameof(payload.PanId));
-    Assert.That(payload.Addr16, Is.EqualTo(0xFFFE), nameof(payload.Addr16));
+    Assert.That(linkLocalAddress, Is.EqualTo(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")), nameof(linkLocalAddress));
+    Assert.That(macAddress, Is.EqualTo(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })), nameof(macAddress));
+    Assert.That(channel, Is.EqualTo(SkStackChannel.Channel33), nameof(channel));
+    Assert.That(panId, Is.EqualTo(0x8888), nameof(panId));
+    Assert.That(addr16, Is.EqualTo(0xFFFE), nameof(addr16));
   }
 
   [Test]
@@ -77,12 +76,12 @@ public class SkStackClientCommandsSKINFOTests : SkStackClientTestsBase {
       SequenceIs.EqualTo("SKINFO\r\n".ToByteSequence())
     );
 
-    var payload = response.Payload;
+    var (linkLocalAddress, macAddress, channel, panId, addr16) = response.Payload;
 
-    Assert.That(payload.LinkLocalAddress, Is.EqualTo(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")), nameof(payload.LinkLocalAddress));
-    Assert.That(payload.MacAddress, Is.EqualTo(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })), nameof(payload.MacAddress));
-    Assert.That(payload.Channel, Is.EqualTo(SkStackChannel.Channel33), nameof(payload.Channel));
-    Assert.That(payload.PanId, Is.EqualTo(0x8888), nameof(payload.PanId));
-    Assert.That(payload.Addr16, Is.EqualTo(0xFFFE), nameof(payload.Addr16));
+    Assert.That(linkLocalAddress, Is.EqualTo(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")), nameof(linkLocalAddress));
+    Assert.That(macAddress, Is.EqualTo(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })), nameof(macAddress));
+    Assert.That(channel, Is.EqualTo(SkStackChannel.Channel33), nameof(channel));
+    Assert.That(panId, Is.EqualTo(0x8888), nameof(panId));
+    Assert.That(addr16, Is.EqualTo(0xFFFE), nameof(addr16));
   }
 }

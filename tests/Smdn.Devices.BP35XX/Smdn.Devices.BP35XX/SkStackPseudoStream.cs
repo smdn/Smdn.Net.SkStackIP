@@ -20,30 +20,28 @@ internal class PseudoSkStackStream : Stream {
     set => throw new NotSupportedException();
   }
 
-  private Pipe readStreamPipe;
-  private Stream readStreamReaderStream;
-  private Stream readStreamWriterStream;
-  private TextWriter readStreamWriter;
-  private Stream writeStream;
+  private readonly Pipe readStreamPipe;
+  private readonly Stream readStreamReaderStream;
+  private readonly Stream writeStream;
 
   public PseudoSkStackStream()
   {
-    this.readStreamPipe = new Pipe(
+    readStreamPipe = new Pipe(
       new PipeOptions(
         useSynchronizationContext: false
       )
     );
-    this.writeStream = new MemoryStream();
-    this.readStreamReaderStream = readStreamPipe.Reader.AsStream();
-    this.readStreamWriterStream = readStreamPipe.Writer.AsStream();
-    this.readStreamWriter = new StreamWriter(readStreamWriterStream, Encoding.ASCII) {
+    writeStream = new MemoryStream();
+    readStreamReaderStream = readStreamPipe.Reader.AsStream();
+    ResponseStream = readStreamPipe.Writer.AsStream();
+    ResponseWriter = new StreamWriter(ResponseStream, Encoding.ASCII) {
       NewLine = "\r\n",
       AutoFlush = true,
     };
   }
 
-  public Stream ResponseStream => readStreamWriterStream;
-  public TextWriter ResponseWriter => readStreamWriter;
+  public Stream ResponseStream { get; }
+  public TextWriter ResponseWriter { get; }
 
   public byte[] ReadSentData()
   {

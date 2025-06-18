@@ -71,17 +71,17 @@ public class BP35A1Tests {
     );
   }
 
-internal class ThrowExceptionSerialPortStreamFactory(Func<Exception> createException) : IBP35SerialPortStreamFactory {
-  private readonly Func<Exception> createException = createException ?? throw new ArgumentNullException(nameof(createException));
+  internal class ThrowExceptionSerialPortStreamFactory(Func<Exception> createException) : IBP35SerialPortStreamFactory {
+    private readonly Func<Exception> createException = createException ?? throw new ArgumentNullException(nameof(createException));
 
-  public void Dispose()
-  {
-    // nothing to do in this class
+    public void Dispose()
+    {
+      // nothing to do in this class
+    }
+
+    public Stream CreateSerialPortStream(string? serialPortName)
+      => throw createException();
   }
-
-  public Stream CreateSerialPortStream(string? serialPortName)
-    => throw createException();
-}
 
   [TestCase("/dev/pseudo-serial-port", "'/dev/pseudo-serial-port'")]
   [TestCase("", "''")]
@@ -220,7 +220,7 @@ internal class ThrowExceptionSerialPortStreamFactory(Func<Exception> createExcep
       services.BuildServiceProvider()
     );
 
-    Assert.DoesNotThrow(() => bp35a1.Dispose(), "Dispose #0");
+    Assert.DoesNotThrow(bp35a1.Dispose, "Dispose #0");
 
     Assert.DoesNotThrow(() => Assert.That(bp35a1.SkStackVersion, Is.EqualTo(Version.Parse("1.2.10"))));
     Assert.DoesNotThrow(() => Assert.That(bp35a1.RohmUserId, Is.EqualTo("FE80")));
@@ -240,6 +240,6 @@ internal class ThrowExceptionSerialPortStreamFactory(Func<Exception> createExcep
       )
     );
 
-    Assert.DoesNotThrow(() => bp35a1.Dispose(), "Dispose #1");
+    Assert.DoesNotThrow(bp35a1.Dispose, "Dispose #1");
   }
 }
