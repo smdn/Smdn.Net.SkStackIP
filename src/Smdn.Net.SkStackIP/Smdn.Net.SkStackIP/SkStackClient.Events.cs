@@ -95,9 +95,15 @@ partial class SkStackClient {
           break;
       }
 
-      // raise event
+      // update state and raise event
       switch (ev.Number) {
+        case SkStackEventNumber.PanaSessionEstablishmentError:
+          PanaSessionState = ev.Number;
+          PanaSessionPeerAddress = null;
+          break;
+
         case SkStackEventNumber.PanaSessionEstablishmentCompleted:
+          PanaSessionState = ev.Number;
           PanaSessionPeerAddress = ev.SenderAddress;
           RaiseEventPanaSessionEstablished(ev);
           break;
@@ -105,11 +111,13 @@ partial class SkStackClient {
         case SkStackEventNumber.PanaSessionTerminationRequestReceived:
         case SkStackEventNumber.PanaSessionTerminationCompleted:
         case SkStackEventNumber.PanaSessionTerminationTimedOut:
+          PanaSessionState = ev.Number;
           PanaSessionPeerAddress = null;
           RaiseEventPanaSessionTerminated(ev);
           break;
 
         case SkStackEventNumber.PanaSessionExpired:
+          PanaSessionState = ev.Number;
           PanaSessionPeerAddress = null;
           RaiseEventPanaSessionExpired(ev);
           break;

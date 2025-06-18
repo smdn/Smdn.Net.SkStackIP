@@ -16,7 +16,68 @@ partial class SkStackClient {
 #pragma warning restore IDE0040
   /// <summary>Gets the <see cref="IPAddress"/> of current PANA session peer.</summary>
   /// <value><see langword="null"/> if PANA session has been terminated, expired, or not been established.</value>
+  /// <seealso cref="PanaSessionState"/>
   public IPAddress? PanaSessionPeerAddress { get; private set; }
+
+  /// <summary>
+  /// Gets the value of the <see cref="SkStackEventNumber"/> that indicating current status of the PANA session.
+  /// </summary>
+  /// <value>
+  /// The value of this property will be one of the following.
+  /// <list type="bullet">
+  ///   <item>
+  ///     <term><see cref="SkStackEventNumber.Undefined"/></term>
+  ///     <description>
+  ///       Initial state of the instance, where neither PANA session establishment nor termination has been attempted.
+  ///       <see cref="PanaSessionPeerAddress"/> will be <see langword="null"/>.
+  ///     </description>
+  ///   </item>
+  ///   <item>
+  ///     <term><see cref="SkStackEventNumber.PanaSessionEstablishmentError"/></term>
+  ///     <description>
+  ///       State where the PANA session establishment was attempted but failed.
+  ///       <see cref="PanaSessionPeerAddress"/> becomes <see langword="null"/>.
+  ///     </description>
+  ///   </item>
+  ///   <item>
+  ///     <term><see cref="SkStackEventNumber.PanaSessionEstablishmentCompleted"/></term>
+  ///     <description>
+  ///       State where the PANA session establishment was successful.
+  ///       <see cref="PanaSessionPeerAddress"/> becomes a <see cref="IPAddress"/> representing the peer's address.
+  ///     </description>
+  ///   </item>
+  ///   <item>
+  ///     <term><see cref="SkStackEventNumber.PanaSessionTerminationRequestReceived"/></term>
+  ///     <description>
+  ///       State where the PANA session termination was requested by the peer.
+  ///       <see cref="PanaSessionPeerAddress"/> becomes <see langword="null"/>.
+  ///     </description>
+  ///   </item>
+  ///   <item>
+  ///     <term><see cref="SkStackEventNumber.PanaSessionTerminationCompleted"/></term>
+  ///     <description>
+  ///       State where the PANA session was terminated.
+  ///       <see cref="PanaSessionPeerAddress"/> becomes <see langword="null"/>.
+  ///     </description>
+  ///   </item>
+  ///   <item>
+  ///     <term><see cref="SkStackEventNumber.PanaSessionTerminationTimedOut"/></term>
+  ///     <description>
+  ///       State where the PANA session was terminated, but the response to the termination request timed out.
+  ///       <see cref="PanaSessionPeerAddress"/> becomes <see langword="null"/>.
+  ///     </description>
+  ///   </item>
+  ///   <item>
+  ///     <term><see cref="SkStackEventNumber.PanaSessionExpired"/></term>
+  ///     <description>
+  ///       State where the PANA session has ended due to expiration.
+  ///       <see cref="PanaSessionPeerAddress"/> becomes <see langword="null"/>.
+  ///     </description>
+  ///   </item>
+  /// </list>
+  /// </value>
+  /// <seealso cref="PanaSessionPeerAddress"/>
+  public SkStackEventNumber PanaSessionState { get; private set; }
 
   /// <summary>Gets a value indicating whether or not the PANA session is alive.</summary>
   /// <value><see langword="true"/> if PANA session is established and alive, <see langword="false"/> if PANA session has been terminated, expired, or not been established.</value>

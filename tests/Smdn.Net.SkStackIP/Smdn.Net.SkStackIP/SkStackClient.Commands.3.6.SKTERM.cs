@@ -27,6 +27,7 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
     await client.SendSKJOINAsync(address);
 
     Assert.That(address, Is.EqualTo(client.PanaSessionPeerAddress));
+    Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
     stream.ClearSentData();
@@ -68,6 +69,7 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
         Assert.That(e, Is.Not.Null, nameof(e));
         Assert.That(e.PanaSessionPeerAddress, Is.EqualTo(address), nameof(e.PanaSessionPeerAddress));
         Assert.That(e.EventNumber, Is.EqualTo(SkStackEventNumber.PanaSessionTerminationCompleted), nameof(e.EventNumber));
+        Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionTerminationCompleted), nameof(client.PanaSessionState));
         Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
         Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
         raisedEventCount++;
@@ -78,6 +80,7 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
     };
 
     Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
 #pragma warning disable CA2012
@@ -97,6 +100,7 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
     Assert.That(isCompletedSuccessfully, Is.True);
 
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionTerminationCompleted), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
     Assert.That(
@@ -137,6 +141,7 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
         Assert.That(e, Is.Not.Null, nameof(e));
         Assert.That(e.PanaSessionPeerAddress, Is.EqualTo(address), nameof(e.PanaSessionPeerAddress));
         Assert.That(e.EventNumber, Is.EqualTo(SkStackEventNumber.PanaSessionTerminationTimedOut), nameof(e.EventNumber));
+        Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionTerminationTimedOut), nameof(client.PanaSessionState));
         Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
         Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
         raisedEventCount++;
@@ -147,6 +152,7 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
     };
 
     Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(client.PanaSessionState));
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendSKTERMAsync().AsTask();
@@ -191,6 +197,7 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
     client.PanaSessionTerminated += (sender, e) => raisedEventCount++;
 
     Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(
@@ -200,6 +207,7 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
     Assert.That(raisedEventCount, Is.Zero, nameof(raisedEventCount));
 
     Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
     Assert.That(

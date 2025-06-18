@@ -50,6 +50,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
         Assert.That(e, Is.Not.Null, nameof(e));
         Assert.That(e.PanaSessionPeerAddress, Is.EqualTo(IPAddress.Parse(PaaIPv6Address)), nameof(e.PanaSessionPeerAddress));
         Assert.That(e.EventNumber, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(e.EventNumber));
+        Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(client.PanaSessionState));
         Assert.That(e.PanaSessionPeerAddress, Is.EqualTo(client.PanaSessionPeerAddress), nameof(client.PanaSessionPeerAddress));
         Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
         raisedEventCount++;
@@ -60,6 +61,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     };
 
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.PanaSessionState, Is.Default, nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
 #pragma warning disable CA2012
@@ -79,6 +81,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     Assert.That(IPAddress.Parse(PaaIPv6Address), Is.EqualTo(rejoinedSessionPeerAddress));
 
     Assert.That(IPAddress.Parse(PaaIPv6Address), Is.EqualTo(client.PanaSessionPeerAddress), nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
     Assert.That(
@@ -120,6 +123,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     client.PanaSessionEstablished += (sender, e) => raisedEventCount++;
 
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.PanaSessionState, Is.Default, nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
 #pragma warning disable CA2012
@@ -140,6 +144,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     Assert.That(raisedEventCount, Is.Zero, nameof(raisedEventCount));
 
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentError), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
     Assert.That(
@@ -161,6 +166,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     client.PanaSessionEstablished += (sender, e) => raisedEventCount++;
 
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.PanaSessionState, Is.Default, nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
     Assert.That(
@@ -175,6 +181,7 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     Assert.That(raisedEventCount, Is.Zero, nameof(raisedEventCount));
 
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
+    Assert.That(client.PanaSessionState, Is.Default, nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
     Assert.That(
