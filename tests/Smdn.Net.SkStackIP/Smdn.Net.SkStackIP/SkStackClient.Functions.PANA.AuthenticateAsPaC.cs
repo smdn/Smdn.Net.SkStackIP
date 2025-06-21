@@ -451,6 +451,11 @@ partial class SkStackClientFunctionsPanaTests {
     using var client = CreateClientPanaSessionEstablished(stream, CreateLoggerForTestCase());
 
     Assert.That(
+      client.ThrowIfPanaSessionAlreadyEstablished,
+      Throws.TypeOf<SkStackPanaSessionStateException>()
+    );
+
+    Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
@@ -728,6 +733,11 @@ partial class SkStackClientFunctionsPanaTests {
     using var client = CreateClientPanaSessionEstablished(stream, CreateLoggerForTestCase());
 
     Assert.That(
+      client.ThrowIfPanaSessionAlreadyEstablished,
+      Throws.TypeOf<SkStackPanaSessionStateException>()
+    );
+
+    Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
@@ -917,6 +927,11 @@ partial class SkStackClientFunctionsPanaTests {
     using var client = CreateClientPanaSessionEstablished(stream, CreateLoggerForTestCase());
 
     Assert.That(
+      client.ThrowIfPanaSessionAlreadyEstablished,
+      Throws.TypeOf<SkStackPanaSessionStateException>()
+    );
+
+    Assert.That(
 #pragma warning disable CA2012
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
@@ -1023,6 +1038,11 @@ partial class SkStackClientFunctionsPanaTests {
   {
     using var stream = new PseudoSkStackStream();
     using var client = CreateClientPanaSessionEstablished(stream, CreateLoggerForTestCase());
+
+    Assert.That(
+      client.ThrowIfPanaSessionAlreadyEstablished,
+      Throws.TypeOf<SkStackPanaSessionStateException>()
+    );
 
     Assert.That(
 #pragma warning disable CA2012

@@ -107,6 +107,10 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
       client.ThrowIfPanaSessionNotAlive,
       Throws.TypeOf<SkStackPanaSessionTerminatedException>()
     );
+    Assert.That(
+      client.ThrowIfPanaSessionAlreadyEstablished,
+      Throws.Nothing
+    );
 
     Assert.That(
       stream.ReadSentData(),
@@ -182,6 +186,10 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
       client.ThrowIfPanaSessionNotAlive,
       Throws.TypeOf<SkStackPanaSessionTerminatedException>()
     );
+    Assert.That(
+      client.ThrowIfPanaSessionAlreadyEstablished,
+      Throws.Nothing
+    );
 
     Assert.That(
       stream.ReadSentData(),
@@ -223,6 +231,10 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
     Assert.That(
       client.ThrowIfPanaSessionNotAlive,
       Throws.Nothing
+    );
+    Assert.That(
+      client.ThrowIfPanaSessionAlreadyEstablished,
+      Throws.TypeOf<SkStackPanaSessionStateException>()
     );
 
     Assert.That(

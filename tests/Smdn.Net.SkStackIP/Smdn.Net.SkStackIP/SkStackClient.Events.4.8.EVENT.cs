@@ -83,6 +83,10 @@ public class SkStackClientEventsEVENTTests : SkStackClientTestsBase {
       client.ThrowIfPanaSessionNotAlive,
       Throws.TypeOf<SkStackPanaSessionTerminatedException>()
     );
+    Assert.That(
+      client.ThrowIfPanaSessionAlreadyEstablished,
+      Throws.Nothing
+    );
   }
 
   [Test]
@@ -136,6 +140,10 @@ public class SkStackClientEventsEVENTTests : SkStackClientTestsBase {
     Assert.That(
       client.ThrowIfPanaSessionNotAlive,
       Throws.TypeOf<SkStackPanaSessionExpiredException>()
+    );
+    Assert.That(
+      client.ThrowIfPanaSessionAlreadyEstablished,
+      Throws.Nothing
     );
   }
 }

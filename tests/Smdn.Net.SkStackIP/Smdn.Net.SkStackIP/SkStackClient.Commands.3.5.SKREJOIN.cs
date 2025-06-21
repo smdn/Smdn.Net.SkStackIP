@@ -68,6 +68,10 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
       client.ThrowIfPanaSessionNotAlive,
       Throws.TypeOf<SkStackPanaSessionNotEstablishedException>()
     );
+    Assert.That(
+      client.ThrowIfPanaSessionAlreadyEstablished,
+      Throws.Nothing
+    );
 
 #pragma warning disable CA2012
     var taskSendCommand = client.SendSKREJOINAsync().AsTask();
@@ -92,6 +96,10 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     Assert.That(
       client.ThrowIfPanaSessionNotAlive,
       Throws.Nothing
+    );
+    Assert.That(
+      client.ThrowIfPanaSessionAlreadyEstablished,
+      Throws.TypeOf<SkStackPanaSessionStateException>()
     );
 
     Assert.That(

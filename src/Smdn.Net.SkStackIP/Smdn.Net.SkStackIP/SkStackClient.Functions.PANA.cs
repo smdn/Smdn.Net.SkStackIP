@@ -113,7 +113,7 @@ partial class SkStackClient {
   /// <exception cref="SkStackPanaSessionNotEstablishedException">
   /// <see cref="PanaSessionState"/> is <see cref="SkStackEventNumber.PanaSessionEstablishmentCompleted"/>.
   /// </exception>
-  protected internal void ThrowIfPanaSessionAlreadyEstablished()
+  public void ThrowIfPanaSessionAlreadyEstablished()
   {
     if (PanaSessionState == SkStackEventNumber.PanaSessionEstablishmentCompleted)
       throw new SkStackPanaSessionStateException("The PANA session has already been established.");

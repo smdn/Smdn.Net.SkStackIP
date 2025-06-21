@@ -53,6 +53,10 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
       client.ThrowIfPanaSessionNotAlive,
       Throws.TypeOf<SkStackPanaSessionNotEstablishedException>()
     );
+    Assert.That(
+      client.ThrowIfPanaSessionAlreadyEstablished,
+      Throws.Nothing
+    );
 
     Exception? thrownExceptionInEventHandler = null;
     var raisedEventCount = 0;
@@ -91,6 +95,10 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     Assert.That(
       client.ThrowIfPanaSessionNotAlive,
       Throws.Nothing
+    );
+    Assert.That(
+      client.ThrowIfPanaSessionAlreadyEstablished,
+      Throws.TypeOf<SkStackPanaSessionStateException>()
     );
 
     var response = taskSendCommand.Result;
