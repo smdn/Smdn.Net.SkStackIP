@@ -64,6 +64,11 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionState, Is.Default, nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
+    Assert.That(
+      client.ThrowIfPanaSessionNotAlive,
+      Throws.TypeOf<SkStackPanaSessionNotEstablishedException>()
+    );
+
 #pragma warning disable CA2012
     var taskSendCommand = client.SendSKREJOINAsync().AsTask();
 
@@ -83,6 +88,11 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     Assert.That(IPAddress.Parse(PaaIPv6Address), Is.EqualTo(client.PanaSessionPeerAddress), nameof(client.PanaSessionPeerAddress));
     Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
+
+    Assert.That(
+      client.ThrowIfPanaSessionNotAlive,
+      Throws.Nothing
+    );
 
     Assert.That(
       stream.ReadSentData(),
@@ -148,6 +158,11 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
     Assert.That(
+      client.ThrowIfPanaSessionNotAlive,
+      Throws.TypeOf<SkStackPanaSessionNotEstablishedException>()
+    );
+
+    Assert.That(
       stream.ReadSentData(),
       SequenceIs.EqualTo("SKREJOIN\r\n".ToByteSequence())
     );
@@ -183,6 +198,11 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.PanaSessionState, Is.Default, nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
+
+    Assert.That(
+      client.ThrowIfPanaSessionNotAlive,
+      Throws.TypeOf<SkStackPanaSessionNotEstablishedException>()
+    );
 
     Assert.That(
       stream.ReadSentData(),

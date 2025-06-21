@@ -78,6 +78,11 @@ public class SkStackClientEventsEVENTTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionTerminationRequestReceived), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
+
+    Assert.That(
+      client.ThrowIfPanaSessionNotAlive,
+      Throws.TypeOf<SkStackPanaSessionTerminatedException>()
+    );
   }
 
   [Test]
@@ -127,5 +132,10 @@ public class SkStackClientEventsEVENTTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionExpired), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
+
+    Assert.That(
+      client.ThrowIfPanaSessionNotAlive,
+      Throws.TypeOf<SkStackPanaSessionExpiredException>()
+    );
   }
 }

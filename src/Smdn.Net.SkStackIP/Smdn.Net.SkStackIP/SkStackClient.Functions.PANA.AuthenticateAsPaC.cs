@@ -18,6 +18,7 @@ partial class SkStackClient {
   /// <param name="password">A Route-B password used for PANA authentication.</param>
   /// <param name="scanOptions">Options such as scanning behavior when performing active scanning.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  /// <exception cref="SkStackPanaSessionStateException">PANA session has already been established.</exception>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<byte> rbid,
     ReadOnlyMemory<byte> password,
@@ -36,6 +37,7 @@ partial class SkStackClient {
   /// <param name="writePassword">A delegate to write Route-B password used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
   /// <param name="scanOptions">Options such as scanning behavior when performing active scanning.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  /// <exception cref="SkStackPanaSessionStateException">PANA session has already been established.</exception>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     Action<IBufferWriter<byte>> writeRBID,
     Action<IBufferWriter<byte>> writePassword,
@@ -63,6 +65,7 @@ partial class SkStackClient {
   /// <param name="channelNumber">A channel number to be used for PANA session.</param>
   /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  /// <exception cref="SkStackPanaSessionStateException">PANA session has already been established.</exception>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<byte> rbid,
     ReadOnlyMemory<byte> password,
@@ -87,6 +90,7 @@ partial class SkStackClient {
   /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
   /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  /// <exception cref="SkStackPanaSessionStateException">PANA session has already been established.</exception>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<byte> rbid,
     ReadOnlyMemory<byte> password,
@@ -111,6 +115,7 @@ partial class SkStackClient {
   /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
   /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  /// <exception cref="SkStackPanaSessionStateException">PANA session has already been established.</exception>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     Action<IBufferWriter<byte>> writeRBID,
     Action<IBufferWriter<byte>> writePassword,
@@ -141,6 +146,7 @@ partial class SkStackClient {
   /// <param name="password">A Route-B password used for PANA authentication.</param>
   /// <param name="pan">A <see cref="SkStackPanDescription"/> representing the address of the PANA Authentication Agent (PAA), PAN ID, and channel used for PANA session.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  /// <exception cref="SkStackPanaSessionStateException">PANA session has already been established.</exception>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<byte> rbid,
     ReadOnlyMemory<byte> password,
@@ -161,6 +167,7 @@ partial class SkStackClient {
   /// <param name="writePassword">A delegate to write Route-B password used for PANA authentication to the <see cref="IBufferWriter{Byte}"/>.</param>
   /// <param name="pan">A <see cref="SkStackPanDescription"/> representing the address of the PANA Authentication Agent (PAA), PAN ID, and channel used for PANA session.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  /// <exception cref="SkStackPanaSessionStateException">PANA session has already been established.</exception>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     Action<IBufferWriter<byte>> writeRBID,
     Action<IBufferWriter<byte>> writePassword,
@@ -183,6 +190,7 @@ partial class SkStackClient {
   /// <param name="channelNumber">A channel number to be used for PANA session.</param>
   /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  /// <exception cref="SkStackPanaSessionStateException">PANA session has already been established.</exception>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<byte> rbid,
     ReadOnlyMemory<byte> password,
@@ -207,6 +215,7 @@ partial class SkStackClient {
   /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
   /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  /// <exception cref="SkStackPanaSessionStateException">PANA session has already been established.</exception>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     ReadOnlyMemory<byte> rbid,
     ReadOnlyMemory<byte> password,
@@ -231,6 +240,7 @@ partial class SkStackClient {
   /// <param name="channel">A <see cref="SkStackChannel"/> representing the channel to be used for PANA session.</param>
   /// <param name="panId">A Personal Area Network (PAN) ID to be used for PANA session.</param>
   /// <param name="cancellationToken">The <see cref="CancellationToken" /> to monitor for cancellation requests.</param>
+  /// <exception cref="SkStackPanaSessionStateException">PANA session has already been established.</exception>
   public ValueTask<SkStackPanaSessionInfo> AuthenticateAsPanaClientAsync(
     Action<IBufferWriter<byte>> writeRBID,
     Action<IBufferWriter<byte>> writePassword,

@@ -104,6 +104,11 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
     Assert.That(
+      client.ThrowIfPanaSessionNotAlive,
+      Throws.TypeOf<SkStackPanaSessionTerminatedException>()
+    );
+
+    Assert.That(
       stream.ReadSentData(),
       SequenceIs.EqualTo("SKTERM\r\n".ToByteSequence())
     );
@@ -174,6 +179,11 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
     Assert.That(
+      client.ThrowIfPanaSessionNotAlive,
+      Throws.TypeOf<SkStackPanaSessionTerminatedException>()
+    );
+
+    Assert.That(
       stream.ReadSentData(),
       SequenceIs.EqualTo("SKTERM\r\n".ToByteSequence())
     );
@@ -209,6 +219,11 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
+
+    Assert.That(
+      client.ThrowIfPanaSessionNotAlive,
+      Throws.Nothing
+    );
 
     Assert.That(
       stream.ReadSentData(),

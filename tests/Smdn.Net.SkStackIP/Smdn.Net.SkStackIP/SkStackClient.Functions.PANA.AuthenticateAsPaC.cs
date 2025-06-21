@@ -457,7 +457,7 @@ partial class SkStackClientFunctionsPanaTests {
         password: "0123456789AB".ToByteSequence(),
         scanOptions: null
       ),
-      Throws.InvalidOperationException
+      Throws.TypeOf<SkStackPanaSessionStateException>()
 #pragma warning restore CA2012
     );
   }
@@ -736,7 +736,7 @@ partial class SkStackClientFunctionsPanaTests {
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: SkStackRegister.PanId.MinValue
       ),
-      Throws.InvalidOperationException
+      Throws.TypeOf<SkStackPanaSessionStateException>()
 #pragma warning restore CA2012
     );
   }
@@ -923,7 +923,7 @@ partial class SkStackClientFunctionsPanaTests {
         password: "0123456789AB".ToByteSequence(),
         pan: default
       ),
-      Throws.InvalidOperationException
+      Throws.TypeOf<SkStackPanaSessionStateException>()
 #pragma warning restore CA2012
     );
   }
@@ -1033,7 +1033,7 @@ partial class SkStackClientFunctionsPanaTests {
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: SkStackRegister.PanId.MinValue
       ),
-      Throws.InvalidOperationException
+      Throws.TypeOf<SkStackPanaSessionStateException>()
 #pragma warning restore CA2012
     );
   }

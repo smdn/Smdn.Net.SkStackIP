@@ -92,8 +92,9 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
-    Assert.ThrowsAsync<InvalidOperationException>(
-      async () => await client.SendUdpEchonetLiteAsync(Array.Empty<byte>())
+    Assert.That(
+      async () => await client.SendUdpEchonetLiteAsync(Array.Empty<byte>()),
+      Throws.TypeOf<SkStackPanaSessionNotEstablishedException>()
     );
   }
 

@@ -49,6 +49,11 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionState, Is.Default, nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
+    Assert.That(
+      client.ThrowIfPanaSessionNotAlive,
+      Throws.TypeOf<SkStackPanaSessionNotEstablishedException>()
+    );
+
     Exception? thrownExceptionInEventHandler = null;
     var raisedEventCount = 0;
 
@@ -82,6 +87,11 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     Assert.That(IPAddress.Parse(PaaIPv6Address), Is.EqualTo(client.PanaSessionPeerAddress), nameof(client.PanaSessionPeerAddress));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
+
+    Assert.That(
+      client.ThrowIfPanaSessionNotAlive,
+      Throws.Nothing
+    );
 
     var response = taskSendCommand.Result;
 
@@ -151,6 +161,11 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentError), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
+
+    Assert.That(
+      client.ThrowIfPanaSessionNotAlive,
+      Throws.TypeOf<SkStackPanaSessionNotEstablishedException>()
+    );
 
     Assert.That(
       stream.ReadSentData(),

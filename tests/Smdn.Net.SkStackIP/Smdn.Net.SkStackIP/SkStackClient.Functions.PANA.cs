@@ -22,9 +22,9 @@ public partial class SkStackClientFunctionsPanaTests : SkStackClientTestsBase {
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
 #pragma warning disable CA2012
-    Assert.That(() => client.TerminatePanaSessionAsync(), Throws.InvalidOperationException);
+    Assert.That(() => client.TerminatePanaSessionAsync(), Throws.TypeOf<SkStackPanaSessionNotEstablishedException>());
 #pragma warning restore CA2012
-    Assert.That(async () => await client.TerminatePanaSessionAsync(), Throws.InvalidOperationException);
+    Assert.That(async () => await client.TerminatePanaSessionAsync(), Throws.TypeOf<SkStackPanaSessionNotEstablishedException>());
   }
 
   [TestCase(true)]

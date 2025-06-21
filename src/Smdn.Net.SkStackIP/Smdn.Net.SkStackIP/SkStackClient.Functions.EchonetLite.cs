@@ -41,6 +41,7 @@ partial class SkStackClient {
     );
   }
 
+  /// <exception cref="SkStackPanaSessionNotEstablishedException">PANA session is not established.</exception>
   [CLSCompliant(false)] // ResiliencePipeline is not CLS compliant
   public ValueTask SendUdpEchonetLiteAsync(
     ReadOnlyMemory<byte> buffer,
