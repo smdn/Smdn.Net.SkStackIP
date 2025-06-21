@@ -1,7 +1,7 @@
-// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.5.0)
+// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.5.1)
 //   Name: Smdn.Net.SkStackIP
-//   AssemblyVersion: 1.5.0.0
-//   InformationalVersion: 1.5.0+631c22046275c09f042cc7f5d6d1e8d6af6500d7
+//   AssemblyVersion: 1.5.1.0
+//   InformationalVersion: 1.5.1+4e659267f00877b910ce282f3bebfb7dcb3e61a9
 //   TargetFramework: .NETStandard,Version=v2.1
 //   Configuration: Release
 //   Referenced assemblies:
