@@ -86,6 +86,14 @@ partial class SkStackClient {
 #endif
   public bool IsPanaSessionAlive => PanaSessionPeerAddress is not null;
 
+  /// <inheritdoc cref="ThrowIfPanaSessionNotEstablished"/>
+  [Obsolete($"Use {nameof(ThrowIfPanaSessionNotEstablished)} instead.")]
+#if SYSTEM_DIAGNOSTICS_CODEANALYSIS_MEMBERNOTNULLATTRIBUTE
+  [MemberNotNull(nameof(PanaSessionPeerAddress))]
+#endif
+  protected internal void ThrowIfPanaSessionIsNotEstablished()
+    => ThrowIfPanaSessionNotEstablished();
+
   /// <summary>
   /// Throws <see cref="SkStackPanaSessionNotEstablishedException"/> if <see cref="PanaSessionState"/>
   /// is not <see cref="SkStackEventNumber.PanaSessionEstablishmentCompleted"/>.
@@ -96,7 +104,7 @@ partial class SkStackClient {
 #if SYSTEM_DIAGNOSTICS_CODEANALYSIS_MEMBERNOTNULLATTRIBUTE
   [MemberNotNull(nameof(PanaSessionPeerAddress))]
 #endif
-  protected internal void ThrowIfPanaSessionIsNotEstablished()
+  public void ThrowIfPanaSessionNotEstablished()
   {
     if (PanaSessionState != SkStackEventNumber.PanaSessionEstablishmentCompleted)
       throw new SkStackPanaSessionNotEstablishedException();
@@ -110,7 +118,7 @@ partial class SkStackClient {
   /// Throws <see cref="SkStackPanaSessionStateException"/> if <see cref="PanaSessionState"/>
   /// is <see cref="SkStackEventNumber.PanaSessionEstablishmentCompleted"/>.
   /// </summary>
-  /// <exception cref="SkStackPanaSessionNotEstablishedException">
+  /// <exception cref="SkStackPanaSessionStateException">
   /// <see cref="PanaSessionState"/> is <see cref="SkStackEventNumber.PanaSessionEstablishmentCompleted"/>.
   /// </exception>
   public void ThrowIfPanaSessionAlreadyEstablished()
@@ -244,7 +252,7 @@ partial class SkStackClient {
   )
   {
     ThrowIfDisposed();
-    ThrowIfPanaSessionIsNotEstablished();
+    ThrowIfPanaSessionNotEstablished();
 
     return TerminatePanaSessionAsyncCore();
 

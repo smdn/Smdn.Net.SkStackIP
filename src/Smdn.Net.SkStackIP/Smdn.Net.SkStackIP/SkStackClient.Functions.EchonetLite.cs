@@ -53,7 +53,7 @@ partial class SkStackClient {
       throw new InvalidOperationException($"UDP port {SkStackKnownPortNumbers.EchonetLite} is not listening. Call {nameof(PrepareUdpPortAsync)} or {nameof(SendSKUDPPORTAsync)} in advance to listen the port.");
 
     ThrowIfDisposed();
-    ThrowIfPanaSessionIsNotEstablished();
+    ThrowIfPanaSessionNotEstablished();
 
     resiliencePipeline ??= ResiliencePipeline.Empty;
 

@@ -20,11 +20,20 @@ public partial class SkStackClientFunctionsPanaTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
+    Assert.That(
+      client.ThrowIfPanaSessionNotEstablished,
+      Throws.TypeOf<SkStackPanaSessionNotEstablishedException>()
+    );
 
 #pragma warning disable CA2012
     Assert.That(() => client.TerminatePanaSessionAsync(), Throws.TypeOf<SkStackPanaSessionNotEstablishedException>());
 #pragma warning restore CA2012
     Assert.That(async () => await client.TerminatePanaSessionAsync(), Throws.TypeOf<SkStackPanaSessionNotEstablishedException>());
+
+    Assert.That(
+      client.ThrowIfPanaSessionNotEstablished,
+      Throws.TypeOf<SkStackPanaSessionNotEstablishedException>()
+    );
   }
 
   [TestCase(true)]
@@ -37,6 +46,10 @@ public partial class SkStackClientFunctionsPanaTests : SkStackClientTestsBase {
     using var client = CreateClientPanaSessionEstablished(stream, logger: CreateLoggerForTestCase());
 
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
+    Assert.That(
+      client.ThrowIfPanaSessionNotEstablished,
+      Throws.Nothing
+    );
 
     stream.ClearSentData();
 
@@ -64,6 +77,10 @@ public partial class SkStackClientFunctionsPanaTests : SkStackClientTestsBase {
 
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
+    Assert.That(
+      client.ThrowIfPanaSessionNotEstablished,
+      Throws.TypeOf<SkStackPanaSessionNotEstablishedException>()
+    );
 
     Assert.That(
       stream.ReadSentData(),
