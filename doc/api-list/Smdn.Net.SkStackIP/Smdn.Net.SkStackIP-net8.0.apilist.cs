@@ -1,7 +1,7 @@
-// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.4.0)
+// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.5.0)
 //   Name: Smdn.Net.SkStackIP
-//   AssemblyVersion: 1.4.0.0
-//   InformationalVersion: 1.4.0+0042217f1f00329fae1eb89b19f6739d41ff5b21
+//   AssemblyVersion: 1.5.0.0
+//   InformationalVersion: 1.5.0+59718bae9aefc1eebe0fd48944711a299cd82811
 //   TargetFramework: .NETCoreApp,Version=v8.0
 //   Configuration: Release
 //   Referenced assemblies:
@@ -136,6 +136,7 @@ namespace Smdn.Net.SkStackIP {
     public bool IsPanaSessionAlive { [MemberNotNullWhen(true, "PanaSessionPeerAddress")] get; }
     protected ILogger? Logger { get; }
     public IPAddress? PanaSessionPeerAddress { get; }
+    public SkStackEventNumber PanaSessionState { get; }
     public TimeSpan ReceiveResponseDelay { get; set; }
     public TimeSpan ReceiveUdpPollingInterval { get; set; }
     public ISynchronizeInvoke? SynchronizingObject { get; set; }
@@ -213,6 +214,7 @@ namespace Smdn.Net.SkStackIP {
     internal protected void ThrowIfPanaSessionAlreadyEstablished() {}
     [MemberNotNull("PanaSessionPeerAddress")]
     internal protected void ThrowIfPanaSessionIsNotEstablished() {}
+    public void ThrowIfPanaSessionNotAlive() {}
   }
 
   public class SkStackCommandNotSupportedException : SkStackErrorResponseException {
@@ -260,6 +262,12 @@ namespace Smdn.Net.SkStackIP {
     public SkStackEventNumber EventNumber { get; }
   }
 
+  public class SkStackPanaSessionExpiredException : SkStackPanaSessionStateException {
+    public SkStackPanaSessionExpiredException() {}
+    public SkStackPanaSessionExpiredException(string message) {}
+    public SkStackPanaSessionExpiredException(string message, Exception? innerException = null) {}
+  }
+
   public sealed class SkStackPanaSessionInfo {
     public SkStackChannel Channel { get; }
     public IPAddress LocalAddress { get; }
@@ -267,6 +275,24 @@ namespace Smdn.Net.SkStackIP {
     public int PanId { get; }
     public IPAddress PeerAddress { get; }
     public PhysicalAddress PeerMacAddress { get; }
+  }
+
+  public class SkStackPanaSessionNotEstablishedException : SkStackPanaSessionStateException {
+    public SkStackPanaSessionNotEstablishedException() {}
+    public SkStackPanaSessionNotEstablishedException(string message) {}
+    public SkStackPanaSessionNotEstablishedException(string message, Exception? innerException = null) {}
+  }
+
+  public class SkStackPanaSessionStateException : InvalidOperationException {
+    public SkStackPanaSessionStateException() {}
+    public SkStackPanaSessionStateException(string message) {}
+    public SkStackPanaSessionStateException(string message, Exception? innerException = null) {}
+  }
+
+  public class SkStackPanaSessionTerminatedException : SkStackPanaSessionStateException {
+    public SkStackPanaSessionTerminatedException() {}
+    public SkStackPanaSessionTerminatedException(string message) {}
+    public SkStackPanaSessionTerminatedException(string message, Exception? innerException = null) {}
   }
 
   public static class SkStackRegister {
