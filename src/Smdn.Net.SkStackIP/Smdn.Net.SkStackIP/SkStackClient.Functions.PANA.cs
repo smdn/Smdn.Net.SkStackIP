@@ -158,11 +158,17 @@ partial class SkStackClient {
   /// <exception cref="SkStackPanaSessionStateException">
   /// Cannot determine the current status of the PANA session.
   /// </exception>
+#if SYSTEM_DIAGNOSTICS_CODEANALYSIS_MEMBERNOTNULLATTRIBUTE
+  [MemberNotNull(nameof(PanaSessionPeerAddress))]
+#endif
   public void ThrowIfPanaSessionNotAlive()
   {
     _ = PanaSessionState switch {
       // established
-      SkStackEventNumber.PanaSessionEstablishmentCompleted => default(int), // throws nothing
+      SkStackEventNumber.PanaSessionEstablishmentCompleted
+        => PanaSessionPeerAddress
+          // inconsistency in internal state
+          ?? throw new InvalidOperationException($"{nameof(PanaSessionPeerAddress)} is set."),
 
       // not established yet
       SkStackEventNumber.Undefined
