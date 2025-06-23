@@ -135,6 +135,9 @@ partial class SkStackClient {
         cancellationToken: cancellationToken
       ).ConfigureAwait(false);
 
+      if (newlyListeningPort.Port == SkStackKnownPortNumbers.EchonetLite)
+        udpPortHandleForEchonetLite = newlyListeningPort.Handle;
+
       return newlyListeningPort;
     }
 

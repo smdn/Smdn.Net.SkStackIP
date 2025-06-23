@@ -284,6 +284,104 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
   }
 
   [Test]
+  public void PrepareUdpPortAsync_EchonetLite()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    Assert.That(
+      async () => await client.SendUdpEchonetLiteAsync(buffer: new byte[] { 0x00 }),
+      Throws
+        .InvalidOperationException
+        .With
+        .Property(nameof(InvalidOperationException.Message))
+        .Contains("not listening")
+    );
+
+    const SkStackUdpPortHandle PortHandle = SkStackUdpPortHandle.Handle1;
+
+    // SKTABLE E
+    stream.ResponseWriter.WriteLine("EPORT");
+    stream.ResponseWriter.WriteLine("0"); // #1
+    stream.ResponseWriter.WriteLine("0"); // #2
+    stream.ResponseWriter.WriteLine("0"); // #3
+    stream.ResponseWriter.WriteLine("0"); // #4
+    stream.ResponseWriter.WriteLine("0"); // #5
+    stream.ResponseWriter.WriteLine("0"); // #6
+    stream.ResponseWriter.WriteLine("OK");
+    // SKUDPPORT
+    stream.ResponseWriter.WriteLine("OK");
+
+    SkStackUdpPort preparedPort = default;
+
+    Assert.DoesNotThrowAsync(
+      async () => preparedPort = await client.PrepareUdpPortAsync(SkStackKnownPortNumbers.EchonetLite)
+    );
+
+    Assert.That(preparedPort.IsUnused, Is.False);
+    Assert.That(preparedPort.Handle, Is.EqualTo(PortHandle), nameof(preparedPort.Handle));
+    Assert.That(preparedPort.Port, Is.EqualTo(SkStackKnownPortNumbers.EchonetLite), nameof(preparedPort.Port));
+
+    Assert.That(
+      async () => await client.SendUdpEchonetLiteAsync(buffer: new byte[] { 0x00 }),
+      Throws.InstanceOf<SkStackPanaSessionStateException>()
+    );
+
+    Assert.That(
+      stream.ReadSentData(),
+      SequenceIs.EqualTo($"SKTABLE E\r\nSKUDPPORT {(int)PortHandle} {SkStackKnownPortNumbers.EchonetLite:X4}\r\n".ToByteSequence())
+    );
+  }
+
+  [Test]
+  public void PrepareUdpPortAsync_EchonetLite_AlreadyListening()
+  {
+    using var stream = new PseudoSkStackStream();
+    using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+
+    Assert.That(
+      async () => await client.SendUdpEchonetLiteAsync(buffer: new byte[] { 0x00 }),
+      Throws
+        .InvalidOperationException
+        .With
+        .Property(nameof(InvalidOperationException.Message))
+        .Contains("not listening")
+    );
+
+    const SkStackUdpPortHandle PortHandle = SkStackUdpPortHandle.Handle3;
+
+    // SKTABLE E
+    stream.ResponseWriter.WriteLine("EPORT");
+    stream.ResponseWriter.WriteLine("0"); // #1
+    stream.ResponseWriter.WriteLine("0"); // #2
+    stream.ResponseWriter.WriteLine($"{SkStackKnownPortNumbers.EchonetLite:D}"); // #3
+    stream.ResponseWriter.WriteLine("0"); // #4
+    stream.ResponseWriter.WriteLine("0"); // #5
+    stream.ResponseWriter.WriteLine("0"); // #6
+    stream.ResponseWriter.WriteLine("OK");
+
+    SkStackUdpPort preparedPort = default;
+
+    Assert.DoesNotThrowAsync(
+      async () => preparedPort = await client.PrepareUdpPortAsync(SkStackKnownPortNumbers.EchonetLite)
+    );
+
+    Assert.That(preparedPort.IsUnused, Is.False);
+    Assert.That(preparedPort.Handle, Is.EqualTo(PortHandle), nameof(preparedPort.Handle));
+    Assert.That(preparedPort.Port, Is.EqualTo(SkStackKnownPortNumbers.EchonetLite), nameof(preparedPort.Port));
+
+    Assert.That(
+      async () => await client.SendUdpEchonetLiteAsync(buffer: new byte[] { 0x00 }),
+      Throws.InstanceOf<SkStackPanaSessionStateException>()
+    );
+
+    Assert.That(
+      stream.ReadSentData(),
+      SequenceIs.EqualTo("SKTABLE E\r\n".ToByteSequence())
+    );
+  }
+
+  [Test]
   public void PrepareUdpPortAsync_NoUnusedPorts()
   {
     using var stream = new PseudoSkStackStream();
