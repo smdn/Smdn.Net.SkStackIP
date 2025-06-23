@@ -1,7 +1,7 @@
-// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.5.1)
+// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.5.2)
 //   Name: Smdn.Net.SkStackIP
-//   AssemblyVersion: 1.5.1.0
-//   InformationalVersion: 1.5.1+4e659267f00877b910ce282f3bebfb7dcb3e61a9
+//   AssemblyVersion: 1.5.2.0
+//   InformationalVersion: 1.5.2+e20e0c7c296fb514b9b1ed1a62fa9dbb6ecce93f
 //   TargetFramework: .NETCoreApp,Version=v8.0
 //   Configuration: Release
 //   Referenced assemblies:
