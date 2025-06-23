@@ -215,6 +215,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
   [TestCase(SkStackKnownPortNumbers.EchonetLite, SkStackUdpPortHandle.Handle2)]
   [TestCase(SkStackKnownPortNumbers.Pana, SkStackUdpPortHandle.Handle2)]
+  [TestCase(8080, SkStackUdpPortHandle.Handle2)]
   public void PrepareUdpPortAsync(int port, SkStackUdpPortHandle expectedHandle)
   {
     using var stream = new PseudoSkStackStream();
@@ -250,6 +251,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
   [TestCase(SkStackKnownPortNumbers.EchonetLite, SkStackUdpPortHandle.Handle5)]
   [TestCase(SkStackKnownPortNumbers.Pana, SkStackUdpPortHandle.Handle3)]
+  [TestCase(8080, SkStackUdpPortHandle.Handle2)]
   public void PrepareUdpPortAsync_AlreadyListening(int port, SkStackUdpPortHandle expectedHandle)
   {
     using var stream = new PseudoSkStackStream();
@@ -258,7 +260,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     // SKTABLE E
     stream.ResponseWriter.WriteLine("EPORT");
     stream.ResponseWriter.WriteLine("0");     // #1
-    stream.ResponseWriter.WriteLine("0");     // #2
+    stream.ResponseWriter.WriteLine("8080");  // #2
     stream.ResponseWriter.WriteLine($"{SkStackKnownPortNumbers.Pana:D}"); // #3
     stream.ResponseWriter.WriteLine("0");     // #4
     stream.ResponseWriter.WriteLine($"{SkStackKnownPortNumbers.EchonetLite:D}"); // #5
@@ -274,6 +276,11 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     Assert.That(preparedPort.IsUnused, Is.False);
     Assert.That(preparedPort.Handle, Is.EqualTo(expectedHandle), nameof(preparedPort.Handle));
     Assert.That(preparedPort.Port, Is.EqualTo(port), nameof(preparedPort.Port));
+
+    Assert.That(
+      stream.ReadSentData(),
+      SequenceIs.EqualTo("SKTABLE E\r\n".ToByteSequence())
+    );
   }
 
   [Test]
