@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2023 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -11,7 +12,8 @@ namespace Smdn.Net.SkStackIP;
 
 [TestFixture]
 public partial class SkStackClientFunctionsPanaTests : SkStackClientTestsBase {
-  private static readonly TimeSpan DefaultTimeOut = TimeSpan.FromSeconds(5);
+  private const int DefaultTimeOutInMilliseconds = 5_000;
+  private static readonly TimeSpan DefaultTimeOut = TimeSpan.FromMilliseconds(DefaultTimeOutInMilliseconds);
 
   [Test]
   public void TerminatePanaSessionAsync_PanaSessionNotEstablished()
@@ -36,14 +38,21 @@ public partial class SkStackClientFunctionsPanaTests : SkStackClientTestsBase {
     );
   }
 
-  [TestCase(true)]
-  [TestCase(false)]
-  public void TerminatePanaSessionAsync(bool timeout)
+  [Test]
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void TerminatePanaSessionAsync(
+    [Values] bool timeout,
+    CancellationToken cancellationToken
+  )
   {
     const string AddressString = "FE80:0000:0000:0000:021D:1290:1234:5678";
 
     var stream = new PseudoSkStackStream();
-    using var client = CreateClientPanaSessionEstablished(stream, logger: CreateLoggerForTestCase());
+    using var client = CreateClientPanaSessionEstablished(
+      stream,
+      logger: CreateLoggerForTestCase(),
+      cancellationToken
+    );
 
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
     Assert.That(
@@ -59,12 +68,12 @@ public partial class SkStackClientFunctionsPanaTests : SkStackClientTestsBase {
 
     async Task RaisePanaSessionTerminationEventsAsync()
     {
-      await Task.Delay(ResponseDelayInterval);
+      await Task.Delay(ResponseDelayInterval, cancellationToken);
 
       stream.ResponseWriter.WriteLine($"EVENT {(timeout ? 28 : 27)} {AddressString}");
     }
 
-    var taskSendTerminatePanaSessionAsync = client.TerminatePanaSessionAsync().AsTask();
+    var taskSendTerminatePanaSessionAsync = client.TerminatePanaSessionAsync(cancellationToken).AsTask();
 
     Assert.DoesNotThrowAsync(
       async () => await Task.WhenAll(taskSendTerminatePanaSessionAsync, RaisePanaSessionTerminationEventsAsync())

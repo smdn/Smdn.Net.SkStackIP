@@ -20,7 +20,8 @@ namespace Smdn.Net.SkStackIP;
 
 [TestFixture]
 public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
-  private static readonly TimeSpan DefaultTimeOut = TimeSpan.FromSeconds(5);
+  private const int DefaultTimeOutInMilliseconds = 5_000;
+  private static readonly TimeSpan DefaultTimeOut = TimeSpan.FromMilliseconds(DefaultTimeOutInMilliseconds);
 
   [Test]
   public void ReceiveUdpEchonetLiteAsync_BufferNull()
@@ -32,9 +33,12 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     );
   }
 
-  [TestCase(true)]
-  [TestCase(false)]
-  public void ReceiveUdpEchonetLiteAsync(bool startCapturingExplicitly)
+  [Test]
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void ReceiveUdpEchonetLiteAsync(
+    [Values] bool startCapturingExplicitly,
+    CancellationToken cancellationToken
+  )
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
@@ -48,15 +52,13 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine($"ERXUDP {remoteAddressString} FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 01234567");
 
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
     var buffer = new ArrayBufferWriter<byte>();
-
     IPAddress? remoteAddress = null;
 
     Assert.DoesNotThrowAsync(
       async () => remoteAddress = await client.ReceiveUdpEchonetLiteAsync(
         buffer: buffer,
-        cts.Token
+        cancellationToken
       )
     );
 
@@ -99,10 +101,15 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
   }
 
   [Test]
-  public async Task SendUdpEchonetLiteAsync_NoPortHandleAssignedToEchonetLite()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public async Task SendUdpEchonetLiteAsync_NoPortHandleAssignedToEchonetLite(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
-    using var client = SkStackClientFunctionsPanaTests.CreateClientPanaSessionEstablished(stream, logger: CreateLoggerForTestCase());
+    using var client = SkStackClientFunctionsPanaTests.CreateClientPanaSessionEstablished(
+      stream,
+      logger: CreateLoggerForTestCase(),
+      cancellationToken
+    );
 
     Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
@@ -117,7 +124,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("0");
     stream.ResponseWriter.WriteLine("OK");
 
-    var response = await client.SendSKTABLEListeningPortListAsync();
+    var response = await client.SendSKTABLEListeningPortListAsync(cancellationToken);
 
     Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Empty);
 
@@ -127,12 +134,18 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
   }
 
   [Test]
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
   public async Task SendUdpEchonetLiteAsync(
-    [Values(SkStackUdpPortHandle.Handle1, SkStackUdpPortHandle.Handle3, SkStackUdpPortHandle.Handle6)] SkStackUdpPortHandle handleForEchonetLite
+    [Values(SkStackUdpPortHandle.Handle1, SkStackUdpPortHandle.Handle3, SkStackUdpPortHandle.Handle6)] SkStackUdpPortHandle handleForEchonetLite,
+    CancellationToken cancellationToken
   )
   {
     using var stream = new PseudoSkStackStream();
-    using var client = SkStackClientFunctionsPanaTests.CreateClientPanaSessionEstablished(stream, logger: CreateLoggerForTestCase());
+    using var client = SkStackClientFunctionsPanaTests.CreateClientPanaSessionEstablished(
+      stream,
+      logger: CreateLoggerForTestCase(),
+      cancellationToken
+    );
 
     Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
@@ -144,7 +157,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     }
     stream.ResponseWriter.WriteLine("OK");
 
-    var response = await client.SendSKTABLEListeningPortListAsync();
+    var response = await client.SendSKTABLEListeningPortListAsync(cancellationToken);
 
     Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
 
@@ -156,11 +169,10 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine($"EVENT 21 {senderAddress} 00");
     stream.ResponseWriter.WriteLine("OK");
 
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
     var buffer = Encoding.ASCII.GetBytes("012345");
 
     Assert.DoesNotThrowAsync(
-      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: null, cts.Token)
+      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: null, cancellationToken)
     );
 
     var expectedDestinationAddress = client.PanaSessionPeerAddress!.ToLongFormatString();
@@ -172,12 +184,17 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
   }
 
   [Test]
-  public async Task SendUdpEchonetLiteAsync_FailedWithEVENT21PARAM1()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public async Task SendUdpEchonetLiteAsync_FailedWithEVENT21PARAM1(CancellationToken cancellationToken)
   {
     const SkStackUdpPortHandle handleForEchonetLite = SkStackUdpPortHandle.Handle1;
 
     using var stream = new PseudoSkStackStream();
-    using var client = SkStackClientFunctionsPanaTests.CreateClientPanaSessionEstablished(stream, logger: CreateLoggerForTestCase());
+    using var client = SkStackClientFunctionsPanaTests.CreateClientPanaSessionEstablished(
+      stream,
+      logger: CreateLoggerForTestCase(),
+      cancellationToken
+    );
 
     Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
@@ -189,7 +206,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     }
     stream.ResponseWriter.WriteLine("OK");
 
-    var response = await client.SendSKTABLEListeningPortListAsync();
+    var response = await client.SendSKTABLEListeningPortListAsync(cancellationToken);
 
     Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
 
@@ -201,11 +218,10 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine($"EVENT 21 {senderAddress} 01");
     stream.ResponseWriter.WriteLine("OK");
 
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
     var buffer = Encoding.ASCII.GetBytes("012345");
 
     Assert.That(
-      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: null, cts.Token),
+      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: null, cancellationToken),
       Throws
         .TypeOf<SkStackUdpSendFailedException>()
         .And.Property(nameof(SkStackUdpSendFailedException.PeerAddress)).EqualTo(client.PanaSessionPeerAddress)
@@ -221,13 +237,18 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
   }
 
   [Test]
-  public async Task SendUdpEchonetLiteAsync_ResilienceStrategy()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public async Task SendUdpEchonetLiteAsync_ResilienceStrategy(CancellationToken cancellationToken)
   {
     const SkStackUdpPortHandle handleForEchonetLite = SkStackUdpPortHandle.Handle1;
     const int maxSendAttempt = 3;
 
     using var stream = new PseudoSkStackStream();
-    using var client = SkStackClientFunctionsPanaTests.CreateClientPanaSessionEstablished(stream, logger: CreateLoggerForTestCase());
+    using var client = SkStackClientFunctionsPanaTests.CreateClientPanaSessionEstablished(
+      stream,
+      logger: CreateLoggerForTestCase(),
+      cancellationToken
+    );
 
     Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
@@ -239,7 +260,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     }
     stream.ResponseWriter.WriteLine("OK");
 
-    var response = await client.SendSKTABLEListeningPortListAsync();
+    var response = await client.SendSKTABLEListeningPortListAsync(cancellationToken);
 
     Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
 
@@ -263,11 +284,10 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
       )
       .Build();
 
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
     var buffer = Encoding.ASCII.GetBytes("012345");
 
     Assert.That(
-      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: resiliencePipeline, cts.Token),
+      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: resiliencePipeline, cancellationToken),
       Throws
         .TypeOf<SkStackUdpSendFailedException>()
         .And.Property(nameof(SkStackUdpSendFailedException.PeerAddress)).EqualTo(client.PanaSessionPeerAddress)

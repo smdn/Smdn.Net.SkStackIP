@@ -15,78 +15,79 @@ namespace Smdn.Net.SkStackIP;
 partial class SkStackClientFunctionsPanaTests {
 #pragma warning restore IDE0040
   [Test]
-  public void ActiveScanAsync_ArgumentException_RBIDEmpty()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void ActiveScanAsync_ArgumentException_RBIDEmpty(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.ActiveScanAsync(
         rbid: default,
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("rbid")
     );
   }
 
   [Test]
-  public void ActiveScanAsync_ArgumentException_PasswordEmpty()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void ActiveScanAsync_ArgumentException_PasswordEmpty(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.ActiveScanAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: default,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("password")
     );
   }
 
   [Test]
-  public void ActiveScanAsync_ArgumentNullException_WriteRBID()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void ActiveScanAsync_ArgumentNullException_WriteRBID(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.ActiveScanAsync(
         writeRBID: null!,
         writePassword: static writer => throw new NotImplementedException(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentNullException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("writeRBID")
     );
   }
 
   [Test]
-  public void ActiveScanAsync_ArgumentNullException_WritePassword()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void ActiveScanAsync_ArgumentNullException_WritePassword(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.ActiveScanAsync(
         writeRBID: static writer => throw new NotImplementedException(),
         writePassword: null!,
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentNullException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("writePassword")
     );
   }
 
   [Test]
-  public void ActiveScanAsync_RouteBCredential_ReadOnlyMemory()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void ActiveScanAsync_RouteBCredential_ReadOnlyMemory(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
 
@@ -99,14 +100,13 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.DoesNotThrowAsync(async () => {
       await client.ActiveScanAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       );
     });
 
@@ -118,7 +118,8 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void ActiveScanAsync_RouteBCredential_Writer()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void ActiveScanAsync_RouteBCredential_Writer(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
 
@@ -131,14 +132,13 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.DoesNotThrowAsync(async () => {
       await client.ActiveScanAsync(
         writeRBID: static writer => writer.Write("00112233445566778899AABBCCDDEEFF".ToByteSequence().Span),
         writePassword: static writer => writer.Write("0123456789AB".ToByteSequence().Span),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       );
     });
 
@@ -150,7 +150,8 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void ActiveScanAsync_NotFound()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void ActiveScanAsync_NotFound(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
 
@@ -163,8 +164,6 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
-
     IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
     Assert.DoesNotThrowAsync(async () => {
@@ -172,7 +171,7 @@ partial class SkStackClientFunctionsPanaTests {
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       );
     });
 
@@ -181,7 +180,8 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void ActiveScanAsync_FoundSingle()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void ActiveScanAsync_FoundSingle(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
 
@@ -202,7 +202,6 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
     IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
     Assert.DoesNotThrowAsync(async () => {
@@ -210,7 +209,7 @@ partial class SkStackClientFunctionsPanaTests {
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       );
     });
 
@@ -223,7 +222,8 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void ActiveScanAsync_FoundMultiple()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void ActiveScanAsync_FoundMultiple(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
 
@@ -252,7 +252,6 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
     IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
     Assert.DoesNotThrowAsync(async () => {
@@ -260,7 +259,7 @@ partial class SkStackClientFunctionsPanaTests {
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       );
     });
 
@@ -278,7 +277,8 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void ActiveScanAsync_ScanDurations_NotFound()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void ActiveScanAsync_ScanDurations_NotFound(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
 
@@ -297,7 +297,6 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
@@ -306,7 +305,7 @@ partial class SkStackClientFunctionsPanaTests {
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 2, 4, 6 }),
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       );
     });
 
@@ -321,7 +320,8 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void ActiveScanAsync_ScanDurations_Found()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void ActiveScanAsync_ScanDurations_Found(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
 
@@ -345,7 +345,6 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
     IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
     Assert.DoesNotThrowAsync(async () => {
@@ -353,7 +352,7 @@ partial class SkStackClientFunctionsPanaTests {
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 2, 4, 6 }),
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       );
     });
 
@@ -370,7 +369,8 @@ partial class SkStackClientFunctionsPanaTests {
   [TestCase(0x_FFFF_FFFFu)]
   [TestCase(0x_0000_0001u)]
   [TestCase(0x_0800_0000u)]
-  public void ActiveScanAsync_ChannelMask(uint channelMask)
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void ActiveScanAsync_ChannelMask(uint channelMask, CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
 
@@ -391,7 +391,6 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
     IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
     Assert.DoesNotThrowAsync(async () => {
@@ -399,7 +398,7 @@ partial class SkStackClientFunctionsPanaTests {
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 2 }, channelMask: channelMask),
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       );
     });
 

@@ -588,9 +588,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
     Assert.ThrowsAsync<OperationCanceledException>(async () => {
-      using var cts = new CancellationTokenSource();
-
-      cts.CancelAfter(TimeSpan.FromSeconds(0.2));
+      using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(0.2));
 
       _ = await client.ReceiveUdpAsync(
         port: SkStackKnownPortNumbers.EchonetLite,
@@ -610,9 +608,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine($"EVENT 33 FE80:0000:0000:0000:021D:1290:1234:5678");
 
     Assert.ThrowsAsync<OperationCanceledException>(async () => {
-      using var cts = new CancellationTokenSource();
-
-      cts.CancelAfter(TimeSpan.FromSeconds(0.2));
+      using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(0.2));
 
       _ = await client.ReceiveUdpAsync(
         port: SkStackKnownPortNumbers.EchonetLite,
@@ -636,10 +632,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine($"ERXUDP {remoteAddressString1} FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 01234567");
     stream.ResponseWriter.WriteLine($"ERXUDP {remoteAddressString2} FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 89ABCDEF");
 
-    using var cts = new CancellationTokenSource();
-
-    cts.CancelAfter(TimeSpan.FromSeconds(1.0));
-
+    using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(1.0));
     var buffer = new ArrayBufferWriter<byte>();
     IPAddress? remoteAddress1 = null;
 
@@ -696,10 +689,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine($"ERXUDP {remoteAddressStringEchonetLite} FE80:0000:0000:0000:021D:1290:1234:5678 {SkStackKnownPortNumbers.EchonetLite:X4} {SkStackKnownPortNumbers.EchonetLite:X4} 001D129012345679 0 000C ECHONET-LITE");
     stream.ResponseWriter.WriteLine($"ERXUDP {remoteAddressStringPana} FE80:0000:0000:0000:021D:1290:1234:5678 {SkStackKnownPortNumbers.Pana:X4} {SkStackKnownPortNumbers.Pana:X4} 001D129012345679 0 0004 PANA");
 
-    using var cts = new CancellationTokenSource();
-
-    cts.CancelAfter(TimeSpan.FromSeconds(1.0));
-
+    using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(1.0));
     var buffer = new ArrayBufferWriter<byte>();
 
     IPAddress? remoteAddressEchonetLite = null;
@@ -762,10 +752,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       stream.ResponseWriter.WriteLine();
     }
 
-    using var cts = new CancellationTokenSource();
-
-    cts.CancelAfter(TimeSpan.FromSeconds(1.0));
-
+    using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(1.0));
     var buffer = new ArrayBufferWriter<byte>();
 
 #pragma warning disable CA2012
@@ -811,10 +798,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       await Task.Delay(ResponseDelayInterval);
     }
 
-    using var cts = new CancellationTokenSource();
-
-    cts.CancelAfter(TimeSpan.FromSeconds(3.0));
-
+    using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(3.0));
     var buffer = new ArrayBufferWriter<byte>();
 
 #pragma warning disable CA2012
@@ -862,10 +846,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       await Task.Delay(ResponseDelayInterval);
     }
 
-    using var cts = new CancellationTokenSource();
-
-    cts.CancelAfter(TimeSpan.FromSeconds(2.0));
-
+    using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(2.0));
     var buffer = new ArrayBufferWriter<byte>();
 
 #pragma warning disable CA2012
@@ -905,10 +886,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine($"ERXUDP {remoteAddressString} FE80:0000:0000:0000:021D:1290:1234:5678 0E1A 0E1A 001D129012345679 0 0008 0123456789ABCDEF");
 
-    using var cts = new CancellationTokenSource();
-
-    cts.CancelAfter(TimeSpan.FromSeconds(1.0));
-
+    using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(1.0));
     var buffer = new ArrayBufferWriter<byte>();
 
     IPAddress? remoteAddress = null;

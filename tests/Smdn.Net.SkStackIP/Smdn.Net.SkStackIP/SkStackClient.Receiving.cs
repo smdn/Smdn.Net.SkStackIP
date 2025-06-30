@@ -136,10 +136,7 @@ public class SkStackClientReceivingTests : SkStackClientTestsBase {
 
     stream.ResponseWriter.WriteLine(erxudp);
 
-    using var cts = new CancellationTokenSource();
-
-    cts.CancelAfter(TimeSpan.FromSeconds(1.0));
-
+    using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(1.0));
     var buffer = new ArrayBufferWriter<byte>();
     IPAddress? remoteAddress1 = null;
 

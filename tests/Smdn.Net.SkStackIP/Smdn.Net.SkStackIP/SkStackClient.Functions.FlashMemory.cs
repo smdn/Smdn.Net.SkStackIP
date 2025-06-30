@@ -164,15 +164,12 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
   public void SaveFlashMemoryAsync_CancellationRequested()
   {
     using var client = new SkStackClient(Stream.Null, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource();
-
-    cts.Cancel();
 
 #pragma warning disable CA2012
     Assert.That(
       () => client.SaveFlashMemoryAsync(
         restriction: SkStackFlashMemoryWriteRestriction.DangerousCreateAlwaysGrant(),
-        cancellationToken: cts.Token
+        cancellationToken: new CancellationToken(canceled: true)
       ),
       Throws.InstanceOf<OperationCanceledException>()
     );

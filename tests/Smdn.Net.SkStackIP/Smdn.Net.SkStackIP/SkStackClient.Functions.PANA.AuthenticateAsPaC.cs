@@ -18,17 +18,23 @@ namespace Smdn.Net.SkStackIP;
 #pragma warning disable IDE0040
 partial class SkStackClientFunctionsPanaTests {
 #pragma warning restore IDE0040
-  internal static SkStackClient CreateClientPanaSessionEstablished(PseudoSkStackStream stream, ILogger logger)
+  internal static SkStackClient CreateClientPanaSessionEstablished(
+    PseudoSkStackStream stream,
+    ILogger logger,
+    CancellationToken cancellationToken
+  )
     => CreateClientAndAuthenticateAsPanaClient(
       stream,
       SkStackEventNumber.PanaSessionEstablishmentCompleted,
-      logger
+      logger,
+      cancellationToken
     );
 
   private static SkStackClient CreateClientAndAuthenticateAsPanaClient(
     PseudoSkStackStream stream,
     SkStackEventNumber eventNumberOfPanaSessionEstablishment,
-    ILogger logger
+    ILogger logger,
+    CancellationToken cancellationToken
   )
   {
     const string SelfIPv6Address = "FE80:0000:0000:0000:021D:1290:0003:C890";
@@ -77,7 +83,6 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine($"EVENT {(int)eventNumberOfPanaSessionEstablishment:X2} {SelfIPv6Address}"); // PANA Session establishment completed/failed
 
     var client = new SkStackClient(stream, logger: logger);
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     SkStackPanaSessionInfo? panaSession = null;
 
@@ -86,7 +91,7 @@ partial class SkStackClientFunctionsPanaTests {
         rbid: RBID.ToByteSequence(),
         password: Password.ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Default,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       exceptPanaSessionEstablishmentException
         ? Throws
@@ -131,90 +136,93 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithoutPAA()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithoutPAA(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = CreateClientAndAuthenticateAsPanaClient(
       stream,
       SkStackEventNumber.PanaSessionEstablishmentCompleted,
-      CreateLoggerForTestCase()
+      CreateLoggerForTestCase(),
+      cancellationToken
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithoutPAA_ArgumentException_RBIDEmpty()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithoutPAA_ArgumentException_RBIDEmpty(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
         rbid: default,
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Default,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("rbid")
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithoutPAA_ArgumentException_PasswordEmpty()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithoutPAA_ArgumentException_PasswordEmpty(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: default,
         scanOptions: SkStackActiveScanOptions.Default,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("password")
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithoutPAA_ArgumentNullException_WriteRBIDNull()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithoutPAA_ArgumentNullException_WriteRBIDNull(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
         writeRBID: null!,
         writePassword: static _ => throw new NotImplementedException(),
         scanOptions: SkStackActiveScanOptions.Default,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writeRBID")
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithoutPAA_ArgumentNullException_WritePasswordNull()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithoutPAA_ArgumentNullException_WritePasswordNull(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
         writeRBID: static _ => throw new NotImplementedException(),
         writePassword: null!,
         scanOptions: SkStackActiveScanOptions.Default,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writePassword")
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPAAAddress()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPAAAddress(CancellationToken cancellationToken)
   {
     const string SelfIPv6Address = "FE80:0000:0000:0000:021D:1290:0003:C890";
     const string SelfMacAddress = "001D129012345678";
@@ -251,8 +259,6 @@ partial class SkStackClientFunctionsPanaTests {
 
     var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
-
     SkStackPanaSessionInfo? panaSession = null;
 
     Assert.DoesNotThrowAsync(
@@ -262,7 +268,7 @@ partial class SkStackClientFunctionsPanaTests {
         paaAddress: IPAddress.Parse(PaaIPv6Address),
         channelNumber: PaaChannel,
         panId: PaaPanId,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       )
     );
 
@@ -292,13 +298,15 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_PanaSessionCouldNotBeEstablished()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_PanaSessionCouldNotBeEstablished(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = CreateClientAndAuthenticateAsPanaClient(
       stream,
       SkStackEventNumber.PanaSessionEstablishmentError,
-      CreateLoggerForTestCase()
+      CreateLoggerForTestCase(),
+      cancellationToken
     );
   }
 
@@ -366,9 +374,11 @@ partial class SkStackClientFunctionsPanaTests {
 
   [TestCase("FE80:0000:0000:0000:FFFF:FFFF:FFFF:FFFF", "FDFFFFFFFFFFFFFF")]
   [TestCase("FE80:0000:0000:0000:021D:1290:1234:5678", "001D129012345678")]
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
   public void AuthenticateAsPanaClientAsync_AddLinkLocalAddressToNeighborAddressTable(
     string paaAddress,
-    string expectedMacAddress
+    string expectedMacAddress,
+    CancellationToken cancellationToken
   )
   {
     const string RBID = "00112233445566778899AABBCCDDEEFF";
@@ -384,7 +394,6 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("FAIL ER01 error");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(
       async () => await client.AuthenticateAsPanaClientAsync(
@@ -393,7 +402,7 @@ partial class SkStackClientFunctionsPanaTests {
         paaAddress: IPAddress.Parse(paaAddress),
         channel: SkStackChannel.Channel33,
         panId: 0,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       )
     );
 
@@ -405,9 +414,11 @@ partial class SkStackClientFunctionsPanaTests {
 
   [TestCase("FDFFFFFFFFFFFFFF", "FE80:0000:0000:0000:FFFF:FFFF:FFFF:FFFF")]
   [TestCase("001D129012345678", "FE80:0000:0000:0000:021D:1290:1234:5678")]
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
   public void AuthenticateAsPanaClientAsync_ResolvePaaAddressIfMacAddressSupplied(
     string paaMacAddress,
-    string paaAddress
+    string paaAddress,
+    CancellationToken cancellationToken
   )
   {
     const string RBID = "00112233445566778899AABBCCDDEEFF";
@@ -425,7 +436,6 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("FAIL ER01 error");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(
       async () => await client.AuthenticateAsPanaClientAsync(
@@ -434,7 +444,7 @@ partial class SkStackClientFunctionsPanaTests {
         paaMacAddress: PhysicalAddress.Parse(paaMacAddress),
         channel: SkStackChannel.Channel33,
         panId: 0,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       )
     );
 
@@ -445,10 +455,15 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithoutPAA_ThrowIfPanaSessionAlreadyEstablished()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithoutPAA_ThrowIfPanaSessionAlreadyEstablished(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
-    using var client = CreateClientPanaSessionEstablished(stream, CreateLoggerForTestCase());
+    using var client = CreateClientPanaSessionEstablished(
+      stream,
+      CreateLoggerForTestCase(),
+      cancellationToken
+    );
 
     Assert.That(
       client.ThrowIfPanaSessionAlreadyEstablished,
@@ -468,7 +483,8 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithoutPAA_ScanOptionDefault()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithoutPAA_ScanOptionDefault(CancellationToken cancellationToken)
   {
     const string RBID = "00112233445566778899AABBCCDDEEFF";
     const string Password = "0123456789AB";
@@ -500,14 +516,13 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.ThrowsAsync<InvalidOperationException>(
       async () => await client.AuthenticateAsPanaClientAsync(
         rbid: RBID.ToByteSequence(),
         password: Password.ToByteSequence(),
         scanOptions: null,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       )
     );
 
@@ -529,7 +544,8 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithoutPAA_ScanOptionSupplied()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithoutPAA_ScanOptionSupplied(CancellationToken cancellationToken)
   {
     const string RBID = "00112233445566778899AABBCCDDEEFF";
     const string Password = "0123456789AB";
@@ -545,14 +561,13 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("EVENT 22 FE80:0000:0000:0000:021D:1290:0003:C890");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.ThrowsAsync<InvalidOperationException>(
       async () => await client.AuthenticateAsPanaClientAsync(
         rbid: RBID.ToByteSequence(),
         password: Password.ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       )
     );
 
@@ -661,11 +676,13 @@ partial class SkStackClientFunctionsPanaTests {
   [TestCase(34, 0x8888, 33, 0x8888)]
   [TestCase(33, 0x9999, 33, 0x8888)]
   [TestCase(34, 0x9999, 33, 0x8888)]
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
   public void AuthenticateAsPanaClientAsync_SetChannelAndPanIdIfNeeded(
     int channel,
     int panId,
     int currentChannel,
-    int currentPanId
+    int currentPanId,
+    CancellationToken cancellationToken
   )
   {
     const string RBID = "00112233445566778899AABBCCDDEEFF";
@@ -697,7 +714,6 @@ partial class SkStackClientFunctionsPanaTests {
     stream.ResponseWriter.WriteLine("FAIL ER01 error");
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.ThrowsAsync<SkStackErrorResponseException>(
       async () => await client.AuthenticateAsPanaClientAsync(
@@ -706,7 +722,7 @@ partial class SkStackClientFunctionsPanaTests {
         paaAddress: IPAddress.Parse(PaaAddress),
         channel: SkStackChannel.Channels[channel],
         panId: panId,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       )
     );
 
@@ -727,10 +743,15 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPAAAddress_ThrowIfPanaSessionAlreadyEstablished()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPAAAddress_ThrowIfPanaSessionAlreadyEstablished(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
-    using var client = CreateClientPanaSessionEstablished(stream, CreateLoggerForTestCase());
+    using var client = CreateClientPanaSessionEstablished(
+      stream,
+      CreateLoggerForTestCase(),
+      cancellationToken
+    );
 
     Assert.That(
       client.ThrowIfPanaSessionAlreadyEstablished,
@@ -772,11 +793,11 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPAAAddress_ArgumentException_RBIDEmpty()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPAAAddress_ArgumentException_RBIDEmpty(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
@@ -785,18 +806,18 @@ partial class SkStackClientFunctionsPanaTests {
         paaAddress: IPAddress.IPv6Any,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: SkStackRegister.PanId.MinValue,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("rbid")
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPAAAddress_ArgumentException_PasswordEmpty()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPAAAddress_ArgumentException_PasswordEmpty(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
@@ -805,18 +826,18 @@ partial class SkStackClientFunctionsPanaTests {
         paaAddress: IPAddress.IPv6Any,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: SkStackRegister.PanId.MinValue,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("password")
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPAAAddress_ArgumentNullException_WriteRBIDNull()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPAAAddress_ArgumentNullException_WriteRBIDNull(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
@@ -825,18 +846,18 @@ partial class SkStackClientFunctionsPanaTests {
         paaAddress: IPAddress.IPv6Any,
         channel: SkStackChannel.Channel33,
         panId: SkStackRegister.PanId.MinValue,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writeRBID")
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPAAAddress_ArgumentNullException_WritePasswordNull()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPAAAddress_ArgumentNullException_WritePasswordNull(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
@@ -845,7 +866,7 @@ partial class SkStackClientFunctionsPanaTests {
         paaAddress: IPAddress.IPv6Any,
         channel: SkStackChannel.Channel33,
         panId: SkStackRegister.PanId.MinValue,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writePassword")
     );
@@ -921,10 +942,15 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPanDescription_ThrowIfPanaSessionAlreadyEstablished()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPanDescription_ThrowIfPanaSessionAlreadyEstablished(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
-    using var client = CreateClientPanaSessionEstablished(stream, CreateLoggerForTestCase());
+    using var client = CreateClientPanaSessionEstablished(
+      stream,
+      CreateLoggerForTestCase(),
+      cancellationToken
+    );
 
     Assert.That(
       client.ThrowIfPanaSessionAlreadyEstablished,
@@ -962,82 +988,87 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPanDescription_ArgumentException_RBIDEmpty()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPanDescription_ArgumentException_RBIDEmpty(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
         rbid: default,
         password: "0123456789AB".ToByteSequence(),
         pan: default,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("rbid")
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPanDescription_ArgumentException_PasswordEmpty()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPanDescription_ArgumentException_PasswordEmpty(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: default,
         pan: default,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("password")
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPanDescription_ArgumentNullException_WriteRBIDNull()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPanDescription_ArgumentNullException_WriteRBIDNull(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
         writeRBID: null!,
         writePassword: static _ => throw new NotImplementedException(),
         pan: default,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writeRBID")
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPanDescription_ArgumentNullException_WritePasswordNull()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPanDescription_ArgumentNullException_WritePasswordNull(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
         writeRBID: static _ => throw new NotImplementedException(),
         writePassword: null!,
         pan: default,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writePassword")
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ThrowIfPanaSessionAlreadyEstablished()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ThrowIfPanaSessionAlreadyEstablished(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
-    using var client = CreateClientPanaSessionEstablished(stream, CreateLoggerForTestCase());
+    using var client = CreateClientPanaSessionEstablished(
+      stream,
+      CreateLoggerForTestCase(),
+      cancellationToken
+    );
 
     Assert.That(
       client.ThrowIfPanaSessionAlreadyEstablished,
@@ -1059,11 +1090,11 @@ partial class SkStackClientFunctionsPanaTests {
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ArgumentException_RBIDEmpty()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ArgumentException_RBIDEmpty(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
@@ -1072,18 +1103,18 @@ partial class SkStackClientFunctionsPanaTests {
         paaMacAddress: PhysicalAddress.None,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: SkStackRegister.PanId.MinValue,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("rbid")
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ArgumentException_PasswordEmpty()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ArgumentException_PasswordEmpty(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
@@ -1092,18 +1123,18 @@ partial class SkStackClientFunctionsPanaTests {
         paaMacAddress: PhysicalAddress.None,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: SkStackRegister.PanId.MinValue,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("password")
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ArgumentNullException_WriteRBIDNull()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ArgumentNullException_WriteRBIDNull(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
@@ -1112,18 +1143,18 @@ partial class SkStackClientFunctionsPanaTests {
         paaMacAddress: PhysicalAddress.None,
         channel: SkStackChannel.Channel33,
         panId: SkStackRegister.PanId.MinValue,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writeRBID")
     );
   }
 
   [Test]
-  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ArgumentNullException_WritePasswordNull()
+  [CancelAfter(DefaultTimeOutInMilliseconds)]
+  public void AuthenticateAsPanaClientAsync_WithPAAMacAddress_ArgumentNullException_WritePasswordNull(CancellationToken cancellationToken)
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
-    using var cts = new CancellationTokenSource(DefaultTimeOut);
 
     Assert.That(
       () => client.AuthenticateAsPanaClientAsync(
@@ -1132,7 +1163,7 @@ partial class SkStackClientFunctionsPanaTests {
         paaMacAddress: PhysicalAddress.None,
         channel: SkStackChannel.Channel33,
         panId: SkStackRegister.PanId.MinValue,
-        cancellationToken: cts.Token
+        cancellationToken: cancellationToken
       ),
       Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writePassword")
     );
