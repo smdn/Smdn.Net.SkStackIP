@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Smdn.Devices.BP35XX/Smdn.Devices.BP35XX.csproj" />
+    <Project Path="src/Smdn.Net.SkStackIP/Smdn.Net.SkStackIP.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Smdn.Devices.BP35XX/Smdn.Devices.BP35XX.Tests.csproj" />
+    <Project Path="tests/Smdn.Net.SkStackIP/Smdn.Net.SkStackIP.Tests.csproj" />
+  </Folder>
+</Solution>
