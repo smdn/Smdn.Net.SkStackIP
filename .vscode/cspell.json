@@ -27,6 +27,7 @@
     "RSSI",
     "smdn",
     "SYSLIB",
+    "trimmable",
     "UART",
   ],
   "ignoreWords": [
