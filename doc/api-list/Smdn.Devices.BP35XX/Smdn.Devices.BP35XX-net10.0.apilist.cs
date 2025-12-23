@@ -2,7 +2,7 @@
 //   Name: Smdn.Devices.BP35XX
 //   AssemblyVersion: 2.3.0.0
 //   InformationalVersion: 2.3.0+d432bef22ed781972661adfad84b0e1d3651e9e3
-//   TargetFramework: .NETCoreApp,Version=v8.0
+//   TargetFramework: .NETCoreApp,Version=v10.0
 //   Configuration: Release
 //   Metadata: IsTrimmable=True
 //   Metadata: RepositoryUrl=https://github.com/smdn/Smdn.Net.SkStackIP
@@ -13,12 +13,12 @@
 //     Microsoft.Extensions.Logging.Abstractions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60
 //     Smdn.Fundamental.PrintableEncoding.Hexadecimal, Version=3.0.0.0, Culture=neutral
 //     Smdn.Net.SkStackIP, Version=1.0.0.0, Culture=neutral
-//     System.ComponentModel, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+//     System.ComponentModel, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 //     System.IO.Ports, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51
-//     System.Memory, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51
-//     System.Net.NetworkInformation, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-//     System.Net.Primitives, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
-//     System.Runtime, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+//     System.Memory, Version=10.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51
+//     System.Net.NetworkInformation, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+//     System.Net.Primitives, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+//     System.Runtime, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 #nullable enable annotations
 
 using System;
