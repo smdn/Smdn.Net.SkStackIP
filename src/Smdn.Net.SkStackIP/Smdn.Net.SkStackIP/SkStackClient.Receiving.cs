@@ -71,6 +71,8 @@ partial class SkStackClient {
     }
   }
 
+  private static readonly object EchobackLineMarker = new();
+
   private static readonly TimeSpan ReceiveResponseDelayDefault = TimeSpan.FromMilliseconds(10);
 
   private TimeSpan receiveResponseDelay = ReceiveResponseDelayDefault;
@@ -93,6 +95,7 @@ partial class SkStackClient {
   private SemaphoreSlim streamReaderSemaphore;
 
 #pragma warning disable CA1502 // TODO: refactor
+#pragma warning disable CA1873
   private async ValueTask<TResult?> ReadAsync<TArg, TResult>(
     Func<ISkStackSequenceParserContext, TArg, TResult> parseSequence,
     TArg arg,
@@ -107,14 +110,17 @@ partial class SkStackClient {
       throw new ArgumentNullException(nameof(parseSequence));
 #endif
 
-    Logger?.LogReceivingStatus($"{callerMemberName} waiting");
+    if (loggerReceivingStatus is not null)
+      LogReceivingStatus(loggerReceivingStatus, $"{callerMemberName} waiting");
 
     await streamReaderSemaphore.WaitAsync().ConfigureAwait(false);
 
-    Logger?.LogReceivingStatus($"{callerMemberName} entered");
+    if (loggerReceivingStatus is not null)
+      LogReceivingStatus(loggerReceivingStatus, $"{callerMemberName} entered");
 
     try {
-      Logger?.LogReceivingStatus($"{callerMemberName} reading");
+      if (loggerReceivingStatus is not null)
+        LogReceivingStatus(loggerReceivingStatus, $"{callerMemberName} reading");
 
       for (; ; ) {
         var reparse = parseSequenceContext.Status switch {
@@ -136,7 +142,8 @@ partial class SkStackClient {
           else {
             scopeReadAndParse = Logger?.BeginScope($"{callerMemberName} read sequence from stream");
 
-            Logger?.LogReceivingStatus("buffered: ", parseSequenceContext.UnparsedSequence);
+            if (loggerReceivingStatus is not null)
+              LogReceivingStatus(loggerReceivingStatus, "buffered: ", parseSequenceContext.UnparsedSequence);
 
             // receive data sequence and parse it
             var readResult = await streamReader.ReadAsync(cancellationToken).ConfigureAwait(false);
@@ -147,7 +154,8 @@ partial class SkStackClient {
             buffer = readResult.Buffer;
           }
 
-          Logger?.LogReceivingStatus("sequence: ", buffer);
+          if (loggerReceivingStatus is not null)
+            LogReceivingStatus(loggerReceivingStatus, "sequence: ", buffer);
 
           parseSequenceContext.Update(buffer);
 
@@ -159,7 +167,8 @@ partial class SkStackClient {
               cancellationToken
             ).ConfigureAwait(false);
 
-            Logger?.LogReceivingStatus($"status: {parseSequenceContext.Status}");
+            if (loggerReceivingStatus is not null)
+              LogReceivingStatus(loggerReceivingStatus, $"status: {parseSequenceContext.Status}");
 
             if (eventProcessed) {
               if (processOnlyERXUDP && parseSequenceContext.Status == ParseSequenceStatus.Continuing)
@@ -167,15 +176,21 @@ partial class SkStackClient {
             }
             else if (parseSequenceContext.Status != ParseSequenceStatus.Incomplete) {
               // if buffered data sequence does not contain any events, parse it with the specified parser
-              Logger?.LogReceivingStatus($"parser: {parseSequence.Method.Name} -- {parseSequence.Method}");
+              if (loggerReceivingStatus is not null)
+                LogReceivingStatus(loggerReceivingStatus, $"parser: {parseSequence.Method.Name} -- {parseSequence.Method}");
 
               result = parseSequence(parseSequenceContext, arg);
 
-              Logger?.LogReceivingStatus($"parse status: {parseSequenceContext.Status}");
+              if (loggerReceivingStatus is not null)
+                LogReceivingStatus(loggerReceivingStatus, $"parse status: {parseSequenceContext.Status}");
             }
           }
           catch (SkStackUnexpectedResponseException ex) {
-            Logger?.LogReceivingStatus("unexpected response: ", buffer, ex);
+            // The `loggerReceivingStatus` is non-null only when IsEnabled is true,
+            // whereas the `Logger` simply holds the reference of given ILogger instance.
+            // Therefore, it is necessary to check `IsEnabled` for `Logger` here.
+            if (Logger is { } l && l.IsEnabled(LogLevelReceivingStatusUnexpectedResponseException))
+              LogReceivingStatusUnexpectedResponseException(l, buffer, ex);
 
             throw;
           }
@@ -193,8 +208,10 @@ partial class SkStackClient {
         };
 
         if (advanceIfConsumed && parseSequenceContext.IsConsumed(buffer)) {
+          if (Logger is { } l && l.IsEnabled(LogLevelResponse))
+            LogDebugResponse(l, buffer.Slice(0, parseSequenceContext.UnparsedSequence.Start), result);
+
           // advance the buffer to the position where parsing finished
-          Logger?.LogDebugResponse(buffer.Slice(0, parseSequenceContext.UnparsedSequence.Start), result);
           streamReader.AdvanceTo(consumed: parseSequenceContext.UnparsedSequence.Start);
         }
         else if (markAsExamined) {
@@ -208,14 +225,18 @@ partial class SkStackClient {
         if (delay)
           await Task.Delay(receiveResponseDelay).ConfigureAwait(false);
 
-        Logger?.LogReceivingStatus($"{callerMemberName} continue reading");
+        if (loggerReceivingStatus is not null)
+          LogReceivingStatus(loggerReceivingStatus, $"{callerMemberName} continue reading");
       } // for infinite
     }
     finally {
-      Logger?.LogReceivingStatus($"{callerMemberName} exited");
+      if (loggerReceivingStatus is not null)
+        LogReceivingStatus(loggerReceivingStatus, $"{callerMemberName} exited");
+
       streamReaderSemaphore.Release();
     }
   }
+#pragma warning restore CA1873
 #pragma warning restore CA1502
 
   private async ValueTask<SkStackResponse<TPayload>> ReceiveResponseAsync<TPayload>(
@@ -226,7 +247,8 @@ partial class SkStackClient {
     CancellationToken cancellationToken
   )
   {
-    Logger?.LogReceivingStatus($"{nameof(ReceiveResponseAsync)} ", command);
+    if (loggerReceivingStatus is not null)
+      LogReceivingStatus(loggerReceivingStatus, $"{nameof(ReceiveResponseAsync)} ", command);
 
     // try read and parse echoback
     await ReadAsync(
@@ -265,7 +287,10 @@ partial class SkStackClient {
     if (commandEventHandler is not null && commandEventHandler.DoContinueHandlingEvents(response.Status)) {
       const int ParseSequenceEmptyResult = default;
 
-      Logger?.LogReceivingStatus($"{nameof(ReceiveResponseAsync)} {commandEventHandler.GetType().Name}");
+#pragma warning disable CA1873
+      if (loggerReceivingStatus is not null)
+        LogReceivingStatus(loggerReceivingStatus, $"{nameof(ReceiveResponseAsync)} {commandEventHandler.GetType().Name}");
+#pragma warning restore CA1873
 
       await ReadAsync(
         parseSequence: static (context, handler) => { handler.ProcessSubsequentEvent(context); return ParseSequenceEmptyResult; },
@@ -316,7 +341,7 @@ partial class SkStackClient {
 
       if (sksendtoEchobackLineReader.IsNext(syntax.EndOfEchobackLine, advancePast: true)) {
         context.Complete(sksendtoEchobackLineReader);
-        return SkStackClientLoggerExtensions.EchobackLineMarker;
+        return EchobackLineMarker;
       }
     }
 
@@ -344,7 +369,7 @@ partial class SkStackClient {
 
     if (echobackLineReader.IsNext(SkStack.SP) || echobackLineReader.IsNext(syntax.EndOfEchobackLine)) {
       context.Complete(reader);
-      return SkStackClientLoggerExtensions.EchobackLineMarker;
+      return EchobackLineMarker;
     }
     else {
       context.Ignore();

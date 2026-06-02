@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Smdn.Net.SkStackIP.Protocol;
+using Smdn.Text.Unicode.ControlPictures;
 
 namespace Smdn.Net.SkStackIP;
 
@@ -158,8 +159,10 @@ partial class SkStackClient {
       commandLineWriter.Write(syntax.EndOfCommandLine);
 
     // write command to logger
-    if (Logger is not null && logWriter is not null) {
-      Logger.LogDebugCommand(logWriter.WrittenMemory);
+    if (Logger is { } l && IsCommandLoggingEnabled(l) && logWriter is not null) {
+#pragma warning disable CA1873
+      LogDebugCommand(l, logWriter.WrittenMemory.Span.ToControlCharsPicturizedString());
+#pragma warning restore CA1873
       logWriter.Clear();
     }
   }

@@ -23,6 +23,8 @@ public partial class SkStackClient : IDisposable {
 
   private readonly ArrayBufferWriter<byte>? logWriter;
 
+  private readonly ILogger? loggerReceivingStatus;
+
   /// <summary>
   /// Initializes a new instance of the <see cref="SkStackClient"/> class with specifying the <see cref="Stream"/> for transmitting SKSTACK-IP protocol.
   /// </summary>
@@ -94,7 +96,7 @@ public partial class SkStackClient : IDisposable {
     this.erxudpDataFormat = ValidateERXUDPDataFormat(erxudpDataFormat, nameof(erxudpDataFormat));
     Logger = logger;
 
-    if (Logger is not null && Logger.IsCommandLoggingEnabled()) {
+    if (Logger is not null && IsCommandLoggingEnabled(Logger)) {
       logWriter = new ArrayBufferWriter<byte>(initialCapacity: 64);
 
       commandLineWriter = new(streamWriter, logWriter);
@@ -102,6 +104,9 @@ public partial class SkStackClient : IDisposable {
     else {
       commandLineWriter = new(streamWriter, null);
     }
+
+    if (Logger is not null && IsReceivingStatusLoggingEnabled(Logger))
+      loggerReceivingStatus = Logger;
 
     parseSequenceContext = new ParseSequenceContext();
     streamReaderSemaphore = new(initialCount: 1, maxCount: 1);

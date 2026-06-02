@@ -1,7 +1,5 @@
 // SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
-#pragma warning disable CA1848
-
 using System;
 #if SYSTEM_DIAGNOSTICS_CODEANALYSIS_MEMBERNOTNULLWHENATTRIBUTE
 using System.Diagnostics.CodeAnalysis;
@@ -148,17 +146,22 @@ public abstract partial class BP35Base : SkStackClient {
     CancellationToken cancellationToken
   )
   {
+#pragma warning disable CA1873
+    var loggerPropertyAndValue = Logger is { } l && l.IsEnabled(LogLevel.Information) ? l : null;
+
     // reset first before configuring
     await SendSKRESETAsync(cancellationToken).ConfigureAwait(false);
 
     // retrieve firmware version
     skstackVersion = (await SendSKVERAsync(cancellationToken).ConfigureAwait(false)).Payload;
 
-    Logger?.LogInformation("{Name}: {Value}", nameof(SkStackVersion), skstackVersion);
+    if (loggerPropertyAndValue is { })
+      LogInfoPropertyAndValue(loggerPropertyAndValue, nameof(SkStackVersion), skstackVersion?.ToString());
 
     skstackAppVersion = (await SendSKAPPVERAsync(cancellationToken).ConfigureAwait(false)).Payload;
 
-    Logger?.LogInformation("{Name}: {Value}", nameof(SkStackAppVersion), skstackAppVersion);
+    if (loggerPropertyAndValue is { })
+      LogInfoPropertyAndValue(loggerPropertyAndValue, nameof(SkStackAppVersion), skstackAppVersion);
 
     // retrieve EINFO
     var respInfo = await SendSKINFOAsync(cancellationToken).ConfigureAwait(false);
@@ -167,11 +170,13 @@ public abstract partial class BP35Base : SkStackClient {
     linkLocalAddress = einfo.LinkLocalAddress;
     macAddress = einfo.MacAddress;
 
-    Logger?.LogInformation("{Name}: {Value}", nameof(LinkLocalAddress), linkLocalAddress);
-    Logger?.LogInformation("{Name}: {Value}", nameof(MacAddress), macAddress);
-
-    Logger?.LogInformation("{Name}: {Value}", nameof(einfo.Channel), einfo.Channel);
-    Logger?.LogInformation("{Name}: {Value} (0x{ValueToBeDisplayedInHex:X4})", nameof(einfo.PanId), einfo.PanId, einfo.PanId);
+    if (loggerPropertyAndValue is { }) {
+      LogInfoPropertyAndValue(loggerPropertyAndValue, nameof(LinkLocalAddress), linkLocalAddress.ToString());
+      LogInfoPropertyAndValue(loggerPropertyAndValue, nameof(MacAddress), macAddress.ToString());
+      LogInfoPropertyAndValue(loggerPropertyAndValue, nameof(einfo.Channel), einfo.Channel.ToString());
+      LogInfoPropertyAndValuePanId(loggerPropertyAndValue, nameof(einfo.PanId), einfo.PanId.ToString(provider: null), $"{einfo.PanId:X4}");
+    }
+#pragma warning restore CA1873
 
     // parse ROHM user ID and password
     (rohmUserId, rohmPassword) = ParseRohmUserIdAndPassword(linkLocalAddress);
@@ -182,7 +187,8 @@ public abstract partial class BP35Base : SkStackClient {
         await SendSKLOADAsync(cancellationToken).ConfigureAwait(false);
       }
       catch (SkStackFlashMemoryIOException) {
-        Logger?.LogWarning("Could not load configuration from flash memory.");
+        if (Logger is { } loggerSKLOAD && loggerSKLOAD.IsEnabled(LogLevel.Warning))
+          LogWarningLoadConfigurationFailed(loggerSKLOAD);
       }
     }
 
@@ -249,4 +255,36 @@ public abstract partial class BP35Base : SkStackClient {
     // nothing to do in this class
     return default;
   }
+
+  [LoggerMessage(
+    EventId = 0,
+    Level = LogLevel.Information,
+    Message = "{Name}: {Value}"
+  )]
+  private static partial void LogInfoPropertyAndValue(
+    ILogger logger,
+    string name,
+    string? value
+  );
+
+  [LoggerMessage(
+    EventId = 0,
+    Level = LogLevel.Information,
+    Message = "{Name}: {Value} (0x{ValueInHexFormat:X4})"
+  )]
+  private static partial void LogInfoPropertyAndValuePanId(
+    ILogger logger,
+    string name,
+    string? value,
+    string? valueInHexFormat
+  );
+
+  [LoggerMessage(
+    EventId = 0,
+    Level = LogLevel.Warning,
+    Message = "Could not load configuration from flash memory."
+  )]
+  private static partial void LogWarningLoadConfigurationFailed(
+    ILogger logger
+  );
 }

@@ -73,7 +73,8 @@ partial class SkStackClient {
         case SkStackEventNumber.NeighborAdvertisementReceived:
         case SkStackEventNumber.EchoRequestReceived:
         case SkStackEventNumber.UdpSendCompleted:
-          Logger?.LogInfoIPEventReceived(ev);
+          if (Logger is { } loggerIPEventReceived && loggerIPEventReceived.IsEnabled(LogLevelIPEventReceived))
+            LogInfoIPEventReceived(loggerIPEventReceived, ev);
           break;
 
         case SkStackEventNumber.PanaSessionEstablishmentError:
@@ -82,12 +83,14 @@ partial class SkStackClient {
         case SkStackEventNumber.PanaSessionTerminationCompleted:
         case SkStackEventNumber.PanaSessionTerminationTimedOut:
         case SkStackEventNumber.PanaSessionExpired:
-          Logger?.LogInfoPanaEventReceived(ev);
+          if (Logger is { } loggerPanaEventReceived && loggerPanaEventReceived.IsEnabled(LogLevelPanaEventReceived))
+            LogInfoPanaEventReceived(loggerPanaEventReceived, ev);
           break;
 
         case SkStackEventNumber.TransmissionTimeControlLimitationActivated:
         case SkStackEventNumber.TransmissionTimeControlLimitationDeactivated:
-          Logger?.LogInfoAribStdT108EventReceived(ev);
+          if (Logger is { } loggerAribStdT108EventReceived && loggerAribStdT108EventReceived.IsEnabled(LogLevelAribStdT108EventReceived))
+            LogInfoAribStdT108EventReceived(loggerAribStdT108EventReceived, ev);
           break;
 
         case SkStackEventNumber.WakeupSignalReceived:
@@ -188,7 +191,8 @@ partial class SkStackClient {
       return FalseResultValueTask;
     }
     else if (statusERXUDP == OperationStatus.Done) {
-      Logger?.LogInfoIPEventReceived(erxudp, erxudpData);
+      if (Logger is { } loggerIPEventReceivedErxUdp && loggerIPEventReceivedErxUdp.IsEnabled(LogLevelIPEventReceived))
+        LogInfoIPEventReceived(loggerIPEventReceivedErxUdp, erxudp, erxudpData);
 
       return ProcessERXUDPAsync();
 

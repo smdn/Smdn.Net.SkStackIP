@@ -1,4 +1,4 @@
-<!--
+﻿<!--
 SPDX-FileCopyrightText: 2021 smdn <smdn@smdn.jp>
 SPDX-License-Identifier: MIT
 -->
@@ -8,7 +8,6 @@ SPDX-License-Identifier: MIT
     <VersionPrefix>1.6.0</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <PackageValidationBaselineVersion>1.0.0</PackageValidationBaselineVersion>
-    <NoWarn>CA1848;$(NoWarn)</NoWarn> <!-- CA1848: For improved performance, use the LoggerMessage delegates instead of calling 'LoggerExtensions.LogXxxxx(...)' -->
     <NoWarn>CS1591;$(NoWarn)</NoWarn> <!-- CS1591: Missing XML comment for publicly visible type or member 'Type_or_Member' -->
   </PropertyGroup>
 
