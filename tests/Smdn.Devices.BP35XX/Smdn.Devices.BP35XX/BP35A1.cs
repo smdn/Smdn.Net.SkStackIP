@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Testing;
 
 using NUnit.Framework;
 
@@ -71,6 +73,71 @@ public class BP35A1Tests {
     );
   }
 
+  [Test]
+  public void CreateAsync_LogWarningLoadFlashMemoryFailed()
+  {
+    var factory = new PseudoSerialPortStreamFactory();
+    var services = new ServiceCollection();
+
+    services.Add(
+      ServiceDescriptor.Singleton(
+        typeof(IBP35SerialPortStreamFactory),
+        factory
+      )
+    );
+
+    var loggerOptions = new FakeLogCollectorOptions() {
+      CustomFilter = static record => record.Level == LogLevel.Warning
+    };
+
+    var logCollector = FakeLogCollector.Create(loggerOptions);
+
+    services.AddLogging(
+      builder => builder.AddProvider(new FakeLoggerProvider(logCollector))
+    );
+
+    // SKRESET
+    factory.Stream.ResponseWriter.WriteLine("OK");
+
+    // SKVER
+    factory.Stream.ResponseWriter.WriteLine("EVER 1.2.10");
+    factory.Stream.ResponseWriter.WriteLine("OK");
+
+    // SKAPPVER
+    factory.Stream.ResponseWriter.WriteLine("EAPPVER pseudo-BP35A1");
+    factory.Stream.ResponseWriter.WriteLine("OK");
+
+    // SKINFO
+    factory.Stream.ResponseWriter.WriteLine("EINFO FE80:0000:0000:0000:021D:1290:1234:5678 001D129012345678 21 8888 FFFE");
+    factory.Stream.ResponseWriter.WriteLine("OK");
+
+    // SKLOAD
+    factory.Stream.ResponseWriter.WriteLine("FAIL ER10");
+
+    // SKSREG SFE 0
+    factory.Stream.ResponseWriter.WriteLine("OK");
+
+    // ROPT
+    factory.Stream.ResponseWriter.Write("OK 00\r");
+
+    Assert.DoesNotThrowAsync(
+      async () => {
+        using var bp35a1 = await BP35A1.CreateAsync(
+          options: new BP35A1Options() {
+            SerialPortName = "/dev/pseudo-serial-port",
+            TryLoadFlashMemory = true,
+          },
+          services.BuildServiceProvider()
+        );
+      }
+    );
+
+    var logSnapshot = logCollector.GetSnapshot();
+
+    Assert.That(logSnapshot.Count, Is.EqualTo(1));
+    Assert.That(logSnapshot[0].Message, Is.EqualTo("Could not load configuration from flash memory."));
+  }
+
   internal class ThrowExceptionSerialPortStreamFactory(Func<Exception> createException) : IBP35SerialPortStreamFactory {
     private readonly Func<Exception> createException = createException ?? throw new ArgumentNullException(nameof(createException));
 
@@ -119,12 +186,12 @@ public class BP35A1Tests {
   [Test]
   public async Task Properties()
   {
-    const string version = "1.2.10";
-    const string appVersion = "pseudo-BP35A1";
-    const string userId = "FE80";
-    const string password = "021D";
-    const string linkLocalAddress = $"{userId}:0000:0000:0000:{password}:1290:1234:5678";
-    const string macAddress = "001D129012345678";
+    const string VersionString = "1.2.10";
+    const string AppVersionString = "pseudo-BP35A1";
+    const string UserId = "FE80";
+    const string Password = "021D";
+    const string LinkLocalAddressString = $"{UserId}:0000:0000:0000:{Password}:1290:1234:5678";
+    const string MacAddressString = "001D129012345678";
 
     var factory = new PseudoSerialPortStreamFactory();
     var services = new ServiceCollection();
@@ -140,15 +207,15 @@ public class BP35A1Tests {
     factory.Stream.ResponseWriter.WriteLine("OK");
 
     // SKVER
-    factory.Stream.ResponseWriter.WriteLine($"EVER {version}");
+    factory.Stream.ResponseWriter.WriteLine($"EVER {VersionString}");
     factory.Stream.ResponseWriter.WriteLine("OK");
 
     // SKAPPVER
-    factory.Stream.ResponseWriter.WriteLine($"EAPPVER {appVersion}");
+    factory.Stream.ResponseWriter.WriteLine($"EAPPVER {AppVersionString}");
     factory.Stream.ResponseWriter.WriteLine("OK");
 
     // SKINFO
-    factory.Stream.ResponseWriter.WriteLine($"EINFO {linkLocalAddress} {macAddress} 21 8888 FFFE");
+    factory.Stream.ResponseWriter.WriteLine($"EINFO {LinkLocalAddressString} {MacAddressString} 21 8888 FFFE");
     factory.Stream.ResponseWriter.WriteLine("OK");
 
     // SKLOAD
@@ -167,12 +234,86 @@ public class BP35A1Tests {
       services.BuildServiceProvider()
     );
 
-    Assert.That(bp35a1.SkStackVersion, Is.EqualTo(Version.Parse(version)));
-    Assert.That(bp35a1.SkStackAppVersion, Is.EqualTo(appVersion));
-    Assert.That(bp35a1.LinkLocalAddress, Is.EqualTo(IPAddress.Parse(linkLocalAddress)));
-    Assert.That(bp35a1.MacAddress, Is.EqualTo(PhysicalAddress.Parse(macAddress)));
-    Assert.That(bp35a1.RohmUserId, Is.EqualTo(userId));
-    Assert.That(bp35a1.RohmPassword, Is.EqualTo(password));
+    Assert.That(bp35a1.SkStackVersion, Is.EqualTo(Version.Parse(VersionString)));
+    Assert.That(bp35a1.SkStackAppVersion, Is.EqualTo(AppVersionString));
+    Assert.That(bp35a1.LinkLocalAddress, Is.EqualTo(IPAddress.Parse(LinkLocalAddressString)));
+    Assert.That(bp35a1.MacAddress, Is.EqualTo(PhysicalAddress.Parse(MacAddressString)));
+    Assert.That(bp35a1.RohmUserId, Is.EqualTo(UserId));
+    Assert.That(bp35a1.RohmPassword, Is.EqualTo(Password));
+  }
+
+  [Test]
+  public async Task Properties_Logging()
+  {
+    const string VersionString = "1.2.10";
+    const string AppVersionString = "pseudo-BP35A1";
+    const string UserId = "FE80";
+    const string Password = "021D";
+    const string LinkLocalAddressString = $"{UserId}:0000:0000:0000:{Password}:1290:1234:5678";
+    const string MacAddressString = "001D129012345678";
+    const int ChannelNumber = 0x21;
+    const int PanId = 0x8888;
+
+    var factory = new PseudoSerialPortStreamFactory();
+    var services = new ServiceCollection();
+
+    services.Add(
+      ServiceDescriptor.Singleton(
+        typeof(IBP35SerialPortStreamFactory),
+        factory
+      )
+    );
+
+    var loggerOptions = new FakeLogCollectorOptions() {
+      CustomFilter = static record => record.Level == LogLevel.Information
+    };
+
+    var logCollector = FakeLogCollector.Create(loggerOptions);
+
+    services.AddLogging(
+      builder => builder.AddProvider(new FakeLoggerProvider(logCollector))
+    );
+
+    // SKRESET
+    factory.Stream.ResponseWriter.WriteLine("OK");
+
+    // SKVER
+    factory.Stream.ResponseWriter.WriteLine($"EVER {VersionString}");
+    factory.Stream.ResponseWriter.WriteLine("OK");
+
+    // SKAPPVER
+    factory.Stream.ResponseWriter.WriteLine($"EAPPVER {AppVersionString}");
+    factory.Stream.ResponseWriter.WriteLine("OK");
+
+    // SKINFO
+    factory.Stream.ResponseWriter.WriteLine($"EINFO {LinkLocalAddressString} {MacAddressString} {ChannelNumber:X2} {PanId:X4} FFFE");
+    factory.Stream.ResponseWriter.WriteLine("OK");
+
+    // SKLOAD
+    factory.Stream.ResponseWriter.WriteLine("OK");
+
+    // SKSREG SFE 0
+    factory.Stream.ResponseWriter.WriteLine("OK");
+
+    // ROPT
+    factory.Stream.ResponseWriter.Write("OK 00\r");
+
+    using var bp35a1 = await BP35A1.CreateAsync(
+      options: new BP35A1Options() {
+        SerialPortName = "/dev/pseudo-serial-port",
+      },
+      services.BuildServiceProvider()
+    );
+
+    var logSnapshot = logCollector.GetSnapshot();
+
+    Assert.That(logSnapshot.Count, Is.EqualTo(6));
+    Assert.That(logSnapshot[0].Message, Is.EqualTo($"{nameof(BP35Base.SkStackVersion)}: {Version.Parse(VersionString)}"));
+    Assert.That(logSnapshot[1].Message, Is.EqualTo($"{nameof(BP35Base.SkStackAppVersion)}: {AppVersionString}"));
+    Assert.That(logSnapshot[2].Message, Is.EqualTo($"{nameof(BP35Base.LinkLocalAddress)}: {IPAddress.Parse(LinkLocalAddressString)}"));
+    Assert.That(logSnapshot[3].Message, Is.EqualTo($"{nameof(BP35Base.MacAddress)}: {PhysicalAddress.Parse(MacAddressString)}"));
+    Assert.That(logSnapshot[4].Message, Is.EqualTo($"Channel: {SkStackChannel.Channels[ChannelNumber]}"));
+    Assert.That(logSnapshot[5].Message, Is.EqualTo($"PanId: {PanId} (0x{PanId:X4})"));
   }
 
   [Test]
