@@ -35,7 +35,7 @@ public abstract partial class BP35Base : SkStackClient {
 #pragma warning disable CA1510
     if (device is null)
       throw new ArgumentNullException(nameof(device));
-#pragma warning disable CA1510
+#pragma warning restore CA1510
 
     try {
       await device.InitializeAsync(
