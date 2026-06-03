@@ -92,6 +92,12 @@ public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<
           message: "undefined channel"
         );
 
+  private static void ThrowIfInvalidChannelNumber(int channelNumber)
+  {
+    if (channelNumber is < ChannelNumberMin or > ChannelNumberMax)
+      throw new InvalidOperationException($"Cannot create mask bits from an invalid channel number {channelNumber}.");
+  }
+
   /// <summary>
   /// Creates the value passed to the parameter <c>CHANNEL_MASK</c> in the <c>SKSCAN</c> command.
   /// </summary>
@@ -104,10 +110,49 @@ public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<
     uint mask = 0u;
 
     foreach (var ch in channels ?? throw new ArgumentNullException(nameof(channels))) {
-      if (ch.ChannelNumber is >= ChannelNumberMin and <= ChannelNumberMax)
-        mask |= 1u << (ch.ChannelNumber - ChannelNumberMin);
-      else
-        throw new InvalidOperationException($"Cannot create mask bits from an invalid channel number {ch.ChannelNumber}.");
+      ThrowIfInvalidChannelNumber(ch.ChannelNumber);
+
+      mask |= 1u << (ch.ChannelNumber - ChannelNumberMin);
+    }
+
+    return mask;
+  }
+
+  /// <summary>
+  /// Creates the value passed to the parameter <c>CHANNEL_MASK</c> in the <c>SKSCAN</c> command.
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.9. SKSCAN' for detailed specifications.</para>
+  /// </remarks>
+  [CLSCompliant(false)]
+  public static uint CreateMask(params IEnumerable<SkStackChannel> channels)
+  {
+    uint mask = 0u;
+
+    foreach (var ch in channels ?? throw new ArgumentNullException(nameof(channels))) {
+      ThrowIfInvalidChannelNumber(ch.ChannelNumber);
+
+      mask |= 1u << (ch.ChannelNumber - ChannelNumberMin);
+    }
+
+    return mask;
+  }
+
+  /// <summary>
+  /// Creates the value passed to the parameter <c>CHANNEL_MASK</c> in the <c>SKSCAN</c> command.
+  /// </summary>
+  /// <remarks>
+  ///   <para>See 'BP35A1コマンドリファレンス 3.9. SKSCAN' for detailed specifications.</para>
+  /// </remarks>
+  [CLSCompliant(false)]
+  public static uint CreateMask(params ReadOnlySpan<SkStackChannel> channels)
+  {
+    uint mask = 0u;
+
+    foreach (var ch in channels) {
+      ThrowIfInvalidChannelNumber(ch.ChannelNumber);
+
+      mask |= 1u << (ch.ChannelNumber - ChannelNumberMin);
     }
 
     return mask;

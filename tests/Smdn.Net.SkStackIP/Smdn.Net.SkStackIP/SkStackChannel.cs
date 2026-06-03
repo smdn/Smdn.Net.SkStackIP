@@ -1,64 +1,118 @@
 // SPDX-FileCopyrightText: 2023 smdn <smdn@smdn.jp>
 // SPDX-License-Identifier: MIT
+using System;
+using System.Collections.Generic;
+
 using NUnit.Framework;
 
 namespace Smdn.Net.SkStackIP;
 
 [TestFixture]
 public class SkStackChannelTests {
-  [Test]
-  public void CreateMask()
+  private static System.Collections.IEnumerable YieldTestCases_CreateMask()
   {
-    Assert.That(
-      SkStackChannel.CreateMask(SkStackChannel.Channel33),
-      Is.EqualTo(0b_0000_0000_0000_0000_0000_0000_0000_0001u)
-    );
-    Assert.That(
-      SkStackChannel.CreateMask(SkStackChannel.Channel60),
-      Is.EqualTo(0b_0000_1000_0000_0000_0000_0000_0000_0000u)
+    yield return new object[] {
+      new[] { SkStackChannel.Channel33 },
+      0b_0000_0000_0000_0000_0000_0000_0000_0001u
+    };
+    yield return new object[] {
+      new[] { SkStackChannel.Channel60 },
+      0b_0000_1000_0000_0000_0000_0000_0000_0000u
+    };
+    yield return new object[] {
+      Array.Empty<SkStackChannel>(),
+      0b_0000_0000_0000_0000_0000_0000_0000_0000u
+    };
+    yield return new object[] {
+      new[] { SkStackChannel.Channel33, SkStackChannel.Channel33 },
+      0b_0000_0000_0000_0000_0000_0000_0000_0001u
+    };
+    yield return new object[] {
+      new[] { SkStackChannel.Channel33, SkStackChannel.Channel34 },
+      0b_0000_0000_0000_0000_0000_0000_0000_0011u
+    };
+    yield return new object[] {
+      new[] { SkStackChannel.Channel33, SkStackChannel.Channel34, SkStackChannel.Channel35 },
+      0b_0000_0000_0000_0000_0000_0000_0000_0111u
+    };
+    yield return new object[] {
+      new[] { SkStackChannel.Channel33, SkStackChannel.Channel60 },
+      0b_0000_1000_0000_0000_0000_0000_0000_0001u
+    };
+  }
+
+  [TestCaseSource(nameof(YieldTestCases_CreateMask))]
+  public void CreateMask_OfParamsArray(SkStackChannel[] channels, uint expected)
+    => Assert.That(
+      SkStackChannel.CreateMask(channels),
+      Is.EqualTo(expected)
     );
 
-    Assert.That(
-      SkStackChannel.CreateMask(),
-      Is.Zero
-    );
+  [Test]
+  public void CreateMask_OfParamsArray_ArgumentNull()
+  {
+    SkStackChannel[] channels = null!;
 
     Assert.That(
-      SkStackChannel.CreateMask(SkStackChannel.Channel33, SkStackChannel.Channel33),
-      Is.EqualTo(0b_0000_0000_0000_0000_0000_0000_0000_0001u)
-    );
-    Assert.That(
-      SkStackChannel.CreateMask(SkStackChannel.Channel33, SkStackChannel.Channel34),
-      Is.EqualTo(0b_0000_0000_0000_0000_0000_0000_0000_0011u)
-    );
-    Assert.That(
-      SkStackChannel.CreateMask(SkStackChannel.Channel33, SkStackChannel.Channel34, SkStackChannel.Channel35),
-      Is.EqualTo(0b_0000_0000_0000_0000_0000_0000_0000_0111u)
-    );
-    Assert.That(
-      SkStackChannel.CreateMask(SkStackChannel.Channel33, SkStackChannel.Channel60),
-      Is.EqualTo(0b_0000_1000_0000_0000_0000_0000_0000_0001u)
+      () => SkStackChannel.CreateMask(channels: channels),
+      Throws
+        .ArgumentNullException
+        .With
+        .Property(nameof(ArgumentNullException.ParamName))
+        .EqualTo("channels")
     );
   }
 
+  [TestCaseSource(nameof(YieldTestCases_CreateMask))]
+  public void CreateMask_OfParamsIEnumerable(SkStackChannel[] channels, uint expected)
+    => Assert.That(
+      SkStackChannel.CreateMask((IEnumerable<SkStackChannel>)channels),
+      Is.EqualTo(expected)
+    );
+
   [Test]
-  public void CreateMask_ArgumentNull()
-    => Assert.That(() => SkStackChannel.CreateMask(channels: null!), Throws.ArgumentNullException);
+  public void CreateMask_OfParamsIEnumerable_ArgumentNull()
+  {
+    IEnumerable<SkStackChannel> channels = null!;
+
+    Assert.That(
+      () => SkStackChannel.CreateMask(channels: channels),
+      Throws
+        .ArgumentNullException
+        .With
+        .Property(nameof(ArgumentNullException.ParamName))
+        .EqualTo("channels")
+    );
+  }
+
+  [TestCaseSource(nameof(YieldTestCases_CreateMask))]
+  public void CreateMask_OfParamsReadOnlySpan(SkStackChannel[] channels, uint expected)
+    => Assert.That(
+      SkStackChannel.CreateMask(channels.AsSpan()),
+      Is.EqualTo(expected)
+    );
 
   private static System.Collections.IEnumerable YieldTestCases_CreateMask_InvalidChannel()
   {
-    yield return SkStackChannel.Empty;
+    yield return new[] { SkStackChannel.Empty };
+    yield return new[] { SkStackChannel.Channel33, SkStackChannel.Empty };
+    yield return new[] { SkStackChannel.Empty, SkStackChannel.Channel60 };
+
     // yield return SkStackChannel.Channels[32]; // cannot test
     // yield return SkStackChannel.Channels[61]; // cannot test
   }
 
   [TestCaseSource(nameof(YieldTestCases_CreateMask_InvalidChannel))]
-  public void CreateMask_InvalidChannel(SkStackChannel invalidChannel)
-  {
-    Assert.That(() => SkStackChannel.CreateMask(invalidChannel), Throws.InvalidOperationException);
-    Assert.That(() => SkStackChannel.CreateMask(SkStackChannel.Channel33, invalidChannel), Throws.InvalidOperationException);
-    Assert.That(() => SkStackChannel.CreateMask(SkStackChannel.Channel60, invalidChannel), Throws.InvalidOperationException);
-  }
+  public void CreateMask_OfParamsArray_InvalidChannel(SkStackChannel[] channels)
+    => Assert.That(() => SkStackChannel.CreateMask(channels), Throws.InvalidOperationException);
+
+  [TestCaseSource(nameof(YieldTestCases_CreateMask_InvalidChannel))]
+  public void CreateMask_OfParamsIEnumerable_InvalidChannel(SkStackChannel[] channels)
+    => Assert.That(() => SkStackChannel.CreateMask((IEnumerable<SkStackChannel>)channels), Throws.InvalidOperationException);
+
+  [TestCaseSource(nameof(YieldTestCases_CreateMask_InvalidChannel))]
+  public void CreateMask_OfParamsReadOnlySpan_InvalidChannel(SkStackChannel[] channels)
+    => Assert.That(() => SkStackChannel.CreateMask(channels.AsSpan()), Throws.InvalidOperationException);
 
   [Test]
   public void IsEmpty()

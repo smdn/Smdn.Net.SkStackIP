@@ -100,7 +100,7 @@ public abstract class SkStackActiveScanOptions : ICloneable {
   /// A callback to select the target PAA from the PAAs found during the scan.
   /// If <see langword="null"/>, selects the PAA which found at first during the scan.
   /// </param>
-  /// <seealso cref="SkStackChannel.CreateMask"/>
+  /// <seealso cref="SkStackChannel.CreateMask(SkStackChannel[])"/>
   [CLSCompliant(false)]
   public static SkStackActiveScanOptions Create(
     IEnumerable<int> scanDurationGenerator,
@@ -144,7 +144,7 @@ public abstract class SkStackActiveScanOptions : ICloneable {
   /// A callback to select the target PAA from the PAAs found during the scan.
   /// If <see langword="null"/>, selects the PAA which found at first during the scan.
   /// </param>
-  /// <seealso cref="SkStackChannel.CreateMask"/>
+  /// <seealso cref="SkStackChannel.CreateMask(SkStackChannel[])"/>
   [CLSCompliant(false)]
   public static SkStackActiveScanOptions Create(
     Func<IEnumerable<int>> scanDurationGeneratorFunc,
