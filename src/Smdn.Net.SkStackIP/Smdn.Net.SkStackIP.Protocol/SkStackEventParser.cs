@@ -132,9 +132,14 @@ internal static class SkStackEventParser {
     return default;
   }
 
-  private static readonly IReadOnlyDictionary<IPAddress, PhysicalAddress> EmptyNeighborCacheList = new ReadOnlyDictionary<IPAddress, PhysicalAddress>(
-    new Dictionary<IPAddress, PhysicalAddress>(capacity: 0)
-  );
+  private static readonly IReadOnlyDictionary<IPAddress, PhysicalAddress> EmptyNeighborCacheList =
+#if SYSTEM_COLLECTIONS_OBJECTMODEL_READONLYDICTIONARY_EMPTY
+    ReadOnlyDictionary<IPAddress, PhysicalAddress>.Empty;
+#else
+    new ReadOnlyDictionary<IPAddress, PhysicalAddress>(
+      new Dictionary<IPAddress, PhysicalAddress>(capacity: 0)
+    );
+#endif
 
   /// <remarks>
   ///   <para>See 'BP35A1コマンドリファレンス 4.4. ENEIGHBOR' for detailed specifications.</para>
