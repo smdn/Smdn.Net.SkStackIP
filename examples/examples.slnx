@@ -1,0 +1,35 @@
+﻿<!--
+SPDX-FileCopyrightText: 2026 smdn <smdn@smdn.jp>
+SPDX-License-Identifier: MIT
+-->
+<Solution>
+  <Folder Name="/Smdn.Devices.BP35XX/" />
+  <Folder Name="/Smdn.Devices.BP35XX/active-scan/">
+    <Project Path="Smdn.Devices.BP35XX/active-scan/Program.csproj" />
+  </Folder>
+  <Folder Name="/Smdn.Devices.BP35XX/getting-started/">
+    <Project Path="Smdn.Devices.BP35XX/getting-started/Program.csproj" />
+  </Folder>
+  <Folder Name="/Smdn.Devices.BP35XX/logging/">
+    <Project Path="Smdn.Devices.BP35XX/logging/Program.csproj" />
+  </Folder>
+  <Folder Name="/Smdn.Devices.BP35XX/pana-session-pac/">
+    <Project Path="Smdn.Devices.BP35XX/pana-session-pac/Program.csproj" />
+  </Folder>
+  <Folder Name="/Smdn.Net.SkStackIP/" />
+  <Folder Name="/Smdn.Net.SkStackIP/drive-with-pseudo-device/">
+    <Project Path="Smdn.Net.SkStackIP/drive-with-pseudo-device/Program.csproj" />
+  </Folder>
+  <Folder Name="/Smdn.Net.SkStackIP/get-device-info/">
+    <Project Path="Smdn.Net.SkStackIP/get-device-info/Program.csproj" />
+  </Folder>
+  <Folder Name="/Smdn.Net.SkStackIP/getting-started/">
+    <Project Path="Smdn.Net.SkStackIP/getting-started/Program.csproj" />
+  </Folder>
+  <Folder Name="/Smdn.Net.SkStackIP/logging/">
+    <Project Path="Smdn.Net.SkStackIP/logging/Program.csproj" />
+  </Folder>
+  <Folder Name="/Smdn.Net.SkStackIP/sleep-wakeup/">
+    <Project Path="Smdn.Net.SkStackIP/sleep-wakeup/Program.csproj" />
+  </Folder>
+</Solution>
