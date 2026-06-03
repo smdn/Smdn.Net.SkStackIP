@@ -3,6 +3,9 @@
 #pragma warning disable CA1036
 
 using System;
+#if SYSTEM_COLLECTIONS_FROZEN_FROZENDICTIONARY
+using System.Collections.Frozen;
+#endif
 using System.Collections.Generic;
 
 namespace Smdn.Net.SkStackIP;
@@ -43,7 +46,11 @@ public readonly struct SkStackChannel : IEquatable<SkStackChannel>, IComparable<
     { 58, new(channelNumber: 58, frequencyMHz: 927.5m) },
     { 59, new(channelNumber: 59, frequencyMHz: 927.7m) },
     { 60, new(channelNumber: 60, frequencyMHz: 927.9m) },
-  };
+  }
+#if SYSTEM_COLLECTIONS_FROZEN_FROZENDICTIONARY
+  .ToFrozenDictionary()
+#endif
+  ;
 
   public static readonly SkStackChannel Empty;
 
