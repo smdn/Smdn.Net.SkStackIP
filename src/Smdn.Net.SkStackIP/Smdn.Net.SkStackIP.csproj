@@ -22,12 +22,21 @@ SPDX-License-Identifier: MIT
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.IO.Pipelines" Version="8.0.0" />
+    <PackageReference Include="System.IO.Pipelines" Version="8.0.0" Condition="!$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0'))" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
     <PackageReference Include="Polly.Core" Version="8.0.0" />
     <PackageReference Include="Smdn.Fundamental.ControlPicture" Version="[3.0.0.1,4.0.0)" />
     <PackageReference Include="Smdn.Fundamental.Encoding.Buffer" Version="[3.0.0,4.0.0)" Condition="$(TargetFramework.StartsWith('netstandard'))" />
     <PackageReference Include="Smdn.Fundamental.PrintableEncoding.Hexadecimal" Version="[3.0.0,4.0.0)" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net10.0'))" Label="AOT-compatible packages">
+    <PackageReference Update="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+    <PackageReference Update="Polly.Core" Version="8.6.0" />
+    <PackageReference Update="Smdn.Fundamental.ControlPicture" Version="[3.1.1,4.0.0)" />
+    <PackageReference Update="Smdn.Fundamental.PrintableEncoding.Hexadecimal" Version="[3.1.1,4.0.0)" />
+    <!-- transitive packages -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
   </ItemGroup>
 
   <ItemGroup>
