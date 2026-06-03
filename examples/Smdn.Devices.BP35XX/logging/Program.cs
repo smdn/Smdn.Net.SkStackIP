@@ -16,7 +16,7 @@ services.AddLogging(
 );
 
 using var device = await BP35A1.CreateAsync(
-  new BP35A1Configurations() {
+  new BP35A1Options() {
     SerialPortName = "/dev/ttyACM0", // Specify a port name such as COM1 on Windows
     TryLoadFlashMemory = true, // Try to load configurations stored in flash memory
   },
