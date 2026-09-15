@@ -165,7 +165,7 @@ public abstract partial class BP35Base : SkStackClient {
 
     // retrieve EINFO
     var respInfo = await SendSKINFOAsync(cancellationToken).ConfigureAwait(false);
-    var einfo = respInfo.Payload!;
+    var einfo = respInfo.Payload;
 
     linkLocalAddress = einfo.LinkLocalAddress;
     macAddress = einfo.MacAddress;

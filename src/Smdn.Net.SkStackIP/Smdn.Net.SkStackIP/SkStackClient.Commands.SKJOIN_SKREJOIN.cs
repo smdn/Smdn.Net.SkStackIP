@@ -110,12 +110,15 @@ partial class SkStackClient {
 
     eventHandler.ThrowIfEstablishmentError();
 
+    return (
+      resp,
+      eventHandler.Address
 #if DEBUG
-    if (eventHandler.Address is null)
-      throw new InvalidOperationException($"{eventHandler.Address} has not been set");
+        ?? throw new InvalidOperationException($"{eventHandler.Address} has not been set")
+#else
+        !
 #endif
-
-    return (resp, eventHandler.Address!);
+    );
   }
 
   private sealed class SKJOINEventHandler(Func<SkStackEventNumber, IPAddress, Exception>? createPanaSessionEstablishmentException) : SkStackEventHandlerBase {
@@ -144,7 +147,7 @@ partial class SkStackClient {
           if (!ev.HasSenderAddress)
             throw new InvalidOperationException($"{nameof(ev.SenderAddress)} must not be null");
 #endif
-          Address = ev.SenderAddress!;
+          Address = ev.SenderAddress;
           return true;
 
         default:
