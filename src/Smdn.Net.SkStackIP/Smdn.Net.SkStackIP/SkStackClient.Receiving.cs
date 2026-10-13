@@ -200,10 +200,10 @@ partial class SkStackClient {
         }
 
         var (markAsExamined, advanceIfConsumed, returnResult, delay) = parseSequenceContext.Status switch {
-          ParseSequenceStatus.Completed => (markAsExamined: true, advanceIfConsumed: true, returnResult: true, delay: default),
-          ParseSequenceStatus.Ignored => (markAsExamined: false, advanceIfConsumed: false, returnResult: true, delay: default),
-          ParseSequenceStatus.Incomplete => (markAsExamined: true, advanceIfConsumed: false, returnResult: false, delay: true),
-          ParseSequenceStatus.Continuing => (markAsExamined: true, advanceIfConsumed: true, returnResult: false, delay: false),
+          ParseSequenceStatus.Completed => (MarkAsExamined: true, AdvanceIfConsumed: true, ReturnResult: true, Delay: default),
+          ParseSequenceStatus.Ignored => (MarkAsExamined: false, AdvanceIfConsumed: false, ReturnResult: true, Delay: default),
+          ParseSequenceStatus.Incomplete => (MarkAsExamined: true, AdvanceIfConsumed: false, ReturnResult: false, Delay: true),
+          ParseSequenceStatus.Continuing => (MarkAsExamined: true, AdvanceIfConsumed: true, ReturnResult: false, Delay: false),
           ParseSequenceStatus.Undetermined or _ => throw new InvalidOperationException("final status is invalid or remains undetermined"),
         };
 

@@ -356,11 +356,13 @@ public static class SkStackTokenParser {
         reader: ref reader,
         length: lengthOfUINT8Array,
         throwIfUnexpected: true,
-        arg: (converter, memory: buffer.AsMemory(0, length)),
+        arg: (converter, buffer.AsMemory(0, length)),
         tryConvert: static (token, arg) => {
-          ToByteSequence(token, arg.memory.Length, arg.memory.Span);
+          var (converter, memory) = arg;
 
-          return (true, arg.converter(arg.memory));
+          ToByteSequence(token, memory.Length, memory.Span);
+
+          return (true, converter(memory));
         },
         result: out value
       );

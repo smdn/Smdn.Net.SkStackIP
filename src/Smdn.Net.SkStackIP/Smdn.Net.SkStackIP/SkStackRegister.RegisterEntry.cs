@@ -29,23 +29,21 @@ partial class SkStackRegister {
 
     private protected RegisterEntry(
       string name,
-      (bool isReadable, bool isWritable) readWrite,
-      (TValue minValue, TValue maxValue) valueRange,
+      (bool IsReadable, bool IsWritable) readWrite,
+      (TValue MinValue, TValue MaxValue) valueRange,
       WriteSKSREGArgumentFunc writeSKSREGArgument,
       ExpectValueFunc expectValue
     )
     {
-      if (readWrite.isWritable && writeSKSREGArgument is null)
+      if (readWrite.IsWritable && writeSKSREGArgument is null)
         throw new ArgumentNullException(nameof(writeSKSREGArgument));
-      if (readWrite.isReadable && expectValue is null)
+      if (readWrite.IsReadable && expectValue is null)
         throw new ArgumentNullException(nameof(expectValue));
 
       Name = name;
       SREG = SkStack.ToByteSequence(name);
-      IsReadable = readWrite.isReadable;
-      IsWritable = readWrite.isWritable;
-      MinValue = valueRange.minValue;
-      MaxValue = valueRange.maxValue;
+      (IsReadable, IsWritable) = readWrite;
+      (MinValue, MaxValue) = valueRange;
       WriteSKSREGArgument = writeSKSREGArgument;
       ExpectValue = expectValue;
     }
@@ -86,8 +84,8 @@ partial class SkStackRegister {
     where TValue : IComparable<TValue> {
     private protected ComparableValueRegisterEntry(
       string name,
-      (bool isReadable, bool isWritable) readWrite,
-      (TValue minValue, TValue maxValue) valueRange,
+      (bool IsReadable, bool IsWritable) readWrite,
+      (TValue MinValue, TValue MaxValue) valueRange,
       WriteSKSREGArgumentFunc writeSKSREGArgument,
       ExpectValueFunc expectValue
     )
@@ -108,12 +106,12 @@ partial class SkStackRegister {
   private sealed class RegisterBinaryEntry : ComparableValueRegisterEntry<bool> {
     public RegisterBinaryEntry(
       string name,
-      (bool isReadable, bool isWritable) readWrite
+      (bool IsReadable, bool IsWritable) readWrite
     )
       : base(
         name: name,
         readWrite: readWrite,
-        valueRange: (minValue: false, maxValue: true),
+        valueRange: (MinValue: false, MaxValue: true),
         writeSKSREGArgument: static (writer, value) => writer.WriteTokenBinary(value),
         expectValue: SkStackTokenParser.ExpectBinary
       )
@@ -127,8 +125,8 @@ partial class SkStackRegister {
   private sealed class RegisterUINT8Entry : ComparableValueRegisterEntry<byte> {
     public RegisterUINT8Entry(
       string name,
-      (bool isReadable, bool isWritable) readWrite,
-      (byte minValue, byte maxValue) valueRange
+      (bool IsReadable, bool IsWritable) readWrite,
+      (byte MinValue, byte MaxValue) valueRange
     )
       : base(
         name: name,
@@ -145,8 +143,8 @@ partial class SkStackRegister {
   private sealed class RegisterChannelEntry : ComparableValueRegisterEntry<SkStackChannel> {
     public RegisterChannelEntry(
       string name,
-      (bool isReadable, bool isWritable) readWrite,
-      (SkStackChannel minValue, SkStackChannel maxValue) valueRange
+      (bool IsReadable, bool IsWritable) readWrite,
+      (SkStackChannel MinValue, SkStackChannel MaxValue) valueRange
     )
       : base(
         name: name,
@@ -162,8 +160,8 @@ partial class SkStackRegister {
   private sealed class RegisterUINT16Entry : ComparableValueRegisterEntry<ushort> {
     public RegisterUINT16Entry(
       string name,
-      (bool isReadable, bool isWritable) readWrite,
-      (ushort minValue, ushort maxValue) valueRange
+      (bool IsReadable, bool IsWritable) readWrite,
+      (ushort MinValue, ushort MaxValue) valueRange
     )
       : base(
         name: name,
@@ -179,8 +177,8 @@ partial class SkStackRegister {
   private sealed class RegisterUINT32Entry : ComparableValueRegisterEntry<uint> {
     public RegisterUINT32Entry(
       string name,
-      (bool isReadable, bool isWritable) readWrite,
-      (uint minValue, uint maxValue) valueRange
+      (bool IsReadable, bool IsWritable) readWrite,
+      (uint MinValue, uint MaxValue) valueRange
     )
       : base(
         name: name,
@@ -196,15 +194,15 @@ partial class SkStackRegister {
   private sealed class RegisterUINT32SecondsTimeSpanEntry : ComparableValueRegisterEntry<TimeSpan> {
     public RegisterUINT32SecondsTimeSpanEntry(
       string name,
-      (bool isReadable, bool isWritable) readWrite,
-      (uint minValue, uint maxValue) valueRange
+      (bool IsReadable, bool IsWritable) readWrite,
+      (uint MinValue, uint MaxValue) valueRange
     )
       : base(
         name: name,
         readWrite: readWrite,
         valueRange: (
-          minValue: TimeSpan.FromSeconds(valueRange.minValue),
-          maxValue: TimeSpan.FromSeconds(valueRange.maxValue)
+          MinValue: TimeSpan.FromSeconds(valueRange.MinValue),
+          MaxValue: TimeSpan.FromSeconds(valueRange.MaxValue)
         ),
         writeSKSREGArgument: static (writer, value) => writer.WriteTokenUINT32((uint)value.TotalSeconds),
         expectValue: ExpectValue
@@ -231,8 +229,8 @@ partial class SkStackRegister {
   private sealed class RegisterUINT64Entry : ComparableValueRegisterEntry<ulong> {
     public RegisterUINT64Entry(
       string name,
-      (bool isReadable, bool isWritable) readWrite,
-      (uint minValue, uint maxValue) valueRange
+      (bool IsReadable, bool IsWritable) readWrite,
+      (uint MinValue, uint MaxValue) valueRange
     )
       : base(
         name: name,
@@ -251,7 +249,7 @@ partial class SkStackRegister {
 
     public RegisterCHARArrayEntry(
       string name,
-      (bool isReadable, bool isWritable) readWrite,
+      (bool IsReadable, bool IsWritable) readWrite,
       int minLength,
       int maxLength
     )

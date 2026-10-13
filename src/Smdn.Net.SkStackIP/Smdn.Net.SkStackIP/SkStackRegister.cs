@@ -12,15 +12,15 @@ public static partial class SkStackRegister {
   private static readonly (bool IsReadable, bool IsWritable) RW = (IsReadable: true, IsWritable: true);
   private static readonly (bool IsReadable, bool IsWritable) R = (IsReadable: true, IsWritable: false);
 
-  public static RegisterEntry<SkStackChannel> S02 { get; } = new RegisterChannelEntry(name: nameof(S02), readWrite: RW, valueRange: (minValue: SkStackChannel.Channel33, maxValue: SkStackChannel.Channel60));
+  public static RegisterEntry<SkStackChannel> S02 { get; } = new RegisterChannelEntry(name: nameof(S02), readWrite: RW, valueRange: (MinValue: SkStackChannel.Channel33, MaxValue: SkStackChannel.Channel60));
   [CLSCompliant(false)]
-  public static RegisterEntry<ushort> S03 { get; } = new RegisterUINT16Entry(name: nameof(S03), readWrite: RW, valueRange: (minValue: 0x0000, maxValue: 0xFFFF));
+  public static RegisterEntry<ushort> S03 { get; } = new RegisterUINT16Entry(name: nameof(S03), readWrite: RW, valueRange: (MinValue: 0x0000, MaxValue: 0xFFFF));
   [CLSCompliant(false)]
   public static RegisterEntry<uint> S07 { get; } = new RegisterUINT32Entry(name: nameof(S07), readWrite: R, valueRange: default);
   public static RegisterEntry<ReadOnlyMemory<byte>> S0A { get; } = new RegisterCHARArrayEntry(name: nameof(S0A), readWrite: RW, minLength: 8, maxLength: 8);
   public static RegisterEntry<bool> S15 { get; } = new RegisterBinaryEntry(name: nameof(S15), readWrite: RW);
   [CLSCompliant(false)]
-  public static RegisterEntry<TimeSpan> S16 { get; } = new RegisterUINT32SecondsTimeSpanEntry(name: nameof(S16), readWrite: RW, valueRange: (minValue: 0x_0000_003C, maxValue: 0x_FFFF_FFFF));
+  public static RegisterEntry<TimeSpan> S16 { get; } = new RegisterUINT32SecondsTimeSpanEntry(name: nameof(S16), readWrite: RW, valueRange: (MinValue: 0x_0000_003C, MaxValue: 0x_FFFF_FFFF));
   public static RegisterEntry<bool> S17 { get; } = new RegisterBinaryEntry(name: nameof(S17), readWrite: RW);
   public static RegisterEntry<bool> SA0 { get; } = new RegisterBinaryEntry(name: nameof(SA0), readWrite: RW);
   public static RegisterEntry<bool> SA1 { get; } = new RegisterBinaryEntry(name: nameof(SA1), readWrite: RW);
