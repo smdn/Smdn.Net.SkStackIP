@@ -26,7 +26,7 @@ public class SkStackClientCommandsSKAPPVERTests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
-    Assert.That(response!.Payload, Is.Not.Null);
+    Assert.That(response.Payload, Is.Not.Null);
     Assert.That(response.Payload, Is.EqualTo("rev26e"));
 
     Assert.That(

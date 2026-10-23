@@ -124,7 +124,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     Assert.That(listeningPortList, Is.Not.Null, nameof(listeningPortList));
     Assert.That(
-      listeningPortList!.Select(static p => (p.Handle, p.Port)),
+      listeningPortList.Select(static p => (p.Handle, p.Port)),
       Is.EqualTo(new[] {
         (SkStackUdpPortHandle.Handle1, 1),
         (SkStackUdpPortHandle.Handle3, 3),

@@ -28,7 +28,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null);
-    Assert.That(response!.Success, Is.True);
+    Assert.That(response.Success, Is.True);
 
     Assert.That(port.IsNull, Is.False, nameof(port.IsNull));
     Assert.That(port.IsUnused, Is.False, nameof(port.IsUnused));
@@ -57,7 +57,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null);
-    Assert.That(response!.Success, Is.True);
+    Assert.That(response.Success, Is.True);
 
     Assert.That(
       stream.ReadSentData(),

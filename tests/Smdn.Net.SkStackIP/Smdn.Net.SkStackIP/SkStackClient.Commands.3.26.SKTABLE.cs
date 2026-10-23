@@ -34,8 +34,8 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
-    Assert.That(response!.Payload, Is.Not.Null);
-    Assert.That(response.Payload!.Count, Is.EqualTo(3));
+    Assert.That(response.Payload, Is.Not.Null);
+    Assert.That(response.Payload.Count, Is.EqualTo(3));
     Assert.That(
       response.Payload[0],
       Is.EqualTo(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:0003:AFE0"))
@@ -95,7 +95,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     var response = taskSendCommand.Result;
 
     Assert.That(response.Payload, Is.Not.Null);
-    Assert.That(response.Payload!.Count, Is.EqualTo(2));
+    Assert.That(response.Payload.Count, Is.EqualTo(2));
     Assert.That(
       response.Payload[0],
       Is.EqualTo(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:0003:AFE0"))
@@ -128,8 +128,8 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
-    Assert.That(response!.Payload, Is.Not.Null);
-    Assert.That(response.Payload!.Count, Is.Zero);
+    Assert.That(response.Payload, Is.Not.Null);
+    Assert.That(response.Payload.Count, Is.Zero);
 
     Assert.That(
       stream.ReadSentData(),
@@ -153,8 +153,8 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
-    Assert.That(response!.Payload, Is.Not.Null);
-    Assert.That(response.Payload!.Count, Is.Zero);
+    Assert.That(response.Payload, Is.Not.Null);
+    Assert.That(response.Payload.Count, Is.Zero);
 
     Assert.That(
       stream.ReadSentData(),
@@ -181,8 +181,8 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
-    Assert.That(response!.Payload, Is.Not.Null);
-    Assert.That(response.Payload!.Count, Is.EqualTo(2));
+    Assert.That(response.Payload, Is.Not.Null);
+    Assert.That(response.Payload.Count, Is.EqualTo(2));
 
     Assert.That(response.Payload.ContainsKey(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")), Is.True);
     Assert.That(response.Payload.ContainsKey(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5679")), Is.True);
@@ -239,7 +239,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     var response = taskSendCommand.Result;
 
     Assert.That(response.Payload, Is.Not.Null);
-    Assert.That(response.Payload!.Count, Is.EqualTo(1));
+    Assert.That(response.Payload.Count, Is.EqualTo(1));
 
     Assert.That(response.Payload.ContainsKey(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")), Is.True);
 
@@ -271,8 +271,8 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
-    Assert.That(response!.Payload, Is.Not.Null);
-    Assert.That(response.Payload!.Count, Is.Zero);
+    Assert.That(response.Payload, Is.Not.Null);
+    Assert.That(response.Payload.Count, Is.Zero);
 
     Assert.That(
       stream.ReadSentData(),
@@ -297,8 +297,8 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
-    Assert.That(response!.Payload, Is.Not.Null);
-    Assert.That(response.Payload!.Count, Is.Zero);
+    Assert.That(response.Payload, Is.Not.Null);
+    Assert.That(response.Payload.Count, Is.Zero);
 
     Assert.That(
       stream.ReadSentData(),
@@ -342,10 +342,10 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(response, Is.Not.Null, nameof(response));
 
-    var ports = response!.Payload;
+    var ports = response.Payload;
 
     Assert.That(ports, Is.Not.Null);
-    Assert.That(ports!.Count, Is.EqualTo(6));
+    Assert.That(ports.Count, Is.EqualTo(6));
 
     Assert.That(ports[0].Port, Is.EqualTo(3610), $"{nameof(SkStackUdpPort.Port)} #0");
     Assert.That(ports[0].Handle, Is.EqualTo(SkStackUdpPortHandle.Handle1), $"{nameof(SkStackUdpPort.Handle)} #0");

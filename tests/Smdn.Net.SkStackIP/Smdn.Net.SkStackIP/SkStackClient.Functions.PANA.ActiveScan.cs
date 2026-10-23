@@ -218,7 +218,7 @@ partial class SkStackClientFunctionsPanaTests {
     );
 
     Assert.That(scanResult, Is.Not.Null);
-    Assert.That(scanResult!.Count, Is.EqualTo(1));
+    Assert.That(scanResult.Count, Is.EqualTo(1));
     Assert.That(
       scanResult[0].MacAddress,
       Is.EqualTo(new PhysicalAddress([0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01]))
@@ -269,7 +269,7 @@ partial class SkStackClientFunctionsPanaTests {
     );
 
     Assert.That(scanResult, Is.Not.Null);
-    Assert.That(scanResult!.Count, Is.EqualTo(2));
+    Assert.That(scanResult.Count, Is.EqualTo(2));
 
     Assert.That(
       scanResult[0].MacAddress,
@@ -364,7 +364,7 @@ partial class SkStackClientFunctionsPanaTests {
     );
 
     Assert.That(scanResult, Is.Not.Null);
-    Assert.That(scanResult!.Count, Is.EqualTo(1));
+    Assert.That(scanResult.Count, Is.EqualTo(1));
 
     var commands = Encoding.ASCII.GetString(stream.ReadSentData());
 
@@ -411,7 +411,7 @@ partial class SkStackClientFunctionsPanaTests {
     );
 
     Assert.That(scanResult, Is.Not.Null);
-    Assert.That(scanResult!.Count, Is.EqualTo(1));
+    Assert.That(scanResult.Count, Is.EqualTo(1));
 
     var commands = Encoding.ASCII.GetString(stream.ReadSentData());
 

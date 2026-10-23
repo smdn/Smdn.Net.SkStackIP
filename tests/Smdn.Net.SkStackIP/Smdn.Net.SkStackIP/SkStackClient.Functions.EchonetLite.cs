@@ -91,7 +91,8 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     var response = await client.SendSKTABLEListeningPortListAsync();
 
-    Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
+    Assert.That(response.Payload, Is.Not.Null);
+    Assert.That(response.Payload.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
 
     Assert.That(client.PanaSessionPeerAddress, Is.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
@@ -128,7 +129,8 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     var response = await client.SendSKTABLEListeningPortListAsync(cancellationToken);
 
-    Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Empty);
+    Assert.That(response.Payload, Is.Not.Null);
+    Assert.That(response.Payload.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Empty);
 
     Assert.That(
       async () => await client.SendUdpEchonetLiteAsync(Array.Empty<byte>()),
@@ -162,7 +164,8 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     var response = await client.SendSKTABLEListeningPortListAsync(cancellationToken);
 
-    Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
+    Assert.That(response.Payload, Is.Not.Null);
+    Assert.That(response.Payload.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
 
     stream.ClearSentData();
 
@@ -212,7 +215,8 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     var response = await client.SendSKTABLEListeningPortListAsync(cancellationToken);
 
-    Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
+    Assert.That(response.Payload, Is.Not.Null);
+    Assert.That(response.Payload.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
 
     stream.ClearSentData();
 
@@ -266,7 +270,8 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     var response = await client.SendSKTABLEListeningPortListAsync(cancellationToken);
 
-    Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
+    Assert.That(response.Payload, Is.Not.Null);
+    Assert.That(response.Payload.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Not.Empty);
 
     stream.ClearSentData();
 

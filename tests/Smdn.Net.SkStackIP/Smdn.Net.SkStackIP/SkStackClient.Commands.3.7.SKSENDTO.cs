@@ -43,7 +43,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
-    Assert.That(response!.Success, Is.True, nameof(response.Success));
+    Assert.That(response.Success, Is.True, nameof(response.Success));
     Assert.That(isCompletedSuccessfully, Is.EqualTo(expectedCompleteResult), nameof(isCompletedSuccessfully));
 
     Assert.That(
@@ -77,7 +77,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
-    Assert.That(response!.Success, Is.True, nameof(response.Success));
+    Assert.That(response.Success, Is.True, nameof(response.Success));
     Assert.That(isCompletedSuccessfully, Is.True, nameof(isCompletedSuccessfully));
 
     Assert.That(
@@ -152,7 +152,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       );
 
       Assert.That(response, Is.Not.Null, $"case #{testCaseNumber} " + nameof(response));
-      Assert.That(response!.Success, Is.True, $"case #{testCaseNumber} " + nameof(response.Success));
+      Assert.That(response.Success, Is.True, $"case #{testCaseNumber} " + nameof(response.Success));
       Assert.That(isCompletedSuccessfully, Is.EqualTo(expectedCompleteResult), $"case #{testCaseNumber} " + nameof(isCompletedSuccessfully));
 
       Assert.That(
@@ -197,7 +197,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
-    Assert.That(response!.Success, Is.True, nameof(response.Success));
+    Assert.That(response.Success, Is.True, nameof(response.Success));
     Assert.That(isCompletedSuccessfully, Is.EqualTo(expectedCompleteResult), nameof(isCompletedSuccessfully));
 
     Assert.That(
@@ -224,7 +224,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
-    Assert.That(response!.Success, Is.True);
+    Assert.That(response.Success, Is.True);
     Assert.That(isCompletedSuccessfully, Is.True, nameof(isCompletedSuccessfully));
 
     Assert.That(

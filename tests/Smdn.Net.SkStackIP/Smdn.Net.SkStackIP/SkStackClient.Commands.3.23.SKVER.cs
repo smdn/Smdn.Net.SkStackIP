@@ -28,7 +28,7 @@ public class SkStackClientCommandsSKVERTests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
-    Assert.That(response!.Payload, Is.Not.Null);
+    Assert.That(response.Payload, Is.Not.Null);
     Assert.That(response.Payload, Is.EqualTo(new Version(1, 2, 10)));
 
     Assert.That(

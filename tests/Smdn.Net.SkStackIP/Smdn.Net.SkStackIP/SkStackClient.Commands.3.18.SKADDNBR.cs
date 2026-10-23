@@ -32,7 +32,7 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null);
-    Assert.That(response!.Success, Is.True);
+    Assert.That(response.Success, Is.True);
 
     Assert.That(
       stream.ReadSentData(),

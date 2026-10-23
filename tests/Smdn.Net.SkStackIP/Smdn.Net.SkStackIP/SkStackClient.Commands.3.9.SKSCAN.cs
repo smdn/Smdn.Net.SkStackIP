@@ -186,7 +186,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     );
 
     Assert.That(scanResult, Is.Not.Null);
-    Assert.That(scanResult!.Count, Is.EqualTo(28));
+    Assert.That(scanResult.Count, Is.EqualTo(28));
 
     var expectedValues = new[] {
       new { Channel = 0x21, LQI = 0x04, RSSI = -103.17m },

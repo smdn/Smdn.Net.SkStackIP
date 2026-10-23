@@ -32,7 +32,7 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
-    Assert.That(response!.Payload, Is.Not.Null);
+    Assert.That(response.Payload, Is.Not.Null);
     Assert.That(response.Status, Is.EqualTo(SkStackResponseStatus.Ok));
     Assert.That(response.StatusText, Is.EqualTo(ReadOnlyMemory<byte>.Empty));
     Assert.That(response.Payload, Is.EqualTo(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")));
