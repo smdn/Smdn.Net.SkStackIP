@@ -42,9 +42,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(() => client.SendSKSETRBIDAsync(id: string.Empty.AsMemory()), Throws.ArgumentException);
-#pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -57,9 +55,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(() => client.SendSKSETRBIDAsync(id: ReadOnlyMemory<byte>.Empty), Throws.ArgumentException);
-#pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -73,9 +69,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(() => client.SendSKSETRBIDAsync(id: rbid.AsMemory()), Throws.ArgumentException);
-#pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -89,9 +83,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(() => client.SendSKSETRBIDAsync(id: rbid.ToByteSequence()), Throws.ArgumentException);
-#pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -105,9 +97,7 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(() => client.SendSKSETRBIDAsync(id: rbid.AsMemory()), Throws.ArgumentException);
-#pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }

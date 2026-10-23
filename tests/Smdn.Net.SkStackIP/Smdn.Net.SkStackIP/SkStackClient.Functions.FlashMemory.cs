@@ -142,12 +142,10 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
   {
     using var client = new SkStackClient(Stream.Null, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(
       () => client.SaveFlashMemoryAsync(restriction: null!),
       Throws.ArgumentNullException
     );
-#pragma warning restore CA2012
   }
 
   private sealed class AlwaysDenySkStackFlashMemoryWriteRestriction : SkStackFlashMemoryWriteRestriction {
@@ -159,12 +157,10 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
   {
     using var client = new SkStackClient(Stream.Null, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(
       () => client.SaveFlashMemoryAsync(restriction: new AlwaysDenySkStackFlashMemoryWriteRestriction()),
       Throws.InvalidOperationException
     );
-#pragma warning restore CA2012
   }
 
   [Test]
@@ -172,7 +168,6 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
   {
     using var client = new SkStackClient(Stream.Null, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(
       () => client.SaveFlashMemoryAsync(
         restriction: SkStackFlashMemoryWriteRestriction.DangerousCreateAlwaysGrant(),
@@ -180,7 +175,6 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
       ),
       Throws.InstanceOf<OperationCanceledException>()
     );
-#pragma warning restore CA2012
   }
 
   [Test]

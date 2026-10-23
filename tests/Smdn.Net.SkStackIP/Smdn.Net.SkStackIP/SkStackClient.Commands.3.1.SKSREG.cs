@@ -120,9 +120,7 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(() => client.SendSKSREGAsync(null!, (ushort)0x8888), Throws.ArgumentNullException);
-#pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -135,52 +133,42 @@ public class SkStackClientCommandsSKREGTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(() => client.SendSKSREGAsync<ushort>(null!), Throws.ArgumentNullException);
-#pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
-  private void SKSREG_Set_RegisterReadOnly(Action<SkStackClient> sendSKSREGSetAsync)
+  private void SKSREG_Set_RegisterReadOnly(Func<SkStackClient, ValueTask> sendSKSREGSetAsync)
   {
     var stream = new PseudoSkStackStream();
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
-    Assert.That(() => sendSKSREGSetAsync(client), Throws.InvalidOperationException);
-#pragma warning restore CA2012
+    Assert.That(async () => await sendSKSREGSetAsync(client), Throws.InvalidOperationException);
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
-#pragma warning disable CA2012
-  [Test] public void SKSREG_Set_RegisterReadOnly_S07() => SKSREG_Set_RegisterReadOnly((client) => client.SendSKSREGAsync(SkStackRegister.S07, default(uint)));
-  [Test] public void SKSREG_Set_RegisterReadOnly_SFB() => SKSREG_Set_RegisterReadOnly((client) => client.SendSKSREGAsync(SkStackRegister.SFB, default(bool)));
-  [Test] public void SKSREG_Set_RegisterReadOnly_SFD() => SKSREG_Set_RegisterReadOnly((client) => client.SendSKSREGAsync(SkStackRegister.SFD, default(ulong)));
-#pragma warning restore CA2012
+  [Test] public void SKSREG_Set_RegisterReadOnly_S07() => SKSREG_Set_RegisterReadOnly(async client => await client.SendSKSREGAsync(SkStackRegister.S07, default(uint)));
+  [Test] public void SKSREG_Set_RegisterReadOnly_SFB() => SKSREG_Set_RegisterReadOnly(async client => await client.SendSKSREGAsync(SkStackRegister.SFB, default(bool)));
+  [Test] public void SKSREG_Set_RegisterReadOnly_SFD() => SKSREG_Set_RegisterReadOnly(async client => await client.SendSKSREGAsync(SkStackRegister.SFD, default(ulong)));
 
-  private void SKSREG_Set_ValueOutOfRange<TArgumentException>(Action<SkStackClient> sendSKSREGSetAsync)
+  private void SKSREG_Set_ValueOutOfRange<TArgumentException>(Func<SkStackClient, ValueTask> sendSKSREGSetAsync)
     where TArgumentException : ArgumentException
   {
     var stream = new PseudoSkStackStream();
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
-    Assert.That(() => sendSKSREGSetAsync(client), Throws.TypeOf<TArgumentException>());
-#pragma warning restore CA2012
+    Assert.That(async () => await sendSKSREGSetAsync(client), Throws.TypeOf<TArgumentException>());
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
 
-#pragma warning disable CA2012
-  [Test] public void SKSREG_Set_RegisterValueOutOfRange_S02() => SKSREG_Set_ValueOutOfRange<ArgumentOutOfRangeException>((client) => client.SendSKSREGAsync(SkStackRegister.S02, default(SkStackChannel)));
-  [Test] public void SKSREG_Set_RegisterValueOutOfRange_S0A_Empty() => SKSREG_Set_ValueOutOfRange<ArgumentException>((client) => client.SendSKSREGAsync(SkStackRegister.S0A, ReadOnlyMemory<byte>.Empty));
-  [Test] public void SKSREG_Set_RegisterValueOutOfRange_S0A_TooShort() => SKSREG_Set_ValueOutOfRange<ArgumentOutOfRangeException>((client) => client.SendSKSREGAsync(SkStackRegister.S0A, new byte[] { 0x00 }.AsMemory()));
-  [Test] public void SKSREG_Set_RegisterValueOutOfRange_S0A_TooLong() => SKSREG_Set_ValueOutOfRange<ArgumentOutOfRangeException>((client) => client.SendSKSREGAsync(SkStackRegister.S0A, new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 }.AsMemory()));
-  [Test] public void SKSREG_Set_RegisterValueOutOfRange_S16_TooShort() => SKSREG_Set_ValueOutOfRange<ArgumentOutOfRangeException>((client) => client.SendSKSREGAsync(SkStackRegister.S16, TimeSpan.FromSeconds(59)));
-  [Test] public void SKSREG_Set_RegisterValueOutOfRange_S16_TooLong() => SKSREG_Set_ValueOutOfRange<ArgumentOutOfRangeException>((client) => client.SendSKSREGAsync(SkStackRegister.S16, TimeSpan.FromSeconds(4294967296)));
-#pragma warning restore CA2012
+  [Test] public void SKSREG_Set_RegisterValueOutOfRange_S02() => SKSREG_Set_ValueOutOfRange<ArgumentOutOfRangeException>(async client => await client.SendSKSREGAsync(SkStackRegister.S02, default(SkStackChannel)));
+  [Test] public void SKSREG_Set_RegisterValueOutOfRange_S0A_Empty() => SKSREG_Set_ValueOutOfRange<ArgumentException>(async client => await client.SendSKSREGAsync(SkStackRegister.S0A, ReadOnlyMemory<byte>.Empty));
+  [Test] public void SKSREG_Set_RegisterValueOutOfRange_S0A_TooShort() => SKSREG_Set_ValueOutOfRange<ArgumentOutOfRangeException>(async client => await client.SendSKSREGAsync(SkStackRegister.S0A, new byte[] { 0x00 }.AsMemory()));
+  [Test] public void SKSREG_Set_RegisterValueOutOfRange_S0A_TooLong() => SKSREG_Set_ValueOutOfRange<ArgumentOutOfRangeException>(async client => await client.SendSKSREGAsync(SkStackRegister.S0A, new byte[] { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08 }.AsMemory()));
+  [Test] public void SKSREG_Set_RegisterValueOutOfRange_S16_TooShort() => SKSREG_Set_ValueOutOfRange<ArgumentOutOfRangeException>(async client => await client.SendSKSREGAsync(SkStackRegister.S16, TimeSpan.FromSeconds(59)));
+  [Test] public void SKSREG_Set_RegisterValueOutOfRange_S16_TooLong() => SKSREG_Set_ValueOutOfRange<ArgumentOutOfRangeException>(async client => await client.SendSKSREGAsync(SkStackRegister.S16, TimeSpan.FromSeconds(4294967296)));
 }

@@ -852,11 +852,9 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     var client = CreateClient(stream);
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false).AsTask();
 
     await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
-#pragma warning restore CA2012
 
     var resp = taskSendCommand.Result;
 
@@ -881,11 +879,9 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     var client = CreateClient(stream);
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false).AsTask();
 
     await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
-#pragma warning restore CA2012
 
     var resp = taskSendCommand.Result;
 
@@ -914,11 +910,9 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     var client = CreateClient(stream);
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false).AsTask();
 
     await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
-#pragma warning restore CA2012
 
     var resp = taskSendCommand.Result;
 
@@ -953,7 +947,6 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     var client = CreateClient(stream);
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync(
       command: "TEST",
       arguments: null,
@@ -979,7 +972,6 @@ public class SkStackClientTests : SkStackClientTestsBase {
     ).AsTask();
 
     await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
-#pragma warning restore CA2012
 
     var resp = taskSendCommand.Result;
 
@@ -1014,7 +1006,6 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     var client = CreateClient(stream);
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync(
       command: "TEST",
       arguments: null,
@@ -1022,7 +1013,6 @@ public class SkStackClientTests : SkStackClientTestsBase {
     ).AsTask();
 
     await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
-#pragma warning restore CA2012
 
     var resp = taskSendCommand.Result;
 
@@ -1055,7 +1045,6 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     var client = CreateClient(stream);
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync(
       command: "TEST",
       arguments: null,
@@ -1063,7 +1052,6 @@ public class SkStackClientTests : SkStackClientTestsBase {
     ).AsTask();
 
     await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
-#pragma warning restore CA2012
 
     var resp = taskSendCommand.Result;
 
@@ -1093,11 +1081,9 @@ public class SkStackClientTests : SkStackClientTestsBase {
     client.ReceiveResponseDelay = delay;
 
     var sw = Stopwatch.StartNew();
-#pragma warning disable CA2012
     var taskSendCommand = client.SendCommandAsync("TEST", throwIfErrorStatus: false).AsTask();
 
     await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
-#pragma warning restore CA2012
 
     sw.Stop();
 

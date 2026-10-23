@@ -143,7 +143,6 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionState, Is.Default, nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.False, nameof(client.IsPanaSessionAlive));
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKREJOINAsync().AsTask();
 
     Assert.That(
@@ -156,7 +155,6 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
         .And.Property(nameof(SkStackPanaSessionEstablishmentException.Channel)).Null
         .And.Property(nameof(SkStackPanaSessionEstablishmentException.PanId)).Null
     );
-#pragma warning restore CA2012
 
     Assert.That(raisedEventCount, Is.Zero, nameof(raisedEventCount));
 

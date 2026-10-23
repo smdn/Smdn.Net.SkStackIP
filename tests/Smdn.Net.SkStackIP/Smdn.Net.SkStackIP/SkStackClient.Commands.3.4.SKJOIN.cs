@@ -189,9 +189,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(() => client.SendSKJOINAsync(ipv6address: null!), Throws.ArgumentNullException);
-#pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -205,9 +203,7 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(() => client.SendSKJOINAsync(ipv6address: IPAddress.Loopback), Throws.ArgumentException);
-#pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }

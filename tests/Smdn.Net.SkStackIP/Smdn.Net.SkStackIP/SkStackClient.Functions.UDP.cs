@@ -515,12 +515,10 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(
       () => client.ReceiveUdpAsync(port: port, buffer: CreateNullBufferWriter()),
       Throws.TypeOf<ArgumentOutOfRangeException>()
     );
-#pragma warning restore CA2012
   }
 
   [Test]
@@ -529,9 +527,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(() => client.ReceiveUdpAsync(port: 1, buffer: null!), Throws.ArgumentNullException);
-#pragma warning restore CA2012
   }
 
   [Test]
@@ -542,12 +538,10 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     client.Dispose();
 
-#pragma warning disable CA2012
     Assert.That(
       () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.EchonetLite, buffer: CreateNullBufferWriter()),
       Throws.InstanceOf<ObjectDisposedException>()
     );
-#pragma warning restore CA2012
   }
 
   [Test]
@@ -556,12 +550,10 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(
       () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.Pana, buffer: CreateNullBufferWriter()),
       Throws.InvalidOperationException
     );
-#pragma warning restore CA2012
   }
 
   [Test]

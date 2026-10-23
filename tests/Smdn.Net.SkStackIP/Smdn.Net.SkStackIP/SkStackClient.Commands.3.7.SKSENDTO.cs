@@ -535,7 +535,6 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKSENDTOAsync(
       handle: SkStackUdpPortHandle.Handle1,
       destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
@@ -544,7 +543,6 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     ).AsTask();
 
     await Task.WhenAll(taskSendCommand, CompleteResponseAsync());
-#pragma warning restore CA2012
 
     var (response, isCompletedSuccessfully) = taskSendCommand.Result;
 

@@ -27,9 +27,7 @@ public partial class SkStackClientFunctionsPanaTests : SkStackClientTestsBase {
       Throws.TypeOf<SkStackPanaSessionNotEstablishedException>()
     );
 
-#pragma warning disable CA2012
     Assert.That(() => client.TerminatePanaSessionAsync(), Throws.TypeOf<SkStackPanaSessionNotEstablishedException>());
-#pragma warning restore CA2012
     Assert.That(async () => await client.TerminatePanaSessionAsync(), Throws.TypeOf<SkStackPanaSessionNotEstablishedException>());
 
     Assert.That(

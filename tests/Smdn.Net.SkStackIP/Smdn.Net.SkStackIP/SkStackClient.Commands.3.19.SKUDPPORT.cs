@@ -76,12 +76,10 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(
       () => client.SendSKUDPPORTAsync(SkStackUdpPortHandle.Handle1, port),
       Throws.TypeOf<ArgumentOutOfRangeException>()
     );
-#pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -95,7 +93,6 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(
       () => client.SendSKUDPPORTAsync(handle, 0x0001),
       Throws
@@ -104,7 +101,6 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
         .Property(nameof(ArgumentOutOfRangeException.ParamName))
         .EqualTo("handle")
     );
-#pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -118,7 +114,6 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     Assert.That(
       () => client.SendSKUDPPORTUnsetAsync(handle),
       Throws
@@ -127,7 +122,6 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
         .Property(nameof(ArgumentOutOfRangeException.ParamName))
         .EqualTo("handle")
     );
-#pragma warning restore CA2012
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
