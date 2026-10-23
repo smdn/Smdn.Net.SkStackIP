@@ -28,7 +28,10 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     SkStackResponse<IReadOnlyList<IPAddress>>? response = null;
 
-    Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
+    Assert.That(
+      async () => response = await client.SendSKTABLEAvailableAddressListAsync(),
+      Throws.Nothing
+    );
 
     Assert.That(response, Is.Not.Null, nameof(response));
     Assert.That(response!.Payload, Is.Not.Null);
@@ -82,13 +85,12 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKTABLEAvailableAddressListAsync().AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskSendCommand, CompleteResponseAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, CompleteResponseAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     var response = taskSendCommand.Result;
 
@@ -120,7 +122,10 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     SkStackResponse<IReadOnlyList<IPAddress>>? response = null;
 
-    Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
+    Assert.That(
+      async () => response = await client.SendSKTABLEAvailableAddressListAsync(),
+      Throws.Nothing
+    );
 
     Assert.That(response, Is.Not.Null, nameof(response));
     Assert.That(response!.Payload, Is.Not.Null);
@@ -142,7 +147,10 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     SkStackResponse<IReadOnlyList<IPAddress>>? response = null;
 
-    Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEAvailableAddressListAsync());
+    Assert.That(
+      async () => response = await client.SendSKTABLEAvailableAddressListAsync(),
+      Throws.Nothing
+    );
 
     Assert.That(response, Is.Not.Null, nameof(response));
     Assert.That(response!.Payload, Is.Not.Null);
@@ -167,7 +175,10 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>>? response = null;
 
-    Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
+    Assert.That(
+      async () => response = await client.SendSKTABLENeighborCacheListAsync(),
+      Throws.Nothing
+    );
 
     Assert.That(response, Is.Not.Null, nameof(response));
     Assert.That(response!.Payload, Is.Not.Null);
@@ -218,13 +229,12 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKTABLENeighborCacheListAsync().AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskSendCommand, CompleteResponseAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, CompleteResponseAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     var response = taskSendCommand.Result;
 
@@ -255,7 +265,10 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>>? response = null;
 
-    Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
+    Assert.That(
+      async () => response = await client.SendSKTABLENeighborCacheListAsync(),
+      Throws.Nothing
+    );
 
     Assert.That(response, Is.Not.Null, nameof(response));
     Assert.That(response!.Payload, Is.Not.Null);
@@ -278,7 +291,10 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     SkStackResponse<IReadOnlyDictionary<IPAddress, PhysicalAddress>>? response = null;
 
-    Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLENeighborCacheListAsync());
+    Assert.That(
+      async () => response = await client.SendSKTABLENeighborCacheListAsync(),
+      Throws.Nothing
+    );
 
     Assert.That(response, Is.Not.Null, nameof(response));
     Assert.That(response!.Payload, Is.Not.Null);
@@ -319,7 +335,10 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     SkStackResponse<IReadOnlyList<SkStackUdpPort>>? response = null;
 
-    Assert.DoesNotThrowAsync(async () => response = await client.SendSKTABLEListeningPortListAsync());
+    Assert.That(
+      async () => response = await client.SendSKTABLEListeningPortListAsync(),
+      Throws.Nothing
+    );
 
     Assert.That(response, Is.Not.Null, nameof(response));
 

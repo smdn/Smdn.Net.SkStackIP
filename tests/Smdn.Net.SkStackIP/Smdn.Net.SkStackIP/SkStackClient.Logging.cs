@@ -33,7 +33,10 @@ public class SkStackClientLoggingTests : SkStackClientTestsBase {
       logger: logger
     );
 
-    Assert.DoesNotThrowAsync(async () => await client.SendSKRESETAsync());
+    Assert.That(
+      async () => await client.SendSKRESETAsync(),
+      Throws.Nothing
+    );
 
     var logSnapshot = logCollector.GetSnapshot();
 
@@ -63,7 +66,10 @@ public class SkStackClientLoggingTests : SkStackClientTestsBase {
       logger: logger
     );
 
-    Assert.DoesNotThrowAsync(async () => await client.SendSKRESETAsync());
+    Assert.That(
+      async () => await client.SendSKRESETAsync(),
+      Throws.Nothing
+    );
 
     var logSnapshot = logCollector.GetSnapshot();
 
@@ -94,7 +100,10 @@ public class SkStackClientLoggingTests : SkStackClientTestsBase {
       logger: logger
     );
 
-    Assert.DoesNotThrowAsync(async () => await client.SendSKRESETAsync());
+    Assert.That(
+      async () => await client.SendSKRESETAsync(),
+      Throws.Nothing
+    );
 
     var logSnapshot = logCollector.GetSnapshot();
 
@@ -129,7 +138,10 @@ public class SkStackClientLoggingTests : SkStackClientTestsBase {
       logger: logger
     );
 
-    Assert.DoesNotThrowAsync(async () => await client.SendSKRESETAsync());
+    Assert.That(
+      async () => await client.SendSKRESETAsync(),
+      Throws.Nothing
+    );
 
     var logSnapshot = logCollector.GetSnapshot();
 
@@ -169,7 +181,10 @@ public class SkStackClientLoggingTests : SkStackClientTestsBase {
       logger: logger
     );
 
-    Assert.DoesNotThrowAsync(async () => await client.SendSKRESETAsync());
+    Assert.That(
+      async () => await client.SendSKRESETAsync(),
+      Throws.Nothing
+    );
 
     var logSnapshot = logCollector.GetSnapshot();
 
@@ -215,7 +230,10 @@ public class SkStackClientLoggingTests : SkStackClientTestsBase {
       logger: logger
     );
 
-    Assert.DoesNotThrowAsync(async () => await client.SendSKRESETAsync());
+    Assert.That(
+      async () => await client.SendSKRESETAsync(),
+      Throws.Nothing
+    );
 
     var logSnapshot = logCollector.GetSnapshot();
 
@@ -261,7 +279,10 @@ public class SkStackClientLoggingTests : SkStackClientTestsBase {
       logger: logger
     );
 
-    Assert.DoesNotThrowAsync(async () => await client.SendSKRESETAsync());
+    Assert.That(
+      async () => await client.SendSKRESETAsync(),
+      Throws.Nothing
+    );
 
     var logSnapshot = logCollector.GetSnapshot();
 
@@ -308,7 +329,10 @@ public class SkStackClientLoggingTests : SkStackClientTestsBase {
       logger: logger
     );
 
-    Assert.DoesNotThrowAsync(async () => await client.SendSKRESETAsync());
+    Assert.That(
+      async () => await client.SendSKRESETAsync(),
+      Throws.Nothing
+    );
 
     var logSnapshot = logCollector.GetSnapshot();
 
@@ -348,7 +372,10 @@ public class SkStackClientLoggingTests : SkStackClientTestsBase {
       logger: logger
     );
 
-    Assert.DoesNotThrowAsync(async () => await client.SendSKRESETAsync());
+    Assert.That(
+      async () => await client.SendSKRESETAsync(),
+      Throws.Nothing
+    );
 
     var logSnapshot = logCollector.GetSnapshot();
 
@@ -384,7 +411,10 @@ public class SkStackClientLoggingTests : SkStackClientTestsBase {
       logger: logger
     );
 
-    Assert.DoesNotThrowAsync(async () => await client.SendSKRESETAsync());
+    Assert.That(
+      async () => await client.SendSKRESETAsync(),
+      Throws.Nothing
+    );
 
     var logSnapshot = logCollector.GetSnapshot();
 

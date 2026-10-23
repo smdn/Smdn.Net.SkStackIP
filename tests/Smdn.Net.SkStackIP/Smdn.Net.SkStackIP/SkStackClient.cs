@@ -135,11 +135,14 @@ public class SkStackClientTests : SkStackClientTestsBase {
   [TestCase(SkStackERXUDPDataFormat.HexAsciiText)]
   public void Ctor_ERXUDPDataFormat(SkStackERXUDPDataFormat format)
   {
-    Assert.DoesNotThrow(() => {
-      using var client = new SkStackClient(Stream.Null, erxudpDataFormat: format);
+    Assert.That(
+      () => {
+        using var client = new SkStackClient(Stream.Null, erxudpDataFormat: format);
 
-      Assert.That(client.ERXUDPDataFormat, Is.EqualTo(format), nameof(client.ERXUDPDataFormat));
-    });
+        Assert.That(client.ERXUDPDataFormat, Is.EqualTo(format), nameof(client.ERXUDPDataFormat));
+      },
+      Throws.Nothing
+    );
   }
 
   [TestCase(-1)]
@@ -185,7 +188,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       $"{nameof(client.SendCommandAsync)} before {nameof(client.Dispose)}"
     );
 
-    Assert.DoesNotThrow(client.Dispose, $"{nameof(client.Dispose)} #1");
+    Assert.That(client.Dispose, Throws.Nothing, $"{nameof(client.Dispose)} #1");
 
     Assert.That(
       async () => await client.SendCommandAsync("TEST"),
@@ -193,7 +196,7 @@ public class SkStackClientTests : SkStackClientTestsBase {
       $"{nameof(client.SendCommandAsync)} after {nameof(client.Dispose)}"
     );
 
-    Assert.DoesNotThrow(client.Dispose, $"{nameof(client.Dispose)} #2");
+    Assert.That(client.Dispose, Throws.Nothing, $"{nameof(client.Dispose)} #2");
   }
 
   [Test]
@@ -205,12 +208,13 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     using var client = new SkStackClientEx(stream, CreateLoggerForTestCase());
 
-    Assert.DoesNotThrowAsync(async () => {
-      _ = await client.SendCommandAsync(
+    Assert.That(
+      async () => _ = await client.SendCommandAsync(
         command: "TEST",
-        arguments: new[] { "arg1", "arg2" }
-      );
-    });
+        arguments: ["arg1", "arg2"]
+      ),
+      Throws.Nothing
+    );
 
     Assert.That(
       stream.ReadSentData(),
@@ -229,12 +233,13 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     using var client = new SkStackClientEx(pipe.Output, pipe.Input, CreateLoggerForTestCase());
 
-    Assert.DoesNotThrowAsync(async () => {
-      _ = await client.SendCommandAsync(
+    Assert.That(
+      async () => _ = await client.SendCommandAsync(
         command: "TEST",
-        arguments: new[] { "arg1", "arg2" }
-      );
-    });
+        arguments: ["arg1", "arg2"]
+      ),
+      Throws.Nothing
+    );
 
     await Task.Delay(100);
 
@@ -269,12 +274,13 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     SkStackResponse? resp = default;
 
-    Assert.DoesNotThrowAsync(async () => {
-      resp = await client.SendCommandAsync(
+    Assert.That(
+      async () => resp = await client.SendCommandAsync(
         command: "TEST",
-        arguments: Array.Empty<string>()
-      );
-    });
+        arguments: []
+      ),
+      Throws.Nothing
+    );
 
     Assert.That(
       stream.ReadSentData(),
@@ -291,12 +297,13 @@ public class SkStackClientTests : SkStackClientTestsBase {
 
     using var client = CreateClient(stream);
 
-    Assert.ThrowsAsync<ArgumentException>(async () => {
-      await client.SendCommandAsync(
+    Assert.That(
+      async () => await client.SendCommandAsync(
         command: "TEST",
-        arguments: new[] { string.Empty }
-      );
-    });
+        arguments: [string.Empty]
+      ),
+      Throws.ArgumentException
+    );
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }

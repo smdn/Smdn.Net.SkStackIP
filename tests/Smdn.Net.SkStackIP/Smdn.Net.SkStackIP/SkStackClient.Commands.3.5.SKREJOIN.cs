@@ -73,13 +73,12 @@ public class SkStackClientCommandsSKREJOINTests : SkStackClientTestsBase {
       Throws.Nothing
     );
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKREJOINAsync().AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     Assert.That(thrownExceptionInEventHandler, Is.Null, nameof(thrownExceptionInEventHandler));
     Assert.That(raisedEventCount, Is.EqualTo(1), nameof(raisedEventCount));

@@ -101,14 +101,15 @@ partial class SkStackClientFunctionsPanaTests {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.DoesNotThrowAsync(async () => {
-      await client.ActiveScanAsync(
+    Assert.That(
+      async () => await client.ActiveScanAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cancellationToken
-      );
-    });
+      ),
+      Throws.Nothing
+    );
 
     var commands = Encoding.ASCII.GetString(stream.ReadSentData());
 
@@ -133,14 +134,15 @@ partial class SkStackClientFunctionsPanaTests {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.DoesNotThrowAsync(async () => {
-      await client.ActiveScanAsync(
+    Assert.That(
+      async () => await client.ActiveScanAsync(
         writeRBID: static writer => writer.Write("00112233445566778899AABBCCDDEEFF".ToByteSequence().Span),
         writePassword: static writer => writer.Write("0123456789AB".ToByteSequence().Span),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cancellationToken
-      );
-    });
+      ),
+      Throws.Nothing
+    );
 
     var commands = Encoding.ASCII.GetString(stream.ReadSentData());
 
@@ -166,17 +168,18 @@ partial class SkStackClientFunctionsPanaTests {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
-    Assert.DoesNotThrowAsync(async () => {
-      scanResult = await client.ActiveScanAsync(
+    Assert.That(
+      async () => scanResult = await client.ActiveScanAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cancellationToken
-      );
-    });
+      ),
+      Throws.Nothing
+    );
 
     Assert.That(scanResult, Is.Not.Null, nameof(scanResult));
-    Assert.That(scanResult!, Is.Empty, nameof(scanResult));
+    Assert.That(scanResult, Is.Empty, nameof(scanResult));
   }
 
   [Test]
@@ -204,14 +207,15 @@ partial class SkStackClientFunctionsPanaTests {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
-    Assert.DoesNotThrowAsync(async () => {
-      scanResult = await client.ActiveScanAsync(
+    Assert.That(
+      async () => scanResult = await client.ActiveScanAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cancellationToken
-      );
-    });
+      ),
+      Throws.Nothing
+    );
 
     Assert.That(scanResult, Is.Not.Null);
     Assert.That(scanResult!.Count, Is.EqualTo(1));
@@ -254,14 +258,15 @@ partial class SkStackClientFunctionsPanaTests {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
-    Assert.DoesNotThrowAsync(async () => {
-      scanResult = await client.ActiveScanAsync(
+    Assert.That(
+      async () => scanResult = await client.ActiveScanAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cancellationToken
-      );
-    });
+      ),
+      Throws.Nothing
+    );
 
     Assert.That(scanResult, Is.Not.Null);
     Assert.That(scanResult!.Count, Is.EqualTo(2));
@@ -300,14 +305,15 @@ partial class SkStackClientFunctionsPanaTests {
 
     IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
-    Assert.DoesNotThrowAsync(async () => {
-      scanResult = await client.ActiveScanAsync(
+    Assert.That(
+      async () => scanResult = await client.ActiveScanAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 2, 4, 6 }),
         cancellationToken: cancellationToken
-      );
-    });
+      ),
+      Throws.Nothing
+    );
 
     Assert.That(scanResult, Is.Not.Null, nameof(scanResult));
     Assert.That(scanResult!, Is.Empty, nameof(scanResult));
@@ -347,14 +353,15 @@ partial class SkStackClientFunctionsPanaTests {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
-    Assert.DoesNotThrowAsync(async () => {
-      scanResult = await client.ActiveScanAsync(
+    Assert.That(
+      async () => scanResult = await client.ActiveScanAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 2, 4, 6 }),
         cancellationToken: cancellationToken
-      );
-    });
+      ),
+      Throws.Nothing
+    );
 
     Assert.That(scanResult, Is.Not.Null);
     Assert.That(scanResult!.Count, Is.EqualTo(1));
@@ -393,14 +400,15 @@ partial class SkStackClientFunctionsPanaTests {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     IReadOnlyList<SkStackPanDescription>? scanResult = null;
 
-    Assert.DoesNotThrowAsync(async () => {
-      scanResult = await client.ActiveScanAsync(
+    Assert.That(
+      async () => scanResult = await client.ActiveScanAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 2 }, channelMask: channelMask),
         cancellationToken: cancellationToken
-      );
-    });
+      ),
+      Throws.Nothing
+    );
 
     Assert.That(scanResult, Is.Not.Null);
     Assert.That(scanResult!.Count, Is.EqualTo(1));

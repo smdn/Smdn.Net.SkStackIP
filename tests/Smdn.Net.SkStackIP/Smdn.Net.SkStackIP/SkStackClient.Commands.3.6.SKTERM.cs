@@ -83,13 +83,12 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKTERMAsync().AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionTerminationEventsAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionTerminationEventsAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     Assert.That(thrownExceptionInEventHandler, Is.Null, nameof(thrownExceptionInEventHandler));
     Assert.That(raisedEventCount, Is.EqualTo(1), nameof(raisedEventCount));
@@ -163,13 +162,12 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionPeerAddress, Is.Not.Null, nameof(client.PanaSessionPeerAddress));
     Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(client.PanaSessionState));
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKTERMAsync().AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionTerminationEventsAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionTerminationEventsAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     Assert.That(thrownExceptionInEventHandler, Is.Null, nameof(thrownExceptionInEventHandler));
     Assert.That(raisedEventCount, Is.EqualTo(1), nameof(raisedEventCount));
@@ -218,8 +216,9 @@ public class SkStackClientCommandsSKTERMTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
-    Assert.ThrowsAsync<SkStackErrorResponseException>(
-      async () => await client.SendSKTERMAsync()
+    Assert.That(
+      async () => await client.SendSKTERMAsync(),
+      Throws.TypeOf<SkStackErrorResponseException>()
     );
 
     Assert.That(raisedEventCount, Is.Zero, nameof(raisedEventCount));

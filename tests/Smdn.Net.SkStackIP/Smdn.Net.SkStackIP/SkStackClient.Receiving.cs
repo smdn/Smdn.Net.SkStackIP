@@ -27,7 +27,7 @@ public class SkStackClientReceivingTests : SkStackClientTestsBase {
   {
     using var client = new SkStackClient(Stream.Null);
 
-    Assert.DoesNotThrow(() => client.ReceiveResponseDelay = newValue);
+    Assert.That(() => client.ReceiveResponseDelay = newValue, Throws.Nothing);
 
     Assert.That(newValue, Is.EqualTo(client.ReceiveResponseDelay), nameof(client.ReceiveResponseDelay));
   }

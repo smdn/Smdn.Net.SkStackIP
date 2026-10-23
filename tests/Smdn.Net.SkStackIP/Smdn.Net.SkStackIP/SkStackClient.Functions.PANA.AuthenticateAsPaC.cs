@@ -261,7 +261,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     SkStackPanaSessionInfo? panaSession = null;
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => panaSession = await client.AuthenticateAsPanaClientAsync(
         rbid: RBID.ToByteSequence(),
         password: Password.ToByteSequence(),
@@ -269,7 +269,8 @@ partial class SkStackClientFunctionsPanaTests {
         channelNumber: PaaChannel,
         panId: PaaPanId,
         cancellationToken: cancellationToken
-      )
+      ),
+      Throws.Nothing
     );
 
     Assert.That(panaSession, Is.Not.Null);
@@ -343,7 +344,7 @@ partial class SkStackClientFunctionsPanaTests {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     using var cts = new CancellationTokenSource(DefaultTimeOut);
 
-    Assert.ThrowsAsync<SkStackErrorResponseException>(
+    Assert.That(
       async () => {
         if (useBufferWriterToSupplyCredential) {
           await client.AuthenticateAsPanaClientAsync(
@@ -361,7 +362,8 @@ partial class SkStackClientFunctionsPanaTests {
             cancellationToken: cts.Token
           );
         }
-      }
+      },
+      Throws.TypeOf<SkStackErrorResponseException>()
     );
 
     Assert.That(
@@ -395,7 +397,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<SkStackErrorResponseException>(
+    Assert.That(
       async () => await client.AuthenticateAsPanaClientAsync(
         rbid: RBID.ToByteSequence(),
         password: Password.ToByteSequence(),
@@ -403,7 +405,8 @@ partial class SkStackClientFunctionsPanaTests {
         channel: SkStackChannel.Channel33,
         panId: 0,
         cancellationToken: cancellationToken
-      )
+      ),
+      Throws.TypeOf<SkStackErrorResponseException>()
     );
 
     Assert.That(
@@ -437,7 +440,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<SkStackErrorResponseException>(
+    Assert.That(
       async () => await client.AuthenticateAsPanaClientAsync(
         rbid: RBID.ToByteSequence(),
         password: Password.ToByteSequence(),
@@ -445,7 +448,8 @@ partial class SkStackClientFunctionsPanaTests {
         channel: SkStackChannel.Channel33,
         panId: 0,
         cancellationToken: cancellationToken
-      )
+      ),
+      Throws.TypeOf<SkStackErrorResponseException>()
     );
 
     Assert.That(
@@ -517,13 +521,14 @@ partial class SkStackClientFunctionsPanaTests {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<InvalidOperationException>(
+    Assert.That(
       async () => await client.AuthenticateAsPanaClientAsync(
         rbid: RBID.ToByteSequence(),
         password: Password.ToByteSequence(),
         scanOptions: null,
         cancellationToken: cancellationToken
-      )
+      ),
+      Throws.InvalidOperationException
     );
 
     Assert.That(
@@ -562,13 +567,14 @@ partial class SkStackClientFunctionsPanaTests {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<InvalidOperationException>(
+    Assert.That(
       async () => await client.AuthenticateAsPanaClientAsync(
         rbid: RBID.ToByteSequence(),
         password: Password.ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cancellationToken
-      )
+      ),
+      Throws.InvalidOperationException
     );
 
     Assert.That(
@@ -649,13 +655,14 @@ partial class SkStackClientFunctionsPanaTests {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     using var cts = new CancellationTokenSource(DefaultTimeOut);
 
-    Assert.ThrowsAsync<SkStackErrorResponseException>(
+    Assert.That(
       async () => await client.AuthenticateAsPanaClientAsync(
         rbid: RBID.ToByteSequence(),
         password: Password.ToByteSequence(),
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cts.Token
-      )
+      ),
+      Throws.TypeOf<SkStackErrorResponseException>()
     );
 
     Assert.That(
@@ -715,7 +722,7 @@ partial class SkStackClientFunctionsPanaTests {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<SkStackErrorResponseException>(
+    Assert.That(
       async () => await client.AuthenticateAsPanaClientAsync(
         rbid: RBID.ToByteSequence(),
         password: Password.ToByteSequence(),
@@ -723,7 +730,8 @@ partial class SkStackClientFunctionsPanaTests {
         channel: SkStackChannel.Channels[channel],
         panId: panId,
         cancellationToken: cancellationToken
-      )
+      ),
+      Throws.TypeOf<SkStackErrorResponseException>()
     );
 
     Assert.That(
@@ -909,14 +917,15 @@ partial class SkStackClientFunctionsPanaTests {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<NotSupportedException>(
+    Assert.That(
       async () => await client.AuthenticateAsPanaClientAsync(
         rbid: "00112233445566778899AABBCCDDEEFF".ToByteSequence(),
         password: "0123456789AB".ToByteSequence(),
         paaAddress: paaAddress,
         channelNumber: SkStackChannel.Channel33.ChannelNumber,
         panId: 0x1234
-      )
+      ),
+      Throws.TypeOf<NotSupportedException>()
     );
   }
 

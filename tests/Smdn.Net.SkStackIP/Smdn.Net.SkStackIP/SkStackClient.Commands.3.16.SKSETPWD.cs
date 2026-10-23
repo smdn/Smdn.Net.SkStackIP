@@ -23,7 +23,10 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     SkStackResponse? response = null;
 
-    Assert.DoesNotThrowAsync(async () => response = await client.SendSKSETPWDAsync("0123456789AB".AsMemory()));
+    Assert.That(
+      async () => response = await client.SendSKSETPWDAsync("0123456789AB".AsMemory()),
+      Throws.Nothing
+    );
 
     Assert.That(response, Is.Not.Null);
 
@@ -122,7 +125,10 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: logger);
     SkStackResponse? response = null;
 
-    Assert.DoesNotThrowAsync(async () => response = await sendSKSETPWDAsync(client, password));
+    Assert.That(
+      async () => response = await sendSKSETPWDAsync(client, password),
+      Throws.Nothing
+    );
 
     Assert.That(response, Is.Not.Null);
 
@@ -179,7 +185,10 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: null);
     SkStackResponse? response = null;
 
-    Assert.DoesNotThrowAsync(async () => response = await sendSKSETPWDAsync(client, password));
+    Assert.That(
+      async () => response = await sendSKSETPWDAsync(client, password),
+      Throws.Nothing
+    );
 
     Assert.That(response, Is.Not.Null);
 

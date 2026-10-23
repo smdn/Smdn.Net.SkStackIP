@@ -37,7 +37,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
   {
     using var client = new ERXUDPDataFormatSkStackClient();
 
-    Assert.DoesNotThrow(() => client.SetERXUDPDataFormat(format));
+    Assert.That(() => client.SetERXUDPDataFormat(format), Throws.Nothing);
     Assert.That(format, Is.EqualTo(client.ERXUDPDataFormat));
   }
 
@@ -68,7 +68,10 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
   {
     using var client = new SkStackClient(Stream.Null);
 
-    Assert.DoesNotThrow(() => client.ReceiveUdpPollingInterval = newValue);
+    Assert.That(
+      () => client.ReceiveUdpPollingInterval = newValue,
+      Throws.Nothing
+    );
 
     Assert.That(newValue, Is.EqualTo(client.ReceiveUdpPollingInterval), nameof(client.ReceiveUdpPollingInterval));
   }
@@ -114,8 +117,9 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     IReadOnlyList<SkStackUdpPort>? listeningPortList = null;
 
-    Assert.DoesNotThrowAsync(
-      async () => listeningPortList = await client.GetListeningUdpPortListAsync()
+    Assert.That(
+      async () => listeningPortList = await client.GetListeningUdpPortListAsync(),
+      Throws.Nothing
     );
 
     Assert.That(listeningPortList, Is.Not.Null, nameof(listeningPortList));
@@ -147,8 +151,9 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     IReadOnlyList<SkStackUdpPort>? listeningPortList = null;
 
-    Assert.DoesNotThrowAsync(
-      async () => listeningPortList = await client.GetListeningUdpPortListAsync()
+    Assert.That(
+      async () => listeningPortList = await client.GetListeningUdpPortListAsync(),
+      Throws.Nothing
     );
 
     Assert.That(listeningPortList, Is.Not.Null, nameof(listeningPortList));
@@ -172,8 +177,9 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     IReadOnlyList<SkStackUdpPortHandle>? unusedHandleList = null;
 
-    Assert.DoesNotThrowAsync(
-      async () => unusedHandleList = await client.GetUnusedUdpPortHandleListAsync()
+    Assert.That(
+      async () => unusedHandleList = await client.GetUnusedUdpPortHandleListAsync(),
+      Throws.Nothing
     );
 
     Assert.That(unusedHandleList, Is.Not.Null, nameof(unusedHandleList));
@@ -205,8 +211,9 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     IReadOnlyList<SkStackUdpPortHandle>? unusedHandleList = null;
 
-    Assert.DoesNotThrowAsync(
-      async () => unusedHandleList = await client.GetUnusedUdpPortHandleListAsync()
+    Assert.That(
+      async () => unusedHandleList = await client.GetUnusedUdpPortHandleListAsync(),
+      Throws.Nothing
     );
 
     Assert.That(unusedHandleList, Is.Not.Null, nameof(unusedHandleList));
@@ -235,8 +242,9 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     SkStackUdpPort preparedPort = default;
 
-    Assert.DoesNotThrowAsync(
-      async () => preparedPort = await client.PrepareUdpPortAsync(port)
+    Assert.That(
+      async () => preparedPort = await client.PrepareUdpPortAsync(port),
+      Throws.Nothing
     );
 
     Assert.That(preparedPort.IsUnused, Is.False);
@@ -269,8 +277,9 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     SkStackUdpPort preparedPort = default;
 
-    Assert.DoesNotThrowAsync(
-      async () => preparedPort = await client.PrepareUdpPortAsync(port)
+    Assert.That(
+      async () => preparedPort = await client.PrepareUdpPortAsync(port),
+      Throws.Nothing
     );
 
     Assert.That(preparedPort.IsUnused, Is.False);
@@ -314,8 +323,9 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     SkStackUdpPort preparedPort = default;
 
-    Assert.DoesNotThrowAsync(
-      async () => preparedPort = await client.PrepareUdpPortAsync(SkStackKnownPortNumbers.EchonetLite)
+    Assert.That(
+      async () => preparedPort = await client.PrepareUdpPortAsync(SkStackKnownPortNumbers.EchonetLite),
+      Throws.Nothing
     );
 
     Assert.That(preparedPort.IsUnused, Is.False);
@@ -362,8 +372,9 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     SkStackUdpPort preparedPort = default;
 
-    Assert.DoesNotThrowAsync(
-      async () => preparedPort = await client.PrepareUdpPortAsync(SkStackKnownPortNumbers.EchonetLite)
+    Assert.That(
+      async () => preparedPort = await client.PrepareUdpPortAsync(SkStackKnownPortNumbers.EchonetLite),
+      Throws.Nothing
     );
 
     Assert.That(preparedPort.IsUnused, Is.False);
@@ -397,8 +408,9 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine("6");
     stream.ResponseWriter.WriteLine("OK");
 
-    Assert.ThrowsAsync<InvalidOperationException>(
-      async () => await client.PrepareUdpPortAsync(SkStackKnownPortNumbers.EchonetLite)
+    Assert.That(
+      async () => await client.PrepareUdpPortAsync(SkStackKnownPortNumbers.EchonetLite),
+      Throws.InvalidOperationException
     );
   }
 
@@ -409,7 +421,10 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.DoesNotThrow(() => client.StartCapturingUdpReceiveEvents(port));
+    Assert.That(
+      () => client.StartCapturingUdpReceiveEvents(port),
+      Throws.Nothing
+    );
   }
 
   [TestCase(0x0000)]
@@ -448,7 +463,10 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.DoesNotThrow(() => client.StopCapturingUdpReceiveEvents(port));
+    Assert.That(
+      () => client.StopCapturingUdpReceiveEvents(port),
+      Throws.Nothing
+    );
   }
 
   [TestCase(0x0000)]
@@ -552,11 +570,10 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
-    Assert.DoesNotThrow(
-      () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.EchonetLite, buffer: CreateNullBufferWriter())
+    Assert.That(
+      () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.EchonetLite, buffer: CreateNullBufferWriter()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
   }
 
   [Test]
@@ -565,20 +582,17 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
-    Assert.DoesNotThrow(
-      () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.EchonetLite, buffer: CreateNullBufferWriter())
+    Assert.That(
+      () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.EchonetLite, buffer: CreateNullBufferWriter()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     client.StopCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite);
 
-#pragma warning disable CA2012
     Assert.That(
       () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.EchonetLite, buffer: CreateNullBufferWriter()),
       Throws.InvalidOperationException
     );
-#pragma warning restore CA2012
   }
 
   [Test]
@@ -587,15 +601,18 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<OperationCanceledException>(async () => {
-      using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(0.2));
+    Assert.That(
+      async () => {
+        using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(0.2));
 
-      _ = await client.ReceiveUdpAsync(
-        port: SkStackKnownPortNumbers.EchonetLite,
-        buffer: CreateNullBufferWriter(),
-        cts.Token
-      );
-    });
+        _ = await client.ReceiveUdpAsync(
+          port: SkStackKnownPortNumbers.EchonetLite,
+          buffer: CreateNullBufferWriter(),
+          cts.Token
+        );
+      },
+      Throws.TypeOf<OperationCanceledException>()
+    );
   }
 
   [Test]
@@ -607,15 +624,18 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     stream.ResponseWriter.WriteLine($"EVENT 21 FE80:0000:0000:0000:021D:1290:1234:5678 00");
     stream.ResponseWriter.WriteLine($"EVENT 33 FE80:0000:0000:0000:021D:1290:1234:5678");
 
-    Assert.ThrowsAsync<OperationCanceledException>(async () => {
-      using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(0.2));
+    Assert.That(
+      async () => {
+        using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(0.2));
 
-      _ = await client.ReceiveUdpAsync(
-        port: SkStackKnownPortNumbers.EchonetLite,
-        buffer: CreateNullBufferWriter(),
-        cts.Token
-      );
-    });
+        _ = await client.ReceiveUdpAsync(
+          port: SkStackKnownPortNumbers.EchonetLite,
+          buffer: CreateNullBufferWriter(),
+          cts.Token
+        );
+      },
+      Throws.TypeOf<OperationCanceledException>()
+    );
   }
 
   [Test]
@@ -636,12 +656,13 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     var buffer = new ArrayBufferWriter<byte>();
     IPAddress? remoteAddress1 = null;
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => remoteAddress1 = await client.ReceiveUdpAsync(
         port: SkStackKnownPortNumbers.EchonetLite,
         buffer: buffer,
         cts.Token
-      )
+      ),
+      Throws.Nothing
     );
 
     Assert.That(remoteAddress1, Is.Not.Null);
@@ -656,12 +677,13 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     IPAddress? remoteAddress2 = null;
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => remoteAddress2 = await client.ReceiveUdpAsync(
         port: SkStackKnownPortNumbers.EchonetLite,
         buffer: buffer,
         cts.Token
-      )
+      ),
+      Throws.Nothing
     );
 
     Assert.That(remoteAddress2, Is.Not.Null);
@@ -694,12 +716,13 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     IPAddress? remoteAddressEchonetLite = null;
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => remoteAddressEchonetLite = await client.ReceiveUdpAsync(
         port: SkStackKnownPortNumbers.EchonetLite,
         buffer: buffer,
         cts.Token
-      )
+      ),
+      Throws.Nothing
     );
 
     Assert.That(remoteAddressEchonetLite, Is.Not.Null);
@@ -714,12 +737,13 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     IPAddress? remoteAddressPana = null;
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => remoteAddressPana = await client.ReceiveUdpAsync(
         port: SkStackKnownPortNumbers.Pana,
         buffer: buffer,
         cts.Token
-      )
+      ),
+      Throws.Nothing
     );
 
     Assert.That(remoteAddressPana, Is.Not.Null);
@@ -755,17 +779,16 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(1.0));
     var buffer = new ArrayBufferWriter<byte>();
 
-#pragma warning disable CA2012
     var taskUdpReceive = client.ReceiveUdpAsync(
       port: SkStackKnownPortNumbers.EchonetLite,
       buffer: buffer,
       cts.Token
     ).AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskUdpReceive, RaiseERXUDPAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskUdpReceive, RaiseERXUDPAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     var remoteAddress = taskUdpReceive.Result;
 
@@ -801,17 +824,16 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(3.0));
     var buffer = new ArrayBufferWriter<byte>();
 
-#pragma warning disable CA2012
     var taskUdpReceive = client.ReceiveUdpAsync(
       port: SkStackKnownPortNumbers.EchonetLite,
       buffer: buffer,
       cts.Token
     ).AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskUdpReceive, RaiseERXUDPAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskUdpReceive, RaiseERXUDPAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     Assert.That(
       buffer.WrittenMemory,
@@ -849,7 +871,6 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
     using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(2.0));
     var buffer = new ArrayBufferWriter<byte>();
 
-#pragma warning disable CA2012
     var taskUdpReceive = client.ReceiveUdpAsync(
       port: SkStackKnownPortNumbers.EchonetLite,
       buffer: buffer,
@@ -860,10 +881,10 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     var taskSendCommand = client.SendSKVERAsync().AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskUdpReceive, taskSendCommand, CompleteResponseAndRaiseERXUDPAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskUdpReceive, taskSendCommand, CompleteResponseAndRaiseERXUDPAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     Assert.That(taskSendCommand.Result.Success, Is.True);
 
@@ -891,12 +912,13 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
 
     IPAddress? remoteAddress = null;
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => remoteAddress = await client.ReceiveUdpAsync(
         port: SkStackKnownPortNumbers.EchonetLite,
         buffer: buffer,
         cts.Token
-      )
+      ),
+      Throws.Nothing
     );
 
     Assert.That(remoteAddress, Is.Not.Null);

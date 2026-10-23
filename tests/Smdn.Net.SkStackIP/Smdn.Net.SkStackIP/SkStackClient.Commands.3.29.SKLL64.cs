@@ -24,7 +24,12 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     SkStackResponse<IPAddress>? response = null;
 
-    Assert.DoesNotThrowAsync(async () => response = await client.SendSKLL64Async(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })));
+    Assert.That(
+      async () => response = await client.SendSKLL64Async(
+        new PhysicalAddress([0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78])
+      ),
+      Throws.Nothing
+    );
 
     Assert.That(response, Is.Not.Null, nameof(response));
     Assert.That(response!.Payload, Is.Not.Null);
@@ -60,15 +65,14 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKLL64Async(
-      new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })
+      new PhysicalAddress([0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78])
     ).AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskSendCommand, CompleteResponseAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, CompleteResponseAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     var response = taskSendCommand.Result;
 

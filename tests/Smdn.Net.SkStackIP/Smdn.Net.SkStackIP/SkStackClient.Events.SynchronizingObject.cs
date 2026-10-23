@@ -113,7 +113,10 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
     if (!waitHandle.WaitOne(3000)) // wait for event handler finished
       Assert.Fail("event handler not called or not finished");
 
-    Assert.DoesNotThrowAsync(async () => await taskSendSKTERM);
+    Assert.That(
+      async () => await taskSendSKTERM,
+      Throws.Nothing
+    );
 
     Assert.That(thrownExceptionInEventHandler, Is.Null, nameof(thrownExceptionInEventHandler));
     Assert.That(raisedEventCount, Is.EqualTo(1), nameof(raisedEventCount));
@@ -174,7 +177,10 @@ public class SkStackClientEventsTests : SkStackClientTestsBase {
     if (!waitHandle.WaitOne(1000)) // wait for event handler finished
       Assert.Fail("event handler not called or not finished");
 
-    Assert.DoesNotThrowAsync(async () => await taskSendSKTERM);
+    Assert.That(
+      async () => await taskSendSKTERM,
+      Throws.Nothing
+    );
 
     Assert.That(raisedEventCount, Is.EqualTo(1), nameof(raisedEventCount));
   }

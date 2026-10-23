@@ -70,7 +70,10 @@ public class SkStackClientEventsEVENTTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
-    Assert.DoesNotThrowAsync(async () => await client.SendSKVERAsync());
+    Assert.That(
+      async () => await client.SendSKVERAsync(),
+      Throws.Nothing
+    );
 
     Assert.That(thrownExceptionInEventHandler, Is.Null, nameof(thrownExceptionInEventHandler));
     Assert.That(raisedEventCount, Is.EqualTo(1), nameof(raisedEventCount));
@@ -128,7 +131,10 @@ public class SkStackClientEventsEVENTTests : SkStackClientTestsBase {
     Assert.That(client.PanaSessionState, Is.EqualTo(SkStackEventNumber.PanaSessionEstablishmentCompleted), nameof(client.PanaSessionState));
     Assert.That(client.IsPanaSessionAlive, Is.True, nameof(client.IsPanaSessionAlive));
 
-    Assert.DoesNotThrowAsync(async () => await client.SendSKVERAsync());
+    Assert.That(
+      async () => await client.SendSKVERAsync(),
+      Throws.Nothing
+    );
 
     Assert.That(thrownExceptionInEventHandler, Is.Null, nameof(thrownExceptionInEventHandler));
     Assert.That(raisedEventCount, Is.EqualTo(1), nameof(raisedEventCount));

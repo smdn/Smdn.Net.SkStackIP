@@ -79,10 +79,9 @@ public class BP35A1CommandsTests {
     // WOPT
     stream.ResponseWriter.Write($"OK\r");
 
-    Assert.DoesNotThrowAsync(async () =>
-      await bp35a1.SetUdpDataFormatAsync(
-        format: format
-      )
+    Assert.That(
+      async () => await bp35a1.SetUdpDataFormatAsync(format: format),
+      Throws.Nothing
     );
 
     var commands = Encoding.ASCII.GetString(stream.ReadSentData());
@@ -107,8 +106,9 @@ public class BP35A1CommandsTests {
 
     BP35UdpReceiveDataFormat actualFormat = default;
 
-    Assert.DoesNotThrowAsync(async () =>
-      actualFormat = await bp35a1.GetUdpDataFormatAsync()
+    Assert.That(
+      async () => actualFormat = await bp35a1.GetUdpDataFormatAsync(),
+      Throws.Nothing
     );
 
     var commands = Encoding.ASCII.GetString(stream.ReadSentData());
@@ -147,12 +147,13 @@ public class BP35A1CommandsTests {
     // WUART
     stream.ResponseWriter.Write($"OK\r");
 
-    Assert.DoesNotThrowAsync(async () =>
-      await bp35a1.SetUartOptionsAsync(
+    Assert.That(
+      async () => await bp35a1.SetUartOptionsAsync(
         baudRate: baudRate,
         flowControl: flowControl,
         characterInterval: characterInterval
-      )
+      ),
+      Throws.Nothing
     );
 
     var commands = Encoding.ASCII.GetString(stream.ReadSentData());
@@ -193,9 +194,12 @@ public class BP35A1CommandsTests {
     BP35UartFlowControl actualFlowControl = default;
     BP35UartCharacterInterval actualCharacterInterval = default;
 
-    Assert.DoesNotThrowAsync(async () => {
-      (actualBaudRate, actualCharacterInterval, actualFlowControl) = await bp35a1.GetUartOptionsAsync();
-    });
+    Assert.That(
+      async () => {
+        (actualBaudRate, actualCharacterInterval, actualFlowControl) = await bp35a1.GetUartOptionsAsync();
+      },
+      Throws.Nothing
+    );
 
     var commands = Encoding.ASCII.GetString(stream.ReadSentData());
 

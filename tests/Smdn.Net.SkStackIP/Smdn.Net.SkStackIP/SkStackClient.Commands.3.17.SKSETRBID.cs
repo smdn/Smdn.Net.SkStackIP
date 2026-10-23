@@ -22,7 +22,10 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     SkStackResponse? response = null;
 
-    Assert.DoesNotThrowAsync(async () => response = await client.SendSKSETRBIDAsync(id: "00112233445566778899AABBCCDDEEFF".AsMemory()));
+    Assert.That(
+      async () => response = await client.SendSKSETRBIDAsync(id: "00112233445566778899AABBCCDDEEFF".AsMemory()),
+      Throws.Nothing
+    );
 
     Assert.That(response, Is.Not.Null);
 

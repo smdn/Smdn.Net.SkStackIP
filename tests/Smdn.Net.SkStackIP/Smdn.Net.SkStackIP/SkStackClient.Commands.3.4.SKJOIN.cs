@@ -78,13 +78,12 @@ public class SkStackClientCommandsSKJOINTests : SkStackClientTestsBase {
       }
     };
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKJOINAsync(IPAddress.Parse(PaaIPv6Address)).AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, RaisePanaSessionEstablishmentEventsAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     Assert.That(thrownExceptionInEventHandler, Is.Null, nameof(thrownExceptionInEventHandler));
     Assert.That(raisedEventCount, Is.EqualTo(1), nameof(raisedEventCount));

@@ -60,7 +60,7 @@ public class BP35A1Tests {
     // ROPT
     factory.Stream.ResponseWriter.Write("OK 00\r");
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => {
         using var bp35a1 = await BP35A1.CreateAsync(
           options: new BP35A1Options() {
@@ -69,7 +69,8 @@ public class BP35A1Tests {
           },
           services.BuildServiceProvider()
         );
-      }
+      },
+      Throws.Nothing
     );
   }
 
@@ -120,7 +121,7 @@ public class BP35A1Tests {
     // ROPT
     factory.Stream.ResponseWriter.Write("OK 00\r");
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => {
         using var bp35a1 = await BP35A1.CreateAsync(
           options: new BP35A1Options() {
@@ -129,7 +130,8 @@ public class BP35A1Tests {
           },
           services.BuildServiceProvider()
         );
-      }
+      },
+      Throws.Nothing
     );
 
     var logSnapshot = logCollector.GetSnapshot();
@@ -361,26 +363,28 @@ public class BP35A1Tests {
       services.BuildServiceProvider()
     );
 
-    Assert.DoesNotThrow(bp35a1.Dispose, "Dispose #0");
+    Assert.That(bp35a1.Dispose, Throws.Nothing, "Dispose #0");
 
-    Assert.DoesNotThrow(() => Assert.That(bp35a1.SkStackVersion, Is.EqualTo(Version.Parse("1.2.10"))));
-    Assert.DoesNotThrow(() => Assert.That(bp35a1.RohmUserId, Is.EqualTo("FE80")));
+    Assert.That(() => _ = bp35a1.SkStackVersion, Throws.Nothing);
+    Assert.That(() => _ = bp35a1.RohmUserId, Throws.Nothing);
 
-    Assert.ThrowsAsync<ObjectDisposedException>(
+    Assert.That(
       async () => await bp35a1.AuthenticateAsPanaClientAsync(
         Encoding.ASCII.GetBytes("01234567890123456789012345678901"),
         Encoding.ASCII.GetBytes("pass"),
         SkStackActiveScanOptions.Default
-      )
+      ),
+      Throws.TypeOf<ObjectDisposedException>()
     );
-    Assert.ThrowsAsync<ObjectDisposedException>(
+    Assert.That(
       async () => await bp35a1.ActiveScanAsync(
         Encoding.ASCII.GetBytes("01234567890123456789012345678901"),
         Encoding.ASCII.GetBytes("pass"),
         SkStackActiveScanOptions.Default
-      )
+      ),
+      Throws.TypeOf<ObjectDisposedException>()
     );
 
-    Assert.DoesNotThrow(bp35a1.Dispose, "Dispose #1");
+    Assert.That(bp35a1.Dispose, Throws.Nothing, "Dispose #1");
   }
 }

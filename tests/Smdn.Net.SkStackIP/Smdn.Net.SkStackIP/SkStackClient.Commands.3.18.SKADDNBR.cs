@@ -23,11 +23,12 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     SkStackResponse? response = null;
 
-    Assert.DoesNotThrowAsync(async () =>
-      response = await client.SendSKADDNBRAsync(
-        ipv6Address: new IPAddress(new byte[] { 0xFE, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 }),
-        macAddress: new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })
-      )
+    Assert.That(
+      async () => response = await client.SendSKADDNBRAsync(
+        ipv6Address: new IPAddress([0xFE, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78]),
+        macAddress: new PhysicalAddress([0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78])
+      ),
+      Throws.Nothing
     );
 
     Assert.That(response, Is.Not.Null);
@@ -102,10 +103,13 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<ArgumentException>(async () => await client.SendSKADDNBRAsync(
-      ipv6Address: new IPAddress(new byte[] { 0xFE, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 }),
-      macAddress: macAddress
-    ));
+    Assert.That(
+      async () => await client.SendSKADDNBRAsync(
+        ipv6Address: new IPAddress([0xFE, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78]),
+        macAddress: macAddress
+      ),
+      Throws.ArgumentException
+    );
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }

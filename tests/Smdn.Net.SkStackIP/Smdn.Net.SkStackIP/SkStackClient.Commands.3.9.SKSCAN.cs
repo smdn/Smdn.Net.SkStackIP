@@ -50,11 +50,12 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<SkStackErrorResponseException>(async () => {
-      await client.SendSKSCANEnergyDetectScanAsync(
+    Assert.That(
+      async () => await client.SendSKSCANEnergyDetectScanAsync(
         duration: TimeSpan.FromMilliseconds(durationMilliseconds)
-      );
-    });
+      ),
+      Throws.TypeOf<SkStackErrorResponseException>()
+    );
 
     Assert.That(
       stream.ReadSentData(),
@@ -85,9 +86,10 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<SkStackErrorResponseException>(async () => {
-      await client.SendSKSCANEnergyDetectScanAsync(durationFactor: durationFactor);
-    });
+    Assert.That(
+      async () => await client.SendSKSCANEnergyDetectScanAsync(durationFactor: durationFactor),
+      Throws.TypeOf<SkStackErrorResponseException>()
+    );
 
     Assert.That(
       stream.ReadSentData(),
@@ -106,11 +108,12 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => {
-      await client.SendSKSCANEnergyDetectScanAsync(
+    Assert.That(
+      async () => await client.SendSKSCANEnergyDetectScanAsync(
         duration: TimeSpan.FromMilliseconds(durationMilliseconds)
-      );
-    });
+      ),
+      Throws.TypeOf<ArgumentOutOfRangeException>()
+    );
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -127,9 +130,10 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => {
-      await client.SendSKSCANEnergyDetectScanAsync(durationFactor: durationFactor);
-    });
+    Assert.That(
+      async () => await client.SendSKSCANEnergyDetectScanAsync(durationFactor: durationFactor),
+      Throws.TypeOf<ArgumentOutOfRangeException>()
+    );
 
     Assert.That(stream.ReadSentData(), Is.Empty);
   }
@@ -145,11 +149,12 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<SkStackErrorResponseException>(async () => {
-      await client.SendSKSCANEnergyDetectScanAsync(
+    Assert.That(
+      async () => await client.SendSKSCANEnergyDetectScanAsync(
         channelMask: channelMask
-      );
-    });
+      ),
+      Throws.TypeOf<SkStackErrorResponseException>()
+    );
 
     Assert.That(
       stream.ReadSentData(),
@@ -175,9 +180,10 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
     IReadOnlyDictionary<SkStackChannel, decimal>? scanResult = default;
 
-    Assert.DoesNotThrowAsync(async () => {
-      (_, scanResult) = await client.SendSKSCANEnergyDetectScanAsync();
-    });
+    Assert.That(
+      async () => (_, scanResult) = await client.SendSKSCANEnergyDetectScanAsync(),
+      Throws.Nothing
+    );
 
     Assert.That(scanResult, Is.Not.Null);
     Assert.That(scanResult!.Count, Is.EqualTo(28));
@@ -277,13 +283,12 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKSCANActiveScanPairAsync().AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskSendCommand, RaiseBeaconReceivedEventAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, RaiseBeaconReceivedEventAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 
@@ -318,13 +323,12 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKSCANActiveScanPairAsync().AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskSendCommand, RaiseActiveScanCompletedEventAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, RaiseActiveScanCompletedEventAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 
@@ -376,13 +380,12 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKSCANActiveScanPairAsync().AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskSendCommand, RaiseBeaconReceivedEventAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, RaiseBeaconReceivedEventAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 
@@ -446,13 +449,12 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKSCANActiveScanAsync().AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskSendCommand, RaiseBeaconReceivedEventAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, RaiseBeaconReceivedEventAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 
@@ -487,13 +489,12 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKSCANActiveScanAsync().AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskSendCommand, RaiseActiveScanCompletedEventAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, RaiseActiveScanCompletedEventAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     var scanResult = taskSendCommand.Result.PanDescriptions;
 

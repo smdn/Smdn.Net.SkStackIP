@@ -28,8 +28,9 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
   {
     using var client = new SkStackClient(Stream.Null, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<ArgumentNullException>(
-      async () => await client.ReceiveUdpEchonetLiteAsync(buffer: null!)
+    Assert.That(
+      async () => await client.ReceiveUdpEchonetLiteAsync(buffer: null!),
+      Throws.TypeOf<ArgumentNullException>()
     );
   }
 
@@ -55,11 +56,12 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
     var buffer = new ArrayBufferWriter<byte>();
     IPAddress? remoteAddress = null;
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => remoteAddress = await client.ReceiveUdpEchonetLiteAsync(
         buffer: buffer,
         cancellationToken
-      )
+      ),
+      Throws.Nothing
     );
 
     Assert.That(remoteAddress, Is.Not.Null);
@@ -128,8 +130,9 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     Assert.That(response.Payload!.Where(static p => p.Port == SkStackKnownPortNumbers.EchonetLite), Is.Empty);
 
-    Assert.ThrowsAsync<InvalidOperationException>(
-      async () => await client.SendUdpEchonetLiteAsync(Array.Empty<byte>())
+    Assert.That(
+      async () => await client.SendUdpEchonetLiteAsync(Array.Empty<byte>()),
+      Throws.TypeOf<InvalidOperationException>()
     );
   }
 
@@ -171,8 +174,9 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     var buffer = Encoding.ASCII.GetBytes("012345");
 
-    Assert.DoesNotThrowAsync(
-      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: null, cancellationToken)
+    Assert.That(
+      async () => await client.SendUdpEchonetLiteAsync(buffer, resiliencePipeline: null, cancellationToken),
+      Throws.Nothing
     );
 
     var expectedDestinationAddress = client.PanaSessionPeerAddress!.ToLongFormatString();

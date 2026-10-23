@@ -18,7 +18,10 @@ public class SkStackClientCommandsSKRESETTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.DoesNotThrowAsync(async () => await client.SendSKRESETAsync());
+    Assert.That(
+      async () => await client.SendSKRESETAsync(),
+      Throws.Nothing
+    );
 
     Assert.That(
       stream.ReadSentData(),

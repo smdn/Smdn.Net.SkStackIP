@@ -26,13 +26,15 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
 
     var restriction = SkStackFlashMemoryWriteRestriction.DangerousCreateAlwaysGrant();
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => await client.SaveFlashMemoryAsync(restriction),
+      Throws.Nothing,
       "#1"
     );
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => await client.SaveFlashMemoryAsync(restriction),
+      Throws.Nothing,
       "#2"
     );
 
@@ -51,8 +53,9 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
     // SKSAVE
     stream.ResponseWriter.WriteLine("FAIL ER10");
 
-    Assert.ThrowsAsync<SkStackFlashMemoryIOException>(
-      async () => await client.SaveFlashMemoryAsync(SkStackFlashMemoryWriteRestriction.DangerousCreateAlwaysGrant())
+    Assert.That(
+      async () => await client.SaveFlashMemoryAsync(SkStackFlashMemoryWriteRestriction.DangerousCreateAlwaysGrant()),
+      Throws.TypeOf<SkStackFlashMemoryIOException>()
     );
 
     Assert.That(
@@ -93,34 +96,38 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
     // SKSAVE
     stream.ResponseWriter.WriteLine("OK");
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => await client.SaveFlashMemoryAsync(
         restriction: restriction!
       ),
+      Throws.Nothing,
       message: "initial write must be granted always"
     );
 
-    Assert.ThrowsAsync<InvalidOperationException>(
+    Assert.That(
       async () => await client.SaveFlashMemoryAsync(
         restriction: restriction!
       ),
+      Throws.InvalidOperationException,
       message: "subsequent write must no be granted if specific interval have not elapsed (#1)"
     );
 
     await Task.Delay(interval);
     await Task.Delay(TimeSpan.FromMilliseconds(500));
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => await client.SaveFlashMemoryAsync(
         restriction: restriction!
       ),
+      Throws.Nothing,
       message: "subsequent write should be granted if specific interval has elapsed"
     );
 
-    Assert.ThrowsAsync<InvalidOperationException>(
+    Assert.That(
       async () => await client.SaveFlashMemoryAsync(
         restriction: restriction!
       ),
+      Throws.InvalidOperationException,
       message: "subsequent write must no be granted if specific interval have not elapsed (#2)"
     );
 
@@ -185,8 +192,9 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
     // SKLOAD
     stream.ResponseWriter.WriteLine("OK");
 
-    Assert.DoesNotThrowAsync(
-      async () => await client.LoadFlashMemoryAsync()
+    Assert.That(
+      async () => await client.LoadFlashMemoryAsync(),
+      Throws.Nothing
     );
 
     Assert.That(
@@ -204,8 +212,9 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
     // SKLOAD
     stream.ResponseWriter.WriteLine("FAIL ER10");
 
-    Assert.ThrowsAsync<SkStackFlashMemoryIOException>(
-      async () => await client.LoadFlashMemoryAsync()
+    Assert.That(
+      async () => await client.LoadFlashMemoryAsync(),
+      Throws.TypeOf<SkStackFlashMemoryIOException>()
     );
 
     Assert.That(
@@ -223,8 +232,9 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
     // SKSREG SFF 1
     stream.ResponseWriter.WriteLine("OK");
 
-    Assert.DoesNotThrowAsync(
-      async () => await client.EnableFlashMemoryAutoLoadAsync()
+    Assert.That(
+      async () => await client.EnableFlashMemoryAutoLoadAsync(),
+      Throws.Nothing
     );
 
     Assert.That(
@@ -242,8 +252,9 @@ public class SkStackClientFunctionsFlashMemoryTests : SkStackClientTestsBase {
     // SKSREG SFF 0
     stream.ResponseWriter.WriteLine("OK");
 
-    Assert.DoesNotThrowAsync(
-      async () => await client.DisableFlashMemoryAutoLoadAsync()
+    Assert.That(
+      async () => await client.DisableFlashMemoryAutoLoadAsync(),
+      Throws.Nothing
     );
 
     Assert.That(

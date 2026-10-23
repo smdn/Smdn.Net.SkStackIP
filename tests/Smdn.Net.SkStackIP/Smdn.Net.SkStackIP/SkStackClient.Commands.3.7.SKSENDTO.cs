@@ -32,13 +32,14 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     SkStackResponse? response = default;
     bool isCompletedSuccessfully = default;
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => (response, isCompletedSuccessfully) = await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
         destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText
-      )
+      ),
+      Throws.Nothing
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
@@ -65,13 +66,14 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     SkStackResponse? response = default;
     bool isCompletedSuccessfully = default;
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => (response, isCompletedSuccessfully) = await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
         destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText
-      )
+      ),
+      Throws.Nothing
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
@@ -99,13 +101,14 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<SkStackUdpSendResultIndeterminateException>(
+    Assert.That(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
         destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText
-      )
+      ),
+      Throws.TypeOf<SkStackUdpSendResultIndeterminateException>()
     );
 
     Assert.That(
@@ -137,13 +140,14 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       SkStackResponse? response = default;
       bool isCompletedSuccessfully = default;
 
-      Assert.DoesNotThrowAsync(
+      Assert.That(
         async () => (response, isCompletedSuccessfully) = await client.SendSKSENDTOAsync(
           handle: SkStackUdpPortHandle.Handle1,
           destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
           data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
           encryption: SkStackUdpEncryption.ForcePlainText
         ),
+        Throws.Nothing,
         $"case #{testCaseNumber}"
       );
 
@@ -182,13 +186,14 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     SkStackResponse? response = default;
     bool isCompletedSuccessfully = default;
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => (response, isCompletedSuccessfully) = await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
         destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText
-      )
+      ),
+      Throws.Nothing
     );
 
     Assert.That(response, Is.Not.Null, nameof(response));
@@ -213,7 +218,10 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
     SkStackResponse? response = default;
     bool isCompletedSuccessfully = default;
 
-    Assert.DoesNotThrowAsync(async () => (response, isCompletedSuccessfully) = await testAction(client));
+    Assert.That(
+      async () => (response, isCompletedSuccessfully) = await testAction(client),
+      Throws.Nothing
+    );
 
     Assert.That(response, Is.Not.Null, nameof(response));
     Assert.That(response!.Success, Is.True);
@@ -365,13 +373,14 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => await client.SendSKSENDTOAsync(
         handle: handle,
         destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.EncryptIfAble
-      )
+      ),
+      Throws.Nothing
     );
 
     Assert.That(
@@ -417,13 +426,14 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.DoesNotThrowAsync(
+    Assert.That(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
         destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: sec
-      )
+      ),
+      Throws.Nothing
     );
 
     Assert.That(
@@ -491,13 +501,14 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
 
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
 
-    Assert.ThrowsAsync<SkStackErrorResponseException>(
+    Assert.That(
       async () => await client.SendSKSENDTOAsync(
         handle: SkStackUdpPortHandle.Handle1,
         destination: new IPEndPoint(IPAddress.Parse(TestDestinationIPAddressString), 0x0E1A),
         data: new byte[] { 0x30, 0x31, 0x32, 0x33, 0x34 },
         encryption: SkStackUdpEncryption.ForcePlainText
-      )
+      ),
+      Throws.TypeOf<SkStackErrorResponseException>()
     );
 
     Assert.That(

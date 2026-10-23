@@ -75,8 +75,9 @@ public partial class SkStackClientFunctionsPanaTests : SkStackClientTestsBase {
 
     var taskSendTerminatePanaSessionAsync = client.TerminatePanaSessionAsync(cancellationToken).AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskSendTerminatePanaSessionAsync, RaisePanaSessionTerminationEventsAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendTerminatePanaSessionAsync, RaisePanaSessionTerminationEventsAsync()),
+      Throws.Nothing
     );
 
     Assert.That(

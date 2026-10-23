@@ -47,7 +47,10 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
 
     SkStackResponse? response = default;
 
-    Assert.DoesNotThrowAsync(async () => response = await client.SendSKDSLEEPAsync(waitUntilWakeUp: false));
+    Assert.That(
+      async () => response = await client.SendSKDSLEEPAsync(waitUntilWakeUp: false),
+      Throws.Nothing
+    );
 
     Assert.That(thrownExceptionInSleptEventHandler, Is.Null, nameof(thrownExceptionInSleptEventHandler));
     Assert.That(raisedSleptEventCount, Is.EqualTo(1), nameof(raisedSleptEventCount));
@@ -113,13 +116,12 @@ public class SkStackClientCommandsSKDSLEEPTests : SkStackClientTestsBase {
       }
     };
 
-#pragma warning disable CA2012
     var taskSendCommand = client.SendSKDSLEEPAsync(waitUntilWakeUp: true).AsTask();
 
-    Assert.DoesNotThrowAsync(
-      async () => await Task.WhenAll(taskSendCommand, RaiseWakeupSignalReceivedEventsAsync())
+    Assert.That(
+      async () => await Task.WhenAll(taskSendCommand, RaiseWakeupSignalReceivedEventsAsync()),
+      Throws.Nothing
     );
-#pragma warning restore CA2012
 
     Assert.That(thrownExceptionInSleptEventHandler, Is.Null, nameof(thrownExceptionInSleptEventHandler));
     Assert.That(raisedSleptEventCount, Is.EqualTo(1), nameof(raisedSleptEventCount));
