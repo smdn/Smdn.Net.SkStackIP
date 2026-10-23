@@ -124,9 +124,9 @@ public static class SkStackTokenParser {
 
       return throwIfUnexpected
         ? throw SkStackUnexpectedResponseException.CreateInvalidToken(
-          token: token,
-          extraMessage: $"expected: '{expectedToken.ToControlCharsPicturizedString()}'"
-        )
+            token: token,
+            extraMessage: $"expected: '{expectedToken.ToControlCharsPicturizedString()}'"
+          )
         : OperationStatus.InvalidData;
     }
 
