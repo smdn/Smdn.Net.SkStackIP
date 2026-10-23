@@ -98,11 +98,8 @@ public abstract partial class BP35Base : SkStackClient {
   private PhysicalAddress? macAddress;
   public PhysicalAddress MacAddress => IsInitialized ? macAddress : throw CreateNotInitializedException();
 
-  private string? rohmUserId;
-  public string RohmUserId => IsInitialized ? rohmUserId : throw CreateNotInitializedException();
-
-  private string? rohmPassword;
-  public string RohmPassword => IsInitialized ? rohmPassword : throw CreateNotInitializedException();
+  public string RohmUserId { get => IsInitialized ? field : throw CreateNotInitializedException(); private set; }
+  public string RohmPassword { get => IsInitialized ? field : throw CreateNotInitializedException(); private set; }
 #pragma warning restore CS8603
 
   /// <summary>
@@ -179,7 +176,7 @@ public abstract partial class BP35Base : SkStackClient {
 #pragma warning restore CA1873
 
     // parse ROHM user ID and password
-    (rohmUserId, rohmPassword) = ParseRohmUserIdAndPassword(linkLocalAddress);
+    (RohmUserId, RohmPassword) = ParseRohmUserIdAndPassword(linkLocalAddress);
 
     // try load configuration from flash memory
     if (tryLoadFlashMemory) {
