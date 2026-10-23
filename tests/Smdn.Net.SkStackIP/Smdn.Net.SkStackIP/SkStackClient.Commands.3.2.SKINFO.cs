@@ -32,7 +32,7 @@ public class SkStackClientCommandsSKINFOTests : SkStackClientTestsBase {
     var (linkLocalAddress, macAddress, channel, panId, addr16) = response.Payload;
 
     Assert.That(linkLocalAddress, Is.EqualTo(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")), nameof(linkLocalAddress));
-    Assert.That(macAddress, Is.EqualTo(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })), nameof(macAddress));
+    Assert.That(macAddress, Is.EqualTo(new PhysicalAddress([0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78])), nameof(macAddress));
     Assert.That(channel, Is.EqualTo(SkStackChannel.Channel33), nameof(channel));
     Assert.That(panId, Is.EqualTo(0x8888), nameof(panId));
     Assert.That(addr16, Is.EqualTo(0xFFFE), nameof(addr16));
@@ -78,7 +78,7 @@ public class SkStackClientCommandsSKINFOTests : SkStackClientTestsBase {
     var (linkLocalAddress, macAddress, channel, panId, addr16) = response.Payload;
 
     Assert.That(linkLocalAddress, Is.EqualTo(IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")), nameof(linkLocalAddress));
-    Assert.That(macAddress, Is.EqualTo(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })), nameof(macAddress));
+    Assert.That(macAddress, Is.EqualTo(new PhysicalAddress([0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78])), nameof(macAddress));
     Assert.That(channel, Is.EqualTo(SkStackChannel.Channel33), nameof(channel));
     Assert.That(panId, Is.EqualTo(0x8888), nameof(panId));
     Assert.That(addr16, Is.EqualTo(0xFFFE), nameof(addr16));

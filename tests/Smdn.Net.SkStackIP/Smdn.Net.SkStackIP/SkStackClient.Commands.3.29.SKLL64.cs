@@ -100,7 +100,7 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
   }
 
   [Test] public void SKLL64_ADDR64_InvalidLength_0() => SKLL64_ADDR64_InvalidLength(PhysicalAddress.None);
-  [Test] public void SKLL64_ADDR64_InvalidLength_1() => SKLL64_ADDR64_InvalidLength(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34 }));
+  [Test] public void SKLL64_ADDR64_InvalidLength_1() => SKLL64_ADDR64_InvalidLength(new PhysicalAddress([0x00, 0x1D, 0x12, 0x90, 0x12, 0x34]));
 
   private void SKLL64_ADDR64_InvalidLength(PhysicalAddress addr64)
   {
@@ -119,7 +119,7 @@ public class SkStackClientCommandsSKLL64Tests : SkStackClientTestsBase {
 
   [Test]
   public void SKLL64_ADDR64_InvalidLength_NonDeferredThrowing_1()
-    => SKLL64_ADDR64_InvalidLength_NonDeferredThrowing(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34 }));
+    => SKLL64_ADDR64_InvalidLength_NonDeferredThrowing(new PhysicalAddress([0x00, 0x1D, 0x12, 0x90, 0x12, 0x34]));
 
   private void SKLL64_ADDR64_InvalidLength_NonDeferredThrowing(PhysicalAddress addr64)
   {

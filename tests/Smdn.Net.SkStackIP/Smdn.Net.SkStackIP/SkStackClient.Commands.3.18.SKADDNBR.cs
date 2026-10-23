@@ -50,7 +50,7 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
     Assert.That(
       () => client.SendSKADDNBRAsync(
         ipv6Address: null!,
-        macAddress: new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })
+        macAddress: new PhysicalAddress([0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78])
       ),
       Throws.ArgumentNullException
     );
@@ -66,7 +66,7 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
     Assert.That(
       () => client.SendSKADDNBRAsync(
         ipv6Address: IPAddress.Loopback,
-        macAddress: new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 })
+        macAddress: new PhysicalAddress([0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78])
       ),
       Throws.ArgumentException
     );
@@ -81,7 +81,7 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
 
     Assert.That(
       () => client.SendSKADDNBRAsync(
-        ipv6Address: new IPAddress(new byte[] { 0xFE, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 }),
+        ipv6Address: new IPAddress([0xFE, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78]),
         macAddress: null!
       ),
       Throws.ArgumentNullException
@@ -89,7 +89,7 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
   }
 
   [Test] public void SKADDNBR_MACADDR_InvalidLength_0() => SKADDNBR_MACADDR_InvalidLength(PhysicalAddress.None);
-  [Test] public void SKADDNBR_MACADDR_InvalidLength_1() => SKADDNBR_MACADDR_InvalidLength(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34 }));
+  [Test] public void SKADDNBR_MACADDR_InvalidLength_1() => SKADDNBR_MACADDR_InvalidLength(new PhysicalAddress([0x00, 0x1D, 0x12, 0x90, 0x12, 0x34]));
 
   private void SKADDNBR_MACADDR_InvalidLength(PhysicalAddress macAddress)
   {
@@ -114,7 +114,7 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
 
   [Test]
   public void SKADDNBR_MACADDR_InvalidLength_NonDeferredThrowing_1()
-    => SKADDNBR_MACADDR_InvalidLength_NonDeferredThrowing(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34 }));
+    => SKADDNBR_MACADDR_InvalidLength_NonDeferredThrowing(new PhysicalAddress([0x00, 0x1D, 0x12, 0x90, 0x12, 0x34]));
 
   private void SKADDNBR_MACADDR_InvalidLength_NonDeferredThrowing(PhysicalAddress macAddress)
   {
@@ -124,7 +124,7 @@ public class SkStackClientCommandsSKADDNBRTests : SkStackClientTestsBase {
 
     Assert.That(
       () => client.SendSKADDNBRAsync(
-        ipv6Address: new IPAddress(new byte[] { 0xFE, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 }),
+        ipv6Address: new IPAddress([0xFE, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78]),
         macAddress: macAddress
       ),
       Throws.ArgumentException

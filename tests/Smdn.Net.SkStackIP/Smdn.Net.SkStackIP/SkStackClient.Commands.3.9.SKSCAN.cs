@@ -297,7 +297,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     Assert.That(scanResult[0].Channel, Is.EqualTo(SkStackChannel.Channels[0x21]));
     Assert.That(scanResult[0].ChannelPage, Is.EqualTo(0x09));
     Assert.That(scanResult[0].Id, Is.EqualTo(0x8888), nameof(SkStackPanDescription.Id));
-    Assert.That(scanResult[0].MacAddress, Is.EqualTo(new PhysicalAddress(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01 })));
+    Assert.That(scanResult[0].MacAddress, Is.EqualTo(new PhysicalAddress([0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01])));
     Assert.That(scanResult[0].Rssi, Is.EqualTo(-42.395m));
     Assert.That(scanResult[0].PairingId, Is.EqualTo(0xAABBCCDD), nameof(SkStackPanDescription.PairingId));
 
@@ -393,10 +393,10 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     Assert.That(scanResult.Count, Is.EqualTo(2));
 
     Assert.That(scanResult[0].Id, Is.EqualTo(0x8888), nameof(SkStackPanDescription.Id));
-    Assert.That(scanResult[0].MacAddress, Is.EqualTo(new PhysicalAddress(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01 })));
+    Assert.That(scanResult[0].MacAddress, Is.EqualTo(new PhysicalAddress([0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01])));
 
     Assert.That(scanResult[1].Id, Is.EqualTo(0x9999), nameof(SkStackPanDescription.Id));
-    Assert.That(scanResult[1].MacAddress, Is.EqualTo(new PhysicalAddress(new byte[] { 0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89 })));
+    Assert.That(scanResult[1].MacAddress, Is.EqualTo(new PhysicalAddress([0xAB, 0xCD, 0xEF, 0x01, 0x23, 0x45, 0x67, 0x89])));
 
     Assert.That(
       stream.ReadSentData(),
@@ -463,7 +463,7 @@ public class SkStackClientCommandsSKSCANTests : SkStackClientTestsBase {
     Assert.That(scanResult[0].Channel, Is.EqualTo(SkStackChannel.Channels[0x21]));
     Assert.That(scanResult[0].ChannelPage, Is.EqualTo(0x09));
     Assert.That(scanResult[0].Id, Is.EqualTo(0x8888), nameof(SkStackPanDescription.Id));
-    Assert.That(scanResult[0].MacAddress, Is.EqualTo(new PhysicalAddress(new byte[] { 0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01 })));
+    Assert.That(scanResult[0].MacAddress, Is.EqualTo(new PhysicalAddress([0x12, 0x34, 0x56, 0x78, 0xAB, 0xCD, 0xEF, 0x01])));
     Assert.That(scanResult[0].Rssi, Is.EqualTo(-42.395m));
     Assert.That(scanResult[0].PairingId, Is.Zero, nameof(SkStackPanDescription.PairingId));
 

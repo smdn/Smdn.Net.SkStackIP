@@ -189,11 +189,11 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(
       response.Payload[IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")],
-      Is.EqualTo(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 }))
+      Is.EqualTo(new PhysicalAddress([0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78]))
     );
     Assert.That(
       response.Payload[IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5679")],
-      Is.EqualTo(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x79 }))
+      Is.EqualTo(new PhysicalAddress([0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x79]))
     );
 
     Assert.That(
@@ -245,7 +245,7 @@ public class SkStackClientCommandsSKTABLETests : SkStackClientTestsBase {
 
     Assert.That(
       response.Payload[IPAddress.Parse("FE80:0000:0000:0000:021D:1290:1234:5678")],
-      Is.EqualTo(new PhysicalAddress(new byte[] { 0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78 }))
+      Is.EqualTo(new PhysicalAddress([0x00, 0x1D, 0x12, 0x90, 0x12, 0x34, 0x56, 0x78]))
     );
 
     Assert.That(
