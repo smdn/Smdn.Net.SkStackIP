@@ -73,21 +73,19 @@ partial class SkStackClient {
 
   private static readonly TimeSpan ReceiveResponseDelayDefault = TimeSpan.FromMilliseconds(10);
 
-  private TimeSpan receiveResponseDelay = ReceiveResponseDelayDefault;
-
   /// <summary>
   /// Gets or sets the interval to delay before attempting to receive a subsequent sequence
   /// if the response sequence currently received is incomplete.
   /// </summary>
   public TimeSpan ReceiveResponseDelay {
-    get => receiveResponseDelay;
+    get;
     set {
       if (value <= TimeSpan.Zero)
         throw new ArgumentOutOfRangeException(message: "must be non-zero positive value", actualValue: value, paramName: nameof(ReceiveResponseDelay));
 
-      receiveResponseDelay = value;
+      field = value;
     }
-  }
+  } = ReceiveResponseDelayDefault;
 
   private readonly ParseSequenceContext parseSequenceContext;
   private SemaphoreSlim streamReaderSemaphore;
@@ -221,7 +219,7 @@ partial class SkStackClient {
           return result;
 
         if (delay)
-          await Task.Delay(receiveResponseDelay).ConfigureAwait(false);
+          await Task.Delay(ReceiveResponseDelay).ConfigureAwait(false);
 
         if (loggerReceivingStatus is not null)
           LogReceivingStatus(loggerReceivingStatus, $"{callerMemberName} continue reading");

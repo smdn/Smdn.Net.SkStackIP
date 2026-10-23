@@ -21,17 +21,15 @@ namespace Smdn.Net.SkStackIP;
 partial class SkStackClient {
   private static readonly TimeSpan ReceiveUdpPollingIntervalDefault = TimeSpan.FromMilliseconds(10);
 
-  private TimeSpan receiveUdpPollingInterval = ReceiveUdpPollingIntervalDefault;
-
   public TimeSpan ReceiveUdpPollingInterval {
-    get => receiveUdpPollingInterval;
+    get;
     set {
       if (value <= TimeSpan.Zero)
         throw new ArgumentOutOfRangeException(message: "must be non-zero positive value", actualValue: value, paramName: nameof(ReceiveUdpPollingInterval));
 
-      receiveUdpPollingInterval = value;
+      field = value;
     }
-  }
+  } = ReceiveUdpPollingIntervalDefault;
 
   private SkStackERXUDPDataFormat erxudpDataFormat;
 
@@ -270,7 +268,7 @@ partial class SkStackClient {
       thisClient: this,
       pipeReader: pipe.Reader,
       bufferWriter: buffer,
-      eventPollingInterval: receiveUdpPollingInterval,
+      eventPollingInterval: ReceiveUdpPollingInterval,
       cancellationToken: cancellationToken
     );
 
