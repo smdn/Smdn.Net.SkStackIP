@@ -569,10 +569,15 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(1.0));
 
     Assert.That(
-      () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.EchonetLite, buffer: CreateNullBufferWriter()),
-      Throws.Nothing
+      async () => await client.ReceiveUdpAsync(
+        port: SkStackKnownPortNumbers.EchonetLite,
+        buffer: CreateNullBufferWriter(),
+        cancellationToken: cts.Token
+      ),
+      Throws.InstanceOf<OperationCanceledException>()
     );
   }
 
@@ -581,10 +586,15 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
   {
     using var stream = new PseudoSkStackStream();
     using var client = new SkStackClient(stream, logger: CreateLoggerForTestCase());
+    using var cts = new CancellationTokenSource(delay: TimeSpan.FromSeconds(1.0));
 
     Assert.That(
-      () => client.ReceiveUdpAsync(port: SkStackKnownPortNumbers.EchonetLite, buffer: CreateNullBufferWriter()),
-      Throws.Nothing
+      () => client.ReceiveUdpAsync(
+        port: SkStackKnownPortNumbers.EchonetLite,
+        buffer: CreateNullBufferWriter(),
+        cancellationToken: cts.Token
+      ),
+      Throws.InstanceOf<OperationCanceledException>()
     );
 
     client.StopCapturingUdpReceiveEvents(SkStackKnownPortNumbers.EchonetLite);
