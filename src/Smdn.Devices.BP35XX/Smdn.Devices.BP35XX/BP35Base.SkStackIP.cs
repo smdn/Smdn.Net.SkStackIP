@@ -12,9 +12,7 @@ using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Devices.BP35XX;
 
-#pragma warning disable IDE0040
 partial class BP35Base {
-#pragma warning restore IDE0040
   private static readonly SkStackProtocolSyntax RMCommandSyntax = new BP35CommandSyntax();
 
   /// <remarks>

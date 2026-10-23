@@ -6,9 +6,7 @@ using System.Threading.Tasks;
 
 namespace Smdn.Net.SkStackIP;
 
-#pragma warning disable IDE0040
 partial class SkStackClient {
-#pragma warning restore IDE0040
   public ValueTask SaveFlashMemoryAsync(
     SkStackFlashMemoryWriteRestriction restriction,
     CancellationToken cancellationToken = default

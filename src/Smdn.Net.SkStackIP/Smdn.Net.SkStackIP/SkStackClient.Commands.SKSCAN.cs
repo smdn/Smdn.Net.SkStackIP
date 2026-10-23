@@ -13,9 +13,7 @@ using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;
 
-#pragma warning disable IDE0040
 partial class SkStackClient {
-#pragma warning restore IDE0040
   private abstract class SKSCANEventHandler<TScanResult> : SkStackEventHandlerBase {
     public bool HasScanResultSet { get; private set; }
 

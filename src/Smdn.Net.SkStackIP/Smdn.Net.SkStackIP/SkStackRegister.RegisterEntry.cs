@@ -9,9 +9,7 @@ using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;
 
-#pragma warning disable IDE0040
 partial class SkStackRegister {
-#pragma warning restore IDE0040
   public abstract class RegisterEntry<TValue> {
     public string Name { get; }
     internal ReadOnlyMemory<byte> SREG { get; }

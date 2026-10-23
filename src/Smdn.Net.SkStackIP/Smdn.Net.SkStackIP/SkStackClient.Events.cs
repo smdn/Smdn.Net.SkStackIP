@@ -13,10 +13,7 @@ using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;
 
-#pragma warning disable IDE0040
 partial class SkStackClient {
-#pragma warning restore IDE0040
-
 #pragma warning disable CA2012
   private static readonly ValueTask<bool> TrueResultValueTask =
 #if SYSTEM_THREADING_TASKS_VALUETASK_FROMRESULT

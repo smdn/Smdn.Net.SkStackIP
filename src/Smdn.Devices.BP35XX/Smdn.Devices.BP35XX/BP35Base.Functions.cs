@@ -7,9 +7,7 @@ using System.Threading.Tasks;
 
 namespace Smdn.Devices.BP35XX;
 
-#pragma warning disable IDE0040
 partial class BP35Base {
-#pragma warning restore IDE0040
   public ValueTask SetUdpDataFormatAsync(
     BP35UdpReceiveDataFormat format,
     CancellationToken cancellationToken = default

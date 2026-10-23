@@ -12,9 +12,7 @@ using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;
 
-#pragma warning disable IDE0040
 partial class SkStackClient {
-#pragma warning restore IDE0040
   private const int SKSETPWDMinLength = 1;
   private const int SKSETPWDMaxLength = 32;
 

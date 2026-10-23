@@ -7,9 +7,7 @@ using System.IO.Ports;
 
 namespace Smdn.Devices.BP35XX;
 
-#pragma warning disable IDE0040
 partial class BP35Base {
-#pragma warning restore IDE0040
   internal abstract class SerialPortStreamFactory : IBP35SerialPortStreamFactory {
     public abstract BP35UartBaudRate BaudRate { get; }
     public abstract bool UseFlowControl { get; }

@@ -15,9 +15,7 @@ using SequenceIs = Smdn.Test.NUnit.Constraints.Buffers.Is;
 
 namespace Smdn.Net.SkStackIP;
 
-#pragma warning disable IDE0040
 partial class SkStackClientFunctionsPanaTests {
-#pragma warning restore IDE0040
   internal static SkStackClient CreateClientPanaSessionEstablished(
     PseudoSkStackStream stream,
     ILogger logger,

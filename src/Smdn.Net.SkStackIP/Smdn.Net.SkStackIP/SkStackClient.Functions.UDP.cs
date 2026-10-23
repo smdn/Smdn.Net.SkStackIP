@@ -18,9 +18,7 @@ using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;
 
-#pragma warning disable IDE0040
 partial class SkStackClient {
-#pragma warning restore IDE0040
   private static readonly TimeSpan ReceiveUdpPollingIntervalDefault = TimeSpan.FromMilliseconds(10);
 
   private TimeSpan receiveUdpPollingInterval = ReceiveUdpPollingIntervalDefault;

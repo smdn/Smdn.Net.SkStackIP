@@ -11,9 +11,7 @@ using Smdn.Net.SkStackIP.Protocol;
 
 namespace Smdn.Net.SkStackIP;
 
-#pragma warning disable IDE0040
 partial class SkStackClient {
-#pragma warning restore IDE0040
   private enum ParseSequenceStatus {
     Initial,
     Undetermined,   // the parsing finished without declaring its state (invalid state)

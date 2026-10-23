@@ -11,9 +11,7 @@ using NUnit.Framework;
 
 namespace Smdn.Net.SkStackIP;
 
-#pragma warning disable IDE0040
 partial class SkStackClientFunctionsPanaTests {
-#pragma warning restore IDE0040
   [Test]
   [CancelAfter(DefaultTimeOutInMilliseconds)]
   public void ActiveScanAsync_ArgumentException_RBIDEmpty(CancellationToken cancellationToken)

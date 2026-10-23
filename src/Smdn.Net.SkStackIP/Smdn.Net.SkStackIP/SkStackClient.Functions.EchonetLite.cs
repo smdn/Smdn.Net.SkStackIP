@@ -11,9 +11,7 @@ using Polly;
 
 namespace Smdn.Net.SkStackIP;
 
-#pragma warning disable IDE0040
 partial class SkStackClient {
-#pragma warning restore IDE0040
   /// <summary>
   /// An UDP port handle currently assigned to the port for ECHONET Lite.
   /// </summary>

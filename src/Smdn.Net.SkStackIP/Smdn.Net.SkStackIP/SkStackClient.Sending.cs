@@ -10,9 +10,7 @@ using Smdn.Text.Unicode.ControlPictures;
 
 namespace Smdn.Net.SkStackIP;
 
-#pragma warning disable IDE0040
 partial class SkStackClient {
-#pragma warning restore IDE0040
   /// <summary>Sends a command.</summary>
   /// <param name="command">The command to be sent.</param>
   /// <param name="writeArguments">The <see cref="Action{ISkStackCommandLineWriter}"/> for write command arguments to the buffer. Can be <see langword="null"/> if command has no arguments.</param>

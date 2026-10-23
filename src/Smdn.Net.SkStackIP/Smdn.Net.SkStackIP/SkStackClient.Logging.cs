@@ -12,9 +12,7 @@ using Smdn.Text.Unicode.ControlPictures;
 
 namespace Smdn.Net.SkStackIP;
 
-#pragma warning disable IDE0040
 partial class SkStackClient {
-#pragma warning restore IDE0040
   internal static class EventIds {
     public const int ReceivingStatus = 1;
     public const int CommandSequence = 2;

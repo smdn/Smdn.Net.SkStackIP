@@ -10,9 +10,7 @@ using System.Threading.Tasks;
 
 namespace Smdn.Net.SkStackIP;
 
-#pragma warning disable IDE0040
 partial class SkStackClient {
-#pragma warning restore IDE0040
   /// <inheritdoc cref="AuthenticateAsPanaClientAsyncCore"/>
   /// <param name="rbid">A Route-B ID used for PANA authentication.</param>
   /// <param name="password">A Route-B password used for PANA authentication.</param>
