@@ -98,11 +98,13 @@ public abstract partial class BP35Base : SkStackClient {
   private PhysicalAddress? macAddress;
   public PhysicalAddress MacAddress => IsInitialized ? macAddress : throw CreateNotInitializedException();
 
+#pragma warning disable IDE0032
   private string? rohmUserId;
   public string RohmUserId => IsInitialized ? rohmUserId : throw CreateNotInitializedException();
 
   private string? rohmPassword;
   public string RohmPassword => IsInitialized ? rohmPassword : throw CreateNotInitializedException();
+#pragma warning restore IDE0032
 #pragma warning restore CS8603
 
   /// <summary>
