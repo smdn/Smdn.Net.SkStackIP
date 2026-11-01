@@ -140,11 +140,11 @@ public class SkStackClientCommandsSKSETRBIDTests : SkStackClientTestsBase {
 
     Assert.That(
       () => client.SendSKSETRBIDAsync(writeRBID: null!),
-      Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writeRBID")
+      Throws.ArgumentNullException.ParamName.EqualTo("writeRBID")
     );
     Assert.That(
       async () => await client.SendSKSETRBIDAsync(writeRBID: null!),
-      Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writeRBID")
+      Throws.ArgumentNullException.ParamName.EqualTo("writeRBID")
     );
 
     Assert.That(stream.ReadSentData(), Is.Empty);

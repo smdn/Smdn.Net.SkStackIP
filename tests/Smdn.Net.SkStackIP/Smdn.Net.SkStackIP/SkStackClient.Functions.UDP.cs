@@ -50,8 +50,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       () => client.SetERXUDPDataFormat(format),
       Throws
         .ArgumentException
-        .With
-        .Property(nameof(ArgumentException.ParamName))
+        .ParamName
         .EqualTo(nameof(client.ERXUDPDataFormat))
     );
   }
@@ -303,7 +302,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       Throws
         .InvalidOperationException
         .With
-        .Property(nameof(InvalidOperationException.Message))
+        .Message
         .Contains("not listening")
     );
 
@@ -354,7 +353,7 @@ public class SkStackClientFunctionsUdpTests : SkStackClientTestsBase {
       Throws
         .InvalidOperationException
         .With
-        .Property(nameof(InvalidOperationException.Message))
+        .Message
         .Contains("not listening")
     );
 

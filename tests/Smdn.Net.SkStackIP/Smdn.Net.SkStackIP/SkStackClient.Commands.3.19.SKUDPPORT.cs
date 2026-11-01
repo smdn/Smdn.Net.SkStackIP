@@ -97,8 +97,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
       () => client.SendSKUDPPORTAsync(handle, 0x0001),
       Throws
         .TypeOf<ArgumentOutOfRangeException>()
-        .With
-        .Property(nameof(ArgumentOutOfRangeException.ParamName))
+        .ParamName
         .EqualTo("handle")
     );
 
@@ -118,8 +117,7 @@ public class SkStackClientCommandsSKUDPPORTTests : SkStackClientTestsBase {
       () => client.SendSKUDPPORTUnsetAsync(handle),
       Throws
         .TypeOf<ArgumentOutOfRangeException>()
-        .With
-        .Property(nameof(ArgumentOutOfRangeException.ParamName))
+        .ParamName
         .EqualTo("handle")
     );
 

@@ -297,8 +297,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       ),
       Throws
         .ArgumentNullException
-        .With
-        .Property(nameof(ArgumentNullException.ParamName))
+        .ParamName
         .EqualTo("destination")
     );
 
@@ -322,8 +321,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       ),
       Throws
         .ArgumentNullException
-        .With
-        .Property(nameof(ArgumentNullException.ParamName))
+        .ParamName
         .EqualTo("destinationAddress")
     );
 
@@ -350,8 +348,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       ),
       Throws
         .TypeOf<ArgumentOutOfRangeException>()
-        .With
-        .Property(nameof(ArgumentOutOfRangeException.ParamName))
+        .ParamName
         .EqualTo("destinationPort")
     );
 
@@ -406,8 +403,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       ),
       Throws
         .TypeOf<ArgumentOutOfRangeException>()
-        .With
-        .Property(nameof(ArgumentOutOfRangeException.ParamName))
+        .ParamName
         .EqualTo("handle")
     );
 
@@ -459,8 +455,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       ),
       Throws
         .ArgumentException
-        .With
-        .Property(nameof(ArgumentException.ParamName))
+        .ParamName
         .EqualTo("encryption")
     );
 
@@ -484,8 +479,7 @@ public class SkStackClientCommandsSKSENDTOTests : SkStackClientTestsBase {
       ),
       Throws
         .ArgumentException
-        .With
-        .Property(nameof(ArgumentException.ParamName))
+        .ParamName
         .EqualTo("data")
     );
 

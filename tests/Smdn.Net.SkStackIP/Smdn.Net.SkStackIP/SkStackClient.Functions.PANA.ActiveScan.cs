@@ -26,7 +26,7 @@ partial class SkStackClientFunctionsPanaTests {
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cancellationToken
       ),
-      Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("rbid")
+      Throws.ArgumentException.ParamName.EqualTo("rbid")
     );
   }
 
@@ -43,7 +43,7 @@ partial class SkStackClientFunctionsPanaTests {
         password: default,
         cancellationToken: cancellationToken
       ),
-      Throws.ArgumentException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("password")
+      Throws.ArgumentException.ParamName.EqualTo("password")
     );
   }
 
@@ -61,7 +61,7 @@ partial class SkStackClientFunctionsPanaTests {
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cancellationToken
       ),
-      Throws.ArgumentNullException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("writeRBID")
+      Throws.ArgumentNullException.ParamName.EqualTo("writeRBID")
     );
   }
 
@@ -79,7 +79,7 @@ partial class SkStackClientFunctionsPanaTests {
         scanOptions: SkStackActiveScanOptions.Create(new[] { 1 }),
         cancellationToken: cancellationToken
       ),
-      Throws.ArgumentNullException.With.Property(nameof(ArgumentException.ParamName)).EqualTo("writePassword")
+      Throws.ArgumentNullException.ParamName.EqualTo("writePassword")
     );
   }
 

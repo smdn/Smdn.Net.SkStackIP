@@ -57,8 +57,7 @@ public class SkStackChannelTests {
       () => SkStackChannel.CreateMask(channels: channels),
       Throws
         .ArgumentNullException
-        .With
-        .Property(nameof(ArgumentNullException.ParamName))
+        .ParamName
         .EqualTo("channels")
     );
   }
@@ -79,8 +78,7 @@ public class SkStackChannelTests {
       () => SkStackChannel.CreateMask(channels: channels),
       Throws
         .ArgumentNullException
-        .With
-        .Property(nameof(ArgumentNullException.ParamName))
+        .ParamName
         .EqualTo("channels")
     );
   }

@@ -215,11 +215,11 @@ public class SkStackClientCommandsSKSETPWDTests : SkStackClientTestsBase {
 
     Assert.That(
       () => client.SendSKSETPWDAsync(writePassword: null!),
-      Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writePassword")
+      Throws.ArgumentNullException.ParamName.EqualTo("writePassword")
     );
     Assert.That(
       async () => await client.SendSKSETPWDAsync(writePassword: null!),
-      Throws.ArgumentNullException.With.Property(nameof(ArgumentNullException.ParamName)).EqualTo("writePassword")
+      Throws.ArgumentNullException.ParamName.EqualTo("writePassword")
     );
 
     Assert.That(stream.ReadSentData(), Is.Empty);

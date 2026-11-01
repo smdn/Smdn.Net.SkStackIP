@@ -17,8 +17,7 @@ public class BP35A1OptionsTests {
       () => options.Configure(baseOptions: null!),
       Throws
         .ArgumentNullException
-        .With
-        .Property(nameof(ArgumentNullException.ParamName))
+        .ParamName
         .EqualTo("baseOptions")
     );
   }

@@ -30,7 +30,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     Assert.That(
       async () => await client.ReceiveUdpEchonetLiteAsync(buffer: null!),
-      Throws.TypeOf<ArgumentNullException>()
+      Throws.ArgumentNullException
     );
   }
 
@@ -134,7 +134,7 @@ public class SkStackClientFunctionsEchonetLiteTests : SkStackClientTestsBase {
 
     Assert.That(
       async () => await client.SendUdpEchonetLiteAsync(Array.Empty<byte>()),
-      Throws.TypeOf<InvalidOperationException>()
+      Throws.InvalidOperationException
     );
   }
 
