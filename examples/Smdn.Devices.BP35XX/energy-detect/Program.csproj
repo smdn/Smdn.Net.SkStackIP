@@ -8,9 +8,11 @@ SPDX-License-Identifier: MIT
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <VerifyReferenceAotCompatibility>true</VerifyReferenceAotCompatibility>
+    <PublishAot>true</PublishAot>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Smdn.Devices.BP35XX" Version="*" />
+    <PackageReference Include="Smdn.Devices.BP35XX" Version="[2.4.0,3.0.0)" />
   </ItemGroup>
 </Project>
 

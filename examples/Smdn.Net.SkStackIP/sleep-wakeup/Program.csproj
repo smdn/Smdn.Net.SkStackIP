@@ -10,7 +10,7 @@ SPDX-License-Identifier: MIT
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Device.Gpio" Version="4.1.0" />
+    <PackageReference Include="System.Device.Gpio" Version="4.1.0" /> <!-- 4.x is not yet AOT-ready -->
     <PackageReference Include="System.IO.Ports" Version="10.0.0" />
     <PackageReference Include="Smdn.Net.SkStackIP" Version="*" />
   </ItemGroup>
