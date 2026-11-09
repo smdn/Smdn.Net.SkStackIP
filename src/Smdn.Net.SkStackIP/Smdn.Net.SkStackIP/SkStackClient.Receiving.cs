@@ -172,8 +172,14 @@ partial class SkStackClient {
             }
             else if (parseSequenceContext.Status != ParseSequenceStatus.Incomplete) {
               // if buffered data sequence does not contain any events, parse it with the specified parser
-              if (loggerReceivingStatus is not null)
+              if (
+#if SYSTEM_RUNTIME_COMPILERSERVICES_RUNTIMEFEATURE_ISDYNAMICCODECOMPILED
+                RuntimeFeature.IsDynamicCodeSupported &&
+#endif
+                loggerReceivingStatus is not null
+              ) {
                 LogReceivingStatus(loggerReceivingStatus, $"parser: {parseSequence.Method.Name} -- {parseSequence.Method}");
+              }
 
               result = parseSequence(parseSequenceContext, arg);
 
