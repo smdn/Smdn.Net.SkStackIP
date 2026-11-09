@@ -110,11 +110,10 @@ partial class SkStackClient {
 
     return (
       resp,
-      eventHandler.Address
 #if DEBUG
-        ?? throw new InvalidOperationException($"{eventHandler.Address} has not been set")
+      eventHandler.Address ?? throw new InvalidOperationException($"{eventHandler.Address} has not been set")
 #else
-        !
+      eventHandler.Address!
 #endif
     );
   }
