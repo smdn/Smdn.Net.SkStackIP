@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO.Ports;
-using System.Text;
+﻿using System.IO.Ports;
 
 using Smdn.Net.SkStackIP;
 

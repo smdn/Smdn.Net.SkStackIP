@@ -35,7 +35,7 @@ port.DiscardInBuffer();
 
 using var client = new SkStackClient(
   stream: port.BaseStream,
-  logger: serviceProvider.GetService<ILoggerFactory>().CreateLogger("SKSTACK-IP")
+  logger: serviceProvider.GetService<ILoggerFactory>()?.CreateLogger("SKSTACK-IP")
 );
 
 await client.SendSKVERAsync();

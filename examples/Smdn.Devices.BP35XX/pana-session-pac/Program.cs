@@ -3,8 +3,6 @@
 
 // この例では、PANA認証エージェント(PAA=スマートメーター)に対して認証を要求し、
 // PANAセッションの確立を試みます
-using System;
-using System.Net;
 using System.Text;
 
 using Microsoft.Extensions.DependencyInjection;

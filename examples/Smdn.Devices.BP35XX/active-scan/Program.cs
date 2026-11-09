@@ -3,7 +3,6 @@
 
 // この例では、アクティブスキャンを実行することにより、
 // ネットワーク内にあるPANA認証エージェント(PAA=スマートメーター)を探索します
-using System;
 using System.Text;
 
 using Microsoft.Extensions.DependencyInjection;

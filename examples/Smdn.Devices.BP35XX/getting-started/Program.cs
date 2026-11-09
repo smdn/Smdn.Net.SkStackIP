@@ -1,6 +1,4 @@
-﻿using System;
-
-using Smdn.Devices.BP35XX;
+﻿using Smdn.Devices.BP35XX;
 
 using var device = await BP35A1.CreateAsync(
   new BP35A1Options() {

@@ -3,11 +3,7 @@
 
 // この例では、特定チャンネルに対するEDスキャンを実行することにより、
 // チャンネルごとの使用状況(電波強度)を取得して表示します
-using System;
-using System.Linq;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 using Smdn.Devices.BP35XX;
 using Smdn.Net.SkStackIP;
