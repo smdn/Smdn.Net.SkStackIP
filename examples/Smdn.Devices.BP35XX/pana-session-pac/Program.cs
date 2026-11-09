@@ -70,7 +70,7 @@ Console.WriteLine("PANA session established");
 Console.WriteLine($"  {nameof(bp35a1.PanaSessionPeerAddress)}: {bp35a1.PanaSessionPeerAddress}");
 Console.WriteLine($"  {nameof(bp35a1.IsPanaSessionAlive)}: {bp35a1.IsPanaSessionAlive}");
 
-Console.WriteLine("PANA session info");
+Console.WriteLine("  PANA session info:");
 Console.WriteLine($"    {nameof(sessionInfo.Channel)}: {sessionInfo.Channel}");
 Console.WriteLine($"    {nameof(sessionInfo.PanId)}: 0x{sessionInfo.PanId:X4}");
 Console.WriteLine($"    {nameof(sessionInfo.PeerAddress)}: {sessionInfo.PeerAddress}");
