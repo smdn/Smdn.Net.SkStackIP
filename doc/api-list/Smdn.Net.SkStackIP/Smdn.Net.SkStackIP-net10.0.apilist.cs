@@ -1,19 +1,21 @@
-// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.6.0)
+// Smdn.Net.SkStackIP.dll (Smdn.Net.SkStackIP-1.7.0)
 //   Name: Smdn.Net.SkStackIP
-//   AssemblyVersion: 1.6.0.0
-//   InformationalVersion: 1.6.0+d432bef22ed781972661adfad84b0e1d3651e9e3
+//   AssemblyVersion: 1.7.0.0
+//   InformationalVersion: 1.7.0+34b12bc1f4da3906a462355806462e674726eff6
 //   TargetFramework: .NETCoreApp,Version=v10.0
 //   Configuration: Release
 //   Metadata: IsTrimmable=True
+//   Metadata: IsAotCompatible=True
 //   Metadata: RepositoryUrl=https://github.com/smdn/Smdn.Net.SkStackIP
 //   Metadata: RepositoryBranch=main
-//   Metadata: RepositoryCommit=d432bef22ed781972661adfad84b0e1d3651e9e3
+//   Metadata: RepositoryCommit=34b12bc1f4da3906a462355806462e674726eff6
 //   Referenced assemblies:
-//     Microsoft.Extensions.Logging.Abstractions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60
+//     Microsoft.Extensions.Logging.Abstractions, Version=10.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60
 //     Polly.Core, Version=8.0.0.0, Culture=neutral, PublicKeyToken=c8a3ffc3f8f825cc
-//     Smdn.Fundamental.ControlPicture, Version=3.0.0.1, Culture=neutral
-//     Smdn.Fundamental.PrintableEncoding.Hexadecimal, Version=3.0.0.0, Culture=neutral
+//     Smdn.Fundamental.ControlPicture, Version=3.1.1.0, Culture=neutral
+//     Smdn.Fundamental.PrintableEncoding.Hexadecimal, Version=3.1.1.0, Culture=neutral
 //     System.Collections, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
+//     System.Collections.Immutable, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 //     System.ComponentModel.Primitives, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
 //     System.IO.Pipelines, Version=10.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51
 //     System.Linq, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a
@@ -33,6 +35,7 @@ using System.IO;
 using System.IO.Pipelines;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -103,9 +106,9 @@ namespace Smdn.Net.SkStackIP {
   }
 
   public abstract class SkStackActiveScanOptions : ICloneable {
-    public static SkStackActiveScanOptions Default { get; }
-    public static SkStackActiveScanOptions Null { get; }
-    public static SkStackActiveScanOptions ScanUntilFind { get; }
+    public static SkStackActiveScanOptions Default { get; } // = "Smdn.Net.SkStackIP.SkStackActiveScanOptions+DefaultActiveScanOptions"
+    public static SkStackActiveScanOptions Null { get; } // = "Smdn.Net.SkStackIP.SkStackActiveScanOptions+NullActiveScanOptions"
+    public static SkStackActiveScanOptions ScanUntilFind { get; } // = "Smdn.Net.SkStackIP.SkStackActiveScanOptions+ScanUntilFindActiveScanOptions"
 
     public static SkStackActiveScanOptions Create(Func<IEnumerable<int>> scanDurationGeneratorFunc, PhysicalAddress paaMacAddress) {}
     public static SkStackActiveScanOptions Create(Func<IEnumerable<int>> scanDurationGeneratorFunc, Predicate<SkStackPanDescription>? paaSelector = null) {}
@@ -327,19 +330,19 @@ namespace Smdn.Net.SkStackIP {
     public static SkStackRegister.RegisterEntry<ushort> PanId { get; }
     public static SkStackRegister.RegisterEntry<TimeSpan> PanaSessionLifetimeInSeconds { get; }
     public static SkStackRegister.RegisterEntry<bool> RespondBeaconRequest { get; }
-    public static SkStackRegister.RegisterEntry<SkStackChannel> S02 { get; }
-    public static SkStackRegister.RegisterEntry<ushort> S03 { get; }
-    public static SkStackRegister.RegisterEntry<uint> S07 { get; }
-    public static SkStackRegister.RegisterEntry<ReadOnlyMemory<byte>> S0A { get; }
-    public static SkStackRegister.RegisterEntry<bool> S15 { get; }
-    public static SkStackRegister.RegisterEntry<TimeSpan> S16 { get; }
-    public static SkStackRegister.RegisterEntry<bool> S17 { get; }
-    public static SkStackRegister.RegisterEntry<bool> SA0 { get; }
-    public static SkStackRegister.RegisterEntry<bool> SA1 { get; }
-    public static SkStackRegister.RegisterEntry<bool> SFB { get; }
-    public static SkStackRegister.RegisterEntry<ulong> SFD { get; }
-    public static SkStackRegister.RegisterEntry<bool> SFE { get; }
-    public static SkStackRegister.RegisterEntry<bool> SFF { get; }
+    public static SkStackRegister.RegisterEntry<SkStackChannel> S02 { get; } // = "Smdn.Net.SkStackIP.SkStackRegister+RegisterChannelEntry"
+    public static SkStackRegister.RegisterEntry<ushort> S03 { get; } // = "Smdn.Net.SkStackIP.SkStackRegister+RegisterUINT16Entry"
+    public static SkStackRegister.RegisterEntry<uint> S07 { get; } // = "Smdn.Net.SkStackIP.SkStackRegister+RegisterUINT32Entry"
+    public static SkStackRegister.RegisterEntry<ReadOnlyMemory<byte>> S0A { get; } // = "Smdn.Net.SkStackIP.SkStackRegister+RegisterCHARArrayEntry"
+    public static SkStackRegister.RegisterEntry<bool> S15 { get; } // = "Smdn.Net.SkStackIP.SkStackRegister+RegisterBinaryEntry"
+    public static SkStackRegister.RegisterEntry<TimeSpan> S16 { get; } // = "Smdn.Net.SkStackIP.SkStackRegister+RegisterUINT32SecondsTimeSpanEntry"
+    public static SkStackRegister.RegisterEntry<bool> S17 { get; } // = "Smdn.Net.SkStackIP.SkStackRegister+RegisterBinaryEntry"
+    public static SkStackRegister.RegisterEntry<bool> SA0 { get; } // = "Smdn.Net.SkStackIP.SkStackRegister+RegisterBinaryEntry"
+    public static SkStackRegister.RegisterEntry<bool> SA1 { get; } // = "Smdn.Net.SkStackIP.SkStackRegister+RegisterBinaryEntry"
+    public static SkStackRegister.RegisterEntry<bool> SFB { get; } // = "Smdn.Net.SkStackIP.SkStackRegister+RegisterBinaryEntry"
+    public static SkStackRegister.RegisterEntry<ulong> SFD { get; } // = "Smdn.Net.SkStackIP.SkStackRegister+RegisterUINT64Entry"
+    public static SkStackRegister.RegisterEntry<bool> SFE { get; } // = "Smdn.Net.SkStackIP.SkStackRegister+RegisterBinaryEntry"
+    public static SkStackRegister.RegisterEntry<bool> SFF { get; } // = "Smdn.Net.SkStackIP.SkStackRegister+RegisterBinaryEntry"
   }
 
   public class SkStackResponse {
@@ -381,7 +384,7 @@ namespace Smdn.Net.SkStackIP {
     IComparable<SkStackChannel>,
     IEquatable<SkStackChannel>
   {
-    public static readonly IReadOnlyDictionary<int, SkStackChannel> Channels; // = "System.Collections.Generic.Dictionary`2[System.Int32,Smdn.Net.SkStackIP.SkStackChannel]"
+    public static readonly IReadOnlyDictionary<int, SkStackChannel> Channels; // = "System.Collections.Frozen.DenseIntegralFrozenDictionary+WithOptionalValues`3[System.Int32,System.Int32,Smdn.Net.SkStackIP.SkStackChannel]"
     public static readonly SkStackChannel Empty; // = "0ch (S02=0x00, 0 MHz)"
 
     public static SkStackChannel Channel33 { get; }
@@ -413,6 +416,8 @@ namespace Smdn.Net.SkStackIP {
     public static SkStackChannel Channel59 { get; }
     public static SkStackChannel Channel60 { get; }
 
+    public static uint CreateMask([ParamCollection] params IEnumerable<SkStackChannel> channels) {}
+    public static uint CreateMask([ParamCollection] params ReadOnlySpan<SkStackChannel> channels) {}
     public static uint CreateMask(params SkStackChannel[] channels) {}
     public static bool operator == (SkStackChannel x, SkStackChannel y) {}
     public static bool operator != (SkStackChannel x, SkStackChannel y) {}
@@ -473,7 +478,7 @@ namespace Smdn.Net.SkStackIP.Protocol {
   }
 
   public abstract class SkStackProtocolSyntax {
-    public static SkStackProtocolSyntax Default { get; }
+    public static SkStackProtocolSyntax Default { get; } // = "Smdn.Net.SkStackIP.Protocol.SkStackProtocolSyntax+DefaultSyntax"
 
     protected SkStackProtocolSyntax() {}
 
@@ -510,5 +515,5 @@ namespace Smdn.Net.SkStackIP.Protocol {
     public string? CausedText { get; }
   }
 }
-// API list generated by Smdn.Reflection.ReverseGenerating.ListApi.MSBuild.Tasks v1.7.1.0.
-// Smdn.Reflection.ReverseGenerating.ListApi.Core v1.5.0.0 (https://github.com/smdn/Smdn.Reflection.ReverseGenerating)
+// API list generated by Smdn.Reflection.ReverseGenerating.ListApi.MSBuild.Tasks v1.8.2.0.
+// Smdn.Reflection.ReverseGenerating.ListApi.Core v1.6.2.0 (https://github.com/smdn/Smdn.Reflection.ReverseGenerating)
